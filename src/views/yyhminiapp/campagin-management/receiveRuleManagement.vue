@@ -1,0 +1,581 @@
+
+<template>
+  <div class="search">
+    <div v-if="!campaginGrabInfoPage && !campaginManagementPage">
+      <div
+        style="width: 100%;background: #fff;box-shadow:0 6px 6px -4px rgba(0,0,0,.2);z-index: 1;position:fixed; padding:14px"
+      >
+        <Steps :current="1">
+          <Step title="基础设置" content="已经完成"></Step>
+          <Step title="规则设置" content="进行中"></Step>
+          <Step title="整点抢设置" content="等进行" v-if=" edit_info.isLimitGrap=='1'"></Step>
+        </Steps>
+      </div>
+      <div style="padding-top: 80px">
+        <Card>
+          <p slot="title">领优惠---规则设置</p>
+          <a href="#" slot="extra">
+            <Button type="dashed" icon="md-arrow-round-back" @click="goback()">返回上一层</Button>
+          </a>
+
+          <Alert show-icon>
+            活动ID :
+            <span style="color:red">{{campId}}</span>
+            <span style="margin-left: 10%">
+              设置总天数 :
+              <span style="color:red">{{daySum}}</span>
+            </span>
+            <span slot="desc"></span>
+          </Alert>
+          <Form :model="edit_info" ref="edit_info" :label-width="220">
+            <!-- <FormItem label="每人免费限领数" required>
+              <InputNumber
+                :min="0"
+                type="text"
+                v-model="edit_info.freeTimes"
+                placeholder="请输入"
+                style="width:400px"
+                @on-change="statusCheckChange"
+              ></InputNumber>
+            </FormItem> -->
+
+            <FormItem label="每人限领总数" required>
+              <InputNumber
+                :min="0"
+                :step="1"
+                type="text"
+                v-model="edit_info.totalGetLimit"
+                placeholder="请输入"
+                style="width:400px"
+                @on-change="statusCheckChange"
+              ></InputNumber>
+              <span style="color:red">&nbsp;&nbsp;张</span>
+            </FormItem>
+
+             
+
+            <FormItem label="投放渠道" required>
+              <Select v-model="edit_info.sendChannel" style="width:400px" @on-change="statusCheckChange">  
+                <Option v-for="item in res_list" :value="item.dictValue" :key="item.id">{{ item.dictLabel }}</Option>
+              </Select>
+            </FormItem>
+
+            <FormItem label="是否在领优惠列表显示" required v-if="edit_info.sendChannel==1">
+              <Select
+                      v-model="edit_info.displayStatus"
+                      style="width:400px"
+                      @on-change="statusCheckChange"
+              >
+                <Option value="1">显示</Option>
+                <Option value="0">不显示</Option>
+              </Select>
+            </FormItem>
+
+            <FormItem label="邀请人数" required v-if="edit_info.sendChannel==1">
+              <InputNumber
+                :min="0"
+                type="text"
+                :step="1"
+                v-model="edit_info.shareInvitedCount"
+                placeholder="请输入"
+                style="width:400px"
+                @on-change="statusCheckChange"
+              ></InputNumber>
+             <span style="color:red">&nbsp;&nbsp;人</span>
+            </FormItem>
+
+
+            <FormItem label="是否限抢券" required>
+              <Select
+                v-model="edit_info.isLimitGrap"
+                style="width:400px"
+                @on-change="statusCheckChange"
+              >
+                <Option value="0">否</Option>
+                <Option value="1">是</Option>
+              </Select>
+            </FormItem>
+
+  
+          <FormItem label="排序" required>
+              <InputNumber
+                :min="0"
+                type="text"
+                 :step="1"
+                v-model="edit_info.orderBy"
+                placeholder="请输入"
+                style="width:400px"
+                @on-change="statusCheckChange"
+              ></InputNumber>
+            </FormItem> 
+
+
+         <FormItem label="是否限制库存数量" required>
+              <Select
+                v-model="isStockCount"
+                style="width:400px"
+                @on-change="statusCheckChange"
+              >
+                <Option value="0">否</Option>
+                <Option value="1">是</Option>
+              </Select>
+            </FormItem>
+
+            <FormItem label="库存数量" required v-if="isStockCount =='1'">
+              <InputNumber
+                :min="0"
+                :step="1"
+                type="text"
+                v-model="edit_info.stockCount"
+                placeholder="请输入"
+                style="width:400px"
+                @on-change="statusCheckChange"
+              ></InputNumber>
+               <span style="color:red"> &nbsp;&nbsp;张</span>
+            </FormItem>
+         <FormItem label=" 默认推荐排除" required>
+              <Select
+                v-model="edit_info.isBlack"
+                style="width:400px"
+                @on-change="statusCheckChange"
+              >
+                <Option value="0">否</Option>
+                <Option value="1">是</Option>
+              </Select>
+            </FormItem>
+
+            <FormItem :label-width="220">
+              <Alert type="warning" show-icon v-if="isCheckDisabled == true" style="width:500px">修改后才能保存</Alert>
+              <Button
+                type="primary"
+                @click="editOk()"
+                :loading="edit_loading"
+                style="width:220px; margin-right:30px;"
+                :disabled="isCheckDisabled"
+              >保存</Button>
+              <Button
+                type="dashed"
+                @click="nextInfo()"
+                style="width:150px;margin-left: 5%"
+                v-if=" edit_info.isLimitGrap=='1' && status=='edit' && isCheckDisabled == true"
+              >下一步</Button>
+            </FormItem>
+          </Form>
+        </Card>
+      </div>
+    </div>
+
+ 
+
+    <div v-if="campaginGrabInfoPage">
+      <campaginGrabInfoSet @changeStatus="showcampaginGrabInfo"></campaginGrabInfoSet>
+    </div>
+
+    <div v-if="campaginManagementPage">
+      <campaginManagement @changeStatus="showcampaginManagement"></campaginManagement>
+    </div>
+
+    <Modal v-model="next_modal" width="360" title="设置成功" @on-cancel="closeModal">
+      <p>即将跳转领优惠列表...</p>
+
+      <div slot="footer">
+        <Button type="success" size="large" long @click="closeModal">确定</Button>
+      </div>
+    </Modal>
+  </div>
+</template>
+
+<script>
+import {
+  getRequest,
+  postRequest,
+  putRequest,
+  deleteRequest,
+  uploadFileRequest
+} from "@/libs/axios";
+
+import { formatDate } from "@/libs/date";
+
+import campaginGrabInfoSet from "./campaginGrabInfo";
+import campaginManagement from "./campaginManagement";
+
+export default {
+  name: "receiveRuleManagement",
+  components: {
+    campaginGrabInfoSet,
+    campaginManagement
+  },
+  props: {},
+
+  data() {
+    return {
+      next_modal: false,
+      campaginGrabInfoPage: false,
+      campaginManagementPage: false,
+      edit_info: {
+        // addRequiredScore: 0,
+        // freeTimes: 0,
+        isLimitGrap: "0",
+        isBlack: "0",
+        sendChannel: "1",
+        label: "",
+        shareInvitedAwardAmount: 0,
+        shareInvitedCount: 0,
+        // shareUseRakeBackPercent: 0,
+        orderBy: 9999,
+        stockCount: 0,
+        totalGetLimit: 0,
+          displayStatus: "0"
+      },
+      isStockCount: "0",
+      edit_loading: false,
+      campId: "",
+      status: "",
+      getUrl: "",
+      msg: "",
+
+      daySum: "",
+      isCheckDisabled: true,
+      current: 1,
+      totalSize: 0, //总条数
+      pageNum: 1, //开始条数
+      limit: 10, //每页记录数
+      TableLoading: false,
+      table_list: [],
+      res_list: [],
+      chooseResArray: [],
+      currentid: "", // 点击单选框得到的id（临时）
+      res_columns: [
+        // {
+        //   type: "selection",
+        //   width: 60,
+        //   align: "center"
+        // },
+        {
+          title: "选择",
+          // key: 'chose',
+          width: 60,
+          align: "center",
+          render: (h, params) => {
+            // console.log(params.row);
+            let value = params.row.dictValue;
+            let flag = false;
+            if (this.currentid == value) {
+              flag = true;
+            } else {
+              flag = false;
+            }
+            return h("div", [
+              h("Radio", {
+                props: {
+                  value: flag
+                },
+                on: {
+                  "on-change": () => {
+                    this.currentid = value;
+                    // this.id_jishi = params.row.id
+                  }
+                }
+              })
+            ]);
+          }
+        },
+        {
+          title: "字典类型",
+          key: "dictCode",
+          width: 150,
+          align: "center"
+        },
+        {
+          title: "字典标签",
+          key: "dictLabel",
+          width: 100,
+          align: "center"
+        },
+        {
+          title: "字典键值",
+          key: "dictValue",
+          width: 150,
+          sortable: true,
+          align: "center"
+        },
+        {
+          title: "字典排序",
+          key: "dictSort",
+          width: 150,
+          sortable: true,
+          align: "center"
+        },
+
+        {
+          title: "状态",
+          key: "status",
+          width: 100,
+          align: "center",
+          render: (h, params) => {
+            const row = params.row;
+            const color = row.status === "1" ? "red" : "blue";
+            const text = row.status === "1" ? "停用" : "正常";
+
+            return h(
+              "Tag",
+              {
+                props: {
+                  color: color
+                }
+              },
+              text
+            );
+          }
+        }
+      ]
+    };
+  },
+
+  created: function() {},
+  methods: {
+    init() {
+      this.campId = this.getStore("campId");
+      this.daySum = this.getStore("daySum");
+      console.log(this.campId);
+      this.updateTableList();
+      this.getTicketTemplate();
+    },
+
+    updateTableList() {
+      this.TableLoading = true;
+
+      const reqParams = {
+        campId: this.campId
+      };
+
+      postRequest(
+        "/campaignReceiveRule/queryRule?campId=" + this.campId,
+        reqParams
+      ).then(res => {
+        if (res.isSuccess) {
+          if (res.data) {
+            this.edit_info = res.data;
+            this.campId = res.data.campId;
+            this.edit_info.isLimitGrap = res.data.isLimitGrap.toString(); // = 0 ? "0" : "1";
+            this.edit_info.sendChannel = res.data.sendChannel.toString();
+            this.edit_info.isBlack = res.data.isBlack.toString();
+            this.status = "edit";
+            this.currentid = res.data.label;
+            this.edit_info.displayStatus = res.data.displayStatus.toString();
+            if (this.edit_info.stockCount == "999999999") {
+              this.isStockCount = "0";
+            } else {
+              this.isStockCount = "1";
+            }
+          } else {
+            this.edit_info = {
+              // addRequiredScore: 0,
+              // freeTimes: 0,
+              isLimitGrap: "0",
+              isBlack: "0",
+              sendChannel: "1",
+              label: "",
+              shareInvitedAwardAmount: 0,
+              shareInvitedCount: 0,
+              // shareUseRakeBackPercent: 0,
+              orderBy: 9999,
+              stockCount: 0,
+              totalGetLimit: 0
+            };
+            this.status = "add";
+          }
+        } else {
+          this.$Message.error(res.msg);
+        }
+      });
+    },
+
+    //获取活动标签ID
+    getTicketTemplate() {
+      const reqParams = {
+        dictCode: "send_channel"
+      };
+
+      postRequest(
+        "/system/sys-dict-data/list?pageNum=" +
+          this.pageNum +
+          "&pageSize=" +
+          this.limit,
+        reqParams
+      ).then(res => {
+        if (res.code == 200) {
+          this.res_list = res.data.records;
+        } else {
+          this.$Message.error(res.msg);
+        }
+      });
+    },
+
+    editOk() {
+      if (!this.edit_info.sendChannel) {
+        this.$Message.error("投放渠道不能为空");
+        return;
+      }
+      if (this.edit_info.sendChannel == 1) {
+        if (
+          !this.edit_info.shareInvitedCount &&
+          this.edit_info.shareInvitedCount != 0
+        ) {
+          this.$Message.error("邀请人数不能为空");
+          return;
+        }
+      }
+
+      if (!this.edit_info.orderBy && this.edit_info.orderBy != 0) {
+        this.$Message.error("排序不能为空");
+        return;
+      }
+
+      if (!this.edit_info.stockCount && this.edit_info.stockCount != 0) {
+        this.$Message.error("库存数量不能为空");
+        return;
+      }
+      if (this.isStockCount == 0) {
+        this.edit_info.stockCount = "999999999";
+      } else {
+        this.edit_info.stockCount = this.edit_info.stockCount;
+      }
+      if (this.edit_info.isLimitGrap == 1) {
+        if (this.daySum > this.edit_info.stockCount) {
+          this.$Message.error("设置总天数不能大于库存数量");
+          return;
+        }
+      }
+
+      this.edit_loading = true;
+      const reqParams = {
+        campId: this.campId,
+        // addRequiredScore: this.edit_info.addRequiredScore,
+        // freeTimes: this.edit_info.freeTimes,
+        isLimitGrap: Number(this.edit_info.isLimitGrap),
+        sendChannel: Number(this.edit_info.sendChannel),
+        isBlack: Number(this.edit_info.isBlack),
+
+        label: this.edit_info.dictId,
+        shareInvitedAwardAmount: this.edit_info.shareInvitedAwardAmount,
+        shareInvitedCount: this.edit_info.shareInvitedCount,
+        // shareUseRakeBackPercent: this.edit_info.shareUseRakeBackPercent / 100,
+        orderBy: this.edit_info.orderBy,
+        stockCount: this.edit_info.stockCount,
+        totalGetLimit: this.edit_info.totalGetLimit,
+          displayStatus: this.edit_info.displayStatus,
+      };
+
+      if (this.status == "add") {
+        this.getUrl = "/campaignReceiveRule/add";
+        this.msg = "新增成功";
+      } else {
+        this.getUrl = "/campaignReceiveRule/edit";
+        this.msg = "编辑成功";
+      }
+
+      postRequest(this.getUrl, reqParams).then(res => {
+        this.edit_loading = false;
+        if (res.code == 200) {
+          this.isCheckDisabled = true;
+          this.status = "edit";
+          if (this.edit_info.isLimitGrap == "1") {
+            setTimeout(() => {
+              this.nextInfo();
+            }, 1200);
+          } else {
+            this.next_modal = true;
+          }
+        } else {
+          this.$Message.error(res.msg);
+        }
+      });
+    },
+
+    // 跳转列表
+
+    closeModal() {
+      this.next_modal = false;
+      setTimeout(() => {
+        this.setStore("campId", "");
+        this.setStore("daySum", "");
+        // this.campaginManagementPage = true;
+        this.$emit("changeStatus", { Return: false, type: 1 });
+      }, 1200);
+    },
+
+    dataProcessing() {
+      if (!this.edit_info.stockCount && this.edit_info.stockCount != 0) {
+        this.$Message.error("库存数量不能为空");
+        return;
+      } else if (this.daySum > this.edit_info.stockCount) {
+        this.$Message.error("设置总天数不能大于库存数量");
+        return;
+      }
+
+      this.setStore("stockCount", this.edit_info.stockCount);
+    },
+
+    nextInfo() {
+      this.dataProcessing();
+      this.campaginGrabInfoPage = true;
+      this.campaginManagementPage = false;
+    },
+
+    showcampaginGrabInfo(e) {
+      if (e.type == 1) {
+        this.$emit("changeStatus", { Return: false, type: 1 });
+      }
+      this.campaginGrabInfoPage = e.Return;
+    },
+
+    showcampaginManagement(e) {
+      this.campaginManagementPage = e;
+    },
+
+    goback() {
+      this.$emit("changeStatus", { Return: false });
+    },
+
+    statusCheckChange() {
+      this.isCheckDisabled = false;
+    },
+
+    // 选择模版start--------------------------------
+    resInfo() {
+      this.res_Modal_show = true;
+      this.statusCheckChange();
+    },
+
+    change(obj) {
+      const dictId = [];
+      for (let i of obj) {
+        dictId.push(i.id);
+      }
+
+      this.res_info.dictIds = dictId.toString();
+    },
+
+    resOk() {
+      this.edit_info.dictId = this.currentid;
+      this.res_Modal_show = false;
+    }
+
+    // 选择模版end------------------------------
+  },
+  mounted() {
+    this.init();
+  }
+};
+</script>
+
+
+<style>
+.form {
+  width: 900px;
+}
+.form > div {
+  display: inline-block;
+}
+</style>
