@@ -106,9 +106,10 @@
             <DatePicker
               type="datetimerange"
               placement="bottom-end"
-              placeholder="Select date"
+              placeholder="请选择日期"
               @on-change="datetimechange"
               style="width:450px;"
+              class="date-range"
             ></DatePicker>
           </FormItem>
         </Col>
@@ -239,23 +240,22 @@ export default {
   },
   methods: {
     loadForm: function(id) {
-      console.log(id);
-
+      this.handleReset('form');
       this.form = {
         id: null,
-        couponId: "23",
-        couponName: "test",
-        backCode: "111,22,33".replace(/[,]/g,"\r\n"),
-        firstSite: "2",
-        secondSite: "1",
-        num: "2",
-        discounts: "30",
-        startDate:"2019-09-25 00:00:00",
-        endDate:"2019-09-27 00:00:00",
+        couponId: "",
+        couponName: "",
+        backCode: "",
+        firstSite: "",
+        secondSite: "",
+        num: "",
+        discounts: "",
+        startDate:"1212",
+        endDate:"2121",
         shops: [
           {
-            provinceId: "120000",
-            cityId: "120100",
+            provinceId: "",
+            cityId: "",
             areaId: 1,
             shopCode: null,
             shopName: null,
@@ -263,8 +263,8 @@ export default {
             status: 1
           },
           {
-            provinceId: "120000",
-            cityId: "120100",
+            provinceId: "",
+            cityId: "",
             areaId: 2,
             shopCode: null,
             shopName: null,
@@ -273,6 +273,46 @@ export default {
           }
         ]
       };
+     
+       getRequest("/couponrecommend/barcodeRelation/list/"+id).then(res => {
+          if (res.code == 200) {
+              var backcode = [];  
+              res.data.forEach(v=>{  
+                   backcode.push(v.barcode) ;
+              });
+                this.form.backCode = backcode.toString().replace(/[,]/g,"\r\n");
+            } else {
+              this.$Message.error(res.msg);
+            }
+        });
+        var param = {}
+        param.id = id;
+        postRequest("/couponrecommend/shopRelation/listShop",param).then(res => {
+          if (res.code == 200) {
+                
+                //this.form.backCode = backcode.toString().replace(/[,]/g,"\r\n");
+            } else {
+              this.$Message.error(res.msg);
+            }
+       });
+      postRequest("/couponrecommend/selectById?id="+id).then(res => {
+            if (res.code == 200) {
+              var info =  res.data;
+              this.form.id = id;
+              this.form.couponId = info.campId;
+              this.form.couponName = info.campName;
+              this.form.firstSite = info.distributeChannel + "";
+              this.form.secondSite = info.distributeLocation + "";
+              this.form.num = info.distributeCount;
+              this.form.showNum = info.exposureCount;
+              this.form.discounts = info.promotion;
+              this.form.startDate = info.distributeStartDate;
+              this.form.endDate = info.distributeEndDate;
+            } else {
+              this.$Message.error(res.msg);
+            }
+          });
+      
     },
     handleSubmit: function(name) {
       this.$refs[name].validate(valid => {
@@ -300,13 +340,29 @@ export default {
             shop.shopName = s.shopName;
             return shop;
           });
-          postRequest("/couponrecommend/add", param).then(res => {
+        
+          if(this.form.id !== null && this.form.id!== undefined && this.form.id!==""){
+            console.log("-------------edit------------")
+             postRequest("/couponrecommend/edit", param).then(res => {
             if (res.code == 200) {
               this.$emit("closeFormModal-event");
             } else {
               this.$Message.error(res.msg);
             }
           });
+
+          return;
+          }
+          postRequest("/couponrecommend/add", param).then(res => {
+            console.log("-------------add------------")
+            if (res.code == 200) {
+              this.$emit("closeFormModal-event");
+            } else {
+              this.$Message.error(res.msg);
+            }
+          });
+
+         
         } else {
           //this.$Message.error("Fail!");
         }

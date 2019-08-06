@@ -162,18 +162,24 @@ export default {
       this.$emit("handleRemove-event", this.index);
     },
     init: function() {
-      this.isInit=1;
       this.loadProvinceList();
+
+      if(this.isInit == 0){
+        return;
+      }
       if (this.shop.provinceId) {
         this.provinceId = this.shop.provinceId;
+        this.provinceName = this.provinceList.find((el) => (el.provinceCode ==  this.provinceId)).provinceName;
       }
       if(this.shop.cityId){
-        this.provinceChange({lable:""});
+        this.provinceChange({lable: this.provinceName});
         this.cityId = this.shop.cityId;
+        this.cityName = this.cityList.find((el) => (el.cityCode ==  this.cityId)).cityName;
       }
       if(this.shop.areaId){
-        this.cityChange({lable:""});
+        this.cityChange({lable: this.cityName});
         this.areaId = this.shop.areaId;
+        this.districtName = this.areaList.find((el) => (el.areaCode ==  this.areaId)).areaName;
       }
       if (this.shop.provinceId) {
         this.shopCode = this.shop.shopCode;
@@ -181,7 +187,10 @@ export default {
     }
   },
   mounted: function() {
-    this.init();
+    if(null != this.shop.provinceId && "" != null != this.shop.provinceId){
+      this.isInit=1;
+    }
+     this.init();
   }
 };
 </script>
