@@ -104,6 +104,7 @@
         <Col span="12">
           <FormItem label="时间" prop="startDate" :rules="{ required: true, message: '请选择日期' }">
             <DatePicker
+              :value="datetimerange"
               type="datetimerange"
               placement="bottom-end"
               placeholder="请选择日期"
@@ -158,6 +159,7 @@ export default {
 
     return {
       index: 0,
+      datetimerange:[],
       form: {
         id: null,
         couponId: null,
@@ -286,6 +288,8 @@ export default {
               this.form.discounts = info.promotion;
               this.form.startDate = info.distributeStartDate;
               this.form.endDate = info.distributeEndDate;
+              this.datetimerange.push(this.form.startDate);
+              this.datetimerange.push(this.form.endDate);
             } else {
               this.$Message.error(res.msg);
             }
@@ -445,8 +449,31 @@ export default {
       console.log(this.form);
     },
     modalClose: function() {
-      //console.log(111);
-      //this.form.shops = [];
+      this.datetimerange = [];
+      this.form= {
+        id: null,
+        couponId: null,
+        couponName: null,
+        backCode: null,
+        firstSite: null,
+        secondSite: null,
+        num: null,
+        showNum: null,
+        discounts: null,
+        startDate: null,
+        endDate: null,
+        shops: [
+           {
+            provinceId: null,
+            cityId: null,
+            areaId: null,
+            shopCode: null,
+            shopName: null,
+            index: 0,
+            status: 1
+          }
+        ]
+      }
     },
     msgErr(txt) {
       this.$Message.error({
