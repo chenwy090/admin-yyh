@@ -76,7 +76,7 @@
       <FormItem label="曝光量" prop="showNum">
         <Row>
           <Col span="4">
-            <Input v-model="form.showNum" placeholder="曝光量" type="number">
+            <Input v-model="form.showNum" placeholder="曝光量" type="text">
               <span slot="append">次</span>
             </Input>
           </Col>
@@ -85,7 +85,7 @@
       <FormItem label="投放量" prop="num">
         <Row>
           <Col span="4">
-            <Input v-model="form.num" placeholder="投放量" type="number">
+            <Input v-model="form.num" placeholder="投放量" type="text">
               <span slot="append">张</span>
             </Input>
           </Col>
@@ -94,7 +94,7 @@
       <FormItem label="优惠力度" prop="discounts">
         <Row>
           <Col span="4">
-            <Input v-model="form.discounts" placeholder="优惠力度" type="number">
+            <Input v-model="form.discounts" placeholder="优惠力度" type="text">
               <span slot="append">%</span>
             </Input>
           </Col>
@@ -171,7 +171,7 @@ export default {
         startDate: null,
         endDate: null,
         shops: [
-          {
+           {
             provinceId: null,
             cityId: null,
             areaId: null,
@@ -240,40 +240,6 @@ export default {
   },
   methods: {
     loadForm: function(id) {
-      this.handleReset('form');
-      this.form = {
-        id: null,
-        couponId: "",
-        couponName: "",
-        backCode: "",
-        firstSite: "",
-        secondSite: "",
-        num: "",
-        discounts: "",
-        startDate:"1212",
-        endDate:"2121",
-        shops: [
-          {
-            provinceId: "",
-            cityId: "",
-            areaId: 1,
-            shopCode: null,
-            shopName: null,
-            index: 0,
-            status: 1
-          },
-          {
-            provinceId: "",
-            cityId: "",
-            areaId: 2,
-            shopCode: null,
-            shopName: null,
-            index: 0,
-            status: 1
-          }
-        ]
-      };
-     
        getRequest("/couponrecommend/barcodeRelation/list/"+id).then(res => {
           if (res.code == 200) {
               var backcode = [];  
@@ -287,10 +253,22 @@ export default {
         });
         var param = {}
         param.id = id;
-        postRequest("/couponrecommend/shopRelation/listShop",param).then(res => {
-          if (res.code == 200) {
-                
-                //this.form.backCode = backcode.toString().replace(/[,]/g,"\r\n");
+        postRequest("/couponrecommend/shopRelation/listCodeShop",param).then(res => {
+          if (res.code == 200) { 
+              var shops = []; 
+               res.data.forEach(v=>{
+                   var shop = {}; 
+                    shop.provinceId = v.province;
+                    shop.cityId = v.city;
+                    shop.areaId = v.district;
+                    shop.shopCode = v.shopCode;
+                    shop.shopName = v.shopName;
+                    shop.index = 0;
+                    shop.status = 1;
+                    shops.push(shop) ;
+              });
+              this.form.shops = shops;
+              console.log(shops)
             } else {
               this.$Message.error(res.msg);
             }
@@ -467,8 +445,8 @@ export default {
       console.log(this.form);
     },
     modalClose: function() {
-      console.log(111);
-      this.form.shops = [];
+      //console.log(111);
+      //this.form.shops = [];
     },
     msgErr(txt) {
       this.$Message.error({

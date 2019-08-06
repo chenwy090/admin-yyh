@@ -98,23 +98,35 @@ export default {
     };
   },
   methods: {
-    loadProvinceList: function() {
+    loadProvinceList: function(callback) {
       postRequest("/system/area/province/list").then(res => {
         if (res.code == 200) {
           this.provinceList = res.data;
+          if(callback){
+            callback();
+          }
         } else {
           this.$Message.error(res.msg);
         }
       });
     },
+    loadCityList: function() {
+      
+    },
+    loadAreaList: function() {
+     
+    },
     //根据省份code获取城市信息数据
-    provinceChange(item) {
-      this.provinceName = item.label;
+    provinceChange(item, callback) {
+      this.provinceName =  item.label;
       this.$emit("sendProvinceId", this.provinceId, this.index);
       getRequest("/system/area/city/" + this.provinceId).then(res => {
         if (res.code == 200) {
           this.cityList = res.data;
           this.areaId = null;
+          if(callback){
+            callback();
+          }
         } else {
           this.$Message.error(res.msg);
         }
@@ -122,18 +134,22 @@ export default {
       this.loadShops();
     },
     //根据城市code获取区县信息数据
-    cityChange(item) {
+    cityChange(item, callback) {
       this.cityName = item.label;
       this.$emit("sendCityId", this.cityId, this.index);
       getRequest("/system/area/district/" + this.cityId).then(res => {
         if (res.code == 200) {
           this.areaList = res.data;
+          if(callback){
+            callback();
+          }
         } else {
           this.$Message.error(res.msg);
         }
       });
       this.loadShops();
     },
+     //根据城市code获取区域信息数据
     areaChange(item) {
       this.districtName = item.label;
       this.$emit("sendAreaId", this.areaId, this.index);
@@ -162,34 +178,35 @@ export default {
       this.$emit("handleRemove-event", this.index);
     },
     init: function() {
-      this.loadProvinceList();
-
-      if(this.isInit == 0){
-        return;
-      }
-      if (this.shop.provinceId) {
-        this.provinceId = this.shop.provinceId;
-        this.provinceName = this.provinceList.find((el) => (el.provinceCode ==  this.provinceId)).provinceName;
-      }
-      if(this.shop.cityId){
-        this.provinceChange({lable: this.provinceName});
-        this.cityId = this.shop.cityId;
-        this.cityName = this.cityList.find((el) => (el.cityCode ==  this.cityId)).cityName;
-      }
-      if(this.shop.areaId){
-        this.cityChange({lable: this.cityName});
-        this.areaId = this.shop.areaId;
-        this.districtName = this.areaList.find((el) => (el.areaCode ==  this.areaId)).areaName;
-      }
-      if (this.shop.provinceId) {
-        this.shopCode = this.shop.shopCode;
-      }
+     var globalThis = this;
+     this.loadProvinceList(function(){
+        if (globalThis.shop.provinceId) {
+          globalThis.isInit=1;
+          globalThis.provinceId = globalThis.shop.provinceId;
+          globalThis.provinceName = globalThis.provinceList.find((el) => (el.provinceCode ==  globalThis.provinceId)).provinceName; 
+          if(globalThis.shop.cityId){
+            globalThis.provinceChange({lable: globalThis.provinceName}, function(){
+              globalThis.cityId = globalThis.shop.cityId;
+              globalThis.cityName = globalThis.cityList.find((el) => (el.cityCode ==  globalThis.cityId)).cityName;
+              if(globalThis.shop.areaId){
+                globalThis.cityChange({lable: globalThis.cityName}, function(){
+                    globalThis.areaId = globalThis.shop.areaId;
+                    globalThis.districtName = globalThis.areaList.find((el) => (el.areaCode ==  globalThis.areaId)).areaName;
+                    if (globalThis.shop.provinceId) {
+                      globalThis.isInit=0;
+                      globalThis.loadShops();
+                      globalThis.shopCode = globalThis.shop.shopCode;
+                    }
+                });
+                
+              }
+            });
+          }
+        }
+     });
     }
   },
   mounted: function() {
-    if(null != this.shop.provinceId && "" != null != this.shop.provinceId){
-      this.isInit=1;
-    }
      this.init();
   }
 };

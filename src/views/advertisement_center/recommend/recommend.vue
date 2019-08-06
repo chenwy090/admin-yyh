@@ -87,14 +87,14 @@
                         </template>
 
                         <template slot-scope="{ row }" slot="action">
-<!--                              <Button
-                                    type="primary"
-                                    size="small"
-                                    style="margin-right: 5px"
-                                    @click="editStaff(row)"
-                                    v-if="row.recommendStatus == 0 ||  row.recommendStatus == -1"
-                            >编辑
-                            </Button> -->
+                                 <Button
+                                        type="primary"
+                                        size="small"
+                                        style="margin-right: 5px"
+                                        @click="editStaff(row)"
+
+                                >编辑
+                                </Button>
                             <Button
                                     type="success"
                                     size="small"
