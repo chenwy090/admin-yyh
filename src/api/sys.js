@@ -579,6 +579,19 @@ export const editMateria = (data) => {
 }
 
 
+// ------------------------------ 维权补偿 -------------------------------------------
+
+// 获取列表
+export const getCompensateList = (params, pageNum) => {
+    let obj = JSON.stringify(params)
+    return postRequest(`/compensate/list?isAsc=DESC&orderByColumn=1&pageNum=${pageNum}&pageSize=10`, obj)
+}
+// 新增
+export const addCompensate = (data) => {
+    let obj = JSON.stringify(data)
+    return postRequest(`/compensate/add`, obj)
+}
+
 // ------------------------------ 优惠券推荐 -------------------------------------------
 
 // 获取列表
