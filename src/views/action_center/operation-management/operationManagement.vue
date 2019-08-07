@@ -285,6 +285,12 @@
           //     return h("div",name);
           //   }
           // },
+            {
+                title: "门店",
+                align: "center",
+                minWidth: 140,
+                key: "shopName"
+            },
           {
             title: "标题",
             align: "center",

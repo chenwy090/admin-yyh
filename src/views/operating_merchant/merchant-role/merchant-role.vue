@@ -144,6 +144,7 @@
                             <CheckboxGroup v-model="checkAllGroupUse" @on-change="checkAllGroupChangeUse" style="float: left">
                                 <Checkbox label="2001">核销</Checkbox>
                                 <Checkbox label="2002">核销记录</Checkbox>
+                                <Checkbox label="2003">赠券</Checkbox>
                             </CheckboxGroup>
                         </div>
                         <Divider />
@@ -381,7 +382,7 @@
                 this.indeterminateUse = false;
 
                 if (this.checkAllUse) {
-                    this.checkAllGroupUse = ['2001', '2002'];
+                    this.checkAllGroupUse = ['2001', '2002', '2003'];
                 } else {
                     this.checkAllGroupUse = [];
                 }
