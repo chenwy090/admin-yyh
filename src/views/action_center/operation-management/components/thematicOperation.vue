@@ -75,6 +75,17 @@
                           :key="index2"
                         >{{item2.dictLabel}}</Option>
                       </Select>
+                        <Select
+                                v-model="item.shopCode"
+                                placeholder="选择门店"
+                                style="width:130px;margin-left:10px"
+                        >
+                            <Option
+                                    v-for="(item,index) in shopList"
+                                    :key="index"
+                                    :value="item.shopId"
+                            >{{item.shopName}}</Option>
+                        </Select>
                     </FormItem>
                     <!-- 时间选择 -->
                     <Form-item label="选择时间:" required class="item" :label-width="85" style="width:345px">
@@ -198,6 +209,17 @@
                           v-for="(item2, index2) in dictList"
                           :key="index2"
                         >{{item2.dictLabel}}</Option>
+                      </Select>
+                      <Select
+                              v-model="editData.shopCode"
+                              placeholder="选择门店"
+                              style="width:130px;margin-left:10px"
+                      >
+                        <Option
+                                v-for="(item,index) in shopList"
+                                :key="index"
+                                :value="item.shopId"
+                        >{{item.shopName}}</Option>
                       </Select>
                     </FormItem>
                     <!-- 时间选择 -->
@@ -330,16 +352,23 @@
 </template>
 
 <<script>
+import storeView from "./store";
 import { getSpecialTopicList,getMiniApp,getDictData,addOperationTopic,editOperation } from "@/api/sys";
 import { baseUrl, uploadOperationImage2AliOssURl } from "@/api/index";
+import { postRequest, getRequest } from "@/libs/axios";
+
 export default {
   name: "thematicOperation",
+    components: {
+        storeView
+    },
   props: {
       thematicStatus: Number,
       thematicItem: Object
     },
   data() {
     return {
+        index: 0,
       appIdData:[],
       dictList:[],
       // 提交数据
@@ -356,7 +385,7 @@ export default {
           }
         ],
         operationType: "yf_zt",
-        pagePath: ""
+        pagePath: "",
       },
       specialTopic:'请选择',
       specialTopicDisplay: false,
@@ -384,8 +413,10 @@ export default {
       url: uploadOperationImage2AliOssURl,
       imgIndex:null,
       timeIndex:null, // 时间index
-      editData:{}, // 编辑功能
+      editData:{
+      }, // 编辑功能
       addEdit:null, // 1新增 2编辑
+        shopList:[]
     }
   },
 
@@ -393,12 +424,22 @@ export default {
     this.getMiniAppFn()
     this.getDictList()
     this.editToData()
+      this.loadShops();
     this.userToken = {
         jwttoken: localStorage.getItem("jwttoken")
       };
   },
 
   methods: {
+      loadShops: function() {
+          postRequest("/system/sys-shop-info/list?pageNum=1&pageSize=2000", {}).then(res => {
+              if (res.code == 200) {
+                  this.shopList = res.data.records;
+              } else {
+                  this.$Message.error(res.msg);
+              }
+          });
+      },
 // 编辑传值
     editToData() {
       // console.log(this.thematicItem);
@@ -457,7 +498,7 @@ export default {
     submit: function() {
       // console.log(this.submitData);
       // return
-
+        console.info(JSON.stringify(this.submitData))
       if(this.thematicStatus == 1){
         if (!this.formCheck()) {
             return;
@@ -673,6 +714,11 @@ export default {
           return
         }
 
+        if(!this.submitData.operationTopicVOList[i].shopCode) {
+            this.msgErr('设置'+index+'的投放门店未选择')
+            return
+        }
+
         if (
           this.submitData.operationTopicVOList[i].startDate >
           this.submitData.operationTopicVOList[i].endDate
@@ -699,6 +745,11 @@ export default {
         this.msgErr('请选择专题活动')
         return
       }
+
+        if(!this.editData.shopCode) {
+            this.msgErr('投放门店未选择')
+            return
+        }
       if(!this.editData.startDate) {
         this.msgErr('开始时间未选择')
         return
