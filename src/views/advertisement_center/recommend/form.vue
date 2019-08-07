@@ -126,7 +126,7 @@
   </div>
 </template>
 <script>
-import { postRequest, getRequest } from "@/libs/axios";
+import { postRequest, getRequest} from "@/libs/axios";
 import storeView from "./store";
 import chooseCouponListView from "./chooseCouponList";
 export default {
@@ -242,41 +242,8 @@ export default {
   },
   methods: {
     loadForm: function(id) {
-       getRequest("/couponrecommend/barcodeRelation/list/"+id).then(res => {
-          if (res.code == 200) {
-              var backcode = [];  
-              res.data.forEach(v=>{  
-                   backcode.push(v.barcode) ;
-              });
-                this.form.backCode = backcode.toString().replace(/[,]/g,"\r\n");
-            } else {
-              this.$Message.error(res.msg);
-            }
-        });
-        var param = {}
-        param.id = id;
-        postRequest("/couponrecommend/shopRelation/listCodeShop",param).then(res => {
-          if (res.code == 200) { 
-              var shops = []; 
-               res.data.forEach(v=>{
-                   var shop = {}; 
-                    shop.provinceId = v.province;
-                    shop.cityId = v.city;
-                    shop.areaId = v.district;
-                    shop.shopCode = v.shopCode;
-                    shop.shopName = v.shopName;
-                    shop.index = 0;
-                    shop.status = 1;
-                    shops.push(shop) ;
-              });
-              this.form.shops = shops;
-              console.log(shops)
-            } else {
-              this.$Message.error(res.msg);
-            }
-       });
-      postRequest("/couponrecommend/selectById?id="+id).then(res => {
-            if (res.code == 200) {
+          postRequest("/couponrecommend/selectById?id="+id).then(res =>{
+             if (res.code == 200) {
               var info =  res.data;
               this.form.id = id;
               this.form.couponId = info.campId;
@@ -294,7 +261,41 @@ export default {
               this.$Message.error(res.msg);
             }
           });
-      
+        getRequest("/couponrecommend/barcodeRelation/list/"+id).then(res => {
+                    if (res.code == 200) {
+                        var backcode = [];  
+                        res.data.forEach(v=>{  
+                            backcode.push(v.barcode) ;
+                        });
+                          this.form.backCode = backcode.toString().replace(/[,]/g,"\r\n");
+                      } else {
+                        this.$Message.error(res.msg);
+                      }
+                  });
+           var param = {}
+           param.id = id;
+        postRequest("/couponrecommend/shopRelation/listCodeShop",param).then(res => {
+          if (res.code == 200) { 
+              var shops = []; 
+              var inx = 1;
+               res.data.forEach(v=>{
+                   
+                   var shop = {}; 
+                    shop.provinceId = v.province;
+                    shop.cityId = v.city;
+                    shop.areaId = v.district;
+                    shop.shopCode = v.shopCode;
+                    shop.shopName = v.shopName;
+                    shop.index = inx;
+                    shop.status = 1;
+                    this.form.shops.push(shop) ;
+                    inx ++;
+              });
+            } else {
+              this.$Message.error(res.msg);
+            }
+          });
+          
     },
     handleSubmit: function(name) {
       this.$refs[name].validate(valid => {

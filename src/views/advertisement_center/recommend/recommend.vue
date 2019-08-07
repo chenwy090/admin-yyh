@@ -44,7 +44,7 @@
             <Card :bordered="false">
                 <Row class="operation">
                     <Button type="primary" icon="md-add" @click="addStaff">添加优惠券</Button>
-                    <Button  @click="search">检查冲突券</Button>
+                    <Button  @click="searchConflict">检查冲突券</Button>
                 </Row>
                 <div>
                     <!-- 冠名活动列表 -->
@@ -244,7 +244,21 @@
                 @on-visible-change="formModalChange"
         >
         <formView ref="form" @closeFormModal-event="closeFormModal" ></formView>
-         </Modal>
+        </Modal>
+        <div v-if="searchConflictDisplay">
+            
+            <Modal
+                v-model="searchConflictDisplay"
+                title="检查冲突券"
+                width="70%"
+                footer-hide
+                :closable="true"
+               >
+               <conflictView ref="table"></conflictView>
+          </Modal>
+          
+        </div>
+               
     </div>
 </template>
 
@@ -256,13 +270,14 @@
         backCodeDownload
     } from "@/api/sys";
     import {uploadOperationImage2AliOssURl} from "@/api/index";
+    import conflictView from "./conflict";
     //import {eidtStatus} from "../../../api/sys";
 
     import formView from "./form";
 
     export default  {
         name: "recommend",
-        components: {formView},
+        components: {formView,conflictView},
         data() {
             return {
                 id:null,
@@ -423,6 +438,7 @@
                 add_edit: null, // 1为新增，2为编辑
                 modalTitle: "", // 对话框标题文字
                 addStaffDisplay: false, // 新增对话框显示
+                searchConflictDisplay: false, // 新增对话框显示
                 bcDownloadDisplay: false,
                 addmateriaStaffDisplay: false,//新增链路素材显示
                 // 新增表单
@@ -533,8 +549,10 @@
             addStaff() {
                 this.formShow = true;
             },
-
-
+            // 冲突检查
+            searchConflict(){
+              this.searchConflictDisplay = true;
+            },
 
             // 编辑按钮
             editStaff(row) {
@@ -855,7 +873,10 @@
             },
             closeFormModal:function(){
                 this.formShow = false;
-            }
+            },
+             closeConflictModal:function(){
+                this.searchConflictDisplay = false;
+            },
         },
         mounted() {
             this.init();
