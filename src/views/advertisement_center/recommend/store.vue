@@ -120,6 +120,7 @@ export default {
     provinceChange(item, callback) {
       this.provinceName =  item.label;
       this.$emit("sendProvinceId", this.provinceId, this.index);
+      
       getRequest("/system/area/city/" + this.provinceId).then(res => {
         if (res.code == 200) {
           this.cityList = res.data;
@@ -134,8 +135,12 @@ export default {
       this.loadShops();
     },
     //根据城市code获取区县信息数据
-    cityChange(item, callback) {
+     cityChange(item, callback) {
       this.cityName = item.label;
+        
+      if(this.isInit == 1){
+        
+      }
       this.$emit("sendCityId", this.cityId, this.index);
       getRequest("/system/area/district/" + this.cityId).then(res => {
         if (res.code == 200) {
@@ -152,11 +157,18 @@ export default {
      //根据城市code获取区域信息数据
     areaChange(item) {
       this.districtName = item.label;
+      
+      if(this.isInit == 1){
+      
+      }
       this.$emit("sendAreaId", this.areaId, this.index);
       this.loadShops();
     },
     shopCodeChange(item) {
-      this.$emit("sendShopCode", this.shopCode, item.label, this.index);
+      if(this.isInit == 1){
+          
+       }
+      his.$emit("sendShopCode", this.shopCode, item.label, this.index);
     },
     loadShops: function() {
       if(this.isInit == 1){
@@ -180,15 +192,18 @@ export default {
     init: function() {
      var globalThis = this;
      this.loadProvinceList(function(){
+      
         if (globalThis.shop.provinceId) {
           globalThis.isInit=1;
           globalThis.provinceId = globalThis.shop.provinceId;
           globalThis.provinceName = globalThis.provinceList.find((el) => (el.provinceCode ==  globalThis.provinceId)).provinceName; 
           if(globalThis.shop.cityId){
+           
             globalThis.provinceChange({lable: globalThis.provinceName}, function(){
               globalThis.cityId = globalThis.shop.cityId;
               globalThis.cityName = globalThis.cityList.find((el) => (el.cityCode ==  globalThis.cityId)).cityName;
               if(globalThis.shop.areaId){
+                 
                 globalThis.cityChange({lable: globalThis.cityName}, function(){
                     globalThis.areaId = globalThis.shop.areaId;
                     globalThis.districtName = globalThis.areaList.find((el) => (el.areaCode ==  globalThis.areaId)).areaName;

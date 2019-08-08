@@ -60,6 +60,7 @@
         </Col>
       </Row>
       <FormItem label="投放门店" v-for="(item, index) in form.shops" v-if="item.status" :key="index">
+        
         <storeView
           :index="item.index"
           v-on:sendProvinceId="sendProvinceId"
@@ -69,6 +70,7 @@
           @handleRemove-event="handleRemove"
           :shop="item"
         ></storeView>
+        
       </FormItem>
       <FormItem label=" ">
         <Button type="dashed" long @click="handleAdd" icon="md-add" style="width:100px;"></Button>
@@ -159,6 +161,7 @@ export default {
 
     return {
       index: 0,
+      showcity:true,
       datetimerange:[],
       form: {
         id: null,
@@ -174,14 +177,14 @@ export default {
         endDate: null,
         shops: [
            {
-            provinceId: null,
-            cityId: null,
-            areaId: null,
-            shopCode: null,
-            shopName: null,
-            index: 0,
-            status: 1
-          }
+                        provinceId: null,
+                        cityId: null,
+                        areaId: null,
+                        shopCode: null,
+                        shopName: null,
+                        index: 0,
+                        status: 1
+                    }
         ]
       },
       formValite: {
@@ -241,7 +244,9 @@ export default {
     };
   },
   methods: {
-    loadForm: function(id) {
+     loadForm: function(id) {
+
+          this.form.shops = []
           postRequest("/couponrecommend/selectById?id="+id).then(res =>{
              if (res.code == 200) {
               var info =  res.data;
@@ -281,7 +286,8 @@ export default {
         postRequest("/couponrecommend/shopRelation/listCodeShop",param).then(res => {
           if (res.code == 200) { 
               var shops = []; 
-              var inx = 1;
+              var inx = 0;
+                this.form.shops = []
                res.data.forEach(v=>{
                    
                    var shop = {}; 
@@ -303,7 +309,7 @@ export default {
     },
     handleSubmit: function(name) {
       this.$refs[name].validate(valid => {
-        if (true) {
+        if (valid) {
           var param = {};
           param.id = this.form.id;
           param.campId = this.form.couponId;
@@ -454,7 +460,9 @@ export default {
       console.log(this.form);
     },
     modalClose: function() {
+      this.showcity = false;
       this.datetimerange = [];
+      this.form.shops = null;
       this.form= {
         id: null,
         couponId: null,
