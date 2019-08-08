@@ -803,6 +803,7 @@
         this.formValidate.uTitle = "";
         this.formValidate.reason = "";
         this.formValidate.remark = "";
+        this.formValidate.specialTopicCouponList = [];
       },
 
       // 关闭查看
