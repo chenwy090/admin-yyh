@@ -205,6 +205,7 @@
           show-total
           show-elevator
           :current="current1"
+           @on-change="changeCurrent1"
         ></Page>
       </Row>
       <!-- 分页器 -->
