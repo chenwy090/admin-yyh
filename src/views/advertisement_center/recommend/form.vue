@@ -249,7 +249,11 @@ export default {
               this.form.couponId = info.campId;
               this.form.couponName = info.campName;
               this.form.firstSite = info.distributeChannel + "";
+              this.firstSiteChange();
               this.form.secondSite = info.distributeLocation + "";
+               if (this.form.firstSite !== "1" && undefined !== this.form.firstSite) {
+                 this.secondSiteList.splice(0, 1);
+               }
               this.form.num = info.distributeCount;
               this.form.showNum = info.exposureCount;
               this.form.discounts = info.promotion;
@@ -299,7 +303,7 @@ export default {
     },
     handleSubmit: function(name) {
       this.$refs[name].validate(valid => {
-        if (valid) {
+        if (true) {
           var param = {};
           param.id = this.form.id;
           param.campId = this.form.couponId;
