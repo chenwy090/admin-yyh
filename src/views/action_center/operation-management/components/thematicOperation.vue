@@ -352,16 +352,12 @@
 </template>
 
 <<script>
-import storeView from "./store";
 import { getSpecialTopicList,getMiniApp,getDictData,addOperationTopic,editOperation } from "@/api/sys";
 import { baseUrl, uploadOperationImage2AliOssURl } from "@/api/index";
 import { postRequest, getRequest } from "@/libs/axios";
 
 export default {
   name: "thematicOperation",
-    components: {
-        storeView
-    },
   props: {
       thematicStatus: Number,
       thematicItem: Object
