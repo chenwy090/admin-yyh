@@ -345,6 +345,7 @@
       //搜索
       queryTableList() {
         //this.templateId=this.searchItem.templateId;
+          this.pageNum = 1;
         this.updateTableList();
       },
 
