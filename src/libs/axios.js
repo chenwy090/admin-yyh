@@ -108,6 +108,34 @@ export const getRequest = (url, params) => {
     });
 };
 
+
+export const getSyncRequest = async (url, params) => {
+    let jwttoken = getStore('jwttoken');
+    return await axios({
+        method: 'get',
+        url: baseUrl + `${url}`,
+        params: params,
+        headers: {
+            'jwttoken': jwttoken
+        }
+    });
+};
+
+export const postSyncRequest = async (url, params) => {
+    let jwttoken = getStore("jwttoken");
+    return await axios({
+        method: 'post',
+        url: baseUrl + `${url}`,
+        data: params,
+
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+            'jwttoken': jwttoken
+        },
+
+
+    });
+};
 export const postRequest = (url, params) => {
     let jwttoken = getStore("jwttoken");
     return axios({

@@ -61,6 +61,12 @@ export default {
           title: "序号",
           type: "index",
         },
+          {
+              title: "推荐ID",
+              //width: 150,
+              key: "recommendId"
+          }
+        ,
         {
           title: "券名称",
           //width: 150,
