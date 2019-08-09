@@ -275,9 +275,7 @@
     } from "@/api/sys";
     import {uploadOperationImage2AliOssURl} from "@/api/index";
     import conflictView from "./conflict";
-    import editView from "./editform";
     import formView from "./form";
-
     export default  {
         name: "recommend",
         components: {formView,conflictView},
@@ -550,7 +548,8 @@
 
             // 新增按钮
             addStaff() {
-                 this.formShow = true;
+                  this.formShow = true;
+                   this.$refs.form.loadForm(null);
             },
             // 冲突检查
             searchConflict(){

@@ -60,7 +60,7 @@
         </Col>
       </Row>
       <FormItem label="投放门店" v-for="(item, index) in form.shops" v-if="item.status" :key="index">
-        
+        <div v-if="showStore">
         <storeView
           :index="item.index"
           v-on:sendProvinceId="sendProvinceId"
@@ -70,7 +70,7 @@
           @handleRemove-event="handleRemove"
           :shop="item"
         ></storeView>
-        
+        </div>
       </FormItem>
       <FormItem label=" ">
         <Button type="dashed" long @click="handleAdd" icon="md-add" style="width:100px;"></Button>
@@ -161,7 +161,7 @@ export default {
 
     return {
       index: 0,
-      showcity:true,
+      showStore:false,
       datetimerange:[],
       form: {
         id: null,
@@ -245,7 +245,10 @@ export default {
   },
   methods: {
      loadForm: function(id) {
-
+          this.showStore = true;
+          if(id===null || id === undefined || id === ''){
+             return;
+          }
           this.form.shops = []
           postRequest("/couponrecommend/selectById?id="+id).then(res =>{
              if (res.code == 200) {
@@ -460,9 +463,10 @@ export default {
       console.log(this.form);
     },
     modalClose: function() {
-      this.showcity = false;
+      this.showStore = false;
       this.datetimerange = [];
       this.form.shops = null;
+      this.form.id = null;
       this.form= {
         id: null,
         couponId: null,
