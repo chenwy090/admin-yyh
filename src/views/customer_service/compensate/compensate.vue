@@ -310,6 +310,12 @@
             minWidth: 160,
             key: "reason",
           },
+           {
+            title: "发放的类型",
+            align: "center",
+            minWidth: 160,
+            key: "pushType",
+          },
          {
             title: "状态",
             align: "center",
