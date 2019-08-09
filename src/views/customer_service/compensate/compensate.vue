@@ -830,7 +830,7 @@
               this.getStaffListFn({});
               this.cancel();
               this.failList=res.data;
-              console.log(">>>>>>>>>>>>>>>"+this.failList);
+              //console.log(">>>>>>>>>>>>>>>"+this.failList);
               if(this.failList!=null){
                 this.failDisplay = true;
               }
@@ -850,6 +850,7 @@
         this.formValidate.templateId = "";
         this.formValidate.welfareType = "";
         this.formValidate.uAmount = "";
+        this.formValidate.memberId= "";
         this.formValidate.uTitle = "";
         this.formValidate.reason = "";
         this.formValidate.remark = "";
