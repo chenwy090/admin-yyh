@@ -219,6 +219,29 @@
    <!--  <Modal v-model="couponModalShow" title="选择优惠券" width="800px" @footer-hide="false">
       <chooseCouponListView @seclectedTr-event="selectedTrCallBack"></chooseCouponListView>
     </Modal> -->
+
+      <!-- 优惠活动对话框 -->
+    <Modal
+      v-model="failDisplay"
+      title="失败数据"
+      width="650"
+      footer-hide
+      :closable="false"
+      :mask-closable="false"
+    >
+     <Table
+            border
+            width="100%"
+            :columns="columns11"
+            :data="failList"
+            
+          >
+          </Table>
+            <Row style="margin:10px 0 0 562px">
+          <Button type="primary" @click="close">关闭</Button>
+        </Row>
+    </Modal>
+    <!-- 优惠活动对话框 -->
   </div>
 </template>
 
@@ -262,6 +285,12 @@
             align: "center",
             minWidth: 160,
             key: "memberId"
+          },
+          {
+            title: "券id",
+            align: "center",
+            minWidth: 160,
+            key: "templateId"
           },
             {
             title: "发放福利",
@@ -369,8 +398,23 @@
           key: "name"
         }
       ],
+       // 错误数据
+      columns11: [
+        {
+          title: "用户id",
+          align: "center",
+          minWidth: 140,
+          key: "memberId"
+        },
+        {
+          title: "券id",
+          align: "center",
+          minWidth: 140,
+          key: "templateId"
+        }
+      ],
         materiaValidate:[],
-       
+        failList: [],
         personGiftList: [], //红包冠名活动列表数据
         CampaginList: [], //优惠活动列表数据
         campaginName: "", // 优惠活动名称
@@ -402,6 +446,7 @@
         modalTitle: "", // 对话框标题文字
         addStaffDisplay: false, // 新增对话框显示
         addmateriaStaffDisplay:false,//新增链路素材显示
+        failDisplay:false,
         // 新增表单 
         formValidate: {
           pushType: "",
@@ -615,7 +660,7 @@
       }
       this.formValidate.specialTopicCouponList.push(obj);
       this.msgOk("选择成功，点击保存即刻关闭");
-      // console.log(this.formValidate.specialTopicCouponList);
+       console.log(this.formValidate.specialTopicCouponList);
     },
 
     //全选优惠券
@@ -769,7 +814,7 @@
           return;
         }
         if (this.add_edit == 1) {
-
+          console.log( this.formValidate.specialTopicCouponList);
           this.formValidate.memberId=this.getSplitString(this.formValidate.memberId);
          /* for (
                   let j = 0;
@@ -781,9 +826,14 @@
           //this.formValidate.templateIdList=this.formValidate.specialTopicCouponList
           addCompensate(this.formValidate).then(res => {
             if (res.code == 200) {
-              this.msgOk("新增成功");
+              this.msgOk("操作成功");
               this.getStaffListFn({});
               this.cancel();
+              this.failList=res.data;
+              console.log(">>>>>>>>>>>>>>>"+this.failList);
+              if(this.failList!=null){
+                this.failDisplay = true;
+              }
             } else {
               this.msgErr(res.msg);
             }
@@ -806,19 +856,12 @@
         this.formValidate.specialTopicCouponList = [];
       },
 
+ 
+
+
       // 关闭查看
       close() {
-        this.checkDetailsDisplay = false;
-        if (this.formValidate.delIds) {
-          this.formValidate.delIds = [];
-        }
-        this.formValidate.specialTopicCouponList = [],
-        this.formValidate.endDate = "";
-        this.formValidate.startDate = "";
-        this.formValidate.imgUrl = "";
-        this.formValidate.topicDesc = "";
-        this.formValidate.name = "";
-        this.cancel();
+        this.failDisplay = false;
       },
 
       // 关闭链路查看
