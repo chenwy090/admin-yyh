@@ -298,6 +298,12 @@
                         slot: "action"
                     },
                     {
+                        title: "推荐ID",
+                        align: "center",
+                        minWidth: 100,
+                        key: "id"
+                    },
+                    {
                         title: "优惠券名称",
                         align: "center",
                         minWidth: 100,

@@ -61,9 +61,15 @@ export default {
           title: "序号",
           type: "index",
         },
+          {
+              title: "推荐ID",
+              //width: 150,
+              key: "recommendId"
+          }
+        ,
         {
           title: "券名称",
-          width: 150,
+          //width: 150,
           key: "campName"
         },
          {
@@ -78,7 +84,7 @@ export default {
         {
           title: "投放渠道",
           key: "distributeChannel",
-          width: 150,
+          //width: 150,
           render: (h, params) => {
                             let channel = params.row.distributeChannel + "";
                             let channelTxt = '';
@@ -110,7 +116,7 @@ export default {
         },
         {
           title: "投放时间",
-          width: 300,
+          //width: 200,
           key: "distributeStartDate",
           render: (h, params) => {
                             let row = params.row;
@@ -121,12 +127,12 @@ export default {
           title: "投放门店",
           key: "shops",
           ellipsis:true,
-          width: 300,
+          //width: 300,
         },
         {
           title: "优惠力度",
           key: "promotion",
-          width: 100,
+          //width: 100,
         },
         {
           title: "排序",
