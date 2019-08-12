@@ -177,7 +177,19 @@
           <Alert>
             <h4>要优惠算法参数</h4>
           </Alert>
-          <Form :label-width="240">
+          <Form :label-width="240" inline>
+             <FormItem label="前" required>
+                 <Tooltip trigger="focus" title="提醒" content="只能输入整数" placement="right">
+              <InputNumber
+                :min="0"
+                v-model="edit_info.receiveCount"
+                placeholder="请输入"
+                style="width:100px"
+                @on-change="statusCheckChange"
+              ></InputNumber>
+               <span style="color:red">&nbsp;&nbsp;次</span>
+                 </Tooltip>
+            </FormItem>
             <FormItem label="折扣比例百分比" required>
               <Tooltip trigger="focus" title="提醒" content="范围在(0~100)  (只能输入整数)" placement="right">
                 <InputNumber
@@ -190,9 +202,20 @@
                 ></InputNumber>
                    <span style="color:red">&nbsp;&nbsp; %</span>
               </Tooltip>
-            
             </FormItem>
-
+            <FormItem label="后续获得折扣比例百分比" required>
+              <Tooltip trigger="focus" title="提醒" content="范围在(0~100)  (只能输入整数)" placement="right">
+                <InputNumber
+                  :max="100"
+                  :min="0"
+                  v-model="edit_info.laterDiscountRatio"
+                  placeholder="请输入"
+                  style="width:300px"
+                  @on-change="statusCheckChange"
+                ></InputNumber>
+                   <span style="color:red">&nbsp;&nbsp; %</span>
+              </Tooltip>
+            </FormItem>
             <FormItem label="随机因子" required>
               <Tooltip
                 trigger="focus"
@@ -306,7 +329,9 @@ export default {
         randomSeed: 0.1,
         // shareUseRakeBackPercent: 0,
         upperDiscountAmount: 0,
-        acceptPercent: 0
+        acceptPercent: 0,
+        receiveCount:0,
+        laterDiscountRatio:0,
       },
       edit_loading: false,
       status: "",
@@ -341,6 +366,7 @@ export default {
             this.edit_info.helpAwardLower = this.edit_info.helpAwardLower * 100;
             this.edit_info.helpAwardUpper = this.edit_info.helpAwardUpper * 100;
             this.edit_info.discountRatio = this.edit_info.discountRatio * 100;
+             this.edit_info.laterDiscountRatio = this.edit_info.laterDiscountRatio * 100;
             this.edit_info.limitTime = this.edit_info.limitTime / 60;
 
             this.status = "edit";
@@ -362,7 +388,9 @@ export default {
               randomSeed: 0.1,
               // shareUseRakeBackPercent: 0,
               upperDiscountAmount: 0,
-              acceptPercent: 0
+              acceptPercent: 0,
+              receiveCount:0,
+              laterDiscountRatio:0,
             };
             this.status = "add";
           }
@@ -431,10 +459,18 @@ export default {
         return;
       }
 
-      // if (!this.edit_info.groupCount && this.edit_info.groupCount != 0) {
-      //   this.$Message.error("成团人数不能为空");
-      //   return;
-      // }
+      if (!this.edit_info.laterDiscountRatio && this.edit_info.laterDiscountRatio != 0) {
+        this.$Message.error("后续折扣比例不能为空");
+        return;
+      } else if (this.edit_info.laterDiscountRatio > 100) {
+        this.$Message.error("后续折扣比例范围为（0～100）");
+        return;
+      }
+
+       if (!this.edit_info.receiveCount && this.edit_info.receiveCount != 0) {
+         this.$Message.error("领取次数不能为空");
+         return;
+       }
 
       if (!this.edit_info.limitTime && this.edit_info.limitTime != 0) {
         this.$Message.error("拼团限时不能为空");
@@ -543,7 +579,9 @@ export default {
         randomSeed: this.edit_info.randomSeed,
         // shareUseRakeBackPercent: this.edit_info.shareUseRakeBackPercent / 100,
         upperDiscountAmount: this.edit_info.upperDiscountAmount,
-        acceptPercent: this.edit_info.acceptPercent / 100
+        acceptPercent: this.edit_info.acceptPercent / 100,
+        receiveCount:  this.edit_info.receiveCount,
+        laterDiscountRatio:  this.edit_info.laterDiscountRatio / 100,
       };
 
       postRequest(this.getUrl, reqParams).then(res => {
