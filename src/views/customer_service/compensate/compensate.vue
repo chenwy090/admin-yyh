@@ -588,7 +588,7 @@
           isEffective: 1,
           campType: 57,
           status: 1,
-          sendChannel: 1,
+          sendChannel: null,
           name: this.couponSearchData.name
         };
         url = "/campagin/list";
