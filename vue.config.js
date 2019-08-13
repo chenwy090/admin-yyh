@@ -1,15 +1,12 @@
 module.exports = {
   baseUrl: '/zex-mgr',
   outputDir: 'zex-mgr', // 输出文件目录
-
-
-
   devServer: {
     port: 9999, // 端口号
-    host: '127.0.0.1',
+    host: '0.0.0.0',
     https: false, // https:{type:Boolean}
     open: true, // 配置自动启动浏览器
-     proxy: null,
+    // proxy: null,
     /*proxy: {
       '/zex-mgr': {
         //   target: 'http://pre-release.sweetmartmarketing.com:8088',
