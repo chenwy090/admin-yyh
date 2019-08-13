@@ -90,10 +90,32 @@ export const upXls = (data) => {
 
 // -----------------------抽奖团配置---------------------------
 
+// 上架 {drawId}
+export const putup = (params) => {
+    return postRequest("/drawDaily/activity/putup", params)
+}
+
+// 下架  {drawId,reason}
+export const putoff = (params) => {
+    return postRequest("/drawDaily/activity/putoff", params)
+}
+
 // 获取列表
 export const queryLuckDrawList = (params) => {
     // return postRequest(`/system/sys-shop-info/list?isAsc=1&orderByColumn=1&pageNum=${pageNum}&pageSize=10`, params)
     return postRequest("/drawDaily/activity/list", params)
+}
+
+// 获取报名成功用户列表
+export const queryTotalPlayerList = (params) => {
+    // return postRequest(`/system/sys-shop-info/list?isAsc=1&orderByColumn=1&pageNum=${pageNum}&pageSize=10`, params)
+    return postRequest("/drawDaily/activity/payer/list", params)
+}
+
+// 抽奖券列表
+export const queryTotalTicketList = (params) => {
+    // return postRequest(`/system/sys-shop-info/list?isAsc=1&orderByColumn=1&pageNum=${pageNum}&pageSize=10`, params)
+    return postRequest("/drawDaily/activity/ticketcode/list", params)
 }
 
 // -----------------------运营位管理---------------------------
@@ -370,7 +392,7 @@ export const geiActivity = (id) => {
 }
 
 // 编辑
-export const editLuckyDraw = (data,id) => {
+export const editLuckyDraw = (data, id) => {
     return uploadformData(`/draw/activity/edit/${id}`, data)
 }
 
@@ -426,7 +448,7 @@ export const getCouponList = (params, pageNum) => {
 }
 
 // 获取详情
-export const getCouponInformation = (campId,pageNum) => {
+export const getCouponInformation = (campId, pageNum) => {
     return getRequest(`/coupon/receiveInfo/selectByCampId?campId=${campId}&pageNum=${pageNum}&pageSize=10`)
 }
 
@@ -440,7 +462,7 @@ export const getMerchantCouponList = (params, pageNum) => {
 }
 
 // 获取详情
-export const getMerchantCouponformation = (templateId,pageNum) => {
+export const getMerchantCouponformation = (templateId, pageNum) => {
     return getRequest(`/merchantCoupon/receiveInfo/selectByTemplateId?templateId=${templateId}&pageNum=${pageNum}&pageSize=10`)
 }
 
@@ -464,7 +486,7 @@ export const editRakeBackRule = (data) => {
 }
 
 // 查看日志
-export const logDetailsApi = (field,pageNum) => {
+export const logDetailsApi = (field, pageNum) => {
     return postRequest(`/rule/rakeBackRule/selectByField?field=${field}&pageNum=${pageNum}&pageSize=10`)
 }
 
@@ -477,7 +499,7 @@ export const getSpecialTopicList = (params, pageNum) => {
 }
 
 //获取超市券/周边券
-export const getCampaginListData = (url,params, pageNum) => {
+export const getCampaginListData = (url, params, pageNum) => {
     let obj = JSON.stringify(params)
     return postRequest(`${url}?pageNum=${pageNum}&pageSize=10`, obj)
 }
@@ -505,14 +527,14 @@ export const delSpecialTopic = (id) => {
 }
 
 // 上下架
-export const upSpecialTopic = (id,status) => {
+export const upSpecialTopic = (id, status) => {
     return postRequest(`/specialTopic/updateStatus?id=${id}&status=${status}`)
 }
 
 // ------------------------------ 超值爆抢 -------------------------------------------
 
 // 获取列表
-export const getHotCouponList = (pageNum,shopId) => {
+export const getHotCouponList = (pageNum, shopId) => {
     return postRequest(`/hotCoupon/list?isAsc=DESC&orderByColumn=1&pageNum=${pageNum}&pageSize=10&shopId=${shopId}`)
 }
 
@@ -523,7 +545,7 @@ export const addHotCoupon = (data) => {
 }
 
 // 上升/下降
-export const editHotCoupon = (event,id) => {
+export const editHotCoupon = (event, id) => {
     return postRequest(`/hotCoupon/edit?event=${event}&id=${id}`)
 }
 
@@ -565,7 +587,7 @@ export const selectByid = (id) => {
 
 
 // 上下架
-export const upStatus = (id,status) => {
+export const upStatus = (id, status) => {
     return postRequest(`/nameing/updateStatus?id=${id}&status=${status}`)
 }
 // 根据ActivityId获取链路素材数据
@@ -613,13 +635,13 @@ export const getRecomondList = (params, pageNum) => {
 // 上下架
 export const eidtStatus = (data) => {
     let obj = JSON.stringify(data)
-    return postRequest(`/couponrecommend/updateStatus/`,obj)
+    return postRequest(`/couponrecommend/updateStatus/`, obj)
 }
 
 //查看门店信息
 export const queryShopInfo = (data) => {
     let obj = JSON.stringify(data)
-    return postRequest(`/couponrecommend/shopRelation/listShop`,obj)
+    return postRequest(`/couponrecommend/shopRelation/listShop`, obj)
 }
 
 export const backCodeDownload = (id) => {
@@ -651,13 +673,13 @@ export const financialWithdrawApplyAudit = (obj) => {
 }
 //审核日志
 export const financialWithdrawApplyAuditRecordList = (applyId) => {
-    return postRequest(`/withdraw/apply/audit/record/list-data`,applyId)
+    return postRequest(`/withdraw/apply/audit/record/list-data`, applyId)
 }
 //提现申请记录excel导出
 export const financialWithdrawApplyDownload = (obj) => {
-    return downloadSteam(`/withdraw/apply/excel/download`,obj)
+    return downloadSteam(`/withdraw/apply/excel/download`, obj)
 }
 //奖励金充值excel导出
 export const financialWithdrawApplyAwardRechargeDownload = (obj) => {
-    return downloadSteam(`/withdraw/apply/award-recharge/excel/download`,obj)
+    return downloadSteam(`/withdraw/apply/award-recharge/excel/download`, obj)
 }

@@ -79,6 +79,21 @@
             >下架</Button>
           </template>
         </template>
+
+        <template slot-scope="{ row }" slot="totalPlayer">
+          <a
+            @click="showTotalPlayer(row.id)"
+            class="underline"
+            href="javascript:;"
+          >{{ row.totalPlayer }}</a>
+        </template>
+        <template slot-scope="{ row }" slot="totalTicket">
+          <a
+            @click="showTotalTicket(row.id)"
+            class="underline"
+            href="javascript:;"
+          >{{ row.totalTicket }}</a>
+        </template>
       </Table>
       <!-- 分页器 -->
       <Row type="flex" justify="end" class="page">
@@ -95,15 +110,161 @@
       </Row>
       <!-- 分页器 -->
     </Card>
+
+    <Modal v-model="modalDetail" :closable="true">
+      <p slot="header" style="color:#f60;text-align:center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>查看</span>
+      </p>
+      <div class="table-box">
+        <Table :show-index="true" :columns="detailColumns" :data="detailTableData"></Table>
+      </div>
+    </Modal>
+    <Modal v-model="modalTotalPlayer" :closable="true">
+      <p slot="header" style="color:#f60;text-align:center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>报名成功用户</span>
+      </p>
+      <div class="table-box">
+        <Table :show-index="true" :columns="totalPlayerColumns" :data="totalPlayerTableData"></Table>
+      </div>
+    </Modal>
+    <Modal v-model="modalTotalTicket" :closable="true">
+      <p slot="header" style="color:#f60;text-align:center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>抽奖券</span>
+      </p>
+      <div class="table-box">
+        <Table :show-index="true" :columns="totalTicketColumns" :data="totalTicketTableData"></Table>
+      </div>
+    </Modal>
+    <Modal v-model="undercarriage" :closable="true" width="400">
+      <p slot="header" style="color:#f60;text-align:center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>下架抽奖活动</span>
+      </p>
+      <div>
+        <Form label-position="top" ref="formValidate" :model="formValidate" :rules="ruleValidate">
+          <FormItem label="填写原因：" prop="reason">
+            <Input
+              v-model="formValidate.reason"
+              type="textarea"
+              :autosize="{minRows: 2,maxRows: 5}"
+              placeholder="填写下架原因..."
+            ></Input>
+          </FormItem>
+        </Form>
+      </div>
+      <div slot="footer">
+        <Button type="error" size="large" @click="putoff('formValidate')">确认</Button>
+        <Button @click="cancelHandleReset('formValidate')" style="margin-left: 8px">取消</Button>
+      </div>
+    </Modal>
+
+    <Modal v-model="modalDetail" :closable="true">
+      <p slot="header" style="color:#f60;text-align:center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>查看</span>
+      </p>
+      <div class="table-box">
+        <Table :show-index="true" :columns="detailColumns" :data="detailTableData"></Table>
+      </div>
+    </Modal>
+    <!-- 查看 开奖结果 -->
+    <Modal v-model="modalDetail" :closable="true">
+      <p slot="header" style="color:#f60;text-align:center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>查看开奖结果</span>
+      </p>
+      <div class="table-box">
+        <Table :show-index="true" :columns="detailColumns" :data="detailTableData">
+          <template slot-scope="{ row }" slot="logistics">
+            <Button
+              type="success"
+              size="small"
+              style="margin-right: 5px"
+              @click="showLogistics(row)"
+            >编辑</Button>
+          </template>
+        </Table>
+        <!-- 填写物流信息 -->
+        <Modal v-model="modalLogistics" :closable="true" width="400">
+          <p slot="header" style="color:#f60;text-align:center">
+            <Icon type="ios-information-circle"></Icon>
+            <span>填写物流信息</span>
+          </p>
+          <div>
+            <Form
+              label-position="left"
+              ref="formValidate"
+              :model="formValidate"
+              :rules="ruleValidate"
+            >
+              <FormItem label="填写原因：" prop="reason">
+                <Input
+                  v-model="formValidate.reason"
+                  type="textarea"
+                  :autosize="{minRows: 2,maxRows: 5}"
+                  placeholder="填写下架原因..."
+                ></Input>
+              </FormItem>
+            </Form>
+          </div>
+          <div slot="footer">
+            <Button type="error" size="large" @click="putoff('formValidate')">确认</Button>
+            <Button @click="cancelHandleReset('formValidate')" style="margin-left: 8px">取消</Button>
+          </div>
+        </Modal>
+      </div>
+    </Modal>
   </div>
 </template>
 <script>
-import { queryLuckDrawList } from "@/api/sys";
+import {
+  putup,
+  putoff,
+  queryLuckDrawList,
+  queryTotalPlayerList,
+  queryTotalTicketList
+} from "@/api/sys";
+import columns, {
+  totalPlayerColumns,
+  totalTicketColumns,
+  detailColumns
+} from "./columns";
 
 export default {
   name: "",
   data() {
     return {
+      id: "",
+      modalTotalPlayer: false,
+      modalTotalTicket: false,
+      modalDetail: false, // 查看
+      modalLogistics: false, //物流
+      logistics: {
+        companyName: "",
+        orderId: ""
+      },
+      undercarriage: false,
+      formValidate: {
+        reason: ""
+      },
+      ruleValidate: {
+        reason: [
+          {
+            required: true,
+            message: "下架原因不能为空",
+            trigger: "blur"
+          },
+          {
+            type: "string",
+            min: 10,
+            message: "原因不得少于10个字",
+            trigger: "blur"
+          }
+        ]
+      },
       groupTypeList: [
         {
           value: "0",
@@ -163,113 +324,122 @@ export default {
         pageSize: 10, //每页数量
         total: 0 //数据总数
       },
-      columns: [
-        {
-          title: "操作",
-          align: "center",
-          width: 240,
-          fixed: "left",
-          slot: "action"
-        },
-        {
-          key: "id",
-          title: "ID",
-          align: "center",
-          width: 120
-        },
-
-        {
-          title: "状态",
-          key: "statusName",
-          align: "center",
-          width: 120
-        },
-        {
-          title: "团类型",
-          key: "groupType",
-          align: "center",
-          minWidth: 100
-        },
-        {
-          key: "name",
-          title: "抽奖名称",
-          align: "center",
-          minWidth: 140
-        },
-        {
-          title: "大奖",
-          key: "bigPrizeName",
-          align: "center",
-          minWidth: 140
-        },
-        {
-          title: "阳光普照奖",
-          key: "normalPrizeName",
-          align: "center",
-          minWidth: 140
-        },
-        {
-          title: "抽奖开始时间",
-          key: "startTime",
-          align: "center",
-          width: 170
-        },
-        {
-          title: "抽奖开奖时间",
-          key: "openDrawTime",
-          align: "center",
-          width: 170
-        },
-        {
-          title: "广告主",
-          key: "advertName",
-          align: "center",
-          minWidth: 80
-        },
-        {
-          title: "最近修改人",
-          key: "address",
-          align: "center",
-          minWidth: 105
-        },
-        {
-          title: "最近修改时间",
-          key: "address",
-          align: "center",
-          width: 170
-        },
-        {
-          title: "报名成功用户",
-          key: "totalPlayer",
-          align: "center",
-          minWidth: 100
-        },
-        {
-          title: "排列五数字",
-          key: "address",
-          align: "center",
-          minWidth: 140
-        },
-        {
-          title: "抽奖券",
-          key: "totalTicket",
-          align: "center",
-          minWidth: 140
-        },
-        {
-          title: "开奖结果",
-          key: "winningRefValue",
-          align: "center",
-          minWidth: 140
-        }
-      ],
-      tableData: []
+      columns,
+      totalPlayerColumns,
+      totalTicketColumns,
+      detailColumns,
+      tableData: [],
+      totalPlayerTableData: [], //报名成功用户列表
+      totalTicketTableData: [], //抽奖券列表
+      detailTableData: [] //查看中奖
     };
   },
+  created() {
+    this.queryTableList();
+  },
   methods: {
+    showLogistics(row) {
+      this.modalLogistics = true;
+      //   xxxx({xxxxx:xxxxxx}}).then(res => {
+      //     if (res.code == 200) {
+      //      this.logistics =
+      //     } else {
+      //     // 数据加载失败
+      //       this.msgErr(res.msg);
+      //     }
+      //   });
+      //
+    },
+    updateLogistics() {
+      //   xxxx(this.logistics).then(res => {
+      //     if (res.code == 200) {
+      //       this.msgOk("更新物流信息成功");
+      //     } else {
+      //       this.msgErr(res.msg);
+      //     }
+      //   });
+    },
+    showTotalPlayer(id) {
+      this.modalTotalPlayer = true;
+      this.id = id;
+      this.queryTotalPlayerTableList();
+    },
+    queryTotalPlayerTableList() {
+      queryTotalPlayerList({
+        drawId: this.id
+      }).then(res => {
+        // console.log(res);
+        if (res.code == 200) {
+          this.totalPlayerTableData = res.data;
+        } else {
+          this.$Message.error(res.code + " 数据加载失败!", 3);
+        }
+      });
+    },
+    showTotalTicket(id) {
+      this.modalTotalTicket = true;
+      this.id = id;
+      this.queryTotalTicketTableList();
+    },
+    queryTotalTicketTableList() {
+      queryTotalTicketList({
+        drawId: this.id
+      }).then(res => {
+        console.log(res);
+        if (res.code == 200) {
+          this.totalTicketTableData = res.data;
+        } else {
+          this.$Message.error(res.code + " 数据加载失败!", 3);
+        }
+      });
+    },
+    cancelHandleReset(name) {
+      this.undercarriage = false;
+      this.$nextTick(() => {
+        this.$refs[name].resetFields();
+      });
+    },
+    putoff(name) {
+      this.$refs[name].validate(valid => {
+        if (valid) {
+          putoff({ drawId: this.id, reason: this.formValidate.reason }).then(
+            res => {
+              if (res.code == 200) {
+                this.msgOk("下架成功");
+              } else {
+                this.msgErr(res.msg);
+              }
+              this.cancelHandleReset(name);
+            }
+          );
+          //   this.$Message.success("Success!");
+        }
+      });
+    },
     updateBanner(row) {},
-    updateOperationStatus(row) {},
-    underUpdateOperationStatus(row) {},
+    // 上架
+    updateOperationStatus(row) {
+      this.$Modal.confirm({
+        title: "提示",
+        content: "<p>确定要上架吗？</p>",
+        onOk: () => {
+          putup({ drawId: row.id }).then(res => {
+            if (res.code == 200) {
+              this.msgOk("上架成功");
+            } else {
+              this.msgErr(res.msg);
+            }
+          });
+        },
+        onCancel: () => {
+          this.msgOk("上架已取消");
+        }
+      });
+    },
+    underUpdateOperationStatus(row) {
+      this.undercarriage = true;
+      this.id = row.id;
+    },
     changeStartDate(time) {
       this.searchData.startTime = time;
     },
@@ -314,9 +484,31 @@ export default {
         pageNum: 1, //页码
         pageSize: 10 //每页数量
       };
+    },
+    // 全局提示
+    msgOk(txt) {
+      this.$Message.info({
+        content: txt,
+        duration: 3
+      });
+    },
+    msgErr(txt) {
+      this.$Message.error({
+        content: txt,
+        duration: 3
+      });
     }
   }
 };
 </script>
 <style scoped>
+.underline {
+  text-decoration: underline;
+}
+.table-box {
+  min-height: 100px;
+  max-height: 400px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
 </style>
