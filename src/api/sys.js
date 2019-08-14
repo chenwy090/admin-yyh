@@ -415,6 +415,11 @@ export const delLuckyDraw = (id) => {
     return uploadformData(`/draw/activity/delete?actId=${id}`)
 }
 
+// 每日排期
+export const getSchedules = (params) => {
+  return postRequest(`/drawDaily/banner/activitylist`, params)
+}
+
 // ------------------------------ 配置新人礼包 ------------------------------------------- 
 
 // 获取列表
