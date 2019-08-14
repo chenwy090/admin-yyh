@@ -1,3 +1,4 @@
+// 抽奖团配置表格列表
 export default [
     {
         title: "操作",
@@ -103,7 +104,8 @@ export default [
         title: "开奖结果",
         key: "winningRefValue",
         align: "center",
-        minWidth: 140
+        minWidth: 140,
+        slot: 'result'
     }
 ]
 // 报名成功用户
@@ -157,3 +159,35 @@ export const detailColumns = [{
     align: "center",
     slot: 'logistics'
 }]
+
+// --------------抽奖团banner位---------------------------------
+export const bannerWayColumns = [
+    {
+        title: "操作",
+        align: "center",
+        width: 200,
+        fixed: "left",
+        slot: "action"
+    }, {
+        title: "抽奖id或链接",
+        key: "nickName",
+        align: "center",
+        slot: 'idLinkUrl'
+    }, {
+        title: "图片",
+        key: "imgUrl",
+        align: "center",
+        slot: "img"
+    }, {
+        title: "修改人",
+        key: "modifiedBy",
+        align: "center",
+    }, {
+        title: "修改时间",
+        key: "gmtModified",
+        align: "center",
+    }, {
+        title: "上线时间",
+        key: "onlineTime",
+        align: "center",
+    }]

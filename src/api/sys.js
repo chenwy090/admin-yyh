@@ -86,9 +86,26 @@ export const upXls = (data) => {
     return uploadFileRequest('/system/sys-shop-info/importShopInfo', data)
 }
 
+// -----------------------抽奖banner位---------------------------
+// 获取bannerway列表
+export const queryBannerWayList = (params) => postRequest("/drawDaily/banner/list", params)
+// bannerway 上架下架 1: 已上架、2：已下架  {id,nextStatus,reason}
+export const updateBannerWayStatus = (params) => postRequest("/drawDaily/banner/updateStatus", params)
 
+// 新增 /drawDaily/banner/add
+export const addBannerWay = (params) => postRequest("/drawDaily/banner/add", params)
+// 修改 /drawDaily/banner/edit
+export const editBannerWay = (params) => postRequest("/drawDaily/banner/edit", params)
 
 // -----------------------抽奖团配置---------------------------
+
+
+// 查看开奖结果 {drawId}
+export const queryWinningList = (params) => postRequest("/drawDaily/activity/winning/list", params)
+
+
+// 编辑物流信息 {logisticsId，logisticsName，logisticsOrderNo}
+export const updateLogistics = (params) => postRequest("/drawDaily/activity/winning/logistics/editor", params)
 
 // 上架 {drawId}
 export const putup = (params) => {
@@ -102,19 +119,16 @@ export const putoff = (params) => {
 
 // 获取列表
 export const queryLuckDrawList = (params) => {
-    // return postRequest(`/system/sys-shop-info/list?isAsc=1&orderByColumn=1&pageNum=${pageNum}&pageSize=10`, params)
     return postRequest("/drawDaily/activity/list", params)
 }
 
 // 获取报名成功用户列表
 export const queryTotalPlayerList = (params) => {
-    // return postRequest(`/system/sys-shop-info/list?isAsc=1&orderByColumn=1&pageNum=${pageNum}&pageSize=10`, params)
     return postRequest("/drawDaily/activity/payer/list", params)
 }
 
 // 抽奖券列表
 export const queryTotalTicketList = (params) => {
-    // return postRequest(`/system/sys-shop-info/list?isAsc=1&orderByColumn=1&pageNum=${pageNum}&pageSize=10`, params)
     return postRequest("/drawDaily/activity/ticketcode/list", params)
 }
 

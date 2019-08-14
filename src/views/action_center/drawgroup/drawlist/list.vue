@@ -40,9 +40,8 @@
           </FormItem>
         </Form>
         <Row type="flex" justify="start">
-          <Col>
-            <Button type="primary" icon="md-add" @click="add">新增</Button>
-          </Col>
+          <Button type="primary" icon="md-add" @click="add">新增</Button>
+          <Button type="primary" class="marginLeft20" @click="toBannerway">抽奖团banner位</Button>
         </Row>
       </Card>
     </div>
@@ -94,6 +93,9 @@
             href="javascript:;"
           >{{ row.totalTicket }}</a>
         </template>
+        <template slot-scope="{ row }" slot="result">
+          <Button type="success" size="small" @click="queryResult(row)">查看</Button>
+        </template>
       </Table>
       <!-- 分页器 -->
       <Row type="flex" justify="end" class="page">
@@ -111,7 +113,7 @@
       <!-- 分页器 -->
     </Card>
 
-    <Modal v-model="modalDetail" :closable="true">
+    <!-- <Modal v-model="modalDetail" :closable="true">
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="ios-information-circle"></Icon>
         <span>查看</span>
@@ -119,7 +121,8 @@
       <div class="table-box">
         <Table :show-index="true" :columns="detailColumns" :data="detailTableData"></Table>
       </div>
-    </Modal>
+    </Modal>-->
+    <!-- 报名成功用户 -->
     <Modal v-model="modalTotalPlayer" :closable="true">
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="ios-information-circle"></Icon>
@@ -129,6 +132,7 @@
         <Table :show-index="true" :columns="totalPlayerColumns" :data="totalPlayerTableData"></Table>
       </div>
     </Modal>
+    <!-- 抽奖券 -->
     <Modal v-model="modalTotalTicket" :closable="true">
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="ios-information-circle"></Icon>
@@ -138,6 +142,7 @@
         <Table :show-index="true" :columns="totalTicketColumns" :data="totalTicketTableData"></Table>
       </div>
     </Modal>
+    <!-- 下架抽奖活动 -->
     <Modal v-model="undercarriage" :closable="true" width="400">
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="ios-information-circle"></Icon>
@@ -161,7 +166,7 @@
       </div>
     </Modal>
 
-    <Modal v-model="modalDetail" :closable="true">
+    <!-- <Modal v-model="modalDetail" :closable="true">
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="ios-information-circle"></Icon>
         <span>查看</span>
@@ -169,15 +174,15 @@
       <div class="table-box">
         <Table :show-index="true" :columns="detailColumns" :data="detailTableData"></Table>
       </div>
-    </Modal>
+    </Modal>-->
     <!-- 查看 开奖结果 -->
-    <Modal v-model="modalDetail" :closable="true">
+    <Modal v-model="modalDetail" :closable="true" width="600">
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="ios-information-circle"></Icon>
         <span>查看开奖结果</span>
       </p>
       <div class="table-box">
-        <Table :show-index="true" :columns="detailColumns" :data="detailTableData">
+        <Table :columns="detailColumns" :data="detailTableData">
           <template slot-scope="{ row }" slot="logistics">
             <Button
               type="success"
@@ -196,23 +201,22 @@
           <div>
             <Form
               label-position="left"
-              ref="formValidate"
-              :model="formValidate"
-              :rules="ruleValidate"
+              ref="formLogistics"
+              :model="logistics"
+              :rules="ruleLogisticsValidate"
+              :label-width="90"
             >
-              <FormItem label="填写原因：" prop="reason">
-                <Input
-                  v-model="formValidate.reason"
-                  type="textarea"
-                  :autosize="{minRows: 2,maxRows: 5}"
-                  placeholder="填写下架原因..."
-                ></Input>
+              <FormItem label="物流公司：" prop="logisticsName">
+                <Input v-model="logistics.logisticsName" type="text" placeholder="物流公司"></Input>
+              </FormItem>
+              <FormItem label="物流单号：" prop="logisticsOrderNo">
+                <Input v-model="logistics.logisticsOrderNo" type="text" placeholder="物流单号"></Input>
               </FormItem>
             </Form>
           </div>
           <div slot="footer">
-            <Button type="error" size="large" @click="putoff('formValidate')">确认</Button>
-            <Button @click="cancelHandleReset('formValidate')" style="margin-left: 8px">取消</Button>
+            <Button type="error" size="large" @click="updateLogistics('formLogistics')">确认</Button>
+            <Button @click="cancelUpdateLogistics('formLogistics')" style="margin-left: 8px">取消</Button>
           </div>
         </Modal>
       </div>
@@ -221,6 +225,8 @@
 </template>
 <script>
 import {
+  queryWinningList,
+  updateLogistics, //更新物流
   putup,
   putoff,
   queryLuckDrawList,
@@ -243,9 +249,28 @@ export default {
       modalDetail: false, // 查看
       modalLogistics: false, //物流
       logistics: {
-        companyName: "",
-        orderId: ""
+        winningId:"",
+        logisticsId: "",
+        logisticsName: "",
+        logisticsOrderNo: ""
       },
+      ruleLogisticsValidate: {
+        logisticsName: [
+          {
+            required: true,
+            message: "物流公司不能为空",
+            trigger: "blur"
+          }
+        ],
+        logisticsOrderNo: [
+          {
+            required: true,
+            message: "物流单号不能为空",
+            trigger: "blur"
+          }
+        ]
+      },
+
       undercarriage: false,
       formValidate: {
         reason: ""
@@ -338,26 +363,50 @@ export default {
     this.queryTableList();
   },
   methods: {
+    toBannerway() {},
+    async queryResult(row) {
+      this.modalDetail = true;
+      const res = await queryWinningList({ drawId: row.id });
+      if (res.code == 200) {
+        //  '0' COMMENT '0:阳光普照奖 1:大奖',
+        let arr = res.data.map(item => {
+          if (item.isAwards == 0) {
+            item.prize = "阳光普照奖";
+          } else {
+            item.prize = "大奖";
+          }
+          return item;
+        });
+        this.detailTableData = arr;
+      } else {
+        this.msgErr(res.msg);
+      }
+    },
     showLogistics(row) {
       this.modalLogistics = true;
-      //   xxxx({xxxxx:xxxxxx}}).then(res => {
-      //     if (res.code == 200) {
-      //      this.logistics =
-      //     } else {
-      //     // 数据加载失败
-      //       this.msgErr(res.msg);
-      //     }
-      //   });
-      //
+      Object.keys(this.logistics).forEach(name => {
+        this.logistics[name] = row[name];
+      });
     },
-    updateLogistics() {
-      //   xxxx(this.logistics).then(res => {
-      //     if (res.code == 200) {
-      //       this.msgOk("更新物流信息成功");
-      //     } else {
-      //       this.msgErr(res.msg);
-      //     }
-      //   });
+    cancelUpdateLogistics(name) {
+      this.modalLogistics = false;
+      this.$nextTick(() => {
+        this.$refs[name].resetFields();
+      });
+    },
+    updateLogistics(name) {
+      this.$refs[name].validate(valid => {
+        if (valid) {
+          updateLogistics(this.logistics).then(res => {
+            if (res.code == 200) {
+              this.msgOk("更新物流信息成功");
+            } else {
+              this.msgErr(res.msg);
+            }
+            this.cancelUpdateLogistics(name);
+          });
+        }
+      });
     },
     showTotalPlayer(id) {
       this.modalTotalPlayer = true;
@@ -510,5 +559,8 @@ export default {
   max-height: 400px;
   overflow-x: hidden;
   overflow-y: auto;
+}
+.marginLeft20 {
+  margin-left: 20px;
 }
 </style>
