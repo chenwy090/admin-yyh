@@ -123,7 +123,7 @@
                     >
                       <InputNumber
                         placeholder="请输入"
-                        :min="1"
+                        :min="0"
                         :max="9999999999999"
                         style="width: 120px"
                         v-model="item.ticketMoney"
