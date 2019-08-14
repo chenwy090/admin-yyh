@@ -264,6 +264,22 @@ util.initRouter = function (vm) {
         if (menuData === null || menuData === "" || menuData === undefined) {
             return;
         }
+        // 开发环境 增加 每日排期页面 (临时添加 -- 上线前让后端加进去)
+        menuData[8].children.push({
+          component: "schedules_daily/schedules_daily",
+          icon: "#",
+          menuId: 2263,
+          menuType: "C",
+          name: "schedules_daily",
+          orderNum: 1,
+          parentId: 1262,
+          path: "schedules_daily",
+          perms: "",
+          title: "每日排期",
+          url: "schedules_daily/schedules_daily",
+          visible: "1"
+        })
+
         util.initRouterNode(constRoutes, menuData);
         util.initRouterNode(otherRoutes, otherRouter);
         // 添加主界面路由
