@@ -24,7 +24,7 @@
                         <div v-if="row.code == '7'">
                             {{row.value}}个
                         </div>
-                        <div v-else-if="row.code == '8'||row.code == '15'||row.code == '16'||row.code == '18'||row.code == '19'||row.code == '21'">
+                        <div v-else-if="row.code == '8'||row.code == '16'||row.code == '18'||row.code == '19'||row.code == '21'">
                             {{row.value}}元
                         </div>
                         <div v-else-if="row.code == '9'">
@@ -819,6 +819,7 @@
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;
         overflow: hidden;
+        height: 36px;
     }
     .table-img{
         width: 74px;
