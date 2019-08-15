@@ -448,8 +448,8 @@
               >保存</Button>
 
             </Row>
-          <Row style="border-top: 1px solid #666;margin-top: 20px">
-              <Form ref="shareModal" v-if="formShareModal.shareData" :model="formShareModal" :label-width="100" style="margin-top:20px">
+          <Row style="border-top: 1px solid #666;margin-top: 20px" v-if="formShareModal.shareData.length">
+              <Form ref="shareModal" :model="formShareModal" :label-width="100" style="margin-top:20px">
                   <FormItem v-for="item in formShareModal.shareData" :key="item.id" :label="item.name" required>
                       <InputNumber
                               :min="item.name=='倍数'?1:0"
