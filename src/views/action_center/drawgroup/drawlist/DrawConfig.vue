@@ -1,5 +1,6 @@
 <template>
   <div class="xxx">
+    <component ref="modalDetail" :is="'ModalDetail'"></component>
     <div class="query-row">
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
@@ -173,10 +174,12 @@ import columns, {
 } from "./columns";
 
 import WinningList from "./WinningList";
+import ModalDetail from "../Modal_detail";
 
 export default {
   name: "draw-config",
   components: {
+    ModalDetail: ModalDetail,
     [WinningList.name]: WinningList
   },
   data() {
@@ -275,6 +278,10 @@ export default {
     this.queryTableList();
   },
   methods: {
+    // 查看详情
+    checkDetailsFn(row) {
+      this.$refs.modalDetail.show(row);
+    },
     changeComp(compName) {
       this.$emit("changeComp",compName);
     },

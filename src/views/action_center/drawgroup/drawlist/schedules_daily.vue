@@ -91,7 +91,6 @@
 <script>
 import { getSchedules } from "@/api/sys";
 import { postRequest } from "@/libs/axios";
-import { baseUrl } from "@/api/index";
 export default {
   name: "schedule-daily",
   data() {
