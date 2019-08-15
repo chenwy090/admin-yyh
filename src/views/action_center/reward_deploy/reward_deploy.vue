@@ -109,7 +109,7 @@
                 :title="modal1.name"
                 :mask-closable="false" footer-hide>
             <Row v-if="modal1.type && modal1.type =='3'">
-                <img style="width: 500px;text-align: center">
+                <img style="width: 500px;text-align: center" :src="modal1.value">
                 <Upload
                         ref="upload"
                         :defaultList="defaultList"
@@ -606,14 +606,17 @@
                 this.modal1.id = item.id;
                 this.modal1.type = item.type;
                 this.modal1.isopen = true;
-                if(item.code == '11'||item.code == '12'||item.code == '13'||item.code == '14'){
-                    this.modal1.value1 = Number(item.value.split(',')[0])||0;
-                    this.modal1.value2 = Number(item.value.split(',')[1])||0;
-                    this.modal1.value3 = Number(item.value.split(',')[2])||0;
-                    this.modal1.value = 0;
-                }
+                debugger
                 if(item.type!='3'){
                     this.modal1.value = Number(item.value)||0;
+                    if(item.code == '11'||item.code == '12'||item.code == '13'||item.code == '14'){
+                        this.modal1.value1 = Number(item.value.split(',')[0])||0;
+                        this.modal1.value2 = Number(item.value.split(',')[1])||0;
+                        this.modal1.value3 = Number(item.value.split(',')[2])||0;
+                        this.modal1.value = 0;
+                    }
+                }else{
+                    this.modal1.value = item.value;
                 };
             },
             openModal2(item){
@@ -629,16 +632,18 @@
                 this.modal3.context = item.context;
             },
             ok1 (name) {
-                if(this.modal1.type&&this.modal1.type!='3'){
-                    this.$refs[name].validate((valid) => {
-                        if (valid) {
-                            this.saveChange1();
-                        } else {
-                            return
-                        }
-                    })
-                }else if(this.modal1.value||this.modal1.value===0){
-                    this.saveChange1();
+                if(!this.modal1.type||this.modal1.type!='3'){
+                    if(this.modal1.value){
+                        this.saveChange1();
+                    }else{
+                        this.$Message.error('请检查表单');
+                    }
+                }else if(this.modal1.value){
+                    if(this.modal1.value){
+                        this.saveChange1();
+                    }else{
+                        this.$Message.error('请上传图片');
+                    }
                 }
             },
             cancel () {
@@ -646,23 +651,18 @@
             },
             ok2 (name) {
                 // this.$Message.info('Clicked ok');
-                this.$refs[name].validate((valid) => {
-                    if (valid) {
-                        this.saveChange2();
-                    } else {
-                        return
-                    }
-                })
+                if(this.modal2.verifyQuantityMin||this.modal2.verifyQuantityMin===0){
+                    this.saveChange2();
+                }else{
+                    this.$Message.error('请检查表单');
+                }
             },
             ok3 (name) {
-                // this.$Message.info('Clicked ok');
-                this.$refs[name].validate((valid) => {
-                    if (valid) {
-                        this.saveChange3();
-                    } else {
-                        return
-                    }
-                })
+                if(this.modal3.context){
+                    this.saveChange3();
+                }else{
+                    this.$Message.error('请检查表单');
+                }
             },
             getData1 (){
                 this.TableLoading1 = true;
@@ -670,7 +670,6 @@
                     "/commonConfig/queryAllConfig"
                 ).then(res => {
                     if (res.code == 200) {
-                        console.log(res.data);
                         this.TableLoading1 = false;
                         if(res.data){
                             this.list1 = res.data.noOverallCommonConfigList||[];
@@ -687,7 +686,6 @@
                     "/mini/userLevelRule/list",{}
                 ).then(res => {
                     if (res.code == 200) {
-                        console.log(res.data);
                         this.list2 = res.data||[];
                         this.TableLoading2 = false;
                     } else {
@@ -702,7 +700,6 @@
                     "/rewardNotice/queryNoticeAll"
                 ).then(res => {
                     if (res.code == 200) {
-                        console.log(res.data);
                         this.list3 = res.data||[];
                         this.TableLoading3 = false;
                     } else {

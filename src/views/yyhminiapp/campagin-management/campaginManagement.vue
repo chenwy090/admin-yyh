@@ -359,6 +359,7 @@
           <FormItem v-for="item in formShareModal.shareData" :key="item.id" :label="item.name" required>
             <span v-if="item.name!= '倍数'&&item.name!= '上限'">&nbsp;优惠面额  X</span>
             <InputNumber
+                    :disabled="item.name=='分享奖励'"
                     :min="item.name== '倍数'?1:0"
                     :step="1"
                     type="text"
@@ -1036,6 +1037,9 @@ export default {
                       this.formShareModal.shareData = res.data.noOverallCommonConfigList||[];
                       this.formShareModal.shareData.forEach(function(v){
                           v.value = Number(v.value)||0;
+                          if(v.name=='分享奖励'){
+                              v.value=0;
+                          }
                       })
                       this.shareDisplay = true;
                   }else{
