@@ -1,7 +1,8 @@
 <template>
   <div class="bannerway">
     <Card class="add-bannerway-row" :bordered="false" style="margin-bottom:2px">
-      <Button type="primary" icon="md-add" @click="addOrEdit('add')">新增</Button>
+      <Button type="primary" icon="md-add" @click="addOrEdit('add')">新增</Button>&nbsp;&nbsp;
+      <Button type="dashed" icon="md-arrow-round-back" @click="goback">返回列表</Button>
     </Card>
     <Card :bordered="false">
       <Table :loading="loading" :columns="columns" :data="tableData">
@@ -101,7 +102,7 @@ import { bannerWayColumns } from "./columns";
 import BannerwayEdit from "./BannerwayEdit";
 
 export default {
-  name: "",
+  name: "bannerway",
   components: {
     [BannerwayEdit.name]: BannerwayEdit
   },
@@ -155,6 +156,9 @@ export default {
     this.queryTableList();
   },
   methods: {
+    goback() {
+      this.$emit("changeComp", "draw-config");
+    },
     // 显示大图
     showBigImg: function(row) {
       this.bigImgDialog = true;
