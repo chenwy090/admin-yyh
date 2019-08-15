@@ -86,6 +86,16 @@ export const upXls = (data) => {
     return uploadFileRequest('/system/sys-shop-info/importShopInfo', data)
 }
 
+
+
+// -----------------------抽奖团配置---------------------------
+
+// 获取列表
+export const queryLuckDrawList = (params) => {
+    // return postRequest(`/system/sys-shop-info/list?isAsc=1&orderByColumn=1&pageNum=${pageNum}&pageSize=10`, params)
+    return postRequest("/drawDaily/activity/list", params)
+}
+
 // -----------------------运营位管理---------------------------
 
 // 获取小程序接口 
