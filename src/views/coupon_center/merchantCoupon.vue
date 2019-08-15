@@ -107,13 +107,13 @@
               sortable="custom"
               ref="table"
             >
-            
+
             <template slot-scope="{ row }" slot="couponBigImg">
                 <Tooltip content="点击可查看大图 " placement="right">
               <img :src="row.couponBigImg" style="width:74px;height:43px;" @click="showBigImg(row)">
                 </Tooltip>
             </template>
-            
+
 
 
            <template slot-scope="{ row }" slot="ticketMoney">
@@ -137,7 +137,7 @@
            <template slot-scope="{ row }" slot="price">
               <span  v-if="row.couponKind ==2">{{row.price /100}} 元 </span>
               <span v-else >免费</span>
-             
+
             </template>
 
            <template slot-scope="{ row }" slot="operate">
@@ -147,7 +147,7 @@
                <!--<Button type="text" size="small" style="color:blue" @click="" v-if="row.templateStatus == '进行中' || row.templateStatus == '已结束' ">查看明细</Button>-->
                <!--<Button type="text" size="small" style="color:red" @click="inputAppendStockCountStatus(row)" v-if="row.templateStatus == '进行中' ">追加</Button>-->
                <!--<Button type="text" size="small" style="color:green" @click="" >复制</Button>-->  <!--changeStatus(row)-->
-
+               <Button type="text" size="small" style="color:red" @click="share(row)">分享奖励</Button>
             </template>
 
 
@@ -165,14 +165,14 @@
             ></Page>
           </Row>
         </Card>
-      </div>   
-     
+      </div>
+
     </Row>
 
     <div v-if="couponEditPage">
       <couponEdit @changeStatus="showbasicSetStatus" :couponEdit_info="couponEdit_info" ></couponEdit>
     </div>
- 
+
   <Modal v-model="bigImgDialog" title="查看大图" width="600" @on-cancel="bigImgCancel">
         <img style="width: 100%" :src="big_Image_url" />
       </Modal>
@@ -236,6 +236,29 @@
               </FormItem>
           </Form>
       </Modal>
+
+
+      <Modal title="分享奖励" v-model="shareDisplay" :mask-closable="false" footer-hide>
+          <Form ref="shareModal" :model="formShareModal" :label-width="100" style="margin-top:20px">
+              <FormItem v-for="item in formShareModal.shareData" :key="item.id" :label="item.name" required>
+                  <InputNumber
+                          :min="item.name== '倍数'?1:0"
+                          :step="1"
+                          type="text"
+                          v-model="item.value"
+                          placeholder="请输入"
+                          style="width:320px"
+                  ></InputNumber>
+                  <span v-if="item.name!= '倍数'">&nbsp;&nbsp;U贝</span>
+                  <span v-if="item.name== '倍数'">&nbsp;&nbsp;倍</span>
+              </FormItem>
+              <FormItem>
+                  <Button style="margin-left: 20px;float: right;" @click="shareDisplay = false">关闭</Button>
+                  <Button style="float: right;" type="primary" @click="shareSave('shareModal')">确认</Button>
+
+              </FormItem>
+          </Form>
+      </Modal>
   </div>
 </template>
 
@@ -260,14 +283,16 @@ export default {
   },
   data() {
     return {
+        formShareModal:{
+            shareData:[]
+        },
       couponEditPage: false,
         updateTemplateStatusDisplay:false,
         appendStockCountDisplay:false,
-
+        shareDisplay:false,
       drop: false,
       dropDownContent: "展开",
       dropDownIcon: "ios-arrow-down",
-
       searchItem: {
           title:"",
           merchantNames:"",
@@ -480,6 +505,59 @@ export default {
           this.formCustom.surplusCount=row.surplusCount;
           //this.formCustom.appendCount = '-1' ;
           this.appendStockCountDisplay = true;
+      },
+      share(row){
+          this.formShareModal.shareData = [];
+          postRequest('/commonConfig/queryConfigByCode',{
+              code:row.templateId
+              }
+          ).then(res => {
+              if (res.code == 200) {
+                  if(res.data||res.data.noOverallCommonConfigList){
+                      this.formShareModal.shareData = res.data.noOverallCommonConfigList||[];
+                      this.formShareModal.shareData.forEach(function(v){
+                          v.value = Number(v.value)||0;
+                      })
+                      this.shareDisplay = true;
+                  }else{
+                      this.msgErr('未查询到数据');
+                  }
+              } else {
+                  this.msgErr(res.msg);
+              }
+          });
+      },
+      shareSave(name){
+          let canSave = true;
+          let msg = ''
+          this.formShareModal.shareData.forEach(function(v){
+              v.createTime = null;
+              v.updateTime = null;
+              v.updateBy = null;
+              if(!v.value&&v.value!==0){
+                  canSave = false
+                  msg='请输入完整表单'
+              }
+              if(v.name=='倍数'&&v.value<1){
+                  canSave = false
+                  msg='请输入大于等于1的倍数'
+              }
+          })
+          if(!canSave){
+              this.msgErr('请输入完整表单');
+              return;
+          }
+          postRequest(
+              "/commonConfig/updateConfigBatch",
+              {"noOverallCommonConfigList":this.formShareModal.shareData}
+          ).then(res => {
+              if (res.code == 200) {
+                  //this.formCustom.remark='';
+                  this.shareDisplay = false;
+              } else {
+                  this.msgErr(res.msg);
+              }
+          });
       },
       // 更新账户
       updateTemplateAppendCountFn() {

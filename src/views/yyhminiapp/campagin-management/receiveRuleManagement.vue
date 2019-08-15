@@ -52,10 +52,10 @@
               <span style="color:red">&nbsp;&nbsp;张</span>
             </FormItem>
 
-             
+
 
             <FormItem label="投放渠道" required>
-              <Select v-model="edit_info.sendChannel" style="width:400px" @on-change="statusCheckChange">  
+              <Select v-model="edit_info.sendChannel" style="width:400px" @on-change="statusCheckChange">
                 <Option v-for="item in res_list" :value="item.dictValue" :key="item.id">{{ item.dictLabel }}</Option>
               </Select>
             </FormItem>
@@ -96,7 +96,7 @@
               </Select>
             </FormItem>
 
-  
+
           <FormItem label="排序" required>
               <InputNumber
                 :min="0"
@@ -107,7 +107,7 @@
                 style="width:400px"
                 @on-change="statusCheckChange"
               ></InputNumber>
-            </FormItem> 
+            </FormItem>
 
 
          <FormItem label="是否限制库存数量" required>
@@ -161,11 +161,33 @@
               >下一步</Button>
             </FormItem>
           </Form>
+
+
+
+          <!--分享奖励配置-->
+          <Form ref="shareModal" v-if="formShareModal.shareData" :model="formShareModal" :label-width="220" style="margin-top:20px">
+            <FormItem v-for="item in formShareModal.shareData" :key="item.id" :label="item.name" required>
+              <InputNumber
+                      :min="item.name== '倍数'?1:0"
+                      :step="1"
+                      type="text"
+                      v-model="item.value"
+                      placeholder="请输入"
+                      style="width:320px"
+              ></InputNumber>
+              <span v-if="item.name!= '倍数'">&nbsp;&nbsp;U贝</span>
+              <span v-if="item.name== '倍数'">&nbsp;&nbsp;倍</span>
+            </FormItem>
+            <FormItem>
+              <Button style="float: left;" type="primary" @click="shareSave('shareModal')">保存</Button>
+
+            </FormItem>
+          </Form>
         </Card>
       </div>
     </div>
 
- 
+
 
     <div v-if="campaginGrabInfoPage">
       <campaginGrabInfoSet @changeStatus="showcampaginGrabInfo"></campaginGrabInfoSet>
@@ -179,7 +201,7 @@
       <p>即将跳转领优惠列表...</p>
 
       <div slot="footer">
-        <Button type="success" size="large" long @click="closeModal">确定</Button>
+        <Button type="success" size="large" long @click="closeModal">保存</Button>
       </div>
     </Modal>
   </div>
@@ -209,6 +231,9 @@ export default {
 
   data() {
     return {
+        formShareModal:{
+            shareData:[]
+        },
       next_modal: false,
       campaginGrabInfoPage: false,
       campaginManagementPage: false,
@@ -338,9 +363,63 @@ export default {
       this.campId = this.getStore("campId");
       this.daySum = this.getStore("daySum");
       console.log(this.campId);
+      this.share(this.campId);
       this.updateTableList();
       this.getTicketTemplate();
     },
+      share(campId){
+          this.formShareModal.shareData = [];
+          postRequest('/commonConfig/queryConfigByCode',{
+                  code:campId
+              }
+          ).then(res => {
+              if (res.code == 200) {
+                  if(res.data||res.data.noOverallCommonConfigList){
+                      this.formShareModal.shareData = res.data.noOverallCommonConfigList||[];
+                      this.formShareModal.shareData.forEach(function(v){
+                          v.value = Number(v.value)||0;
+                      })
+                      this.shareDisplay = true;
+                  }else{
+                      this.$Message.error('未查询到数据');
+                  }
+              } else {
+                  this.$Message.error(res.msg);
+              }
+          });
+      },
+      shareSave(name){
+          let canSave = true;
+          let msg = ''
+          this.formShareModal.shareData.forEach(function(v){
+              v.createTime = null;
+              v.updateTime = null;
+              v.updateBy = null;
+              if(!v.value&&v.value!==0){
+                  canSave = false
+                  msg='请输入完整表单'
+              }
+              if(v.name=='倍数'&&v.value<1){
+                  canSave = false
+                  msg='请输入大于等于1的倍数'
+              }
+          })
+          if(!canSave){
+              this.$Message.error(msg);
+              return;
+          }
+          postRequest(
+              "/commonConfig/updateConfigBatch",
+              {"noOverallCommonConfigList":this.formShareModal.shareData}
+          ).then(res => {
+              if (res.code == 200) {
+                  //this.formCustom.remark='';
+                  this.$Message.success('保存成功')
+              } else {
+                  this.$Message.error(res.msg);
+              }
+          });
+      },
 
     updateTableList() {
       this.TableLoading = true;
