@@ -96,7 +96,7 @@
                 :autosize="{minRows: 4,maxRows: 8}"
                 placeholder="请填写使用门槛描述"
               />
-            </FormItem> 
+            </FormItem>
 
             <FormItem label="活动时间类型" required>
               <Select
@@ -134,8 +134,8 @@
 
 
 
-  
-  
+
+
             <FormItem label="优惠券缩略图" required>
               <div
                 style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
@@ -167,7 +167,7 @@
                 </Upload>
                 <p>选择优惠券缩略图 (不大于1M,尺寸为130*130, JPG/PNG/JPEG/BMP）</p>
               </div>
-            </FormItem> 
+            </FormItem>
 
 
 
@@ -203,7 +203,7 @@
                 </Upload>
                 <p>选择优惠券详情图 (不大于1M,尺寸为280*218, JPG/PNG/JPEG/BMP）</p>
               </div>
-            </FormItem> 
+            </FormItem>
 
 
 
@@ -215,7 +215,7 @@
                 style="width:300px"
                 placeholder="请选择兑换时间类型"
                 @on-change="statusCheckChange"
-               
+
               >
                 <Option value='0'>固定日期时间范围有效</Option>
                    <Option value='1'>发券后+X天后开始兑换</Option>
@@ -245,7 +245,7 @@
             </div>
 
 
-         <div v-if="edit_info.ChangeDateType =='1'">  
+         <div v-if="edit_info.ChangeDateType =='1'">
 
               <FormItem label="发券后+X天开始兑换" required>
                       <Input
@@ -266,7 +266,7 @@
                               placeholder="请输入发券后+X天结束兑换"
                               @on-change="statusCheckChange"
                             />
-                      
+
                 </FormItem>
 
          </div> -->
@@ -289,9 +289,9 @@
             </FormItem>
 
             <FormItem v-if="edit_info.ticketName">
-             
 
-              <Alert style="width:500px">  
+
+              <Alert style="width:500px">
                     <Row>模版ID：{{edit_info.ticketTemplateId}}  </Row>
                      <Row>模版名称：{{edit_info.ticketName}}  </Row>
 
@@ -365,7 +365,7 @@
           size="small"
           height="300"
         >
-        
+
            <template slot-scope="{ row }" slot="ChangeStart">
             <span v-if="row.changeDateType ==0"> {{row.changeStartDate}}</span>
               <span  v-if="row.changeDateType ==1"> 发券后+{{row.changeStart}}天开始兑换</span>
@@ -377,7 +377,7 @@
               <span v-if="row.changeDateType ==1"> 发券后+{{row.changeEnd}}天结束兑换</span>
             </template>
 
-        
+
         </Table>
       </Form>
 
@@ -388,7 +388,7 @@
     </Modal>
 
     <div v-if="receiveRuleSetPage">
-      <receiveRuleSet @changeStatus="showReceiveRuleSetStatus"></receiveRuleSet>
+      <receiveRuleSet :camp_pageStatus="camp_pageStatus" @changeStatus="showReceiveRuleSetStatus"></receiveRuleSet>
     </div>
   </div>
 </template>

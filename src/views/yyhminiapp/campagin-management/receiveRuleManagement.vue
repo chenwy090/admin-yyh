@@ -27,7 +27,7 @@
             </span>
             <span slot="desc"></span>
           </Alert>
-          <Form :model="edit_info" ref="edit_info" :label-width="220">
+          <Form v-if="!isNext" :model="edit_info" ref="edit_info" :label-width="220">
             <!-- <FormItem label="每人免费限领数" required>
               <InputNumber
                 :min="0"
@@ -165,7 +165,7 @@
 
 
           <!--分享奖励配置-->
-          <Form ref="shareModal" v-if="formShareModal.shareData" :model="formShareModal" :label-width="220" style="margin-top:20px">
+          <Form ref="shareModal" v-if="formShareModal.shareData.length&&camp_pageStatus==='edit'&&isNext" :model="formShareModal" :label-width="220" style="margin-top:20px">
             <FormItem v-for="item in formShareModal.shareData" :key="item.id" :label="item.name" required>
               <InputNumber
                       :min="item.name== '倍数'?1:0"
@@ -179,8 +179,12 @@
               <span v-if="item.name== '倍数'">&nbsp;&nbsp;倍</span>
             </FormItem>
             <FormItem>
-              <Button style="float: left;" type="primary" @click="shareSave('shareModal')">保存</Button>
-
+              <Button style="float: left;" type="primary" @click="shareSave()">保存</Button>
+              <Button
+                      type="dashed"
+                      @click="nextInfo2()"
+                      style="width:150px;margin-left: 5%"
+              >下一步</Button>
             </FormItem>
           </Form>
         </Card>
@@ -227,7 +231,9 @@ export default {
     campaginGrabInfoSet,
     campaginManagement
   },
-  props: {},
+  props: {
+      camp_pageStatus:String
+  },
 
   data() {
     return {
@@ -235,6 +241,7 @@ export default {
             shareData:[]
         },
       next_modal: false,
+        isNext:false,
       campaginGrabInfoPage: false,
       campaginManagementPage: false,
       edit_info: {
@@ -362,7 +369,6 @@ export default {
     init() {
       this.campId = this.getStore("campId");
       this.daySum = this.getStore("daySum");
-      console.log(this.campId);
       this.share(this.campId);
       this.updateTableList();
       this.getTicketTemplate();
@@ -415,6 +421,12 @@ export default {
               if (res.code == 200) {
                   //this.formCustom.remark='';
                   this.$Message.success('保存成功')
+                  if(name){
+                      setTimeout(() => {
+                          this.campaginGrabInfoPage = true;
+                          this.campaginManagementPage = false;
+                      }, 1200);
+                  }
               } else {
                   this.$Message.error(res.msg);
               }
@@ -598,15 +610,27 @@ export default {
 
     nextInfo() {
       this.dataProcessing();
-      this.campaginGrabInfoPage = true;
-      this.campaginManagementPage = false;
+      this.isNext=true;
+      if(this.camp_pageStatus!=='edit'){
+          this.campaginGrabInfoPage = true;
+          this.campaginManagementPage = false;
+      }
     },
+      nextInfo2(){
+          this.shareSave('next');
+          this.isNext=true;
+          this.campaginGrabInfoPage = true;
+          this.campaginManagementPage = false;
+      },
 
     showcampaginGrabInfo(e) {
       if (e.type == 1) {
         this.$emit("changeStatus", { Return: false, type: 1 });
       }
       this.campaginGrabInfoPage = e.Return;
+      if(this.camp_pageStatus==='edit'){
+          this.isNext = e.isNext;
+      }
     },
 
     showcampaginManagement(e) {
@@ -614,7 +638,11 @@ export default {
     },
 
     goback() {
-      this.$emit("changeStatus", { Return: false });
+        if(this.isNext){
+            this.isNext = false;
+        }else{
+            this.$emit("changeStatus", { Return: false });
+        }
     },
 
     statusCheckChange() {
