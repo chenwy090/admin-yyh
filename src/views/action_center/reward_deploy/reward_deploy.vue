@@ -800,7 +800,7 @@
         },
         created(){
             this.getData1();
-            // this.getData2();
+            this.getData2();
             this.getData3();
             this.userToken = {
                 jwttoken: localStorage.getItem("jwttoken")
