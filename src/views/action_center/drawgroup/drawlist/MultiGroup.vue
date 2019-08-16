@@ -17,7 +17,7 @@
               type="datetime"
               format="yyyy-MM-dd HH:mm"
               placeholder="请选择日期"
-              @on-change="datetimechange"
+              @on-change="startTimeChange"
               class="date-range"
             ></DatePicker>
           </Col>
@@ -44,7 +44,7 @@
                 type="datetime"
                 format="yyyy-MM-dd HH:mm"
                 placeholder="请选择日期"
-                @on-change="datetimechange"
+                @on-change="openDrawTimeChange"
                 class="date-range"
               ></DatePicker>
             </Col>
@@ -61,7 +61,7 @@
                 type="datetime"
                 format="HH:mm"
                 placeholder="请选择日期"
-                @on-change="datetimechange"
+                @on-change="openDrawTimeChange"
                 class="date-range"
               ></TimePicker>
             </Col>
@@ -85,7 +85,7 @@
         </FormItem>
       </template>
 
-      <!-- <FormItem label="投放门店：" v-for="(item,index) in form.drawDailyShopList" :key="item.id">
+      <FormItem label="投放门店：" v-for="(item,index) in form.drawDailyShopList" :key="item.id">
         <storeView
           :id="item.id"
           :index="index"
@@ -96,7 +96,7 @@
           @handleRemove-event="handleRemove"
           :shop="item"
         ></storeView>
-      </FormItem>-->
+      </FormItem>
       <FormItem label>
         <Button type="dashed" long @click="handleAdd" icon="md-add" style="width:100px;"></Button>
       </FormItem>
@@ -281,14 +281,14 @@
 
       <FormItem
         label="每人开团次数："
-        prop="userJoinGroupCount"
-        :rules="{ required: false, message: '请输入开团次数' }"
+        prop="userOpenGroupCount"
+        :rules="{ required: true, message: '请输入开团次数' }"
       >
         <Row>
           <Col span="10">
             <Input
               style="width:90%"
-              v-model="form.userJoinGroupCount"
+              v-model="form.userOpenGroupCount"
               placeholder="请输入开团次数"
               clearable
             />
@@ -314,24 +314,41 @@
         </Row>
       </FormItem>
 
-      <FormItem label="开团消耗U贝：" prop="name" :rules="{ required: false, message: '请输入开团消耗U贝' }">
+      <FormItem
+        label="开团消耗U贝："
+        prop="openGroupFee"
+        :rules="{ required: true, message: '请输入开团消耗U贝' }"
+      >
         <Row>
           <Col span="10">
-            <Input style="width:90%" v-model="form.name" placeholder="请输入开团消耗U贝" clearable />
+            <Input style="width:90%" v-model="form.openGroupFee" placeholder="请输入开团消耗U贝" clearable />
           </Col>
         </Row>
       </FormItem>
-      <FormItem label="参团次数：" prop="name" :rules="{ required: false, message: '请输入参团次数' }">
+      <FormItem
+        label="参团次数："
+        prop="userJoinGroupCount"
+        :rules="{ required: true, message: '请输入参团次数' }"
+      >
         <Row>
           <Col span="10">
-            <Input style="width:90%" v-model="form.name" placeholder="请输入参团次数" clearable />
+            <Input
+              style="width:90%"
+              v-model="form.userJoinGroupCount"
+              placeholder="请输入参团次数"
+              clearable
+            />
           </Col>
         </Row>
       </FormItem>
-      <FormItem label="参团消耗U贝：" prop="name" :rules="{ required: false, message: '请输入参团消耗U贝' }">
+      <FormItem
+        label="参团消耗U贝："
+        prop="joinGroupFee"
+        :rules="{ required: true, message: '请输入参团消耗U贝' }"
+      >
         <Row>
           <Col span="10">
-            <Input style="width:90%" v-model="form.name" placeholder="请输入参团消耗U贝" clearable />
+            <Input style="width:90%" v-model="form.joinGroupFee" placeholder="请输入参团消耗U贝" clearable />
           </Col>
         </Row>
       </FormItem>
@@ -355,14 +372,6 @@
         <Row>
           <Col span="10">
             <Input v-model="form.drawRuleRemarks" type="textarea" :rows="6" placeholder="抽奖规则" />
-          </Col>
-        </Row>
-      </FormItem>
-
-      <FormItem label="广告主信息：" prop="name" :rules="{ required: false, message: '请输入活动名称' }">
-        <Row>
-          <Col span="10">
-            <Input style="width:90%" v-model="form.name" placeholder="请输入" clearable />
           </Col>
         </Row>
       </FormItem>
@@ -413,20 +422,20 @@ import chooseCouponListView from "./chooseCouponList";
 export default {
   name: "multi-group",
   props: {
-    groupType: {
-        type:[String, Number],
-        default:2
-    },
+    // groupType: {
+    //   type: [String, Number],
+    //   default: 2
+    // }
   },
   components: {
     storeView,
     chooseCouponListView
   },
   watch: {
-    groupType() {
-      console.log("groupType",this.groupType);
-      this.form.groupType = groupType;
-    }
+    // groupType() {
+    //   console.log("groupType", this.groupType);
+    //   this.form.groupType = groupType;
+    // }
   },
   data() {
     //验证正整数+正小数+0
@@ -496,58 +505,55 @@ export default {
         { value: 5, label: "达人" }
       ],
 
-      index: 0,
+      index: 1,
       prizeType: "",
       couponModalShow: false,
       showStore: true,
       form: {
         id: null,
-        groupType: "",
+        groupType: 2, //团类型不能为空
         name: "", //活动名称
         startTime: "", //活动开始时间
-        openDrawTime: "", //开奖时间
         openDrawTimeType: 1, //开奖时间配置1：固定时间、2：满多少人开奖
-        openDrawTimeNeedPlayers: "",
-
+        openDrawTime: "", //开奖时间
+        openDrawTimeNeedPlayers: "", //type:2 满x人开奖
+        winningRemarks: "", //领奖说明
         joinUserLevel: 1, //参加对象 用户等级
-        isFailureBackFee: 1,
-        groupPlayerCount: 0, //成团人数 不能为空
-        openGroupMinutes: 0, //开团有效分钟数 不能为空
-        userOpenGroupCount: 0, // 用户开团次数 不能为空
-        userJoinGroupCount: 0, //用户参团次数限制 不能为空
         maxOpenGroupCount: 0, //总开团数 不能为空
+        groupPlayerCount: 0, //成团人数 不能为空
+        userOpenGroupCount: 0, //每人开团次数 用户开团次数 不能为空
+        openGroupMinutes: 0, //开团有效时间 开团有效分钟数 不能为空
 
-        advertName: 0, //广告主名称
-        advertIntro: 0, //广告主 描述富文本
+        feeType: 1, //"费用类型1不能为空"
+        openGroupFee: "", //开团消耗U贝 "开团费用不能为空"
+
+        userJoinGroupCount: 1, //参团次数 用户参团次数限制 不能为空
+        joinGroupFee: 0, //参团消耗U贝  参团费用(U贝 ) 参团费用不能为空
+        isFailureBackFee: 1, //团失败u贝返还
+        drawRuleRemarks: "", //抽奖规则
+        //----广告主信息：
+        advertName: 0, //广告主 名称
+        advertIntro: 0, //广告主 介绍 描述富文本
         advertBannerImgUrl: 0, //广告主 banner图片url
         advertLogoImgUrl: 0, //广告主 logo图片url
-        couponId: null,
-        couponName: null,
-        backCode: null,
-        firstSite: null,
-        secondSite: null,
-        num: null,
-        showNum: null,
-        discounts: null,
-        startDate: null,
-        endDate: null,
+
         // 活动大奖
         bigPrize: {
+          type: 1,
+          prizeName: "", //实物名称 奖项名称
+          prizeNum: 0, //实物个数 奖品个数
           couponType: 2, //优惠券类型1：周边券、2：商超券/ 超市券
           giftImg: "", //奖品图片地址
-          prizeName: "", //奖项名称
-          prizeNum: 0, //奖品个数
-          prizeReferId: null, //优惠券奖品关联ID
-          type: 1
+          prizeReferId: null //优惠券奖品关联ID
         },
         // 阳光普照奖
         normalPrize: {
-          couponType: 2,
-          giftImg: "",
+          type: 1,
           prizeName: "",
           prizeNum: 0,
-          prizeReferId: null,
-          type: 1
+          couponType: 2,
+          giftImg: "",
+          prizeReferId: null
         },
         drawDailyShopList: [
           {
@@ -557,7 +563,7 @@ export default {
             countryCode: null, //areaId
             shopId: null,
             shopName: null,
-            index: Math.random()
+            index: 1
           }
         ]
       },
@@ -590,10 +596,12 @@ export default {
       this.compName = name;
     },
 
-    datetimechange(time) {
+    startTimeChange(time) {
+      this.form.startTime = time;
+    },
+    openDrawTimeChange(time) {
       this.form.openDrawTime = time;
     },
-
     selectedTrCallBack(couponId, couponName) {
       console.log("selectedTrCallBack:", couponId, couponName);
 
@@ -608,6 +616,7 @@ export default {
       this.couponModalShow = true;
     },
     handleAdd() {
+      this.index++;
       this.form.drawDailyShopList.push({
         id: Math.random(),
         provinceCode: null,
@@ -615,7 +624,8 @@ export default {
         countryCode: null,
         shopId: null,
         shopName: null,
-        index: Math.random()
+        index: this.index,
+        status: 1
       });
     },
     sendProvinceId(val, id) {

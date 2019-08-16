@@ -3,7 +3,7 @@
     <Row>
       <Col span="4">
         <FormItem
-          :prop="'shops['+index+'].provinceCode'"
+          :prop="'drawDailyShopList['+index+'].provinceCode'"
           :rules="{ required: true, message: '请选择省份' }"
         >
           <Select
