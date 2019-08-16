@@ -1,5 +1,6 @@
 <template>
   <div class="xxx">
+    <draw-edit></draw-edit>
     <div class="query-row">
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
@@ -40,7 +41,7 @@
           </FormItem>
         </Form>
         <Row type="flex" justify="start">
-          <Button type="primary" icon="md-add" @click="add">新增</Button>
+          <Button type="primary" icon="md-add" @click="addOrEdit('add')">新增</Button>
           <Button type="primary" class="marginLeft20" @click="changeComp('schedule-daily')">每日排期</Button>
           <Button type="primary" class="marginLeft20" @click="changeComp('bannerway')">抽奖团banner位</Button>
         </Row>
@@ -63,7 +64,7 @@
               type="primary"
               size="small"
               style="margin-right: 5px"
-              @click="updateBanner(row)"
+              @click="addOrEdit('edit',row)"
             >编辑</Button>
             <Button
               type="success"
@@ -155,6 +156,7 @@
         <Button @click="cancelHandleReset('formValidate')" style="margin-left: 8px">取消</Button>
       </div>
     </Modal>
+    <draw-edit :id="id" :action="action" @refresh="queryTableList"></draw-edit>
     <!-- 查看 开奖结果 -->
     <winning-list :modalWinningList="modalWinningList" :id="id"></winning-list>
   </div>
@@ -167,20 +169,26 @@ import {
   queryTotalPlayerList,
   queryTotalTicketList
 } from "@/api/sys";
-import columns, {
-  totalPlayerColumns,
-  totalTicketColumns,
-} from "./columns";
+import columns, { totalPlayerColumns, totalTicketColumns } from "./columns";
 
+import DrawEdit from "./DrawEdit";
 import WinningList from "./WinningList";
 
 export default {
   name: "draw-config",
   components: {
+    [DrawEdit.name]: DrawEdit,
     [WinningList.name]: WinningList
   },
   data() {
     return {
+      //------新增修改单人团/多人团--------------------
+      //新增 add、修改 edit
+      action: {
+        id: Math.random(),
+        type: "add"
+      },
+      //--------------------------
       id: "",
       modalTotalPlayer: false,
       modalTotalTicket: false,
@@ -275,8 +283,15 @@ export default {
     this.queryTableList();
   },
   methods: {
+    addOrEdit(type, data) {
+      this.action = {
+        id: Math.random(),
+        type,
+        data
+      };
+    },
     changeComp(compName) {
-      this.$emit("changeComp",compName);
+      this.$emit("changeComp", compName);
     },
     queryResult(row) {
       this.modalWinningList = Math.random();
