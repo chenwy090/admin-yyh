@@ -264,6 +264,7 @@ util.initRouter = function (vm) {
         if (menuData === null || menuData === "" || menuData === undefined) {
             return;
         }
+
         util.initRouterNode(constRoutes, menuData);
         util.initRouterNode(otherRoutes, otherRouter);
         // 添加主界面路由
