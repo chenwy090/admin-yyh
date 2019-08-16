@@ -192,7 +192,7 @@
       </template>
       <template v-else-if="form.normalPrize.type==2">
         <Row>
-          <Col span="8">
+          <Col span="10">
             <FormItem
               label="选择优惠券"
               prop="normalPrize.prizeName"
@@ -402,12 +402,33 @@
 
       <!-- 广告主 banner图片url advertBannerImgUrl   广告主 logo图片url advertLogoImgUrl -->
 
+      <Row>
+        <Col span="10">
+          <FormItem label="Banner图：">
+            <UploadImage :fileUploadType="'banner'" @uploadSuccess="bannerUploadSuccess"></UploadImage>
+          </FormItem>
+        </Col>
+        <Col span="10">
+          <FormItem label="Logo：">
+            <UploadImage :fileUploadType="'logo'" @uploadSuccess="logoUploadSuccess"></UploadImage>
+          </FormItem>
+        </Col>
+      </Row>
+
       <FormItem label=" ">
         <Button type="primary" @click="handleSubmit('form')">提交</Button>
         <Button style="margin-left: 8px" @click="handleReset('form')">重置</Button>
       </FormItem>
     </Form>
-    <Modal v-model="couponModalShow" title="选择优惠券" width="800px" @footer-hide="false">
+    <Modal
+      v-model="couponModalShow"
+      title="选择优惠券"
+      width="650"
+      :footer-hide="true"
+      :closable="false"
+      :mask-closable="false"
+      :styles="{top: '20px'}"
+    >
       <chooseCouponListView @seclectedTr-event="selectedTrCallBack"></chooseCouponListView>
     </Modal>
   </div>
@@ -418,13 +439,15 @@ import singleFormData from "./multiGroupFromData";
 import { postRequest, getRequest } from "@/libs/axios";
 import storeView from "./store";
 import chooseCouponListView from "./chooseCouponList";
+import UploadImage from "./UploadImage";
 
 // this.$emit("closeFormModal-event");
 export default {
   name: "multi-group",
   components: {
     storeView,
-    chooseCouponListView
+    chooseCouponListView,
+    UploadImage
   },
   mounted() {
     let { drawType, multiFormData, drawData } = this.$store.state;
@@ -500,7 +523,8 @@ export default {
         { value: 2, label: "新客" },
         { value: 3, label: "老客" },
         { value: 4, label: "红人" },
-        { value: 5, label: "达人" }
+        { value: 5, label: "达人" },
+        { value: 0, label: "全部" }
       ],
 
       index: 1,
@@ -552,6 +576,13 @@ export default {
     }
   },
   methods: {
+    // 广告主 banner图片url advertBannerImgUrl   广告主 logo图片url advertLogoImgUrl -->
+    bannerUploadSuccess(data) {
+      this.form.advertBannerImgUrl = data.imgUrl;
+    },
+    logoUploadSuccess(data) {
+      this.form.advertLogoImgUrl = data.imgUrl;
+    },
     changeComp(name) {
       this.compName = name;
     },
@@ -562,12 +593,15 @@ export default {
     openDrawTimeChange(time) {
       this.form.openDrawTime = time;
     },
-    selectedTrCallBack(couponId, couponName) {
-      console.log("selectedTrCallBack:", couponId, couponName);
+    selectedTrCallBack(data) {
+      console.log("selectedTrCallBack:", data);
+      if (typeof data != "boolean") {
+        // prizeType => bigPrize normalPrize
+        this.form[this.prizeType].couponType = data.couponType;
+        this.form[this.prizeType].prizeReferId = data.id;
+        this.form[this.prizeType].prizeName = data.name;
+      }
 
-      // prizeType => bigPrize normalPrize
-      this.form[this.prizeType].prizeReferId = couponId;
-      this.form[this.prizeType].prizeName = couponName;
       this.couponModalShow = false;
     },
 

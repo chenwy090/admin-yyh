@@ -154,6 +154,15 @@ export const detailColumns = [{
     key: "address",
     align: "center",
 }, {
+    title: "发放状态",
+    key: "statusName",
+    align: "center",
+}, {
+    title: "奖品发送失败备注",
+    key: "memo",
+    align: "center",
+    slot: 'logistics'
+}, {
     title: "物流信息",
     key: "logistics",
     align: "center",
