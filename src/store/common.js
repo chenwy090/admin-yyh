@@ -2,13 +2,16 @@
 
 const comm = {
     state: {
+      drawType:"",//add/edit add_cache 缓存
+      groupType:2,
+      multiFormData:{},
+      singleFormData:{},
+      drawData:{},
       singleModalData: []
     },
     mutations: {
       g_setData(iState, obj) {
-        console.log(obj);
         for (let key in obj) {
-          console.log(key);
           iState[key] = obj[key];
         }
       }

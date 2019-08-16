@@ -13,9 +13,9 @@
       <div v-if="modalShow" class="draw-content">
         <Form :label-width="30">
           <FormItem>
-            <RadioGroup v-model="groupType">
+            <RadioGroup v-model="groupType" @on-change="radioGroupChange">
               <Radio
-                v-for="item in groupTypeList"
+                v-for="item in groupTypeOptions"
                 :key="item.value"
                 :label="item.value"
               >{{ item.label }}</Radio>
@@ -35,6 +35,8 @@
   </div>
 </template>
 <script>
+import { postRequest, getRequest } from "@/libs/axios";
+import { mapState } from "vuex";
 import MultiGroup from "./MultiGroup";
 import SingleGroup from "./SingleGroup";
 export default {
@@ -56,29 +58,48 @@ export default {
   watch: {
     modalShow() {
       let groupTypeName = this.groupType == 2 ? "多人团" : "单人团";
-      this.title = `新增抽奖-${groupTypeName}`;
+      let title = this.action.type == "add" ? "新增抽奖" : "修改抽奖";
+      this.title = `${title}-${groupTypeName}`;
     },
     groupType(val, oldVal) {
       let groupTypeName = this.groupType == 2 ? "多人团" : "单人团";
-      this.title = `新增抽奖-${groupTypeName}`;
-      console.log(111, this.groupType);
+      let title = this.action.type == "add" ? "新增抽奖" : "修改抽奖";
+      this.title = `${title}-${groupTypeName}`;
+      this.$store.commit("g_setData", {
+        groupType: this.groupType
+      });
     },
     action: {
       handler(val, oldVal) {
-        this.modalShow = true;
         console.log("watch:action", this.action);
-        let { type = "add", data } = this.action;
+        this.modalShow = true;
+        let { type = "add", groupType, data } = this.action;
+        this.groupType = groupType;
         if (type == "add") {
           this.title = "新增抽奖";
         } else {
           //edit
           this.title = "修改抽奖";
+          this.$store.commit("g_setData", {
+            drawType: "edit",
+            groupType: this.groupType,
+            drawData: data
+          });
         }
       },
       deep: true
     }
   },
   computed: {
+    groupTypeOptions() {
+      return this.groupTypeList.filter(item => {
+        if (this.action.type == "add") {
+          return item;
+        } else {
+          return item.value == this.groupType;
+        }
+      });
+    },
     compName() {
       return this.groupType == 2 ? MultiGroup.name : SingleGroup.name;
     }
@@ -98,7 +119,8 @@ export default {
           value: 1,
           label: "单人团"
         }
-      ]
+      ],
+      data: {}
     };
   },
   created() {},
@@ -106,8 +128,15 @@ export default {
     changeComp(name) {
       this.compName = name;
     },
+
     closeFormModal() {
       this.modalShow = false;
+    },
+    radioGroupChange(groupType) {
+      this.$store.commit("g_setData", {
+        drawType: "add_cache",
+        groupType
+      });
     }
   }
 };

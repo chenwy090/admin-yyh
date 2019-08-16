@@ -22,7 +22,12 @@
       </Col>
       <Col span="4">
         <FormItem>
-          <Select v-model="cityCode" placeholder="选择市" @on-change="cityChange" :label-in-value="true">
+          <Select
+            v-model="cityCode"
+            placeholder="选择市"
+            @on-change="cityChange"
+            :label-in-value="true"
+          >
             <Option
               v-for="(item,index) in cityList"
               :key="index"
@@ -33,7 +38,12 @@
       </Col>
       <Col span="4">
         <FormItem>
-          <Select v-model="areaCode" placeholder="选择区" @on-change="areaChange" :label-in-value="true">
+          <Select
+            v-model="countryCode"
+            placeholder="选择区"
+            @on-change="areaChange"
+            :label-in-value="true"
+          >
             <Option
               v-for="(item,index) in areaList"
               :key="index"
@@ -86,7 +96,7 @@ export default {
       shopList: [],
       provinceCode: null,
       cityCode: null,
-      areaCode: null,
+      countryCode: null,
       shopId: null,
       provinceName: null,
       cityName: null,
@@ -109,7 +119,7 @@ export default {
       this.areaList = [];
       this.shopList = [];
       this.cityCode = null;
-      this.areaCode = null;
+      this.countryCode = null;
       this.shopId = null;
       this.cityName = null;
       this.districtName = null;
@@ -128,7 +138,7 @@ export default {
     cityChange(item, callback) {
       this.areaList = [];
       this.shopList = [];
-      this.areaCode = null;
+      this.countryCode = null;
       this.shopId = null;
       this.districtName = null;
       if (!item) {
@@ -159,11 +169,11 @@ export default {
       } else {
         this.districtName = item.label;
       }
-      this.$emit("sendAreaId", this.areaCode, this.shop.id);
+      this.$emit("sendAreaId", this.countryCode, this.shop.id);
       this.loadShops();
     },
-    shopIdChange(item) { 
-      console.log("shopIdChange",item)
+    shopIdChange(item) {
+      console.log("shopIdChange", item);
       if (!item) {
         this.$emit("sendShopId", this.shopId, null, this.shop.id);
       } else {
@@ -190,7 +200,6 @@ export default {
       this.$emit("handleRemove-event", this.shop.id);
     },
     init: function() {
-      
       postRequest("/system/area/province/list")
         .then(res => {
           if (res.code == 200) {
@@ -257,12 +266,18 @@ export default {
         });
     }
   },
-  mounted: function() {
+  mounted() {
     if (null != this.shop.provinceId && ("" != null) != this.shop.provinceId) {
       this.isInit = 1;
     }
     // this.init();(
     this.loadProvinceList();
+
+    console.log("mounted");
+    ["provinceCode", "cityCode", "countryCode", "shopId"].forEach(name => {
+      console.log(this.shop[name]);
+      this[name] = this.shop[name];
+    });
   }
 };
 </script>

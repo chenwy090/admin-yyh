@@ -316,7 +316,7 @@ export default {
             this.msgOk(texts[isTop] + "置顶成功！");
             this.startQuery();
           } else {
-            this.msgErr(texts[isTop] + "置顶失败，请稍后再试！");
+            this.msgErr(res.msg + "，请稍后再试！");
           }
         })
         .catch(err => {

@@ -8,7 +8,7 @@
           </Col>
         </Row>
       </FormItem>
-      <FormItem label="活动开始时间：" prop="startTime" :rules="{ required: false, message: '请选择日期' }">
+      <FormItem label="活动开始时间：" prop="startTime" :rules="{ required: true, message: '请选择日期' }">
         <Row>
           <Col span="10">
             <DatePicker
@@ -35,7 +35,7 @@
       </FormItem>
 
       <template v-if="form.openDrawTimeType==1">
-        <FormItem label="活动开始时间：" prop="openDrawTime" :rules="{ required: true, message: '请选择日期' }">
+        <FormItem label prop="openDrawTime" :rules="{ required: true, message: '请选择日期' }">
           <Row>
             <Col span="10">
               <DatePicker
@@ -52,13 +52,12 @@
         </FormItem>
       </template>
       <template v-else-if="form.openDrawTimeType==2">
-        <FormItem label="活动开始时间：" prop="openDrawTime" :rules="{ required: true, message: '请选择日期' }">
+        <FormItem label prop="openDrawTime" :rules="{ required: true, message: '请选择日期' }">
           <Row>
             <Col span="10">
               <TimePicker
                 style="width:90%"
                 :value="form.openDrawTime"
-                type="datetime"
                 format="HH:mm"
                 placeholder="请选择日期"
                 @on-change="openDrawTimeChange"
@@ -414,6 +413,8 @@
   </div>
 </template>
 <script>
+import multiFormData from "./multiGroupFromData";
+import singleFormData from "./multiGroupFromData";
 import { postRequest, getRequest } from "@/libs/axios";
 import storeView from "./store";
 import chooseCouponListView from "./chooseCouponList";
@@ -421,21 +422,18 @@ import chooseCouponListView from "./chooseCouponList";
 // this.$emit("closeFormModal-event");
 export default {
   name: "multi-group",
-  props: {
-    // groupType: {
-    //   type: [String, Number],
-    //   default: 2
-    // }
-  },
   components: {
     storeView,
     chooseCouponListView
   },
-  watch: {
-    // groupType() {
-    //   console.log("groupType", this.groupType);
-    //   this.form.groupType = groupType;
-    // }
+  mounted() {
+    let { drawType, multiFormData, drawData } = this.$store.state;
+    if (drawType == "add" || drawType == "add_cache") {
+      this.form = JSON.parse(JSON.stringify(multiFormData));
+    } else if (drawType == "edit") {
+      this.form = JSON.parse(JSON.stringify(drawData));
+    }
+    console.log("mountedmountedmounted", this.form);
   },
   data() {
     //验证正整数+正小数+0
@@ -509,64 +507,7 @@ export default {
       prizeType: "",
       couponModalShow: false,
       showStore: true,
-      form: {
-        id: null,
-        groupType: 2, //团类型不能为空
-        name: "", //活动名称
-        startTime: "", //活动开始时间
-        openDrawTimeType: 1, //开奖时间配置1：固定时间、2：满多少人开奖
-        openDrawTime: "", //开奖时间
-        openDrawTimeNeedPlayers: "", //type:2 满x人开奖
-        winningRemarks: "", //领奖说明
-        joinUserLevel: 1, //参加对象 用户等级
-        maxOpenGroupCount: 0, //总开团数 不能为空
-        groupPlayerCount: 0, //成团人数 不能为空
-        userOpenGroupCount: 0, //每人开团次数 用户开团次数 不能为空
-        openGroupMinutes: 0, //开团有效时间 开团有效分钟数 不能为空
-
-        feeType: 1, //"费用类型1不能为空"
-        openGroupFee: "", //开团消耗U贝 "开团费用不能为空"
-
-        userJoinGroupCount: 1, //参团次数 用户参团次数限制 不能为空
-        joinGroupFee: 0, //参团消耗U贝  参团费用(U贝 ) 参团费用不能为空
-        isFailureBackFee: 1, //团失败u贝返还
-        drawRuleRemarks: "", //抽奖规则
-        //----广告主信息：
-        advertName: 0, //广告主 名称
-        advertIntro: 0, //广告主 介绍 描述富文本
-        advertBannerImgUrl: 0, //广告主 banner图片url
-        advertLogoImgUrl: 0, //广告主 logo图片url
-
-        // 活动大奖
-        bigPrize: {
-          type: 1,
-          prizeName: "", //实物名称 奖项名称
-          prizeNum: 0, //实物个数 奖品个数
-          couponType: 2, //优惠券类型1：周边券、2：商超券/ 超市券
-          giftImg: "", //奖品图片地址
-          prizeReferId: null //优惠券奖品关联ID
-        },
-        // 阳光普照奖
-        normalPrize: {
-          type: 1,
-          prizeName: "",
-          prizeNum: 0,
-          couponType: 2,
-          giftImg: "",
-          prizeReferId: null
-        },
-        drawDailyShopList: [
-          {
-            id: Math.random(),
-            provinceCode: null,
-            cityCode: null,
-            countryCode: null, //areaId
-            shopId: null,
-            shopName: null,
-            index: 1
-          }
-        ]
-      },
+      form: JSON.parse(JSON.stringify(multiFormData)),
       formValite: {
         firstSite: [{ required: true, message: "请选择投放渠道" }],
         secondSite: [{ required: true, message: "请选择投放位置" }],
@@ -590,7 +531,26 @@ export default {
       }
     };
   },
-  created() {},
+
+  activated() {
+    let { drawType, multiFormData, drawData } = this.$store.state;
+    if (drawType == "add" || drawType == "add_cache") {
+      this.form = JSON.parse(JSON.stringify(multiFormData));
+    } else if (drawType == "edit") {
+      this.form = JSON.parse(JSON.stringify(drawData));
+    }
+  },
+  deactivated() {
+    let { drawType } = this.$store.state;
+
+    console.log("deactivated", drawType);
+    if (drawType == "add_cache") {
+      this.$store.commit("g_setData", {
+        //多人团
+        multiFormData: JSON.parse(JSON.stringify(this.form))
+      });
+    }
+  },
   methods: {
     changeComp(name) {
       this.compName = name;
@@ -677,7 +637,6 @@ export default {
     handleSubmit(name) {
       this.$refs[name].validate(valid => {
         console.log("validvalidvalidvalidvalidvalid", valid);
-
         if (valid) {
           //  /drawDaily/activity/add  新增
           const url = "/drawDaily/activity/add";
@@ -688,8 +647,6 @@ export default {
               this.$Message.error(res.msg);
             }
           });
-        } else {
-          //this.$Message.error("Fail!");
         }
       });
     },
