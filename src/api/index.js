@@ -10,6 +10,11 @@ import {
 
 //本地访问地址
 //export const baseUrl = "http://127.0.0.1:8088/zex-mgr";
+//测试环境
+// export const baseUrl = "http://47.103.117.70:8088/zex-mgr";
+export const baseUrl = "http://192.168.31.170:8088/zex-mgr";
+// export const baseUrl = "http://192.168.31.175:8088/zex-mgr";
+export const downloadUrl = "http://47.103.117.70:8088/zex-mgr";
 
 
 //  开发测试环境
@@ -29,6 +34,8 @@ export const downloadUrl = "http://47.103.117.70:8088/zex-mgr";
 //测试环境1
 
 // export const baseUrl = "http://127.0.0.1:8088/zex-mgr"
+// 开发环境
+// export const baseUrl = "http://192.168.31.175:8088/zex-mgr"
 
 // export const baseUrl = "http://smart1.sweetmartmarketing.com:7088/zex-mgr"
 
