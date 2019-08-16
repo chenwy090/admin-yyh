@@ -96,7 +96,11 @@
                     >修改</Button>
                 </template>
                 <template slot-scope="{ row }" slot="context">
-                    <div class="over-hidden" :title="row.context">{{row.context}}</div>
+                    <div class="over-hidden-box" >
+                        <div class="over-hidden" v-html="row.context">
+                        </div>
+                        <!--<div class="over-hidden-hover" v-html="row.context"></div>-->
+                    </div>
                 </template>
             </Table>
         </div>
@@ -364,9 +368,7 @@
                 :mask-closable="false" footer-hide>
             <Form :model="modal3" label-position="right" ref="modalErf3" :rules="ruleValidate3">
                 <Row>
-                    <Form-item prop="context">
-                        <i-input v-model="modal3.context" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入..."></i-input>
-                    </Form-item>
+                    <editor-bar v-model="modal3.context" :content="modal3.context" @on-change="change"></editor-bar>
                 </Row>
                 <FormItem>
                     <Button style="float: right;margin-left: 20px" type="primary" @click="ok3('modalErf3')">确认</Button>
@@ -380,8 +382,10 @@
 <script>
     import { postRequest, getRequest } from "@/libs/axios";
     import { uploadOperationImage2AliOssURl } from "@/api/index";
+    import EditorBar from '@/components/EditorBar'
     export default {
         name: "reward_deploy",
+        components:{EditorBar},
         data(){
             return{
                 userToken: {}, //用户token
@@ -563,6 +567,9 @@
             }
         },
         methods: {
+            change(e){
+                this.modal3.context = e;
+            },
             handleView (name) {
                 this.imgName = name;
                 this.visible = true;
@@ -819,8 +826,25 @@
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;
         overflow: hidden;
-        height: 36px;
+        height: 46px;
     }
+    /*.over-hidden-hover{*/
+        /*display: none;*/
+        /*padding: 10px 14px;*/
+        /*border: 1px solid #ddd;*/
+        /*border-radius: 5px;*/
+        /*position: absolute;*/
+        /*top: -50px;*/
+        /*left: -30px;*/
+
+    /*}*/
+    .over-hidden-box{
+        /*position: relative;*/
+        /*overflow: visible;*/
+    }
+    /*.over-hidden-box:hover .over-hidden-hover{*/
+        /*display: block;*/
+    /*}*/
     .table-img{
         width: 74px;
         height: 43px;
