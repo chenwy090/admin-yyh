@@ -24,13 +24,13 @@
                         <div v-if="row.code == '7'">
                             {{row.value}}个
                         </div>
-                        <div v-else-if="row.code == '8'||row.code == '16'||row.code == '18'||row.code == '19'||row.code == '21'">
+                        <div v-else-if="row.code == '8'||row.code == '16'||row.code == '18'||row.code == '19'||row.code == '21'||row.code == '26'">
                             {{row.value}}元
                         </div>
                         <div v-else-if="row.code == '9'">
                             {{row.value}}U贝=1元
                         </div>
-                        <div v-else-if="row.code == '10'">
+                        <div v-else-if="row.code == '10'||row.code=='27'">
                             {{row.value}}次
                         </div>
                         <div v-else-if="row.code == '11'||row.code == '12'||row.code == '13'||row.code == '14'">
@@ -163,6 +163,7 @@
                                 :min="0"
                                 :step="1"
                                 type="text"
+                                :precision="0"
                                 v-model="modal1.value"
                                 placeholder="请输入"
                                 style="width: 100%"
@@ -173,7 +174,7 @@
                     <span class="ivu-form-item-label">个</span>
                     </Col>
                 </Row>
-                <Row v-else-if="modal1.code == '8'||modal1.code == '15'||modal1.code == '16'||modal1.code == '18'||modal1.code == '19'||modal1.code == '21'">
+                <Row v-else-if="modal1.code == '8'||modal1.code == '15'||modal1.code == '16'||modal1.code == '18'||modal1.code == '19'||modal1.code == '21'||modal1.code == '26'">
                     <Col span="18">
                     <FormItem label="金额">
                         <InputNumber
@@ -181,6 +182,8 @@
                                 :step="1"
                                 type="text"
                                 v-model="modal1.value"
+                                :precision="2"
+                                :active-change="true"
                                 placeholder="请输入"
                                 style="width: 100%"
                         ></InputNumber>
@@ -197,6 +200,7 @@
                                 :min="0"
                                 :step="1"
                                 type="text"
+                                :precision="0"
                                 v-model="modal1.value"
                                 placeholder="请输入"
                                 style="width: 100%"
@@ -207,13 +211,14 @@
                     <span class="ivu-form-item-label">U贝=1元</span>
                     </Col>
                 </Row>
-                <Row v-else-if="modal1.code == '10'">
+                <Row v-else-if="modal1.code == '10'||modal1.code == '27'">
                     <Col span="18">
                     <FormItem label="次数">
                         <InputNumber
                                 :min="0"
                                 :step="1"
                                 type="text"
+                                :precision="0"
                                 v-model="modal1.value"
                                 placeholder="请输入"
                                 style="width: 100%"
@@ -231,6 +236,7 @@
                                 :min="0"
                                 :step="1"
                                 type="text"
+                                :precision="0"
                                 v-model="modal1.value1"
                                 placeholder="请输入"
                                 style="width: 100%"
@@ -246,6 +252,7 @@
                                 :min="0"
                                 :step="1"
                                 type="text"
+                                :precision="0"
                                 v-model="modal1.value2"
                                 placeholder="请输入"
                                 style="width: 100%"
@@ -261,6 +268,7 @@
                                 :min="0"
                                 :step="1"
                                 type="text"
+                                :precision=0
                                 v-model="modal1.value3"
                                 placeholder="请输入"
                                 style="width: 100%"
@@ -278,6 +286,7 @@
                                 :min="0"
                                 :step="1"
                                 type="text"
+                                :precision="0"
                                 v-model="modal1.value"
                                 placeholder="请输入"
                                 style="width: 100%"
@@ -294,8 +303,9 @@
                         <InputNumber
                                 :min="0"
                                 :max="100"
-                                :step="0.1"
+                                :step="1"
                                 type="text"
+                                :precision="0"
                                 v-model="modal1.value"
                                 placeholder="请输入"
                                 style="width: 100%"
@@ -313,6 +323,7 @@
                                 :min="0"
                                 :step="1"
                                 type="text"
+                                :precision="0"
                                 v-model="modal1.value"
                                 placeholder="请输入"
                                 style="width: 100%"
@@ -345,6 +356,7 @@
                                 :min="0"
                                 :step="1"
                                 type="text"
+                                :precision="0"
                                 v-model="modal2.verifyQuantityMin"
                                 placeholder="请输入"
                                 style="width: 100%"
@@ -380,6 +392,7 @@
 </template>
 
 <script>
+
     import { postRequest, getRequest } from "@/libs/axios";
     import { uploadOperationImage2AliOssURl } from "@/api/index";
     import EditorBar from '@/components/EditorBar'
@@ -567,6 +580,15 @@
             }
         },
         methods: {
+            formatter(value){
+                if(String(value).split('.').length>2){
+                    value = String(value).split('.')[0]+'.'+String(value).split('.')[1];
+                };
+                if(String(value).split('.').length==2&&String(value).split('.')[1].length>2){
+                    value = String(value).split('.')[0]+'.'+String(value).split('.')[1].slice(0,2);
+                }
+                return Number(value)
+            },
             change(e){
                 this.modal3.context = e;
             },
@@ -613,7 +635,6 @@
                 this.modal1.id = item.id;
                 this.modal1.type = item.type;
                 this.modal1.isopen = true;
-                debugger
                 if(item.type!='3'){
                     this.modal1.value = Number(item.value)||0;
                     if(item.code == '11'||item.code == '12'||item.code == '13'||item.code == '14'){
