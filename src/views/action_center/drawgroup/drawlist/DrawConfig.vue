@@ -1,6 +1,6 @@
 <template>
   <div class="xxx">
-    <draw-edit></draw-edit>
+    <component ref="modalDetail" :is="'ModalDetail'"></component>
     <div class="query-row">
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
@@ -173,11 +173,16 @@ import columns, { totalPlayerColumns, totalTicketColumns } from "./columns";
 
 import DrawEdit from "./DrawEdit";
 import WinningList from "./WinningList";
+import ModalDetail from "../Modal_detail";
 
 export default {
   name: "draw-config",
   components: {
+<<<<<<< HEAD
     [DrawEdit.name]: DrawEdit,
+=======
+    ModalDetail: ModalDetail,
+>>>>>>> feature/1.5.4-modal
     [WinningList.name]: WinningList
   },
   data() {
@@ -283,12 +288,18 @@ export default {
     this.queryTableList();
   },
   methods: {
+<<<<<<< HEAD
     addOrEdit(type, data) {
       this.action = {
         id: Math.random(),
         type,
         data
       };
+=======
+    // 查看详情
+    checkDetailsFn(row) {
+      this.$refs.modalDetail.show(row);
+>>>>>>> feature/1.5.4-modal
     },
     changeComp(compName) {
       this.$emit("changeComp", compName);
