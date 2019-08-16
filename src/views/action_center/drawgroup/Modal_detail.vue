@@ -128,15 +128,17 @@ export default {
     // 此方法给父组件调用的，勿动！！！
     async show(row) {
       let id = row.id;
+      let host = baseUrl;
       if (process.env.NODE_ENV === "development") {
         id = 14;
+        host = "http://192.168.31.170:8088/zex-mgr";
       }
       this.$Spin.show();
       setTimeout(_ => {
         this.$Spin.hide();
       }, 10000);
       await postJson(
-        "http://192.168.31.170:8088/zex-mgr" + "/drawDaily/activity/selectById",
+        host + "/drawDaily/activity/selectById",
         { id }
       )
         .then(res => {

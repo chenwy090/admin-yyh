@@ -178,11 +178,7 @@ import ModalDetail from "../Modal_detail";
 export default {
   name: "draw-config",
   components: {
-<<<<<<< HEAD
-    [DrawEdit.name]: DrawEdit,
-=======
     ModalDetail: ModalDetail,
->>>>>>> feature/1.5.4-modal
     [WinningList.name]: WinningList
   },
   data() {
@@ -288,18 +284,16 @@ export default {
     this.queryTableList();
   },
   methods: {
-<<<<<<< HEAD
     addOrEdit(type, data) {
       this.action = {
         id: Math.random(),
         type,
         data
       };
-=======
+    },
     // 查看详情
     checkDetailsFn(row) {
       this.$refs.modalDetail.show(row);
->>>>>>> feature/1.5.4-modal
     },
     changeComp(compName) {
       this.$emit("changeComp", compName);

@@ -1,5 +1,6 @@
 module.exports = {
-  publicPath: '/zex-mgr',
+  // publicPath: '/zex-mgr',
+  baseUrl: '/zex-mgr',
   outputDir: 'zex-mgr', // 输出文件目录
   devServer: {
     port: 9999, // 端口号
