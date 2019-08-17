@@ -120,19 +120,23 @@ export default {
         return ''
       }
       let e = val[0];
+      let shopName = '';
+      if (typeof e.shopName === 'string') {
+        shopName = ' ' + e.shopName;
+      }
       return (
         e.provinceName + ' ' + this.handleNone(e.cityName) +
-        ' ' + this.handleNone(e.countryName) + ' ' + e.shopName
+        ' ' + this.handleNone(e.countryName) + shopName
       );
     },
     // 此方法给父组件调用的，勿动！！！
     async show(row) {
       let id = row.id;
       let host = baseUrl;
-      if (process.env.NODE_ENV === "development") {
-        id = 14;
-        host = "http://192.168.31.170:8088/zex-mgr";
-      }
+      // if (process.env.NODE_ENV === "development") {
+        // id = 14;
+        // host = "http://192.168.31.170:8088/zex-mgr";
+      // }
       this.$Spin.show();
       setTimeout(_ => {
         this.$Spin.hide();
