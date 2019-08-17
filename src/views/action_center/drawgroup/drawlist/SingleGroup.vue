@@ -17,6 +17,7 @@
               type="datetime"
               format="yyyy-MM-dd HH:mm"
               placeholder="请选择日期"
+              :options="m_dateOptions"
               @on-change="startTimeChange"
               class="date-range"
             ></DatePicker>
@@ -25,7 +26,7 @@
       </FormItem>
       <!-- //开奖时间配置1：固定时间、2：满多少人开奖 -->
       <FormItem label="开奖时间：">
-        <RadioGroup v-model="form.openDrawTimeType">
+        <RadioGroup v-model="form.openDrawTimeType" @on-change="form.openDrawTime = ''">
           <Radio
             v-for="item in openDrawTimeTypeList"
             :key="item.value"
@@ -44,6 +45,7 @@
                 type="datetime"
                 format="yyyy-MM-dd HH:mm"
                 placeholder="请选择活动开奖时间"
+                :options="m_dateOptions"
                 @on-change="openDrawTimeChange"
                 class="date-range"
               ></DatePicker>
@@ -55,14 +57,16 @@
         <FormItem label prop="openDrawTime" :rules="{ required: true, message: '请选择活动开奖时间' }">
           <Row>
             <Col span="10">
-              <TimePicker
+              <DatePicker
                 style="width:90%"
                 :value="form.openDrawTime"
-                format="HH:mm"
+                type="datetime"
+                format="yyyy-MM-dd HH:mm"
                 placeholder="请选择活动开奖时间"
+                :options="m_dateOptions"
                 @on-change="openDrawTimeChange"
                 class="date-range"
-              ></TimePicker>
+              ></DatePicker>
             </Col>
           </Row>
         </FormItem>
@@ -134,6 +138,7 @@
       <template v-else-if="form.bigPrize.type==2">
         <Row>
           <Col span="10">
+          <!-- 这里需要跟后端对一下 -->
             <FormItem
               label="选择优惠券"
               prop="bigPrize.prizeName"
@@ -339,6 +344,9 @@ import storeView from "./store";
 import chooseCouponListView from "./chooseCouponList";
 import UploadImage from "./UploadImage";
 
+import comm from "@/mixins/common";
+
+
 // this.$emit("closeFormModal-event");
 export default {
   name: "single-group",
@@ -347,6 +355,7 @@ export default {
     chooseCouponListView,
     UploadImage
   },
+  mixins: [comm],
   data() {
     //验证正整数+正小数+0
     const checkIsPositive = (rule, value, callback) => {

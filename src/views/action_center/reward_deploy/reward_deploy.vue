@@ -177,16 +177,20 @@
                 <Row v-else-if="modal1.code == '8'||modal1.code == '18'||modal1.code == '19'||modal1.code == '21'||modal1.code == '26'">
                     <Col span="18">
                     <FormItem label="金额">
-                        <InputNumber
-                                :min="0"
-                                :step="1"
-                                type="text"
-                                v-model="modal1.value"
-                                :precision="2"
-                                :active-change="true"
-                                placeholder="请输入"
-                                style="width: 100%"
-                        ></InputNumber>
+                        <!--<InputNumber-->
+                                <!--:min="0"-->
+                                <!--:step="1"-->
+                                <!--type="text"-->
+                                <!--v-model="modal1.value"-->
+                                <!--:precision="2"-->
+                                <!--:active-change="true"-->
+                                <!--placeholder="请输入"-->
+                                <!--style="width: 100%"-->
+                        <!--&gt;</InputNumber>-->
+                        <div class="ivu-input-number ivu-input-number-default" style="width: 100%">
+                            <input class="ivu-input-number-input" min="0" v-model="modal1.value"
+                                   v-numformatter = 'modal1.value'/>
+                        </div>
                     </FormItem>
                     </Col>
                     <Col span="4" offset="1">
@@ -580,15 +584,29 @@
             }
         },
         methods: {
-            formatter(value){
-                if(String(value).split('.').length>2){
-                    value = String(value).split('.')[0]+'.'+String(value).split('.')[1];
-                };
-                if(String(value).split('.').length==2&&String(value).split('.')[1].length>2){
-                    value = String(value).split('.')[0]+'.'+String(value).split('.')[1].slice(0,2);
+            inputNum(e){
+                if (!String.fromCharCode(e.keyCode).match(/[0-9\.]/)) {
+                    return false;
                 }
-                return Number(value)
             },
+            formatter(e){
+                // if ( !this.isNumber(e.keyCode) )  return false
+                // let value = e.target.value;
+                // if (value.indexOf('.')&&e.keyCode==190) return false
+                // if (value.split('.')[1]&&value.split('.')[1].length>=2) return false
+                console.log(e);
+                e.target.value = e.target.value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3'); //只能输入两个小数
+            },
+            // 仅能输入数字
+            isNumber(keyCode) {
+                 // 数字
+                if (keyCode >= 48 && keyCode <= 57 ) return true
+                 // 小数字键盘
+                if (keyCode == 190) return true
+                    // Backspace键
+                if (keyCode == 8) return true
+                    return false
+                },
             change(e){
                 this.modal3.context = e;
             },

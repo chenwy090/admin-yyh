@@ -173,7 +173,7 @@ export default {
       this.loadShops();
     },
     shopIdChange(item) {
-      console.log("shopIdChange", item);
+      // console.log("shopIdChange", item);
       if (!item) {
         this.$emit("sendShopId", this.shopId, null, this.shop.id);
       } else {
@@ -272,8 +272,6 @@ export default {
     }
     // this.init();(
     this.loadProvinceList();
-
-    console.log("mounted");
     ["provinceCode", "cityCode", "countryCode", "shopId"].forEach(name => {
       // console.log(this.shop[name]);
       this[name] = this.shop[name];
