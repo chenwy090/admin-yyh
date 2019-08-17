@@ -17,6 +17,7 @@
               type="datetime"
               format="yyyy-MM-dd HH:mm"
               placeholder="请选择活动开始时间"
+              :options="m_dateOptions"
               @on-change="startTimeChange"
               class="date-range"
             ></DatePicker>
@@ -25,7 +26,7 @@
       </FormItem>
       <!-- //开奖时间配置1：固定时间、2：满多少人开奖 -->
       <FormItem label="开奖时间：">
-        <RadioGroup v-model="form.openDrawTimeType">
+        <RadioGroup v-model="form.openDrawTimeType" @on-change="form.openDrawTime = ''">
           <Radio
             v-for="item in openDrawTimeTypeList"
             :key="item.value"
@@ -44,6 +45,7 @@
                 type="datetime"
                 format="yyyy-MM-dd HH:mm"
                 placeholder="请选择活动开奖时间"
+                :options="m_dateOptions"
                 @on-change="openDrawTimeChange"
                 class="date-range"
               ></DatePicker>
@@ -70,6 +72,7 @@
                 type="datetime"
                 format="yyyy-MM-dd HH:mm"
                 placeholder="请选择活动开奖时间"
+                :options="m_dateOptions"
                 @on-change="openDrawTimeChange"
                 class="date-range"
               ></DatePicker>
@@ -452,6 +455,8 @@ import storeView from "./store";
 import chooseCouponListView from "./chooseCouponList";
 import UploadImage from "./UploadImage";
 
+import comm from "@/mixins/common";
+
 // this.$emit("closeFormModal-event");
 export default {
   name: "multi-group",
@@ -460,6 +465,7 @@ export default {
     chooseCouponListView,
     UploadImage
   },
+  mixins: [comm],
   mounted() {
     let { drawType, multiFormData, drawData } = this.$store.state;
     if (drawType == "add" || drawType == "add_cache") {
