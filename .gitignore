@@ -1,5 +1,6 @@
 
 # Numerous always-ignore extensions
+.zex-mgr
 *.bak
 *.patch
 *.diff

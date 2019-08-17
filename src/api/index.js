@@ -31,8 +31,8 @@ export const downloadUrl = "http://47.103.117.70:8088/zex-mgr";
 // export const baseUrl = "http://192.168.31.7:8088/zex-mgr";//杨伟涛
 // export const downloadUrl = "http://47.103.117.70:8088/zex-mgr";
 
-export const baseUrl = "http://47.103.117.70:8088/zex-mgr";
-export const downloadUrl = "http://47.103.117.70:8088/zex-mgr";
+// export const baseUrl = "http://47.103.117.70:8088/zex-mgr";
+// export const downloadUrl = "http://47.103.117.70:8088/zex-mgr";
 
 
 //测试环境1
