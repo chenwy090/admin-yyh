@@ -24,7 +24,7 @@
                         <div v-if="row.code == '7'">
                             {{row.value}}个
                         </div>
-                        <div v-else-if="row.code == '8'||row.code == '16'||row.code == '18'||row.code == '19'||row.code == '21'||row.code == '26'">
+                        <div v-else-if="row.code == '8'||row.code == '18'||row.code == '19'||row.code == '21'||row.code == '26'">
                             {{row.value}}元
                         </div>
                         <div v-else-if="row.code == '9'">
@@ -174,7 +174,7 @@
                     <span class="ivu-form-item-label">个</span>
                     </Col>
                 </Row>
-                <Row v-else-if="modal1.code == '8'||modal1.code == '15'||modal1.code == '16'||modal1.code == '18'||modal1.code == '19'||modal1.code == '21'||modal1.code == '26'">
+                <Row v-else-if="modal1.code == '8'||modal1.code == '18'||modal1.code == '19'||modal1.code == '21'||modal1.code == '26'">
                     <Col span="18">
                     <FormItem label="金额">
                         <InputNumber
