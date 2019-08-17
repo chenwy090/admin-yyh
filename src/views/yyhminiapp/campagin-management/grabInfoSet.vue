@@ -56,7 +56,7 @@
               ></InputNumber>
                    <span style="color:red"> &nbsp;&nbsp;人</span>
                  </Tooltip>
-            
+
             </FormItem>
 
             <FormItem label="拼团限时(分钟)" required>
@@ -72,7 +72,7 @@
                    <span style="color:red"> &nbsp;&nbsp;分钟</span>
               </Tooltip>
 
-              
+
             </FormItem>
 
             <FormItem label="每人每天参团限制次数" required>
@@ -86,7 +86,7 @@
               ></InputNumber>
                     <span style="color:red">&nbsp;&nbsp;次</span>
                 </Tooltip>
-           
+
             </FormItem>
 
             <!-- <FormItem label="兑换要优惠一次所需积分" required>
@@ -125,7 +125,7 @@
                 ></InputNumber>
                   <span style="color:red">&nbsp;&nbsp; %</span>
               </Tooltip>
-            
+
             </FormItem>
 
             <FormItem label="助力得全场满减现金券面额上限百分比" required>
@@ -140,7 +140,7 @@
                 ></InputNumber>
                  <span style="color:red">&nbsp;&nbsp; %</span>
               </Tooltip>
-             
+
             </FormItem>
 
             <!-- <FormItem label="助力者用券后给分享者返佣百分比" required>
@@ -168,7 +168,7 @@
                 ></InputNumber>
                  <span style="color:red">&nbsp;&nbsp; %</span>
               </Tooltip>
-             
+
             </FormItem>
           </Form>
         </Card>
@@ -341,7 +341,9 @@ export default {
     };
   },
 
-  created: function() {},
+  created: function() {
+      this.init();
+  },
   methods: {
     init() {
       this.updateTableList();
@@ -663,7 +665,6 @@ export default {
     }
   },
   mounted() {
-    this.init();
   }
 };
 </script>

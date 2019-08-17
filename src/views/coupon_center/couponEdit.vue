@@ -4,15 +4,15 @@
     <div
             style="width: 90%;background: #fff;box-shadow:0 6px 6px -4px rgba(0,0,0,.2);z-index: 5;position:fixed; padding:14px">
       <Alert show-icon v-if="couponEdit_info.merchantId">
-              <span> 
+              <span>
                 商户编号 :
                 <span style="color:red">{{couponEdit_info.merchantId}}</span>
 
-            </span> 
-            <span  v-if="edit_info.templateId" style="margin-left: 20px"> 
+            </span>
+            <span  v-if="edit_info.templateId" style="margin-left: 20px">
              优惠券模板ID :
                 <span style="color:red">{{edit_info.templateId}}</span>
-        </span> 
+        </span>
                 <span slot="desc"></span>
               </Alert>
     </div>
@@ -49,7 +49,7 @@
               </Table>
           </Row>
 
-   <Row class="box"> 
+   <Row class="box">
         <Col span="3" class="left-text"><span style="color:red">*</span>标题</Col>
         <Col span="16">
             <Tooltip trigger="focus" title="提醒" content="最多10个汉字" placement="right">
@@ -66,7 +66,7 @@
       </Row>
 
 
-  <!-- <Row class="box"> 
+  <!-- <Row class="box">
         <Col span="3" class="left-text"><span style="color:red">*</span>优惠副标题</Col>
         <Col span="16">
             <Input
@@ -79,7 +79,7 @@
         </Col>
         </Row> -->
 
-  <Row class="box"> 
+  <Row class="box">
         <Col span="3" class="left-text"><span style="color:red">*</span>优惠类型</Col>
         <Col span="16">
             <Select
@@ -97,7 +97,7 @@
         </Col>
       </Row>
 
-  <Row class="box" v-if="edit_info.couponType==1"> 
+  <Row class="box" v-if="edit_info.couponType==1">
         <Col span="3" class="left-text"><span style="color:red">*</span>立减</Col>
         <Col span="16">
             <Tooltip trigger="focus" title="提醒" content="最多为两位小数点,最大为999999.99" placement="right">
@@ -113,8 +113,8 @@
               </Tooltip>
         </Col>
       </Row>
-             
-  <Row class="box" v-if="edit_info.couponType==2"> 
+
+  <Row class="box" v-if="edit_info.couponType==2">
         <Col span="3" class="left-text"><span style="color:red">*</span>折扣</Col>
         <Col span="16">
             <Tooltip trigger="focus" title="提醒" content="最多为一位小数点" placement="right">
@@ -126,7 +126,7 @@
                     style="width:300px"
                     :max="10.0"
 
-                    
+
                   ></InputNumber>
                     <span style="color:red">&nbsp;&nbsp; 折</span>
               </Tooltip>
@@ -217,7 +217,7 @@
               </Col>
           </Row>
 
-       <Row class="box" > 
+       <Row class="box" >
         <Col span="3" class="left-text"><span style="color:red">*</span>活动开始时间</Col>
         <Col span="16">
                <DatePicker
@@ -230,7 +230,7 @@
         </Col>
       </Row>
 
-   <Row class="box" > 
+   <Row class="box" >
         <Col span="3" class="left-text"><span style="color:red">*</span>活动结束时间</Col>
         <Col span="16">
              <DatePicker
@@ -242,8 +242,8 @@
                 ></DatePicker>
         </Col>
       </Row>
-         
-   <Row class="box" > 
+
+   <Row class="box" >
         <Col span="3" class="left-text"><span style="color:red">*</span>用券有效期类型</Col>
         <Col span="16">
               <Select
@@ -256,9 +256,9 @@
               </Select>
         </Col>
       </Row>
-           
 
-        <Row class="box" v-if="edit_info.useDateType =='1'" > 
+
+        <Row class="box" v-if="edit_info.useDateType =='1'" >
         <Col span="3" class="left-text"><span style="color:red">*</span>用券开始时间</Col>
         <Col span="16">
                 <DatePicker
@@ -269,9 +269,9 @@
                       style="width: 300px"
                     ></DatePicker>
         </Col>
-      </Row>  
+      </Row>
 
-      <Row class="box" v-if="edit_info.useDateType =='1'" > 
+      <Row class="box" v-if="edit_info.useDateType =='1'" >
         <Col span="3" class="left-text"><span style="color:red">*</span>用券结束时间</Col>
         <Col span="16">
                 <DatePicker
@@ -282,10 +282,10 @@
                       v-model="edit_info.useEndDate"
                     ></DatePicker>
         </Col>
-      </Row>  
-       
+      </Row>
 
-      <Row class="box" v-if="edit_info.useDateType =='2'" > 
+
+      <Row class="box" v-if="edit_info.useDateType =='2'" >
         <Col span="3" class="left-text"><span style="color:red">*</span>加X天开始生效</Col>
         <Col span="16">
                 <Input
@@ -298,11 +298,11 @@
                       />
                  <span style="color:red">&nbsp;&nbsp; 天</span>
         </Col>
-      </Row>             
+      </Row>
 
-      
 
-      <Row class="box" v-if="edit_info.useDateType =='2'" > 
+
+      <Row class="box" v-if="edit_info.useDateType =='2'" >
         <Col span="3" class="left-text"><span style="color:red">*</span>加Y天结束用券</Col>
         <Col span="16">
                <Input
@@ -314,8 +314,8 @@
                           />
                        <span style="color:red">&nbsp;&nbsp; 天</span>
         </Col>
-      </Row>    
-            
+      </Row>
+
 
 
 
@@ -335,7 +335,7 @@
                   <br>
                   <div  class="left-text">选择优惠券缩略图 (不大于1M,JPG/PNG/JPEG/BMP）</div>
                </Col>
-             
+
           </Row>
 
 
@@ -355,7 +355,7 @@
                   <br>
                   <div  class="left-text">选择优惠券缩略图 (不大于1M,JPG/PNG/JPEG/BMP）</div>
                </Col>
-             
+
           </Row>
           <Row class="box"  >
               <Col span="3" class="left-text"><span style="color:red">*</span>库存数量</Col>
@@ -374,7 +374,7 @@
                   </Tooltip>
               </Col>
           </Row>
-       <Row class="box"  > 
+       <Row class="box"  >
         <Col span="3" class="left-text"><span style="color:red">*</span>用户限领数量</Col>
         <Col span="16">
               <Tooltip trigger="focus" title="提醒" content="发放总量和数量不限制" placement="right">
@@ -387,9 +387,9 @@
                                 :step="1"
                             :max ="999999999"
                               ></InputNumber>
-                            
+
                                <span style="color:red">&nbsp;&nbsp; 张</span>
-                                 </Tooltip> 
+                                 </Tooltip>
         </Col>
       </Row>
           <Row class="box"  >
@@ -421,7 +421,6 @@
               </Col>
           </Row>
 
-
           <!--<Row class="box"  required v-if="camp_pageStatus =='edit' " >
         <Col span="3" class="left-text"><span style="color:red">*</span>顺序排序</Col>
         <Col span="16">
@@ -432,10 +431,10 @@
                 style="width:300px"
                 placeholder="请输入顺序排序"
                 @on-change="statusCheckChange"
-                
+
                     :maxlength="9"
               />
-                </Tooltip> 
+                </Tooltip>
         </Col>
       </Row>-->
             <Row style="{'margin-top':'54px'}">
@@ -447,8 +446,29 @@
                 style="width:300px;"
                 :disabled="isCheckDisabled"
               >保存</Button>
-             
+
             </Row>
+          <Row style="border-top: 1px solid #666;margin-top: 20px" v-if="formShareModal.shareData.length">
+              <Form ref="shareModal" :model="formShareModal" :label-width="100" style="margin-top:20px">
+                  <FormItem v-for="item in formShareModal.shareData" :key="item.id" :label="item.name" required>
+                      <InputNumber
+                              :min="item.name=='倍数'?1:0"
+                              :step="1"
+                              type="text"
+                              v-model="item.value"
+                              placeholder="请输入"
+                              style="width:320px"
+                      ></InputNumber>
+                      <span v-if="item.name!= '倍数'">&nbsp;&nbsp;U贝</span>
+                      <span v-if="item.name== '倍数'">&nbsp;&nbsp;倍</span>
+                  </FormItem>
+                  <FormItem>
+                      <!--<Button style="margin-left: 20px;float: right;" @click="shareDisplay = false">关闭</Button>-->
+                      <Button type="primary" @click="shareSave('shareModal')">保存</Button>
+
+                  </FormItem>
+              </Form>
+          </Row>
      </Row>
         </Card>
          <Modal
@@ -533,7 +553,7 @@
 
 
  </div>
- 
+
 </template>
 
 <script>
@@ -559,6 +579,9 @@ export default {
   },
   data() {
     return {
+        formShareModal:{
+            shareData:[]
+        },
       imgSrc1: null,
       imgSrc2: null,
       receiveRuleSetPage: false,
@@ -688,8 +711,62 @@ export default {
 
   created: function() {
     this.userToken = { jwttoken: localStorage.getItem("jwttoken") };
+    this.init();
   },
   methods: {
+      share(row){
+          this.formShareModal.shareData = [];
+          postRequest('/commonConfig/queryConfigByCode',{
+                  code:row.templateId
+              }
+          ).then(res => {
+              if (res.code == 200) {
+                  if(res.data||res.data.noOverallCommonConfigList){
+                      this.formShareModal.shareData = res.data.noOverallCommonConfigList||[];
+                      this.formShareModal.shareData.forEach(function(v){
+                          v.value = Number(v.value)||0;
+                      })
+                      this.shareDisplay = true;
+                  }else{
+                      this.msgErr('未查询到数据');
+                  }
+              } else {
+                  this.msgErr(res.msg);
+              }
+          });
+      },
+      shareSave(name){
+          let canSave = true;
+          let msg = ''
+          this.formShareModal.shareData.forEach(function(v){
+              v.createTime = null;
+              v.updateTime = null;
+              v.updateBy = null;
+              if(!v.value&&v.value!==0){
+                  canSave = false
+                  msg='请输入完整表单'
+              }
+              if(v.name=='倍数'&&v.value<1){
+                  canSave = false
+                  msg='请输入大于等于1的倍数'
+              }
+          })
+          if(!canSave){
+              this.msgErr('请输入完整表单');
+              return;
+          }
+          postRequest(
+              "/commonConfig/updateConfigBatch",
+              {"noOverallCommonConfigList":this.formShareModal.shareData}
+          ).then(res => {
+              if (res.code == 200) {
+                  //this.formCustom.remark='';
+                 this.msgOk('保存成功')
+              } else {
+                  this.msgErr(res.msg);
+              }
+          });
+      },
     init() {
       this.camp_pageStatus = this.getStore("camp_pageStatus");
 
@@ -730,6 +807,7 @@ export default {
     //编辑
     editInfo() {
       this.edit_info = this.couponEdit_info;
+      this.share(this.edit_info);
       this.uploadList = [{ url: this.couponEdit_info.couponSmallImg }];
       this.uploadList1 = [{ url: this.couponEdit_info.couponBigImg }];
       this.edit_info.merchantList=this.couponEdit_info.merchantList;
@@ -793,17 +871,18 @@ export default {
           this.getMerchantListFn();
       },
       getMerchantInfo(){
+          var that= this;
           if(this.camp_pageStatus == 'add'){
               this.couponEdit_info.templateId = '';
           }
           if (this.camp_pageStatus == 'edit' && this.couponEdit_info.templateId){
               postRequest("/merchant/merchantCouponRelation/selectByTemplateId?templateId=" + this.couponEdit_info.templateId).then(res => {
                   if (res.code == 200) {
-                      this.add_info = res.data;
+                      that.add_info = res.data;
                       let obj = {
                           url: res.data.wxQrcode
                       };
-                      this.bsUploadList.push(obj);
+                      // that.bsUploadList.push(obj);
                       var roleIdList = [];
                       /*if (res.data.roleIdList){
                           for (var o of res.data.roleIdList){
@@ -811,7 +890,7 @@ export default {
                           }
                       }
                       this.add_info.roleIdList = roleIdList;*/
-                      this.add_info.templateId = this.templateId;
+                      that.add_info.templateId = that.templateId;
                   } else {
                       this.$Message.error(res.msg);
                   }
@@ -1389,7 +1468,7 @@ export default {
     }
   },
   mounted() {
-    this.init();
+    // this.init();
   }
 };
 </script>

@@ -20,16 +20,16 @@
           </a>
 
           <Alert show-icon>
-            <span style="margin-left: 1%"> 
+            <span style="margin-left: 1%">
             活动ID :
             <span style="color:red">{{campId}}</span>
-          </span> 
+          </span>
             <span style="margin-left: 20%">
               设置总天数 :
               <span style="color:red">{{daySum}}</span>
             </span>
             <span style="margin-left: 20%">
-              库存数量 : 
+              库存数量 :
                <span style="color:red"  v-if=" stockCount !=  '999999999'"> {{stockCount}}</span>
             <span style="color:red"  v-if=" stockCount ==  '999999999'">无限制</span>
             </span>
@@ -63,7 +63,7 @@
                               ></InputNumber>
                                   <span style="color:red">&nbsp;&nbsp; 张</span>
                             </Tooltip>
-                        
+
                           </FormItem>
                         </Col>
                         <Col span="8">
@@ -88,7 +88,7 @@
                                  :disabled-minutes="[0]"
                               :disabled-seconds="[0]"
                             :steps="[1, 59,59]"
-                           
+
                               @on-change="statusCheckChange"
                             ></TimePicker>
                           </FormItem>
@@ -364,7 +364,7 @@ export default {
     // 跳转列表
 
     goback() {
-      this.$emit("changeStatus", { Return: false });
+      this.$emit("changeStatus", { Return: false,isNext:true });
     }
   },
   mounted() {

@@ -38,7 +38,7 @@
                 />
               </Form-item>
               <!-- <Form-item label="活动标签" :label-width="100">
-              
+
                 <Select v-model="search.label" placeholder="请选择" style="width: 200px">
                   <Option v-for="(item, index) in templatelist" :key="index" :value="item.dictValue">{{item.dictLabel}}</Option>
                 </Select>
@@ -113,22 +113,22 @@
             <template slot-scope="{ row }" slot="imgUrl">
                <Tooltip content="点击可查看大图 " placement="right">
               <img :src="row.imgUrl" style="width:74px;height:43px;" @click="showBigImg(row)">
-               </Tooltip> 
+               </Tooltip>
             </template>
 
 
            <template slot-scope="{ row }" slot="getrules">
-            <span style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;">{{row.rules}}</span>     
-          
-          
+            <span style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;">{{row.rules}}</span>
+
+
             </template>
 
              <template slot-scope="{ row }" slot="getcouponValueDesc">
-            <span style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;">{{row.couponValueDesc}}</span>     
+            <span style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;">{{row.couponValueDesc}}</span>
             </template>
 
            <template slot-scope="{ row }" slot="getdoorsillDesc">
-             <span style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;">{{row.doorsillDesc}}</span>     
+             <span style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;">{{row.doorsillDesc}}</span>
             </template>
 
 
@@ -250,7 +250,7 @@
               </Upload>
               <p>选择优惠券缩略图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
             </div>
-          </FormItem> 
+          </FormItem>
 
           <FormItem label="优惠券详情图" required>
         <!-- <FormItem label="优惠券详情图"> -->
@@ -281,7 +281,7 @@
               </Upload>
               <p>选择优惠券详情图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
             </div>
-          </FormItem> 
+          </FormItem>
 
           <FormItem label="优惠券模板" required>
             <Button
@@ -354,6 +354,29 @@
             >保存</Button>
           </FormItem>
         </Form>
+        <!--分享奖励配置-->
+        <Form v-if="formShareModal.shareData.length" ref="shareModal" :model="formShareModal" :label-width="180" style="margin-top:20px">
+          <FormItem v-for="item in formShareModal.shareData" :key="item.id" :label="item.name" required>
+            <span v-if="item.name!= '倍数'&&item.name!= '上限'">&nbsp;优惠面额  X</span>
+            <InputNumber
+                    :disabled="item.name=='分享奖励'"
+                    :min="item.name== '倍数'?1:0"
+                    :step="1"
+                    type="text"
+                    v-model="item.value"
+                    placeholder="请输入"
+                    style="width:320px"
+            ></InputNumber>
+            <span v-if="item.name== '上限'">&nbsp;&nbsp;U贝</span>
+            <span v-if="item.name== '倍数'">&nbsp;倍</span>
+            <span v-if="item.name!= '倍数'&&item.name!= '上限'">&nbsp;&nbsp;%</span>
+          </FormItem>
+          <FormItem>
+            <Button style="float: left;" type="primary" @click="shareSave('shareModal')">保存</Button>
+
+          </FormItem>
+        </Form>
+
       </div>
     </Card>
 
@@ -428,6 +451,9 @@ export default {
   },
   data() {
     return {
+        formShareModal:{
+            shareData:[]
+        },
       drop: false,
       dropDownContent: "展开",
       dropDownIcon: "ios-arrow-down",
@@ -996,6 +1022,66 @@ export default {
       this.getActivity();
       this.getchannel();
     },
+      share(code){
+          console.log(111);
+          if(!code){
+            return;
+        }
+          this.formShareModal.shareData = [];
+          postRequest('/commonConfig/queryConfigByCode',{
+                  code:code
+              }
+          ).then(res => {
+              if (res.code == 200) {
+                  if(res.data||res.data.noOverallCommonConfigList){
+                      this.formShareModal.shareData = res.data.noOverallCommonConfigList||[];
+                      this.formShareModal.shareData.forEach(function(v){
+                          v.value = Number(v.value)||0;
+                          if(v.name=='分享奖励'){
+                              v.value=0;
+                          }
+                      })
+                      this.shareDisplay = true;
+                  }else{
+                      this.$Message.error('未查询到数据');
+                  }
+              } else {
+                  this.$Message.error(res.msg);
+              }
+          });
+      },
+      shareSave(name){
+          let canSave = true;
+          let msg = ''
+          this.formShareModal.shareData.forEach(function(v){
+              v.createTime = null;
+              v.updateTime = null;
+              v.updateBy = null;
+              if(!v.value&&v.value!==0){
+                  canSave = false
+                  msg='请输入完整表单'
+              }
+              if(v.name=='倍数'&&v.value<1){
+                  canSave = false
+                  msg='请输入大于等于1的倍数'
+              }
+          })
+          if(!canSave){
+              this.$Message.error('请输入完整表单');
+              return;
+          }
+          postRequest(
+              "/commonConfig/updateConfigBatch",
+              {"noOverallCommonConfigList":this.formShareModal.shareData}
+          ).then(res => {
+              if (res.code == 200) {
+                  //this.formCustom.remark='';
+                  this.$Message.success('保存成功')
+              } else {
+                  this.$Message.error(res.msg);
+              }
+          });
+      },
 
     //获取投放渠道
     getchannel() {
@@ -1040,6 +1126,7 @@ export default {
           this.add_info.couponType = "2";
 
           this.add_info.dateType = "2";
+          // this.share();
           // this.couponTypeDisabled = true;
           break;
         case "63":
@@ -1131,8 +1218,12 @@ export default {
         "/campagin/list?pageNum=" + this.pageNum + "&pageSize=" + this.limit,
         reqParams
       ).then(res => {
-        this.TableLoading = false;
+          console.log(111);
+          this.TableLoading = false;
         if (res.isSuccess) {
+            if(this.add_info.campType == 62){
+                this.share(res.data.records[0].campId)
+            }
           if (this.add_info.campType == 57) {
             this.totalSize = res.data.total;
             this.table_list = res.data.records;
@@ -1192,7 +1283,6 @@ export default {
             this.add_info.ticketName = res.data.records[0].ticketName;
             this.add_info.ticketTemplateId =
               res.data.records[0].ticketTemplateId;
-
             // this.add_info.couponValueDesc = res.data.records[0].couponValueDesc
             //   .replace("￥", "")
             //   .replace("券", "");
