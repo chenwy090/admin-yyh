@@ -275,7 +275,7 @@ export default {
 
     console.log("mounted");
     ["provinceCode", "cityCode", "countryCode", "shopId"].forEach(name => {
-      console.log(this.shop[name]);
+      // console.log(this.shop[name]);
       this[name] = this.shop[name];
     });
   }

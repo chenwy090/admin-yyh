@@ -4,7 +4,7 @@
     <Modal
       v-model="modalShow"
       :title="title"
-      width="1000"
+      width="800"
       footer-hide
       :closable="true"
       :mask-closable="false"
@@ -143,9 +143,9 @@ export default {
 </script>
 <style scoped>
 .draw-content {
-  width: 800px;
+  width: 750px;
   margin: 0 auto;
-  border: 1px solid red;
+  /* border: 1px solid red; */
   overflow: hidden;
 }
 .table-box {

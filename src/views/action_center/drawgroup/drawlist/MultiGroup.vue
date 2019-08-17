@@ -8,7 +8,7 @@
           </Col>
         </Row>
       </FormItem>
-      <FormItem label="活动开始时间：" prop="startTime" :rules="{ required: true, message: '请选择日期' }">
+      <FormItem label="活动开始时间：" prop="startTime" :rules="{ required: true, message: '请选择活动开始时间' }">
         <Row>
           <Col span="10">
             <DatePicker
@@ -16,7 +16,7 @@
               :value="form.startTime"
               type="datetime"
               format="yyyy-MM-dd HH:mm"
-              placeholder="请选择日期"
+              placeholder="请选择活动开始时间"
               @on-change="startTimeChange"
               class="date-range"
             ></DatePicker>
@@ -24,7 +24,7 @@
         </Row>
       </FormItem>
       <!-- //开奖时间配置1：固定时间、2：满多少人开奖 -->
-      <FormItem label="活动开奖时间：">
+      <FormItem label="开奖时间：">
         <RadioGroup v-model="form.openDrawTimeType">
           <Radio
             v-for="item in openDrawTimeTypeList"
@@ -35,7 +35,7 @@
       </FormItem>
 
       <template v-if="form.openDrawTimeType==1">
-        <FormItem label prop="openDrawTime" :rules="{ required: true, message: '请选择日期' }">
+        <FormItem label prop="openDrawTime" :rules="{ required: true, message: '请选择活动开奖时间' }">
           <Row>
             <Col span="10">
               <DatePicker
@@ -43,7 +43,7 @@
                 :value="form.openDrawTime"
                 type="datetime"
                 format="yyyy-MM-dd HH:mm"
-                placeholder="请选择日期"
+                placeholder="请选择活动开奖时间"
                 @on-change="openDrawTimeChange"
                 class="date-range"
               ></DatePicker>
@@ -52,17 +52,27 @@
         </FormItem>
       </template>
       <template v-else-if="form.openDrawTimeType==2">
-        <FormItem label prop="openDrawTime" :rules="{ required: true, message: '请选择日期' }">
+        <FormItem label prop="openDrawTime" :rules="{ required: true, message: '请选择活动开奖时间' }">
           <Row>
             <Col span="10">
-              <TimePicker
+              <!-- <TimePicker
                 style="width:90%"
                 :value="form.openDrawTime"
                 format="HH:mm"
-                placeholder="请选择日期"
+                placeholder="请选择活动开奖时间"
                 @on-change="openDrawTimeChange"
                 class="date-range"
-              ></TimePicker>
+              ></TimePicker> -->
+
+              <DatePicker
+                style="width:90%"
+                :value="form.openDrawTime"
+                type="datetime"
+                format="yyyy-MM-dd HH:mm"
+                placeholder="请选择活动开奖时间"
+                @on-change="openDrawTimeChange"
+                class="date-range"
+              ></DatePicker>
             </Col>
           </Row>
         </FormItem>
@@ -102,7 +112,7 @@
 
       <!-- 1:实物、2：优惠券、3：U贝 -->
       <FormItem label="活动大奖：">
-        <RadioGroup v-model="form.bigPrize.type">
+        <RadioGroup v-model="form.bigPrize.type" @on-change="form.bigPrize.prizeName=''">
           <Radio v-for="item in typeList" :key="item.value" :label="item.value">{{ item.label }}</Radio>
         </RadioGroup>
       </FormItem>
@@ -114,6 +124,7 @@
                 style="width:90%"
                 v-model="form.bigPrize.prizeName"
                 placeholder="请输入实物名称"
+                :maxlength="15"
                 clearable
               />
             </FormItem>
@@ -153,7 +164,7 @@
                 :key="111"
                 style="width:90%"
                 v-model="form.bigPrize.prizeNum"
-                placeholder="请输入输入U贝数"
+                placeholder="请输入U贝数"
                 clearable
               />
             </Col>
@@ -524,7 +535,7 @@ export default {
         { value: 3, label: "老客" },
         { value: 4, label: "红人" },
         { value: 5, label: "达人" },
-        { value: 0, label: "全部" }
+        { value: 0, label: "所有人" }
       ],
 
       index: 1,
@@ -699,19 +710,5 @@ export default {
 };
 </script>
 <style scoped>
-.draw-content {
-  width: 800px;
-  margin: 0 auto;
-  border: 1px solid red;
-  overflow: hidden;
-}
-.table-box {
-  min-height: 100px;
-  max-height: 400px;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-.marginLeft20 {
-  margin-left: 20px;
-}
+
 </style>
