@@ -1,6 +1,6 @@
 <template>
   <div class="xxx">
-    <draw-edit></draw-edit>
+    <component ref="modalDetail" :is="'ModalDetail'"></component>
     <div class="query-row">
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
@@ -9,7 +9,7 @@
               <Option
                 v-for="item in groupTypeList"
                 :value="item.value"
-                :key="item.value"
+                :key="item.value+item.label"
               >{{ item.label }}</Option>
             </Select>
           </FormItem>
@@ -27,11 +27,10 @@
           </FormItem>
           <FormItem label="抽奖开始时间：" :label-width="100">
             <DatePicker
-              type="datetime"
+              type="daterange"
               placeholder="请选择抽奖日期"
-              format="yyyy-MM-dd HH:mm"
               style="display:inline-block;width: 200px"
-              :value="searchData.startTime"
+              :value="daterange"
               @on-change="changeStartDate"
             ></DatePicker>
           </FormItem>
@@ -162,6 +161,10 @@
   </div>
 </template>
 <script>
+import multiFormData from "./multiGroupFromData";
+import singleFormData from "./multiGroupFromData";
+// import singleFormData from "./singleGroupFromData";
+import { postRequest } from "@/libs/axios";
 import {
   putup,
   putoff,
@@ -173,13 +176,16 @@ import columns, { totalPlayerColumns, totalTicketColumns } from "./columns";
 
 import DrawEdit from "./DrawEdit";
 import WinningList from "./WinningList";
+import ModalDetail from "../Modal_detail";
 
 export default {
   name: "draw-config",
   components: {
+    ModalDetail: ModalDetail,
     [DrawEdit.name]: DrawEdit,
     [WinningList.name]: WinningList
   },
+
   data() {
     return {
       //------新增修改单人团/多人团--------------------
@@ -214,15 +220,15 @@ export default {
       },
       groupTypeList: [
         {
-          value: "0",
+          value: 0,
           label: "全部"
         },
         {
-          value: "1",
+          value: 1,
           label: "单人团"
         },
         {
-          value: "2",
+          value: 1,
           label: "多人团"
         }
       ],
@@ -256,13 +262,15 @@ export default {
           label: "已下架"
         }
       ],
+      daterange: [],
       searchData: {
         // 查询参数
         groupType: "0",
         name: "",
         status: "",
         operationType: "",
-        startTime: ""
+        startTime: "",
+        endTime: ""
         //分页参数
       },
       loading: false, //列表加载动画
@@ -283,12 +291,54 @@ export default {
     this.queryTableList();
   },
   methods: {
-    addOrEdit(type, data) {
+    getData() {
+      const url = "/drawDaily/activity/selectById";
+      postRequest(url, { id: this.id }).then(res => {
+        console.log("修改", res);
+        if (res.code == 200) {
+          this.$emit("closeFormModal-event");
+        } else {
+          return this.$Message.error(res.msg);
+        }
+      });
+    },
+    async addOrEdit(type, row) {
+      let data = null;
+      let groupType = 2;
+      if (type == "add") {
+        this.$store.commit("g_setData", {
+          drawType: "add",
+          groupType,
+          // 新增多人团和单人团数据初始化
+          multiFormData: JSON.parse(JSON.stringify(multiFormData)),
+          singleFormData: JSON.parse(JSON.stringify(singleFormData))
+        });
+      } else if (type == "edit") {
+        const url = "/drawDaily/activity/selectById";
+        let res = await postRequest(url, { id: row.id });
+        if (res.code == 200) {
+          data = res.data;
+          groupType = data.groupType;
+          this.$store.commit("g_setData", {
+            drawType: "edit",
+            groupType,
+            // 修改将数据放入进去即可
+            drawData: JSON.parse(JSON.stringify(data))
+          });
+        } else {
+          return this.$Message.error(res.msg);
+        }
+      }
       this.action = {
         id: Math.random(),
         type,
+        groupType,
         data
       };
+    },
+    // 查看详情
+    checkDetailsFn(row) {
+      this.$refs.modalDetail.show(row);
     },
     changeComp(compName) {
       this.$emit("changeComp", compName);
@@ -378,8 +428,12 @@ export default {
       this.undercarriage = true;
       this.id = row.id;
     },
-    changeStartDate(time) {
-      this.searchData.startTime = time;
+    changeStartDate(arr) {
+      // yyyy-MM-dd
+      console.log(arr);
+
+      this.searchData.startTime = arr[0];
+      this.searchData.endTime = arr[1];
     },
     // 分页（点击第几页）
     changeCurrent(pageNum) {
@@ -409,19 +463,24 @@ export default {
     },
     add() {},
     reset() {
+      this.daterange = [];
       // 重置查询参数
       this.searchData = {
         groupType: "0",
         name: "",
         status: "",
         operationType: "",
-        startTime: ""
+        startTime: "",
+        endTime: ""
       };
 
       this.page = {
         pageNum: 1, //页码
         pageSize: 10 //每页数量
       };
+
+      //重新查询一遍
+      this.queryTableList();
     },
     // 全局提示
     msgOk(txt) {

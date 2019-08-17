@@ -152,6 +152,27 @@ export const postRequest = (url, params) => {
     });
 };
 
+/**
+ * url 中要包含ip和端口
+ * @param {*} url 
+ * @param {*} params 
+ */
+export const postJson = (url, params) => {
+  let jwttoken = getStore("jwttoken");
+  return axios({
+      method: 'post',
+      url,
+      data: params,
+
+      headers: {
+          'Content-Type': 'application/json;charset=utf-8',
+          'jwttoken': jwttoken
+      },
+
+
+  });
+};
+
 export const putRequest = (url, params) => {
     let jwttoken = getStore("jwttoken");
     return axios({
