@@ -92,14 +92,14 @@
           <Row class="box" v-if="formValidate.welfareType == 1">
               <!-- <Col span="3" class="left-text"> <span style="color:red">*</span> 优惠券活动：</Col> -->
               <Col span="8"  >
-                  <Button @click="getCampaginListFn">点击选择优惠券</Button>
+                  <Button @click="getCampaginListFn">请选择优惠券</Button>
               </Col>
           </Row>
         </FormItem>
         <!--   <Row class="box" v-if="formValidate.welfareType == 1">
               <Col span="3" class="left-text"> <span style="color:red">*</span> 优惠券活动：</Col>
               <Col span="8"  >
-                  <Button @click="getCampaginListFn">点击选择优惠券</Button>
+                  <Button @click="getCampaginListFn">请选择优惠券</Button>
               </Col>
           </Row> -->
         <!-- 优惠券列表 -->
