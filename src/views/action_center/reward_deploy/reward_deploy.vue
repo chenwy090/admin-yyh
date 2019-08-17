@@ -701,6 +701,11 @@
                         this.TableLoading1 = false;
                         if(res.data){
                             this.list1 = res.data.noOverallCommonConfigList||[];
+                            this.list1.forEach(function(v){
+                                if(v.code == '8'||v.code == '18'||v.code == '19'||v.code == '21'||v.code == '26'){
+                                    v.value = v.value/100;
+                                }
+                            })
                         }
                     } else {
                         this.$Message.error(res.msg);
