@@ -4,8 +4,8 @@ export default {
   name: "", //活动名称
   startTime: "", //活动开始时间
   openDrawTimeType: 1, //开奖时间配置1：固定时间、2：满多少人开奖
-  openDrawTime: "", //开奖时间
-  openDrawTimeNeedPlayers: 2, //type:2 满x人开奖
+  openDrawTime: "", //开奖时间 必填
+  openDrawTimeNeedPlayers: 0, //type:2 满x人开奖
   winningRemarks: "", //领奖说明
   joinUserLevel: 1, //参加对象 用户等级
   maxOpenGroupCount: 0, //总开团数 不能为空

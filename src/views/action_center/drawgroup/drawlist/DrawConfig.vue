@@ -228,13 +228,13 @@ export default {
           label: "单人团"
         },
         {
-          value: 1,
+          value: 2,
           label: "多人团"
         }
       ],
       statusList: [
         {
-          value: "",
+          value: "all",
           label: "全部"
         },
         {
@@ -265,9 +265,9 @@ export default {
       daterange: [],
       searchData: {
         // 查询参数
-        groupType: "0",
+        groupType: 0,
         name: "",
-        status: "",
+        status: "all", //提交后台过滤为 ""空字符串
         operationType: "",
         startTime: "",
         endTime: ""
@@ -291,17 +291,17 @@ export default {
     this.queryTableList();
   },
   methods: {
-    getData() {
-      const url = "/drawDaily/activity/selectById";
-      postRequest(url, { id: this.id }).then(res => {
-        console.log("修改", res);
-        if (res.code == 200) {
-          this.$emit("closeFormModal-event");
-        } else {
-          return this.$Message.error(res.msg);
-        }
-      });
-    },
+    // getData() {
+    //   const url = "/drawDaily/activity/selectById";
+    //   postRequest(url, { id: this.id }).then(res => {
+    //     console.log("修改", res);
+    //     if (res.code == 200) {
+    //       this.$emit("closeFormModal-event");
+    //     } else {
+    //       return this.$Message.error(res.msg);
+    //     }
+    //   });
+    // },
     async addOrEdit(type, row) {
       let data = null;
       let groupType = 2;
@@ -318,8 +318,19 @@ export default {
         let res = await postRequest(url, { id: row.id });
         if (res.code == 200) {
           data = res.data;
-          data.defaultBannerList = [{ imgUrl: data.advertBannerImgUrl }];
-          data.defaultLogoList = [{ imgUrl: data.advertLogoImgUrl }];
+          data.defaultBannerList = [];
+          data.defaultLogoList = [];
+          data.defaultShowList = [];
+          if (data.advertBannerImgUrl) {
+            data.defaultBannerList = [{ imgUrl: data.advertBannerImgUrl }];
+          }
+          if (data.advertLogoImgUrl) {
+            data.defaultLogoList = [{ imgUrl: data.advertLogoImgUrl }];
+          }
+
+          if (data.advertListUrl) {
+            data.defaultShowList = [{ imgUrl: data.advertListUrl }];
+          }
 
           groupType = data.groupType;
           this.$store.commit("g_setData", {
@@ -433,8 +444,6 @@ export default {
     },
     changeStartDate(arr) {
       // yyyy-MM-dd
-      console.log(arr);
-
       this.searchData.startTime = arr[0];
       this.searchData.endTime = arr[1];
     },
@@ -446,8 +455,13 @@ export default {
     queryTableList(pageNum) {
       this.page.pageNum = pageNum || 1;
       this.loading = true;
+      let status = this.searchData.status;
+      if (status == "all") {
+        status = "";
+      }
       queryLuckDrawList({
         ...this.searchData,
+        status,
         ...this.page
       }).then(res => {
         // console.log(res);
@@ -469,9 +483,9 @@ export default {
       this.daterange = [];
       // 重置查询参数
       this.searchData = {
-        groupType: "0",
+        groupType: 0,
         name: "",
-        status: "",
+        status: "all",
         operationType: "",
         startTime: "",
         endTime: ""
