@@ -157,7 +157,7 @@
                 type="dashed"
                 @click="nextInfo()"
                 style="width:150px;margin-left: 5%"
-                v-if=" edit_info.isLimitGrap=='1' && status=='edit' && isCheckDisabled == true"
+                v-if=" status=='edit' && isCheckDisabled == true"
               >下一步</Button>
             </FormItem>
           </Form>
@@ -184,6 +184,7 @@
                       type="dashed"
                       @click="nextInfo2()"
                       style="width:150px;margin-left: 5%"
+                      v-if="edit_info.isLimitGrap=='1'"
               >下一步</Button>
             </FormItem>
           </Form>
@@ -422,10 +423,14 @@ export default {
                   //this.formCustom.remark='';
                   this.$Message.success('保存成功')
                   if(name){
-                      setTimeout(() => {
-                          this.campaginGrabInfoPage = true;
-                          this.campaginManagementPage = false;
-                      }, 1200);
+                      if (this.edit_info.isLimitGrap == "1") {
+                          setTimeout(() => {
+                              this.campaginGrabInfoPage = true;
+                              this.campaginManagementPage = false;
+                          }, 1200);
+                      } else {
+                          this.next_modal = true;
+                      }
                   }
               } else {
                   this.$Message.error(res.msg);
