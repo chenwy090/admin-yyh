@@ -310,7 +310,7 @@
         <Row>
           <Col span="10">
             <Input
-              style="width:90%"
+              style="width:80%"
               v-model="form.openGroupMinutes"
               placeholder="请输入开团有效时间"
               clearable
@@ -403,31 +403,43 @@
 
       <!-- 广告主 banner图片url advertBannerImgUrl   广告主 logo图片url advertLogoImgUrl -->
 
-      <Row>
-        <Col span="10">
-          <FormItem label="Banner图：">
-            <UploadImage
-              :defaultList="this.form.defaultBannerList"
-              :fileUploadType="'banner'"
-              @uploadSuccess="bannerUploadSuccess"
-            ></UploadImage>
-          </FormItem>
+      <Alert type="warning">选择图片(不大于10M,JPG/PNG/JPEG/BMP）</Alert>
+      <Row type="flex" justify="end">
+        <Col span="8">
+          <!-- <FormItem label="Banner图：">
+            <UploadImage :fileUploadType="'banner'" @uploadSuccess="bannerUploadSuccess"></UploadImage>
+          </FormItem>-->
+          <UploadImage
+            label="列表banner："
+            :fileUploadType="'banner'"
+            :defaultList="this.form.defaultBannerList"
+            @uploadSuccess="bannerUploadSuccess"
+          ></UploadImage>
         </Col>
-        <Col span="10">
-          <FormItem label="Logo：">
-            <UploadImage
-              :defaultList="this.form.defaultLogoList"
-              :fileUploadType="'logo'"
-              @uploadSuccess="logoUploadSuccess"
-            ></UploadImage>
-          </FormItem>
+        <Col span="8">
+          <UploadImage
+            label="详情Banner："
+            :fileUploadType="'banner'"
+            :defaultList="this.form.defaultBannerList"
+            @uploadSuccess="bannerUploadSuccess"
+          ></UploadImage>
+        </Col>
+        <Col span="8">
+          <UploadImage
+            label="Logo："
+            :fileUploadType="'logo'"
+            :defaultList="this.form.defaultLogoList"
+            @uploadSuccess="logoUploadSuccess"
+          ></UploadImage>
         </Col>
       </Row>
 
-      <FormItem label=" ">
-        <Button type="primary" @click="handleSubmit('form')">提交</Button>
-        <Button style="margin-left: 8px" @click="handleReset('form')">重置</Button>
-      </FormItem>
+      <div style="margin-top:20px;">
+        <FormItem label>
+          <Button type="primary" @click="handleSubmit('form')">提交</Button>
+          <Button style="margin-left: 8px" @click="handleReset('form')">重置</Button>
+        </FormItem>
+      </div>
     </Form>
     <Modal
       v-model="couponModalShow"

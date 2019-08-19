@@ -25,7 +25,7 @@
           <FormItem label="抽奖名称：" :label-width="85">
             <Input style="width:200px" type="text" v-model="searchData.name" placeholder="请输入"></Input>
           </FormItem>
-          <FormItem label="抽奖开始时间：" :label-width="100">
+          <FormItem label="抽奖时间：" :label-width="100">
             <DatePicker
               type="daterange"
               placeholder="请选择抽奖日期"
@@ -34,7 +34,7 @@
               @on-change="changeStartDate"
             ></DatePicker>
           </FormItem>
-          <FormItem style="margin-left:35px;" class="br">
+          <FormItem :label-width="0">
             <Button type="primary" icon="ios-search" @click="queryTableList()">搜索</Button>
             <Button icon="md-refresh" @click="reset">重置</Button>
           </FormItem>
