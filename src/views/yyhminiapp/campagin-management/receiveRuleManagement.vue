@@ -576,13 +576,14 @@ export default {
         if (res.code == 200) {
           this.isCheckDisabled = true;
           this.status = "edit";
-          if (this.edit_info.isLimitGrap == "1") {
+          // if (this.edit_info.isLimitGrap == "1") {
+          //
+          // } else {
+          //   this.next_modal = true;
+          // }
             setTimeout(() => {
-              this.nextInfo();
+                this.nextInfo();
             }, 1200);
-          } else {
-            this.next_modal = true;
-          }
         } else {
           this.$Message.error(res.msg);
         }
