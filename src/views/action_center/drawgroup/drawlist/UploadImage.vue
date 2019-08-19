@@ -1,12 +1,13 @@
 <template>
   <div>
-    <div class="demo-upload-list" v-for="item in uploadList" :key="item.imgUrl">
+    <div class="demo-upload-list" v-for="item in uploadList" :key="item.uid">
       <img :src="item.imgUrl" />
       <div class="demo-upload-list-cover">
         <Icon type="ios-eye-outline" @click.native="handleView(item.imgUrl)"></Icon>
         <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
       </div>
     </div>
+    <!-- :default-file-list="defaultList" -->
     <div style="display: inline;">
       <Upload
         :headers="userToken"
@@ -41,9 +42,29 @@ import { checkImage } from "@/libs/date";
 export default {
   name: "upload-image",
   props: {
+    defaultList: {
+      type: Array,
+      default: function() {
+        return [];
+      }
+    },
     fileUploadType: {
       type: [String, Number],
       default: ""
+    }
+  },
+  watch: {
+    defaultList() {
+      const fileList = this.$refs.upload.fileList;
+      // this.$refs.upload.fileList.splice(0, fileList.length);
+      this.uploadList = [];
+      for (let i = 0; i < this.defaultList.length; i++) {
+        let item = this.defaultList[i];
+        // this.$refs.upload.fileList.push(item);
+
+        this.uploadList.push(item);
+      }
+      // this.$refs.upload.fileList
     }
   },
   data() {
@@ -51,6 +72,14 @@ export default {
       userToken: {}, //用户token
       // 文件上传
       url: uploadOperationImage2AliOssURl,
+      // defaultList: [
+      //   {
+      //     imgUrl: "https://image.52iuh.cn/wx_mini/ILJAe1kLiF.png"
+      //   },
+      //   {
+      //     imgUrl: "https://image.52iuh.cn/wx_mini/NlXpxCBPzg.png"
+      //   }
+      // ],
       uploadList: [],
       imgUrl: "",
       visible: false
@@ -61,27 +90,29 @@ export default {
       jwttoken: localStorage.getItem("jwttoken")
     };
   },
+  mounted() {
+    this.uploadList = this.$refs.upload.fileList;
+  },
+
   methods: {
-    handleView(name) {
-      this.imgUrl = name;
+    handleView(imgUrl) {
+      this.imgUrl = imgUrl;
       this.visible = true;
     },
     handleRemove(file) {
-      this.$refs.upload.fileList = [];
       this.uploadList = [];
-      this.imgUrl = "";
     },
-    handleUploadSuccess(res, file) {
-      console.log(file, res);
+    handleUploadSuccess(res, file, fileList) {
       if (res.code == 200) {
+        this.uploadList = [];
         let imgUrl = res.image_url;
-        this.uploadList = [{ imgUrl }];
-
-        this.imgUrl = imgUrl;
+        file.imgUrl = imgUrl;
         this.$emit("uploadSuccess", {
           fileUploadType: this.fileUploadType,
           imgUrl
         });
+
+        this.uploadList.push(file)
         this.$Message.info("上传图片成功");
       } else {
         this.$Message.error("上传图片失败，请重新上传");

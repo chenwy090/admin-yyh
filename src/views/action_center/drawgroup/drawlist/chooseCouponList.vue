@@ -57,6 +57,10 @@ import { postRequest, getRequest } from "@/libs/axios";
 import { getCampaginListData } from "@/api/sys";
 export default {
   props: {
+    prizeType: {
+      type: String,
+      default: ""
+    },
     couponType: {
       type: [String, Number],
       default: 2
@@ -65,6 +69,11 @@ export default {
   computed: {
     tableColumns() {
       return this.searchForm.couponType == 1 ? this.columns1 : this.columns2;
+    }
+  },
+  watch:{
+    prizeType(){
+      console.log("prizeTypeprizeType",this.prizeType);
     }
   },
   data() {
@@ -253,6 +262,7 @@ export default {
     selectedTr() {
       //couponType id,name
       this.$emit("seclectedTr-event", {
+        prizeType: this.prizeType,
         couponType: this.couponType,
         id: this.id,
         name: this.name
@@ -268,6 +278,7 @@ export default {
     selectMerchant() {
       if (this.choice.id) {
         this.merchantTabDisplay = false;
+        this.choice.prizeType = this.prizeType;
         this.choice.couponType = this.searchForm.couponType;
         this.$emit("seclectedTr-event", this.choice);
       } else {

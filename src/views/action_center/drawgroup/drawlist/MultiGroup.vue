@@ -64,7 +64,7 @@
                 placeholder="请选择活动开奖时间"
                 @on-change="openDrawTimeChange"
                 class="date-range"
-              ></TimePicker> -->
+              ></TimePicker>-->
 
               <DatePicker
                 style="width:90%"
@@ -115,7 +115,10 @@
 
       <!-- 1:实物、2：优惠券、3：U贝 -->
       <FormItem label="活动大奖：">
-        <RadioGroup v-model="form.bigPrize.type" @on-change="form.bigPrize.prizeName=''">
+        <RadioGroup
+          v-model="form.bigPrize.type"
+          @on-change="form.bigPrize.prizeName='',form.bigPrize.prizeNum = ''"
+        >
           <Radio v-for="item in typeList" :key="item.value" :label="item.value">{{ item.label }}</Radio>
         </RadioGroup>
       </FormItem>
@@ -404,12 +407,7 @@
       >
         <Row>
           <Col span="10">
-            <Input
-              style="width:90%"
-              v-model="form.advertIntro"
-              placeholder="请输入广告主 描述富文本"
-              clearable
-            />
+            <Input v-model="form.advertIntro" type="textarea" :rows="6" placeholder="请输入广告主 描述富文本" />
           </Col>
         </Row>
       </FormItem>
@@ -419,12 +417,20 @@
       <Row>
         <Col span="10">
           <FormItem label="Banner图：">
-            <UploadImage :fileUploadType="'banner'" @uploadSuccess="bannerUploadSuccess"></UploadImage>
+            <UploadImage
+              :defaultList="this.form.defaultBannerList"
+              :fileUploadType="'banner'"
+              @uploadSuccess="bannerUploadSuccess"
+            ></UploadImage>
           </FormItem>
         </Col>
         <Col span="10">
           <FormItem label="Logo：">
-            <UploadImage :fileUploadType="'logo'" @uploadSuccess="logoUploadSuccess"></UploadImage>
+            <UploadImage
+              :defaultList="this.form.defaultLogoList"
+              :fileUploadType="'logo'"
+              @uploadSuccess="logoUploadSuccess"
+            ></UploadImage>
           </FormItem>
         </Col>
       </Row>
@@ -443,7 +449,7 @@
       :mask-closable="false"
       :styles="{top: '20px'}"
     >
-      <chooseCouponListView @seclectedTr-event="selectedTrCallBack"></chooseCouponListView>
+      <chooseCouponListView :prizeType="prizeType" @seclectedTr-event="selectedTrCallBack"></chooseCouponListView>
     </Modal>
   </div>
 </template>
@@ -495,6 +501,14 @@ export default {
       }
     };
     return {
+      defaultList: [
+        // {
+        //   imgUrl: "https://image.52iuh.cn/wx_mini/ILJAe1kLiF.png"
+        // },
+        // {
+        //   imgUrl: "https://image.52iuh.cn/wx_mini/NlXpxCBPzg.png"
+        // }
+      ],
       //isFailureBackFee 团失败是否返还费用
       failureBackFeeList: [
         { value: 1, label: "是" },
@@ -613,16 +627,20 @@ export default {
     selectedTrCallBack(data) {
       console.log("selectedTrCallBack:", data);
       if (typeof data != "boolean") {
-        // prizeType => bigPrize normalPrize
-        this.form[this.prizeType].couponType = data.couponType;
-        this.form[this.prizeType].prizeReferId = data.id;
-        this.form[this.prizeType].prizeName = data.name;
+        // prizeType => 多人团 bigPrize normalPrize | singlePrize 单人团
+        if (this.prizeType == data.prizeType) {
+          if (data.prizeType != "singlePrize") {
+            this.form[this.prizeType].couponType = data.couponType;
+            this.form[this.prizeType].prizeReferId = data.id;
+            this.form[this.prizeType].prizeName = data.name;
+          }
+        }
       }
-
       this.couponModalShow = false;
     },
 
     handleChoose(prizeType) {
+      console.log("handleChoose", prizeType);
       this.prizeType = prizeType;
       this.couponModalShow = true;
     },

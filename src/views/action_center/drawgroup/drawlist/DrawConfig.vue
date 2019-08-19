@@ -318,6 +318,9 @@ export default {
         let res = await postRequest(url, { id: row.id });
         if (res.code == 200) {
           data = res.data;
+          data.defaultBannerList = [{ imgUrl: data.advertBannerImgUrl }];
+          data.defaultLogoList = [{ imgUrl: data.advertLogoImgUrl }];
+
           groupType = data.groupType;
           this.$store.commit("g_setData", {
             drawType: "edit",

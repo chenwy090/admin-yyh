@@ -138,7 +138,7 @@
       <template v-else-if="form.bigPrize.type==2">
         <Row>
           <Col span="10">
-          <!-- 这里需要跟后端对一下 -->
+            <!-- 这里需要跟后端对一下 -->
             <FormItem
               label="选择优惠券"
               prop="bigPrize.prizeName"
@@ -250,21 +250,42 @@
         </RadioGroup>
       </FormItem>
 
-      
+      <!--  1:实物、2：优惠券、3：U贝 -->
       <FormItem label="参加条件：">
-        <RadioGroup v-model="form.joinRule">
+        <RadioGroup>
+          <!-- isFailureBackFee -->
+          <Radio label="2">优惠券</Radio>
+        </RadioGroup>
+
+        <Row>
+          <Col span="10">
+            <FormItem
+              label="选择优惠券"
+              prop="bigPrize.prizeName"
+              :rules="{ required: true, message: '请选择优惠券' }"
+            >
+              <Input :key="333" v-model="form.couponName" placeholder="点击按钮选择优惠券" disabled>
+                <Button @click="handleChoose('singlePrize')" slot="append">选择</Button>
+              </Input>
+            </FormItem>
+          </Col>
+        </Row>
+        <!-- <p>
+          <Select v-model="other.coupon" style="width: 150px;">
+            <Option v-for="el in 'abc'" :key="'line256' + el" :value="el" :label="'优惠券'+el"></Option>
+          </Select>
+        </p>-->
+      </FormItem>
+
+      <FormItem label="团失败u贝返还：">
+        <RadioGroup v-model="form.isFailureBackFee">
           <!-- isFailureBackFee -->
           <Radio
-            label="coupon"
-          >优惠券</Radio>
+            v-for="item in failureBackFeeList"
+            :key="item.value"
+            :label="item.value"
+          >{{ item.label }}</Radio>
         </RadioGroup>
-        <p>
-          <Select v-model="other.coupon" style="width: 150px;">
-            <Option v-for="el in 'abc'" :key="'line256' + el"
-              :value="el"
-              :label="'优惠券'+el"></Option>
-          </Select>
-        </p>
       </FormItem>
 
       <FormItem
@@ -286,7 +307,6 @@
           </Col>
         </Row>
       </FormItem>
-
       <FormItem
         label="介绍："
         prop="advertIntro"
@@ -294,16 +314,10 @@
       >
         <Row>
           <Col span="10">
-            <Input
-              style="width:90%"
-              v-model="form.advertIntro"
-              placeholder="请输入广告主 描述富文本"
-              clearable
-            />
+            <Input v-model="form.advertIntro" type="textarea" :rows="6" placeholder="请输入广告主 描述富文本" />
           </Col>
         </Row>
       </FormItem>
-
       <!-- 广告主 banner图片url advertBannerImgUrl   广告主 logo图片url advertLogoImgUrl -->
 
       <Row>
@@ -333,7 +347,7 @@
       :mask-closable="false"
       :styles="{top: '20px'}"
     >
-      <chooseCouponListView @seclectedTr-event="selectedTrCallBack"></chooseCouponListView>
+      <chooseCouponListView :prizeType="prizeType" @seclectedTr-event="selectedTrCallBack"></chooseCouponListView>
     </Modal>
   </div>
 </template>
@@ -345,7 +359,6 @@ import chooseCouponListView from "./chooseCouponList";
 import UploadImage from "./UploadImage";
 
 import comm from "@/mixins/common";
-
 
 // this.$emit("closeFormModal-event");
 export default {
@@ -376,9 +389,9 @@ export default {
       }
     };
     return {
-      other: {
-        coupon: ''
-      },
+      // other: {
+      //   coupon: ""
+      // },
       //isFailureBackFee 团失败是否返还费用
       failureBackFeeList: [
         { value: 1, label: "是" },
@@ -463,7 +476,6 @@ export default {
     } else if (drawType == "edit") {
       this.form = JSON.parse(JSON.stringify(drawData));
     }
-    this.form.joinRule = 'coupon';
     console.log("mountedmountedmounted", this.form);
   },
   activated() {
@@ -473,7 +485,6 @@ export default {
     } else if (drawType == "edit") {
       this.form = JSON.parse(JSON.stringify(drawData));
     }
-    this.form.joinRule = 'coupon';
   },
   deactivated() {
     let { drawType } = this.$store.state;
@@ -507,10 +518,18 @@ export default {
     selectedTrCallBack(data) {
       console.log("selectedTrCallBack:", data);
       if (typeof data != "boolean") {
-        // prizeType => bigPrize normalPrize
-        this.form[this.prizeType].couponType = data.couponType;
-        this.form[this.prizeType].prizeReferId = data.id;
-        this.form[this.prizeType].prizeName = data.name;
+        // prizeType => 多人团 bigPrize normalPrize | singlePrize 单人团
+        if (this.prizeType == data.prizeType) {
+          if (data.prizeType == "singlePrize") {
+            this.form.couponType = data.couponType; //优惠券类型1：周边券、2：商超券
+            this.form.couponId = data.id; //优惠券ID（单人团参团条件）
+            this.form.couponName = data.name; //优惠券名称
+          } else {
+            this.form[this.prizeType].couponType = data.couponType;
+            this.form[this.prizeType].prizeReferId = data.id;
+            this.form[this.prizeType].prizeName = data.name;
+          }
+        }
       }
 
       this.couponModalShow = false;
@@ -587,7 +606,7 @@ export default {
           const url = "/drawDaily/activity/add";
           const params = JSON.parse(JSON.stringify(this.form));
           params.groupType = 1;
-          console.log('params:', params);
+          console.log("params:", params);
           postRequest(url, params).then(res => {
             if (res.code == 200) {
               this.$emit("closeFormModal-event");
