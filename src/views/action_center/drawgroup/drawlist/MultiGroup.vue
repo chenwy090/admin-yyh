@@ -57,25 +57,14 @@
         <FormItem label prop="openDrawTime" :rules="{ required: true, message: '请选择活动开奖时间' }">
           <Row>
             <Col span="10">
-              <!-- <TimePicker
+              <TimePicker
                 style="width:90%"
                 :value="form.openDrawTime"
                 format="HH:mm"
                 placeholder="请选择活动开奖时间"
                 @on-change="openDrawTimeChange"
                 class="date-range"
-              ></TimePicker>-->
-
-              <DatePicker
-                style="width:90%"
-                :value="form.openDrawTime"
-                type="datetime"
-                format="yyyy-MM-dd HH:mm"
-                placeholder="请选择活动开奖时间"
-                :options="m_dateOptions"
-                @on-change="openDrawTimeChange"
-                class="date-range"
-              ></DatePicker>
+              ></TimePicker>
             </Col>
           </Row>
         </FormItem>
@@ -449,7 +438,11 @@
       :mask-closable="false"
       :styles="{top: '20px'}"
     >
-      <chooseCouponListView :prizeType="prizeType" @seclectedTr-event="selectedTrCallBack"></chooseCouponListView>
+      <chooseCouponListView
+        v-if="couponModalShow"
+        :prizeType="prizeType"
+        @seclectedTr-event="selectedTrCallBack"
+      ></chooseCouponListView>
     </Modal>
   </div>
 </template>

@@ -131,6 +131,7 @@ export default {
 
     closeFormModal() {
       this.modalShow = false;
+      this.$emit("refresh");
     },
     radioGroupChange(groupType) {
       this.$store.commit("g_setData", {

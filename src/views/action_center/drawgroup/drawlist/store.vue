@@ -85,7 +85,12 @@ export default {
   props: {
     id: Number,
     index: Number,
-    shop: Object
+    shop: {
+      type: Object,
+      default: function() {
+        return {};
+      }
+    }
   },
   data() {
     return {
@@ -108,6 +113,15 @@ export default {
       postSyncRequest("/system/area/province/list").then(res => {
         if (res.code == 200) {
           this.provinceList = res.data;
+        
+          ["provinceCode", "cityCode", "countryCode", "shopId"].forEach(
+            name => {
+              console.log(this);
+              this[name] = this.shop[name];
+              console.log(name,this[name]);
+              console.log(this.shop[name]);
+            }
+          );
         } else {
           this.$Message.error(res.msg);
         }
@@ -199,7 +213,7 @@ export default {
     handleRemove() {
       this.$emit("handleRemove-event", this.shop.id);
     },
-    init: function() {
+    init() {
       postRequest("/system/area/province/list")
         .then(res => {
           if (res.code == 200) {
@@ -272,10 +286,12 @@ export default {
     }
     // this.init();(
     this.loadProvinceList();
-    ["provinceCode", "cityCode", "countryCode", "shopId"].forEach(name => {
-      // console.log(this.shop[name]);
-      this[name] = this.shop[name];
-    });
+    // ["provinceCode", "cityCode", "countryCode", "shopId"].forEach(name => {
+    //   // console.log(this.shop[name]);
+    //   this[name] = this.shop[name];
+    //   console.log(this[name]);
+    //   console.log(this.shop[name]);
+    // });
   }
 };
 </script>
