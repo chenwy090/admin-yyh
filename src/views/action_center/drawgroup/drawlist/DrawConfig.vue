@@ -335,8 +335,22 @@ export default {
           data = res.data;
 
           //投放门店： 给每个元素添加一个id
+          if (data.drawDailyShopList.length == 0) {
+            data.drawDailyShopList.push({
+              id: Math.random(),
+              provinceCode: null,
+              cityCode: null,
+              countryCode: null,
+              shopId: null,
+              shopName: null,
+              index: this.index,
+              status: 1
+            });
+          }
           data.drawDailyShopList = data.drawDailyShopList.map(item => {
-            item.id = Math.random();
+            if (!item.id) {
+              item.id = Math.random();
+            }
             return item;
           });
 

@@ -92,6 +92,7 @@ export default {
       }
     }
   },
+
   data() {
     return {
       isInit: 0,
@@ -117,8 +118,7 @@ export default {
           ["provinceCode", "cityCode", "countryCode", "shopId"].forEach(
             name => {
               this[name] = this.shop[name];
-              console.log(name, this[name]);
-              console.log(this.shop[name]);
+              // console.log(name, this[name]);
             }
           );
         } else {
@@ -166,12 +166,11 @@ export default {
           if (callback) {
             callback();
           }
+          this.loadShops();
         } else {
           this.$Message.error(res.msg);
         }
       });
-
-      this.loadShops();
     },
     //根据城市code获取区域信息数据
     areaChange(item) {
@@ -186,7 +185,7 @@ export default {
       this.loadShops();
     },
     shopIdChange(item) {
-      // console.log("shopIdChange", item);
+      console.log("shopIdChange111", item, this.shop.id);
       if (!item) {
         this.$emit("sendShopId", this.shopId, null, this.shop.id);
       } else {
@@ -235,9 +234,11 @@ export default {
           if (this.shop.provinceCode) {
             this.provinceCode = this.shop.provinceCode;
             this.provinceName = this.provinceList.find(
-              el => el.provinceCode == this.provinceId
+              el => el.provinceCode == this.provinceCode
             ).provinceName;
           }
+          console.log("provinceCode", this.provinceCode);
+
           return res;
         })
         .then(res => {
@@ -252,6 +253,8 @@ export default {
                     el => el.cityCode == this.cityCode
                   ).cityName;
                 }
+
+                console.log("cityName", this.cityName);
               } else {
                 this.$Message.error(res.msg);
               }
@@ -270,8 +273,8 @@ export default {
                         ).areaName;
                       }
 
-                      if (this.shop.provinceId) {
-                        this.shopId = this.shop.shopId;
+                      if (this.shop.shopId) {
+                        this.shopId = `${this.shop.shopId}`;
                         this.loadShops();
                       }
                     } else {
@@ -285,21 +288,14 @@ export default {
     }
   },
   mounted() {
-    this.loadProvinceList();
-    if (this.shop.provinceCode == null) {
-      // 新增
+    this.$nextTick(() => {
       this.loadProvinceList();
-    } else {
+      // console.log(111,this.shop);
       // 修改 级联查询
-      // this.init();
-    }
-
-    // ["provinceCode", "cityCode", "countryCode", "shopId"].forEach(name => {
-    //   // console.log(this.shop[name]);
-    //   this[name] = this.shop[name];
-    //   console.log(this[name]);
-    //   console.log(this.shop[name]);
-    // });
+      if (this.shop.provinceCode) {
+        this.init();
+      }
+    });
   }
 };
 </script>
