@@ -384,7 +384,7 @@
                 :mask-closable="false" footer-hide>
             <Form :model="modal3" label-position="right" ref="modalErf3" :rules="ruleValidate3">
                 <Row>
-                    <editor-bar v-model="modal3.context" :content="modal3.context" @on-change="change"></editor-bar>
+                    <editor-bar v-model="modal3.context" :content="modal3.context" @on-change="change" @on-blur="blur"></editor-bar>
                 </Row>
                 <FormItem>
                     <Button style="float: right;margin-left: 20px" type="primary" @click="ok3('modalErf3')">确认</Button>
@@ -458,7 +458,8 @@
                 modal3:{
                     name:'',
                     isopen:false,
-                    context:''
+                    context:'',
+                    newcontext:'',
                 },
                 columns1: [
                     {
@@ -608,7 +609,10 @@
                     return false
                 },
             change(e){
-                this.modal3.context = e;
+                this.modal3.newcontext = e;
+            },
+            blur(e){
+                this.modal3.newcontext = e;
             },
             handleView (name) {
                 this.imgName = name;
@@ -676,6 +680,7 @@
                 this.modal3.code = item.code;
                 this.modal3.isopen = true;
                 this.modal3.context = item.context;
+                this.modal3.newcontext = item.context;
             },
             ok1 (name) {
                 if(!this.modal1.type||this.modal1.type!='3'){
@@ -812,7 +817,7 @@
                 var that = this;
                 postRequest("/rewardNotice/updateNotice",{
                         "code": this.modal3.code,
-                        "context": this.modal3.context
+                        "context": this.modal3.newcontext
                     }
                 ).then(res => {
                     if (res.code == 200) {

@@ -77,6 +77,10 @@
                     this.info_ = html // 绑定当前逐渐地值
                     this.$emit('on-change', this.info_) // 将内容同步到父组件中
                 }
+                this.editor.customConfig.onblur = (html) => {
+                    this.info_ = html // 绑定当前逐渐地值
+                    this.$emit('on-blur', this.info_) // 将内容同步到父组件中
+                }
 
                 // 创建富文本编辑器
                 this.editor.create()
