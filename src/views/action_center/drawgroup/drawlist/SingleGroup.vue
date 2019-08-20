@@ -111,9 +111,9 @@
         </RadioGroup>
       </FormItem>
       <template v-if="form.bigPrizeTemp.type==1">
-        <Row>
-          <Col span="8">
-            <FormItem label="实物名称：">
+        <FormItem label="实物名称：">
+          <Row>
+            <Col span="10">
               <Input
                 style="width:90%"
                 v-model="form.bigPrizeTemp.prizeName1"
@@ -121,9 +121,11 @@
                 :maxlength="15"
                 clearable
               />
-            </FormItem>
-          </Col>
-          <Col span="8">
+            </Col>
+          </Row>
+        </FormItem>
+        <!-- 单人团的实物个数也不要 -->
+        <!-- <Col span="8">
             <FormItem label="实物个数：">
               <Input
                 style="width:90%"
@@ -132,8 +134,8 @@
                 clearable
               />
             </FormItem>
-          </Col>
-        </Row>
+        </Col>-->
+        <!-- </Row> -->
       </template>
       <template v-else-if="form.bigPrizeTemp.type==2">
         <Row>
@@ -179,7 +181,7 @@
 
       <template v-if="form.normalPrizeTemp.type==1">
         <Row>
-          <Col span="8">
+          <Col span="10">
             <FormItem label="实物名称：">
               <Input
                 style="width:90%"
@@ -189,7 +191,7 @@
               />
             </FormItem>
           </Col>
-          <Col span="8">
+          <!-- <Col span="8">
             <FormItem label="实物个数：">
               <Input
                 style="width:90%"
@@ -198,7 +200,7 @@
                 clearable
               />
             </FormItem>
-          </Col>
+          </Col>-->
         </Row>
       </template>
       <template v-else-if="form.normalPrizeTemp.type==2">

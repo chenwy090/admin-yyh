@@ -68,17 +68,22 @@ export default [
         align: "center",
         minWidth: 80
     },
+
+    // modifiedBy createBy
     {
         title: "最近修改人",
-        key: "address",
+        key: "createAndModifiedBy",
         align: "center",
-        minWidth: 105
+        minWidth: 105,
+        slot: 'createAndModifiedBy'
     },
+    // gmtModified gmtCreate
     {
         title: "最近修改时间",
-        key: "address",
+        key: "gmtModifiedAndCreate",
         align: "center",
-        width: 170
+        width: 170,
+        slot: 'gmtModifiedAndCreate'
     },
     {
         title: "报名成功用户",
