@@ -334,9 +334,15 @@ export default {
         if (res.code == 200) {
           data = res.data;
 
+          //投放门店： 给每个元素添加一个id
+          data.drawDailyShopList = data.drawDailyShopList.map(item => {
+            item.id = Math.random();
+            return item;
+          });
+
           //大奖  阳光普照奖
-          this.bigPrizeTemp = this.formatPrizeData(data.bigPrize);
-          this.normalPrizeTemp = this.formatPrizeData(data.normalPrize);
+          data.bigPrizeTemp = this.formatPrizeData(data.bigPrize);
+          data.normalPrizeTemp = this.formatPrizeData(data.normalPrize);
 
           //广告图数据
           data.defaultDrawActiveList = [];
@@ -405,8 +411,9 @@ export default {
         temp.couponType = couponType || 2;
         temp.giftImg = giftImg;
         temp.prizeReferId = prizeReferId;
+        temp.prizeName2 = prizeName;
       } else {
-        temp.prizeNum3 = prizeName;
+        temp.prizeNum3 = prizeNum;
       }
       return temp;
     },

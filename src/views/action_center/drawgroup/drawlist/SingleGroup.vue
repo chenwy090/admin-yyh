@@ -25,7 +25,7 @@
         </Row>
       </FormItem>
       <!-- //开奖时间配置1：固定时间、2：满多少人开奖 -->
-      <FormItem label="开奖时间：">
+      <FormItem label="活动开奖时间：">
         <RadioGroup v-model="form.openDrawTimeType" @on-change="form.openDrawTime = ''">
           <Radio
             v-for="item in openDrawTimeTypeList"
@@ -106,17 +106,17 @@
 
       <!-- 1:实物、2：优惠券、3：U贝 -->
       <FormItem label="活动大奖：">
-        <RadioGroup v-model="form.bigPrize.type" @on-change="form.bigPrize.prizeName=''">
+        <RadioGroup v-model="form.bigPrizeTemp.type" @on-change="form.bigPrize.prizeName=''">
           <Radio v-for="item in typeList" :key="item.value" :label="item.value">{{ item.label }}</Radio>
         </RadioGroup>
       </FormItem>
-      <template v-if="form.bigPrize.type==1">
+      <template v-if="form.bigPrizeTemp.type==1">
         <Row>
           <Col span="8">
             <FormItem label="实物名称：">
               <Input
                 style="width:90%"
-                v-model="form.bigPrize.prizeName"
+                v-model="form.bigPrizeTemp.prizeName1"
                 placeholder="请输入实物名称"
                 :maxlength="15"
                 clearable
@@ -127,7 +127,7 @@
             <FormItem label="实物个数：">
               <Input
                 style="width:90%"
-                v-model="form.bigPrize.prizeNum"
+                v-model="form.bigPrizeTemp.prizeNum1"
                 placeholder="请输入个数"
                 clearable
               />
@@ -135,30 +135,35 @@
           </Col>
         </Row>
       </template>
-      <template v-else-if="form.bigPrize.type==2">
+      <template v-else-if="form.bigPrizeTemp.type==2">
         <Row>
           <Col span="10">
             <!-- 这里需要跟后端对一下 -->
             <FormItem
               label="选择优惠券"
-              prop="bigPrize.prizeName"
+              prop="bigPrizeTemp.prizeName2"
               :rules="{ required: true, message: '请选择优惠券' }"
             >
-              <Input :key="11" v-model="form.bigPrize.prizeName" placeholder="点击按钮选择优惠券" disabled>
+              <Input
+                :key="11"
+                v-model="form.bigPrizeTemp.prizeName2"
+                placeholder="点击按钮选择优惠券"
+                disabled
+              >
                 <Button @click="handleChoose('bigPrize')" slot="append">选择</Button>
               </Input>
             </FormItem>
           </Col>
         </Row>
       </template>
-      <template v-else-if="form.bigPrize.type==3">
+      <template v-else-if="form.bigPrizeTemp.type==3">
         <FormItem label="U贝数：">
           <Row>
             <Col span="10">
               <Input
                 :key="111"
                 style="width:90%"
-                v-model="form.bigPrize.prizeNum"
+                v-model="form.bigPrizeTemp.prizeNum3"
                 placeholder="请输入U贝数"
                 clearable
               />
@@ -167,18 +172,18 @@
         </FormItem>
       </template>
       <FormItem label="阳光普照奖：">
-        <RadioGroup v-model="form.normalPrize.type">
+        <RadioGroup v-model="form.normalPrizeTemp.type">
           <Radio v-for="item in typeList" :key="item.value" :label="item.value">{{ item.label }}</Radio>
         </RadioGroup>
       </FormItem>
 
-      <template v-if="form.normalPrize.type==1">
+      <template v-if="form.normalPrizeTemp.type==1">
         <Row>
           <Col span="8">
             <FormItem label="实物名称：">
               <Input
                 style="width:90%"
-                v-model="form.normalPrize.prizeName"
+                v-model="form.normalPrizeTemp.prizeName1"
                 placeholder="请输入实物名称"
                 clearable
               />
@@ -188,7 +193,7 @@
             <FormItem label="实物个数：">
               <Input
                 style="width:90%"
-                v-model="form.normalPrize.prizeNum"
+                v-model="form.normalPrize.prizeNum1"
                 placeholder="请输入个数"
                 clearable
               />
@@ -196,17 +201,17 @@
           </Col>
         </Row>
       </template>
-      <template v-else-if="form.normalPrize.type==2">
+      <template v-else-if="form.normalPrizeTemp.type==2">
         <Row>
           <Col span="10">
             <FormItem
               label="选择优惠券"
-              prop="normalPrize.prizeName"
+              prop="normalPrizeTemp.prizeName2"
               :rules="{ required: true, message: '请选择优惠券' }"
             >
               <Input
                 :key="22"
-                v-model="form.normalPrize.prizeName"
+                v-model="form.normalPrizeTemp.prizeName2"
                 placeholder="点击按钮选择优惠券"
                 disabled
               >
@@ -216,14 +221,14 @@
           </Col>
         </Row>
       </template>
-      <template v-else-if="form.normalPrize.type==3">
+      <template v-else-if="form.normalPrizeTemp.type==3">
         <FormItem label="U贝数：">
           <Row>
             <Col span="10">
               <Input
                 :key="222"
                 style="width:90%"
-                v-model="form.normalPrize.prizeNum"
+                v-model="form.normalPrizeTemp.prizeNum3"
                 placeholder="请输入输入U贝数"
                 clearable
               />
@@ -349,7 +354,7 @@
       <div style="margin-top:20px;">
         <FormItem label>
           <Button type="primary" @click="handleSubmit('form')">提交</Button>
-          <Button style="margin-left: 8px" @click="handleReset('form')">重置</Button>
+          <!-- <Button style="margin-left: 8px" @click="handleReset('form')">重置</Button> -->
         </FormItem>
       </div>
     </Form>
@@ -419,7 +424,7 @@ export default {
       // openDrawTimeType 开奖时间配置1：固定时间、2：满多少人开奖
       openDrawTimeTypeList: [
         { value: 1, label: "固定时间" },
-        { value: 2, label: "相对时间（满多少人开奖）" }
+        { value: 2, label: "相对时间（满x人开奖）" }
       ],
 
       // 优惠券类型1：周边券、2：商超券
@@ -451,10 +456,11 @@ export default {
       prizeNum: "", //奖品个数
       giftImg: "", //奖品图片地址
 
+      //  运营后台的抽奖团配置的新增单人团页面不显示新人，新客，老客
       joinUserLevelList: [
-        { value: 1, label: "新人" },
-        { value: 2, label: "新客" },
-        { value: 3, label: "老客" },
+        // { value: 1, label: "新人" },
+        // { value: 2, label: "新客" },
+        // { value: 3, label: "老客" },
         { value: 4, label: "红人" },
         { value: 5, label: "达人" },
         { value: 0, label: "所有人" }
@@ -657,14 +663,14 @@ export default {
       let { type } = data;
       debugger;
       temp.type = type;
-      if (data.type == 1) {
+      if (type == 1) {
         temp.prizeName = data.prizeName1;
         temp.prizeNum = data.prizeNum1;
-      } else if (data.type == 2) {
+      } else if (type == 2) {
         temp.couponType = data.couponType;
         temp.giftImg = data.giftImg;
         temp.prizeReferId = data.prizeReferId;
-        temp.prizeNum = data.prizeNum2;
+        temp.prizeName = data.prizeName2;
       } else {
         temp.prizeNum = data.prizeNum3;
       }

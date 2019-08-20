@@ -109,16 +109,15 @@ export default {
     };
   },
   methods: {
-    loadProvinceList(callback) {
-      postSyncRequest("/system/area/province/list").then(res => {
+    loadProvinceList() {
+      return postSyncRequest("/system/area/province/list").then(res => {
         if (res.code == 200) {
           this.provinceList = res.data;
-        
+
           ["provinceCode", "cityCode", "countryCode", "shopId"].forEach(
             name => {
-              console.log(this);
               this[name] = this.shop[name];
-              console.log(name,this[name]);
+              console.log(name, this[name]);
               console.log(this.shop[name]);
             }
           );
@@ -146,7 +145,7 @@ export default {
           this.$Message.error(res.msg);
         }
       });
-      this.loadShops();
+      // this.loadShops();
     },
     //根据城市code获取区县信息数据
     cityChange(item, callback) {
@@ -198,6 +197,15 @@ export default {
       if (!this.provinceName) {
         return this.$Message.error("请选择省份");
       }
+      if (!this.cityName) {
+        return this.$Message.error("请选择区县");
+      }
+      if (!this.districtName) {
+        return this.$Message.error("请选择区域");
+      }
+      // if (!this.shopId) {
+      //   return this.$Message.error("请选择门店");
+      // }
       postRequest("/system/sys-shop-info/list?pageNum=1&pageSize=2000", {
         province: this.provinceName,
         city: this.cityName,
@@ -224,45 +232,41 @@ export default {
           return res;
         })
         .then(res => {
-          if (this.shop.provinceId) {
-            this.provinceId = this.shop.provinceId;
+          if (this.shop.provinceCode) {
+            this.provinceCode = this.shop.provinceCode;
             this.provinceName = this.provinceList.find(
               el => el.provinceCode == this.provinceId
             ).provinceName;
-            this.loadShops();
           }
           return res;
         })
         .then(res => {
-          // if(this.shop.cityId){
-          getSyncRequest("/system/area/city/" + this.provinceId)
+          getSyncRequest("/system/area/city/" + this.provinceCode)
             .then(res => {
               if (res.code == 200) {
                 this.cityList = res.data;
-                this.areaId = null;
-                this.cityId = this.shop.cityId;
-                if (this.shop.cityId) {
+                this.cityCode = this.shop.cityCode;
+                this.countryCode = null;
+                if (this.shop.cityCode) {
                   this.cityName = this.cityList.find(
-                    el => el.cityCode == this.cityId
+                    el => el.cityCode == this.cityCode
                   ).cityName;
                 }
-
-                this.loadShops();
               } else {
                 this.$Message.error(res.msg);
               }
               return res;
             })
             .then(res => {
-              if (this.shop.cityId) {
-                getSyncRequest("/system/area/district/" + this.cityId).then(
+              if (this.shop.cityCode) {
+                getSyncRequest("/system/area/district/" + this.cityCode).then(
                   res => {
                     if (res.code == 200) {
                       this.areaList = res.data;
-                      this.areaId = this.shop.areaId;
-                      if (this.shop.areaId) {
+                      this.countryCode = this.shop.countryCode;
+                      if (this.shop.countryCode) {
                         this.districtName = this.areaList.find(
-                          el => el.areaCode == this.areaId
+                          el => el.areaCode == this.countryCode
                         ).areaName;
                       }
 
@@ -281,11 +285,15 @@ export default {
     }
   },
   mounted() {
-    if (null != this.shop.provinceId && ("" != null) != this.shop.provinceId) {
-      this.isInit = 1;
-    }
-    // this.init();(
     this.loadProvinceList();
+    if (this.shop.provinceCode == null) {
+      // 新增
+      this.loadProvinceList();
+    } else {
+      // 修改 级联查询
+      // this.init();
+    }
+
     // ["provinceCode", "cityCode", "countryCode", "shopId"].forEach(name => {
     //   // console.log(this.shop[name]);
     //   this[name] = this.shop[name];
