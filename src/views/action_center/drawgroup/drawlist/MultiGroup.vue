@@ -25,7 +25,7 @@
         </Row>
       </FormItem>
       <!-- //开奖时间配置1：固定时间、2：满多少人开奖 -->
-      <FormItem label="开奖时间：">
+      <FormItem label="活动开奖时间：">
         <RadioGroup v-model="form.openDrawTimeType" @on-change="form.openDrawTime = ''">
           <Radio
             v-for="item in openDrawTimeTypeList"
@@ -441,7 +441,7 @@
       <div style="margin-top:20px;">
         <FormItem label>
           <Button type="primary" @click="handleSubmit('form')">提交</Button>
-          <Button style="margin-left: 8px" @click="handleReset('form')">重置</Button>
+          <!-- <Button style="margin-left: 8px" @click="handleReset('form')">重置</Button> -->
         </FormItem>
       </div>
     </Form>
@@ -526,7 +526,7 @@ export default {
       // openDrawTimeType 开奖时间配置1：固定时间、2：满多少人开奖
       openDrawTimeTypeList: [
         { value: 1, label: "固定时间" },
-        { value: 2, label: "相对时间（满多少人开奖）" }
+        { value: 2, label: "相对时间（满x人开奖）" }
       ],
 
       // 优惠券类型1：周边券、2：商超券
@@ -751,14 +751,14 @@ export default {
       };
       let { type } = data;
       temp.type = type;
-      if (data.type == 1) {
+      if (type == 1) {
         temp.prizeName = data.prizeName1;
         temp.prizeNum = data.prizeNum1;
-      } else if (data.type == 2) {
+      } else if (type == 2) {
         temp.couponType = data.couponType;
         temp.giftImg = data.giftImg;
         temp.prizeReferId = data.prizeReferId;
-        temp.prizeNum = data.prizeNum2;
+        temp.prizeName = data.prizeName2;
       } else {
         temp.prizeNum = data.prizeNum3;
       }
