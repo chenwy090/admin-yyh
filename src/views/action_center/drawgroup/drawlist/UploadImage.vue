@@ -1,5 +1,6 @@
 <template>
   <div>
+    <span class="label">{{label}}</span>
     <div class="demo-upload-list" v-for="item in uploadList" :key="item.uid">
       <img :src="item.imgUrl" />
       <div class="demo-upload-list-cover">
@@ -12,7 +13,7 @@
       <Upload
         :headers="userToken"
         ref="upload"
-        type="drag"
+        :type="dragType"
         :format="['jpg','jpeg','png','bmp']"
         :show-upload-list="false"
         :before-upload="handleBeforeUpload"
@@ -22,13 +23,19 @@
         :max-size="10240"
         :on-exceeded-size="handleMaxSize"
         :on-format-error="handleFormatError"
-        style="display: inline-block;width:90px;"
+        :style="uploadStyle"
       >
-        <div style="width: 90px;height:90px;line-height: 90px;">
-          <Icon type="ios-camera" size="20" />
-        </div>
+        <!-- :style="display: inline-block;width:90px;" -->
+        <template v-if="uploadList.length==0">
+          <div style="width: 90px;height:90px;line-height: 90px;">
+            <Icon type="ios-camera" size="20" />
+          </div>
+        </template>
+        <template v-else>
+          <Button size="small" icon="ios-cloud-upload-outline">更改</Button>
+        </template>
       </Upload>
-      <p style="font-size:12px">选择图片(不大于1M,JPG/PNG/JPEG/BMP）</p>
+      <!-- <p style="font-size:12px">选择图片(不大于1M,JPG/PNG/JPEG/BMP）</p> -->
     </div>
 
     <Modal v-model="visible" :footer-hide="true">
@@ -42,6 +49,10 @@ import { checkImage } from "@/libs/date";
 export default {
   name: "upload-image",
   props: {
+    label: {
+      type: String,
+      default: ""
+    },
     defaultList: {
       type: Array,
       default: function() {
@@ -65,6 +76,16 @@ export default {
         this.uploadList.push(item);
       }
       // this.$refs.upload.fileList
+    }
+  },
+  computed: {
+    uploadStyle() {
+      return this.uploadList.length == 0
+        ? "display: inline-block;width:90px;"
+        : "float:'left';padding-top:60px;";
+    },
+    dragType() {
+      return this.uploadList.length ? "select" : "drag";
     }
   },
   data() {
@@ -112,7 +133,7 @@ export default {
           imgUrl
         });
 
-        this.uploadList.push(file)
+        this.uploadList.push(file);
         this.$Message.info("上传图片成功");
       } else {
         this.$Message.error("上传图片失败，请重新上传");
@@ -120,7 +141,7 @@ export default {
     },
     //文件上传
     handleMaxSize(file) {
-      this.$Message.error("图片不大于1M");
+      this.$Message.error("图片不大于10M");
     },
     handleFormatError() {
       this.msgErr("只能上传jpg,jpeg,png,bmp格式,请重新上传");
@@ -145,8 +166,13 @@ export default {
 };
 </script>
 <style scoped>
+.label {
+  float: left;
+  height: 90px;
+}
 .demo-upload-list {
-  display: inline-block;
+  /* display: inline-block; */
+  float: left;
   width: 90px;
   height: 90px;
   text-align: center;

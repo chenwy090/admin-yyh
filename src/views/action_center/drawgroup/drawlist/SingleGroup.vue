@@ -252,16 +252,16 @@
 
       <!--  1:实物、2：优惠券、3：U贝 -->
       <FormItem label="参加条件：">
-        <RadioGroup>
+        <RadioGroup :value="2">
           <!-- isFailureBackFee -->
-          <Radio label="2">优惠券</Radio>
+          <Radio :label="2">优惠券</Radio>
         </RadioGroup>
-
         <Row>
           <Col span="10">
             <FormItem
-              label="选择优惠券"
-              prop="bigPrize.prizeName"
+              label
+              :label-width="100"
+              prop="couponName"
               :rules="{ required: true, message: '请选择优惠券' }"
             >
               <Input :key="333" v-model="form.couponName" placeholder="点击按钮选择优惠券" disabled>
@@ -270,11 +270,6 @@
             </FormItem>
           </Col>
         </Row>
-        <!-- <p>
-          <Select v-model="other.coupon" style="width: 150px;">
-            <Option v-for="el in 'abc'" :key="'line256' + el" :value="el" :label="'优惠券'+el"></Option>
-          </Select>
-        </p>-->
       </FormItem>
 
       <FormItem label="团失败u贝返还：">
@@ -320,23 +315,43 @@
       </FormItem>
       <!-- 广告主 banner图片url advertBannerImgUrl   广告主 logo图片url advertLogoImgUrl -->
 
-      <Row>
-        <Col span="10">
-          <FormItem label="Banner图：">
+      <Alert type="warning">选择图片(不大于10M,JPG/PNG/JPEG/BMP）</Alert>
+      <Row type="flex" justify="end">
+        <Col span="8">
+          <!-- <FormItem label="Banner图：">
             <UploadImage :fileUploadType="'banner'" @uploadSuccess="bannerUploadSuccess"></UploadImage>
-          </FormItem>
+          </FormItem>-->
+          <UploadImage
+            label="列表banner："
+            :fileUploadType="'drawActive'"
+            :defaultList="this.form.defaultDrawActiveList"
+            @uploadSuccess="drawActiveUploadSuccess"
+          ></UploadImage>
         </Col>
-        <Col span="10">
-          <FormItem label="Logo：">
-            <UploadImage :fileUploadType="'logo'" @uploadSuccess="logoUploadSuccess"></UploadImage>
-          </FormItem>
+        <Col span="8">
+          <UploadImage
+            label="详情Banner："
+            :fileUploadType="'banner'"
+            :defaultList="this.form.defaultBannerList"
+            @uploadSuccess="bannerUploadSuccess"
+          ></UploadImage>
+        </Col>
+        <Col span="8">
+          <UploadImage
+            label="Logo："
+            :fileUploadType="'logo'"
+            :defaultList="this.form.defaultLogoList"
+            @uploadSuccess="logoUploadSuccess"
+          ></UploadImage>
         </Col>
       </Row>
 
-      <FormItem label=" ">
-        <Button type="primary" @click="handleSubmit('form')">提交</Button>
-        <Button style="margin-left: 8px" @click="handleReset('form')">重置</Button>
-      </FormItem>
+      <div style="margin-top:20px;">
+        <FormItem label>
+          <Button type="primary" @click="handleSubmit('form')">提交</Button>
+          <Button style="margin-left: 8px" @click="handleReset('form')">重置</Button>
+        </FormItem>
+      </div>
     </Form>
     <Modal
       v-model="couponModalShow"
@@ -347,7 +362,11 @@
       :mask-closable="false"
       :styles="{top: '20px'}"
     >
-      <chooseCouponListView :prizeType="prizeType" @seclectedTr-event="selectedTrCallBack"></chooseCouponListView>
+      <chooseCouponListView
+        v-if="couponModalShow"
+        :prizeType="prizeType"
+        @seclectedTr-event="selectedTrCallBack"
+      ></chooseCouponListView>
     </Modal>
   </div>
 </template>
@@ -499,6 +518,9 @@ export default {
   },
   methods: {
     // 广告主 banner图片url advertBannerImgUrl   广告主 logo图片url advertLogoImgUrl -->
+    drawActiveUploadSuccess(data) {
+      this.form.drawActiveUrl = data.imgUrl;
+    },
     bannerUploadSuccess(data) {
       this.form.advertBannerImgUrl = data.imgUrl;
     },
@@ -525,9 +547,9 @@ export default {
             this.form.couponId = data.id; //优惠券ID（单人团参团条件）
             this.form.couponName = data.name; //优惠券名称
           } else {
-            this.form[this.prizeType].couponType = data.couponType;
-            this.form[this.prizeType].prizeReferId = data.id;
-            this.form[this.prizeType].prizeName = data.name;
+            this.form[`${this.prizeType}Temp`].couponType = data.couponType;
+            this.form[`${this.prizeType}Temp`].prizeReferId = data.id;
+            this.form[`${this.prizeType}Temp`].prizeName2 = data.name;
           }
         }
       }
@@ -536,6 +558,7 @@ export default {
     },
 
     handleChoose(prizeType) {
+      console.log("handleChoose", prizeType);
       this.prizeType = prizeType;
       this.couponModalShow = true;
     },
@@ -604,10 +627,13 @@ export default {
         if (valid) {
           //  /drawDaily/activity/add  新增
           const url = "/drawDaily/activity/add";
-          const params = JSON.parse(JSON.stringify(this.form));
-          params.groupType = 1;
-          console.log("params:", params);
-          postRequest(url, params).then(res => {
+
+          //清洗数据
+          let formData = JSON.parse(JSON.stringify(this.form));
+          formData.bigPrize = this.formatFormData(formData.bigPrizeTemp);
+          formData.normalPrize = this.formatFormData(formData.normalPrizeTemp);
+          formData.groupType = 1;
+          postRequest(url, formData).then(res => {
             if (res.code == 200) {
               this.$emit("closeFormModal-event");
             } else {
@@ -616,6 +642,33 @@ export default {
           });
         }
       });
+    },
+
+    //格式化提交数据
+    formatFormData(data) {
+      let temp = {
+        type: 1,
+        prizeName: "", //实物名称 奖项名称  实物：选择后填写实物名称，最多15个汉字
+        prizeNum: "", //实物个数 奖品个数
+        couponType: 2, //优惠券类型1：周边券、2：商超券/ 超市券 优惠券：选择领优惠券和周边券
+        giftImg: "", //奖品图片地址
+        prizeReferId: null //优惠券奖品关联ID
+      };
+      let { type } = data;
+      debugger;
+      temp.type = type;
+      if (data.type == 1) {
+        temp.prizeName = data.prizeName1;
+        temp.prizeNum = data.prizeNum1;
+      } else if (data.type == 2) {
+        temp.couponType = data.couponType;
+        temp.giftImg = data.giftImg;
+        temp.prizeReferId = data.prizeReferId;
+        temp.prizeNum = data.prizeNum2;
+      } else {
+        temp.prizeNum = data.prizeNum3;
+      }
+      return temp;
     },
     handleReset(name) {
       this.$refs[name].resetFields();

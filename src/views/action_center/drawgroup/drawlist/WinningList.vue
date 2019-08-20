@@ -1,7 +1,7 @@
 <template>
   <div class="winningList">
     <!-- 查看 开奖结果 -->
-    <Modal v-model="modalDetail" :closable="true" width="600">
+    <Modal v-model="modalDetail" :closable="true" width="700">
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="ios-information-circle"></Icon>
         <span>查看开奖结果</span>
