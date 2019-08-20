@@ -21,7 +21,10 @@
         </FormItem>
       </Col>
       <Col span="4">
-        <FormItem>
+        <FormItem
+          :prop="'drawDailyShopList['+index+'].cityCode'"
+          :rules="{ required: true, message: '请选择市' }"
+        >
           <Select
             v-model="cityCode"
             placeholder="选择市"
@@ -37,7 +40,10 @@
         </FormItem>
       </Col>
       <Col span="4">
-        <FormItem>
+        <FormItem
+          :prop="'drawDailyShopList['+index+'].countryCode'"
+          :rules="{ required: true, message: '请选择区' }"
+        >
           <Select
             v-model="countryCode"
             placeholder="选择区"
@@ -53,7 +59,10 @@
         </FormItem>
       </Col>
       <Col span="4">
-        <FormItem>
+        <FormItem
+          :prop="'drawDailyShopList['+index+'].shopId'"
+          :rules="{ required: true, message: '请选择门店' }"
+        >
           <Select
             v-model="shopId"
             placeholder="选择门店"

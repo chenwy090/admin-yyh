@@ -720,9 +720,19 @@ export default {
       this.$refs[name].validate(valid => {
         console.log("validvalidvalidvalidvalidvalid", valid);
         if (valid) {
+          let { openDrawTimeType, startTime, openDrawTime } = this.form;
+          if (openDrawTimeType == 1) {
+            let d1 = new Date(startTime);
+            let d2 = new Date(openDrawTime);
+
+            if (d1 >= d2) {
+              let msg = "活动开奖时间不能小于等于活动开始时间";
+              console.log(msg);
+              return this.msgErr(msg);
+            }
+          }
           //  /drawDaily/activity/add  新增
           const url = "/drawDaily/activity/add";
-
           //清洗数据
           let formData = JSON.parse(JSON.stringify(this.form));
           formData.bigPrize = this.formatFormData(formData.bigPrizeTemp);
