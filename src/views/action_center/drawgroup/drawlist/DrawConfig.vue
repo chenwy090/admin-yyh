@@ -47,7 +47,7 @@
       </Card>
     </div>
     <Card :bordered="false">
-      <Table :show-index="true" :loading="loading" :columns="columns" :data="tableData">
+      <Table border :show-index="true" :loading="loading" :columns="columns" :data="tableData">
         <template slot-scope="{ row }" slot="action">
           <!--0：未上架 1:未开始 2:进行中 3:开奖中 4:已开奖 5:已下架  -->
           <template v-if="row.status == 4 || row.status == 5">

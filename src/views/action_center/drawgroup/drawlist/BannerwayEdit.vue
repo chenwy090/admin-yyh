@@ -1,6 +1,6 @@
 <template>
   <div class="bannerwayEdit">
-    <Modal v-model="isShow" :closable="true">
+    <Modal v-model="isShow" :closable="true" :mask-closable="false">
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="ios-information-circle"></Icon>
         <span>{{title}}</span>
@@ -104,17 +104,16 @@ export default {
   watch: {
     action: {
       handler(val, oldVal) {
-        console.log("watch:action", this.action);
         let { type, data } = this.action;
         this.isShow = true;
         if (type == "add") {
-          this.title = "新增";
+          this.title = "添加任务抽奖banner";
           Object.keys(this.formValidate).forEach(name => {
             this.formValidate[name] = "";
           });
         } else {
           //edit
-          this.title = "修改";
+          this.title = "修改任务抽奖banner";
           this.$nextTick(() => {
             Object.keys(this.formValidate).forEach(name => {
               this.formValidate[name] = data[name];
@@ -305,6 +304,18 @@ export default {
       this.isShow = false;
       this.$nextTick(() => {
         this.$refs[name].resetFields();
+        this.uploadList = [];
+
+        this.formValidate = {
+          id: "",
+          drawType: 1, //  1.抽奖id 2抽奖链接
+          checkDrawType: "",
+          drawId: "", //抽奖活动ID
+          linkUrl: "", //外置链接跳转地址
+          imgUrl: "", // banner图片访问地址
+          onlineTime: "", //上线时间
+          rankNum: "" //排序字段，值越大优先级越高
+        };
       });
     },
 
@@ -339,8 +350,6 @@ export default {
           } else {
             this.msgErr(res.msg);
           }
-
-          console.log("rrrr", r);
         } else {
           this.$Message.error("数据验证失败！");
         }

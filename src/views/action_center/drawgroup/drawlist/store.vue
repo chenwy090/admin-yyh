@@ -166,7 +166,7 @@ export default {
           if (callback) {
             callback();
           }
-          this.loadShops();
+          // this.loadShops();
         } else {
           this.$Message.error(res.msg);
         }

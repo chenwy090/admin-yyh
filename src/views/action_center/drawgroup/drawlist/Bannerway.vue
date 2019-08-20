@@ -5,7 +5,7 @@
       <Button type="dashed" icon="md-arrow-round-back" @click="goback">返回列表</Button>
     </Card>
     <Card :bordered="false">
-      <Table :loading="loading" :columns="columns" :data="tableData">
+      <Table  border :loading="loading" :columns="columns" :data="tableData">
         <template slot-scope="{ row }" slot="action">
           <!-- 1: 已上架、2：已下架 -->
           <Button
@@ -72,7 +72,7 @@
 
     <bannerway-edit :action="action" @refresh="queryTableList"></bannerway-edit>
 
-    <Modal v-model="undercarriage" :closable="true" width="400">
+    <Modal v-model="undercarriage" :closable="true" :mask-closable="false" width="400">
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="ios-information-circle"></Icon>
         <span>下架</span>
@@ -107,6 +107,18 @@ export default {
     [BannerwayEdit.name]: BannerwayEdit
   },
   data() {
+    const validateReason = (rule, value, callback) => {
+      value += "";
+      value = value.trim();
+      console.log(value.length);
+      if (value == "") {
+        callback(new Error("下架原因不能为空"));
+      } else if (value.length < 10) {
+        callback(new Error("下架原因不得少于10个字"));
+      } else {
+        callback();
+      }
+    };
     return {
       // 新增、修改 任务抽奖banner
       modalAddModify: false,
@@ -129,13 +141,7 @@ export default {
         reason: [
           {
             required: true,
-            message: "下架原因不能为空",
-            trigger: "blur"
-          },
-          {
-            type: "string",
-            min: 10,
-            message: "原因不得少于10个字",
+            validator: validateReason,
             trigger: "blur"
           }
         ]
