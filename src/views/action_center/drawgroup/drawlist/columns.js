@@ -201,7 +201,7 @@ export const bannerWayColumns = [
         key: "gmtModified",
         align: "center",
     }, {
-        title: "上线时间",
+        title: "上架时间",
         key: "onlineTime",
         align: "center",
     }]

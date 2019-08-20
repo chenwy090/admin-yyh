@@ -5,20 +5,20 @@ export default {
   startTime: "", //活动开始时间 ［必填］
   openDrawTimeType: 1, //开奖时间配置1：固定时间 年月日  时：分 2：满多少人开奖 时：分 
   openDrawTime: "", //开奖时间 必填
-  openDrawTimeNeedPlayers: 0, //type:2 满x人开奖
+  openDrawTimeNeedPlayers: "", //type:2 满x人开奖
 
   winningRemarks: "", //领奖说明
   joinUserLevel: 1, //参加对象 用户等级  参与对象［必选，单选］参与对象［必选，单选］
-  maxOpenGroupCount: 0, //总开团数 不能为空  ［必填］：填写成团人数
-  groupPlayerCount: 0, //成团人数 不能为空 ［必填］：填写单个用户可开团次数
-  userOpenGroupCount: 0, //每人开团次数 用户开团次数 不能为空  ［必填］：填写单个用户可参团次数
-  openGroupMinutes: 0, //开团有效时间 开团有效分钟数 不能为空
+  maxOpenGroupCount: "", //总开团数 不能为空  ［必填］：填写成团人数
+  groupPlayerCount: "", //成团人数 不能为空 ［必填］：填写单个用户可开团次数
+  userOpenGroupCount: "", //每人开团次数 用户开团次数 不能为空  ［必填］：填写单个用户可参团次数
+  openGroupMinutes: "", //开团有效时间 开团有效分钟数 不能为空
 
   feeType: 1, //"费用类型1不能为空"
   openGroupFee: "", //开团消耗U贝 "开团费用不能为空" ［必填］：填写用户开团所消耗的U贝数
 
-  userJoinGroupCount: 1, //参团次数 用户参团次数限制 不能为空  ［必填］：填写单个用户可参团次数
-  joinGroupFee: 0, //参团消耗U贝  参团费用(U贝 ) 参团费用不能为空
+  userJoinGroupCount: "", //参团次数 用户参团次数限制 不能为空  ［必填］：填写单个用户可参团次数
+  joinGroupFee: "", //参团消耗U贝  参团费用(U贝 ) 参团费用不能为空 可以0
   isFailureBackFee: 1, //团失败u贝返还
   drawRuleRemarks: "", //抽奖规则 ［必填］：填写抽奖规则
   //----广告主信息：

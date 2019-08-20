@@ -140,7 +140,7 @@ export default {
           key: "startTime"
         },
         {
-          title: "开奖时间",
+          title: "抽奖开奖时间",
           align: "center",
           minWidth: 140,
           key: "openDrawTime"
