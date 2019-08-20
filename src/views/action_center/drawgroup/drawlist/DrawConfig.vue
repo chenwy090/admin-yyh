@@ -81,6 +81,13 @@
           </template>
         </template>
 
+        <template slot-scope="{ row }" slot="createAndModifiedBy">
+          <span>{{ row.modifiedBy || row.createBy }}</span>
+        </template>
+        <template slot-scope="{ row }" slot="gmtModifiedAndCreate">
+          <span>{{ row.gmtModified || row.gmtCreate }}</span>
+        </template>
+
         <template slot-scope="{ row }" slot="totalPlayer">
           <a
             @click="showTotalPlayer(row.id)"
