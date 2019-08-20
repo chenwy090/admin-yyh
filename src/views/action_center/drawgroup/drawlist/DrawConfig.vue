@@ -63,6 +63,7 @@
               type="primary"
               size="small"
               style="margin-right: 5px"
+              v-if="row.status == 0 || row.status == 1"
               @click="addOrEdit('edit',row)"
             >编辑</Button>
             <Button
@@ -303,6 +304,16 @@ export default {
     //   });
     // },
     async addOrEdit(type, row) {
+      /**
+       * 编辑：创建后未上架，可编辑修改所有信息，但是保存是需判断是否到开始时间，
+       * 如果是，则提示开始时间已到，无法保存。，一旦上架，不可修改
+       *  未上架 0
+          未开始 1
+          进行中 2
+          开奖中 3
+          已开奖 4
+          已下架 5
+       *  */
       let data = null;
       let groupType = 2;
       if (type == "add") {
@@ -314,22 +325,33 @@ export default {
           singleFormData: JSON.parse(JSON.stringify(singleFormData))
         });
       } else if (type == "edit") {
+        if (!(row.status == 0 || row.status == 1)) {
+          return this.msgErr("创建后未上架、未开始的活动，才可编辑");
+        }
+        //
         const url = "/drawDaily/activity/selectById";
         let res = await postRequest(url, { id: row.id });
         if (res.code == 200) {
           data = res.data;
+
+          //大奖  阳光普照奖
+          this.bigPrizeTemp = this.formatPrizeData(data.bigPrize);
+          this.normalPrizeTemp = this.formatPrizeData(data.normalPrize);
+
+          //广告图数据
+          data.defaultDrawActiveList = [];
           data.defaultBannerList = [];
           data.defaultLogoList = [];
-          data.defaultShowList = [];
+
+          // drawActiveUrl:"",//列表banner
+          if (data.drawActiveUrl) {
+            data.defaultDrawActiveList = [{ imgUrl: data.drawActiveUrl }];
+          }
           if (data.advertBannerImgUrl) {
             data.defaultBannerList = [{ imgUrl: data.advertBannerImgUrl }];
           }
           if (data.advertLogoImgUrl) {
             data.defaultLogoList = [{ imgUrl: data.advertLogoImgUrl }];
-          }
-
-          if (data.advertListUrl) {
-            data.defaultShowList = [{ imgUrl: data.advertListUrl }];
           }
 
           groupType = data.groupType;
@@ -349,6 +371,44 @@ export default {
         groupType,
         data
       };
+    },
+
+    formatPrizeData(data) {
+      let temp = {
+        type: 1,
+        // 1:实物
+        prizeName1: "",
+        prizeNum1: 1, //不可编辑
+
+        //2：优惠券
+        couponType: 2, //优惠券类型1：周边券、2：商超券/ 超市券 优惠券：选择领优惠券和周边券
+        giftImg: "", //奖品图片地址
+        prizeReferId: null, //优惠券奖品关联ID
+        prizeNum2: "", //可编辑
+
+        //3 U贝
+        prizeNum3: "" //可编辑
+      };
+
+      let {
+        type,
+        prizeName,
+        prizeNum,
+        couponType,
+        giftImg,
+        prizeReferId
+      } = data;
+      temp.type = type;
+      if (type == 1) {
+        temp.prizeName1 = prizeName;
+      } else if (type == 2) {
+        temp.couponType = couponType || 2;
+        temp.giftImg = giftImg;
+        temp.prizeReferId = prizeReferId;
+      } else {
+        temp.prizeNum3 = prizeName;
+      }
+      return temp;
     },
     // 查看详情
     checkDetailsFn(row) {
@@ -408,6 +468,8 @@ export default {
             res => {
               if (res.code == 200) {
                 this.msgOk("下架成功");
+                //刷新列表
+                this.queryTableList();
               } else {
                 this.msgErr(res.msg);
               }
@@ -428,6 +490,8 @@ export default {
           putup({ drawId: row.id }).then(res => {
             if (res.code == 200) {
               this.msgOk("上架成功");
+              //重新查询数据
+              this.queryTableList();
             } else {
               this.msgErr(res.msg);
             }
