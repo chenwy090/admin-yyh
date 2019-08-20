@@ -1,6 +1,6 @@
 <template>
   <div class="bannerwayEdit">
-    <Modal v-model="isShow" :closable="true" :mask-closable="false">
+    <Modal v-model="isShow" :closable="true" :mask-closable="false" @on-cancel="closeDialog">
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="ios-information-circle"></Icon>
         <span>{{title}}</span>
@@ -106,6 +106,7 @@ export default {
       handler(val, oldVal) {
         let { type, data } = this.action;
         this.isShow = true;
+
         if (type == "add") {
           this.title = "添加任务抽奖banner";
           Object.keys(this.formValidate).forEach(name => {
@@ -256,6 +257,11 @@ export default {
     };
   },
   methods: {
+    closeDialog() {
+      //关闭对话框清除表单数据
+      this.$refs.formValidate.resetFields();
+      this.uploadList = [];
+    },
     handleView(name) {
       this.formValidate.imgUrl = name;
       this.visible = true;
