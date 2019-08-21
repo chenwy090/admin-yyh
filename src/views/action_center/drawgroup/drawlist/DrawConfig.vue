@@ -127,7 +127,7 @@
         <span>报名成功用户</span>
       </p>
       <div class="table-box">
-        <Table :show-index="true" :columns="totalPlayerColumns" :data="totalPlayerTableData"></Table>
+        <Table border :show-index="true" :columns="totalPlayerColumns" :data="totalPlayerTableData"></Table>
       </div>
     </Modal>
     <!-- 抽奖券 -->
@@ -137,7 +137,7 @@
         <span>抽奖券</span>
       </p>
       <div class="table-box">
-        <Table :show-index="true" :columns="totalTicketColumns" :data="totalTicketTableData"></Table>
+        <Table border :show-index="true" :columns="totalTicketColumns" :data="totalTicketTableData"></Table>
       </div>
     </Modal>
     <!-- 下架抽奖活动 -->
