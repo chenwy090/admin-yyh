@@ -7,7 +7,7 @@
         <span>查看开奖结果</span>
       </p>
       <div class="table-box">
-        <Table :columns="columns" :data="tableData">
+        <Table border :columns="columns" :data="tableData">
           <template slot-scope="{ row }" slot="logistics">
             <Button
               type="success"
@@ -53,7 +53,7 @@ import {
   queryWinningList,
   updateLogistics //更新物流
 } from "@/api/sys";
-import columns, { detailColumns } from "./columns";
+import { detailColumns } from "./columns";
 
 export default {
   name: "winning-list",
