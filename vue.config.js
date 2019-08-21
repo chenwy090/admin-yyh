@@ -1,3 +1,4 @@
+const webpack = require("webpack");
 module.exports = {
   // baseUrl: '/zex-mgr',
   outputDir: 'zex-mgr', // 输出文件目录
@@ -6,7 +7,7 @@ module.exports = {
     plugins: [
       // 指定初次常量
       new webpack.DefinePlugin({
-          '__UPDATED__': JSON.stringify(new Date().toLocaleString())
+        '__UPDATED__': JSON.stringify(new Date().toLocaleString())
       })
     ]
   },
