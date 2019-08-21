@@ -286,7 +286,7 @@ export default {
     color: #000;
   }
   .banner-img{
-    width: 200px; height: atuo;max-height: 600px;background: #ddd;
+    width: 120px; height: atuo;max-height: 600px;background: #ddd;
   }
 }
 .flex{
