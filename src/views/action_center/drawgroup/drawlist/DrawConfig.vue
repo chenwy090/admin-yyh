@@ -170,8 +170,7 @@
 </template>
 <script>
 import multiFormData from "./multiGroupFromData";
-import singleFormData from "./multiGroupFromData";
-// import singleFormData from "./singleGroupFromData";
+import singleFormData from "./singleGroupFromData";
 import { postRequest } from "@/libs/axios";
 import {
   putup,

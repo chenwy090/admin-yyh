@@ -46,7 +46,7 @@
                 :on-success="handleUploadSuccess"
                 :action="url"
                 accept="image"
-                :max-size="10240"
+                :max-size="1024"
                 :on-exceeded-size="handleMaxSize"
                 :on-format-error="handleFormatError"
                 style="display: inline-block;width:90px;"
@@ -278,7 +278,7 @@ export default {
     },
     //文件上传
     handleMaxSize(file) {
-      this.$Message.error("图片不大于10M");
+      this.$Message.error("图片不大于1M");
     },
 
     handleFormatError() {
@@ -325,9 +325,11 @@ export default {
           // this.$Message.success("数据验证成功!");
           let oForm = JSON.parse(JSON.stringify(this.formValidate));
           let { drawType, checkDrawType } = oForm;
-          if (drawType) {
+          debugger;
+          if (drawType == 1) {
             oForm.drawId = checkDrawType;
           } else {
+            //drawType == 2
             oForm.linkUrl = checkDrawType;
           }
           delete oForm.checkDrawType;

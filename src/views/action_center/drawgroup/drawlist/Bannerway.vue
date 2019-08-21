@@ -5,7 +5,7 @@
       <Button type="dashed" icon="md-arrow-round-back" @click="goback">返回列表</Button>
     </Card>
     <Card :bordered="false">
-      <Table  border :loading="loading" :columns="columns" :data="tableData">
+      <Table border :loading="loading" :columns="columns" :data="tableData">
         <template slot-scope="{ row }" slot="action">
           <!-- 1: 已上架、2：已下架 -->
           <Button
@@ -26,6 +26,13 @@
             v-if="row.status == 1"
             @click="underUpdateOperationStatus(row)"
           >下架</Button>
+        </template>
+
+        <template slot-scope="{ row }" slot="createAndModifiedBy">
+          <span>{{ row.modifiedBy || row.createBy }}</span>
+        </template>
+        <template slot-scope="{ row }" slot="gmtModifiedAndCreate">
+          <span>{{ row.gmtModified || row.gmtCreate }}</span>
         </template>
 
         <template slot-scope="{ row }" slot="totalPlayer">

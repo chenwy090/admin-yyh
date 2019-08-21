@@ -105,7 +105,6 @@
       <!-- 1:实物、2：优惠券、3：U贝 -->
       <FormItem label="活动大奖：">
         <RadioGroup v-model="form.bigPrizeTemp.type">
-          <!--  @on-change="form.bigPrize.prizeName='',form.bigPrize.prizeNum = ''" -->
           <Radio v-for="item in typeList" :key="item.value" :label="item.value">{{ item.label }}</Radio>
         </RadioGroup>
       </FormItem>
@@ -155,7 +154,11 @@
         </Row>
       </template>
       <template v-else-if="form.bigPrizeTemp.type==3">
-        <FormItem label="U贝数：">
+        <FormItem
+          label="U贝数："
+          prop="bigPrizeTemp.prizeNum3"
+          :rules="{ required: true, validator: checkIsPositiveIntegerEx0 }"
+        >
           <Row>
             <Col span="10">
               <Input
@@ -220,7 +223,11 @@
         </Row>
       </template>
       <template v-else-if="form.normalPrizeTemp.type==3">
-        <FormItem label="U贝数：">
+        <FormItem
+          label="U贝数："
+          prop="normalPrizeTemp.prizeNum3"
+          :rules="{ required: true, validator: checkIsPositiveIntegerEx0 }"
+        >
           <Row>
             <Col span="10">
               <Input
@@ -257,7 +264,7 @@
       <FormItem
         label="总开团数："
         prop="maxOpenGroupCount"
-        :rules="{ required: true, message: '请输入总开团数' }"
+        :rules="{ required: true, validator: checkIsPositiveIntegerEx0 }"
       >
         <Row>
           <Col span="10">
@@ -274,7 +281,7 @@
       <FormItem
         label="成团人数："
         prop="groupPlayerCount"
-        :rules="{ required: true, message: '请输入成团人数' }"
+        :rules="{ required: true, validator: checkIsPositiveIntegerEx0 }"
       >
         <Row>
           <Col span="10">
@@ -291,7 +298,7 @@
       <FormItem
         label="每人开团次数："
         prop="userOpenGroupCount"
-        :rules="{ required: true, message: '请输入开团次数' }"
+        :rules="{ required: true, validator: checkIsPositiveIntegerEx0 }"
       >
         <Row>
           <Col span="10">
@@ -309,7 +316,7 @@
       <FormItem
         label="开团有效时间："
         prop="openGroupMinutes"
-        :rules="{ required: true, message: '请输入开团有效时间' }"
+        :rules="{ required: true, validator: checkIsPositiveIntegerEx0 }"
       >
         <Row>
           <Col span="10">
@@ -326,7 +333,7 @@
       <FormItem
         label="开团消耗U贝："
         prop="openGroupFee"
-        :rules="{ required: true, message: '请输入开团消耗U贝' }"
+        :rules="{ required: true, validator: checkIsPositiveIntegerEx0 }"
       >
         <Row>
           <Col span="10">
@@ -337,7 +344,7 @@
       <FormItem
         label="参团次数："
         prop="userJoinGroupCount"
-        :rules="{ required: true, message: '请输入参团次数' }"
+        :rules="{ required: true, validator: checkIsPositiveIntegerEx0 }"
       >
         <Row>
           <Col span="10">
@@ -353,7 +360,7 @@
       <FormItem
         label="参团消耗U贝："
         prop="joinGroupFee"
-        :rules="{ required: true, message: '请输入参团消耗U贝' }"
+        :rules="{ required: true, validator: checkIsPositiveIntegerEx0 }"
       >
         <Row>
           <Col span="10">
@@ -407,7 +414,7 @@
 
       <!-- 广告主 banner图片url advertBannerImgUrl   广告主 logo图片url advertLogoImgUrl -->
 
-      <Alert type="warning">选择图片(不大于10M,JPG/PNG/JPEG/BMP）</Alert>
+      <Alert type="warning">选择图片(不大于1M,JPG/PNG/JPEG/BMP）</Alert>
       <Row type="flex" justify="end">
         <Col span="8">
           <!-- <FormItem label="Banner图：">
@@ -473,6 +480,7 @@ import UploadImage from "./UploadImage";
 import comm from "@/mixins/common";
 
 // this.$emit("closeFormModal-event");
+
 export default {
   name: "multi-group",
   components: {
@@ -500,15 +508,7 @@ export default {
         callback(new Error("请输入大于等于0的正数"));
       }
     };
-    //验证正整数
-    const checkIsPositiveIntegerEx0 = (rule, value, callback) => {
-      var reg = /^([1-9][0-9]*)$/;
-      if (reg.test(value)) {
-        callback();
-      } else {
-        callback(new Error("请输入大于0的正整数"));
-      }
-    };
+
     return {
       defaultList: [
         // {
@@ -572,27 +572,7 @@ export default {
       couponModalShow: false,
       showStore: true,
       form: JSON.parse(JSON.stringify(multiFormData)),
-      formValite: {
-        firstSite: [{ required: true, message: "请选择投放渠道" }],
-        secondSite: [{ required: true, message: "请选择投放位置" }],
-        num: [
-          {
-            required: true,
-            validator: checkIsPositiveIntegerEx0,
-            trigger: "blur"
-          }
-        ],
-        showNum: [
-          {
-            required: true,
-            validator: checkIsPositiveIntegerEx0,
-            trigger: "blur"
-          }
-        ],
-        discounts: [
-          { required: true, validator: checkIsPositive, trigger: "blur" }
-        ]
-      }
+      formValite: {}
     };
   },
 
@@ -616,6 +596,15 @@ export default {
     }
   },
   methods: {
+    //验证正整数
+    checkIsPositiveIntegerEx0(rule, value, callback) {
+      var reg = /^([0-9][0-9]*)$/;
+      if (reg.test(value)) {
+        callback();
+      } else {
+        callback(new Error("请输入大于等于0的正整数"));
+      }
+    },
     // 广告主 banner图片url advertBannerImgUrl   广告主 logo图片url advertLogoImgUrl -->
     drawActiveUploadSuccess(data) {
       this.form.drawActiveUrl = data.imgUrl;
