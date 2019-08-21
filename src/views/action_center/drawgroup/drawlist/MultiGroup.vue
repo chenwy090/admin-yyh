@@ -512,7 +512,6 @@ export default {
     } else if (drawType == "edit") {
       this.form = JSON.parse(JSON.stringify(drawData));
     }
-    console.log("mountedmountedmounted", this.form);
   },
   data() {
     //验证正整数+正小数+0
@@ -713,10 +712,8 @@ export default {
       });
     },
     handleRemove(id) {
-      console.log("handleRemove", id);
       if (this.form.drawDailyShopList.length == 1) {
-        this.msgErr("必须保留一条");
-        return;
+        return this.msgErr("必须保留一条");
       }
       this.form.drawDailyShopList.some((item, index) => {
         if (item.id == id) {
@@ -727,7 +724,6 @@ export default {
     },
     handleSubmit(name) {
       this.$refs[name].validate(valid => {
-        console.log("validvalidvalidvalidvalidvalid", valid);
         if (valid) {
           let { openDrawTimeType, startTime, openDrawTime } = this.form;
           if (openDrawTimeType == 1) {

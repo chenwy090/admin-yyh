@@ -71,7 +71,6 @@ export default {
     },
     action: {
       handler(val, oldVal) {
-        console.log("watch:action", this.action);
         this.modalShow = true;
         let { type = "add", groupType, data } = this.action;
         this.groupType = groupType;
