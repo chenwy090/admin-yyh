@@ -1,6 +1,15 @@
 module.exports = {
   // baseUrl: '/zex-mgr',
   outputDir: 'zex-mgr', // 输出文件目录
+  configureWebpack: {
+    // 配置 webpack plugins
+    plugins: [
+      // 指定初次常量
+      new webpack.DefinePlugin({
+          '__UPDATED__': JSON.stringify(new Date().toLocaleString())
+      })
+    ]
+  },
   devServer: {
     port: 9999, // 端口号
     host: '127.0.0.1',

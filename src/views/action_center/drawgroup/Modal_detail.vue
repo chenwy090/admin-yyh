@@ -1,6 +1,6 @@
 <template>
   <div class="yyh-modal">
-    <Modal v-model="modalShow" title="详情"
+    <Modal class="yyh-modal" v-model="modalShow" title="详情"
       :styles="{top: '20px'}">
       <div v-if="dataList.groupType !== -1">
         <div class="yyh-modal-item" v-for="(el, i) in descConfig[Number(dataList.groupType-1)]" :key="'modal_detail' + i">
@@ -8,21 +8,22 @@
           <span v-if="el[1] === '投放门店'" style="flex: 1">{{handleAddress(dataList[el[0]])}}</span>
           <span v-else-if="el[1] === '活动大奖'" style="flex: 1;">
             <div style="display: flex;">
-              <img v-if="dataList[el[0]].prizeName == '2'" class="mgr-1 " style="width: 100px; height: 100px;background: #ddd;" :src="dataList[el[0]].giftImg" alt="奖品图">
-              <span class="mgr-1 flex-1">奖品名称：{{dataList[el[0]].prizeName == '3' ? dataList[el[0]].prizeName + 'U贝' : dataList[el[0]].prizeName}}
+              <img v-if="dataList[el[0]].type == '2'" class="mgr-1 banner-img" :src="dataList[el[0]].giftImg" alt="奖品图">
+              <span class="mgr-1 flex-1">奖品名称：{{dataList[el[0]].type == '3' ? dataList[el[0]].prizeName + 'U贝' : dataList[el[0]].prizeName}}
                 &nbsp;({{dataList[el[0]].prizeNum}}位)
               </span>
             </div>
           </span>
           <span v-else-if="el[1] === '阳光普照奖'" style="flex: 1">
             <div style="display: flex;">
-              <img v-if="dataList[el[0]].prizeName == '2'" class="mgr-1 " style="width: 100px; height: 100px;background: #ddd;" :src="dataList[el[0]].prizeName" alt="奖品图">
-              <span class="mgr-1 flex-1">奖品名称：{{dataList[el[0]].prizeName == '3' ? dataList[el[0]].prizeName + 'U贝' : dataList[el[0]].prizeName}}
-                &nbsp;({{dataList[el[0]].prizeNum}}位)
+              <img v-if="dataList[el[0]].type == '2'" class="mgr-1 banner-img" :src="dataList[el[0]].prizeName" alt="奖品图">
+              <span class="mgr-1 flex-1">奖品名称：<span v-show="dataList[el[0]].type == '3'">&nbsp;{{dataList[el[0]].prizeNum}}</span>{{dataList[el[0]].type == '3' ? dataList[el[0]].prizeName + 'U贝' : dataList[el[0]].prizeName}}
+                <span v-show="dataList[el[0]].type != '3' && dataList[el[0]].prizeNum">&nbsp;({{dataList[el[0]].prizeNum}}位)</span>
               </span>
             </div>
           </span>
-          <span v-else style="flex: 1">{{dataList[el[0]] !== undefined ? dataList[el[0]] : ''}}</span>
+          <span v-else-if="el[1] === '参与对象'" style="flex: 1">{{dataList[el[0]] ? dataList[el[0]] : dataList.joinUserLevel == 0 ? '全部' : ''}}</span>
+          <span v-else style="flex: 1">{{dataList[el[0]] !== undefined ? dataList[el[0]] : ''}}{{el[1] === '开团有效时间'? ' 分钟': ''}}</span>
         </div>
         <!-- 广告主相关 -->
         <div class="par">
@@ -35,13 +36,13 @@
           <span class="title" style="width: 3em">简介：</span><span class="flex-1" v-html="typeof dataList.advertIntro === 'string' ? dataList.advertIntro : ''"></span>
         </div>
         <div class="par mgl-2 yyh-modal-item">
-          <span style="width: 280px;">
+          <span class="flex" style="width: 280px;">
             <span class="title width-5">banner图</span>
-              <img class="mgr-1 " style="width: 100px; height: 100px;background: #ddd;" :src="dataList.advertBannerImgUrl" alt="banner">                        
+              <img class="mgr-1 banner-img" :src="dataList.advertBannerImgUrl" alt="banner">                        
           </span>
-          <span style="width: 280px;">
+          <span class="flex" style="width: 280px;">
             <span class="title width-5" >logo图</span>
-              <img class="mgr-1 " style="width: 100px; height: 100px;background: #ddd;" :src="dataList.advertLogoImgUrl" alt="logo">            
+              <img class="mgr-1 banner-img" :src="dataList.advertLogoImgUrl" alt="logo">            
           </span>
         </div>
       </div>
@@ -80,7 +81,7 @@ export default {
 
       ["bigPrize", "活动大奖"],
       ["normalPrize", "阳光普照奖"],
-      ["joinUserLevel", "参与对象"],
+      ["joinUserLevelName", "参与对象"],
       ["couponName", "参加用券"],
       ["drawRuleRemarks", "抽奖规则"]
     ];
@@ -94,7 +95,7 @@ export default {
       ["drawDailyShopList", "投放门店"],
       ["bigPrize", "活动大奖"],
       ["normalPrize", "阳光普照奖"],
-      ["joinUserLevel", "参与对象"],
+      ["joinUserLevelName", "参与对象"],
       ["maxOpenGroupCount", "开团总次数"],
       ["groupPlayerCount", "成团人数"],
       ["userOpenGroupCount", "开团次数"],
@@ -284,6 +285,12 @@ export default {
   .title {
     color: #000;
   }
+  .banner-img{
+    width: 200px; height: atuo;max-height: 600px;background: #ddd;
+  }
+}
+.flex{
+  display: flex;
 }
 .flex-1{
   flex: 1
