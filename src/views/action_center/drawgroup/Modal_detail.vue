@@ -6,22 +6,22 @@
         <div class="yyh-modal-item" v-for="(el, i) in descConfig[Number(dataList.groupType-1)]" :key="'modal_detail' + i">
           <span class="title" style="width: 8em">{{el[1]}}:</span>
           <span v-if="el[1] === '投放门店'" style="flex: 1">{{handleAddress(dataList[el[0]])}}</span>
-          <span v-else-if="el[1] === '活动大奖'" style="flex: 1;">
+          <span v-else-if="el[1] === '活动大奖' || el[1] === '阳光普照奖'" style="flex: 1;">
             <div style="display: flex;">
               <img v-if="dataList[el[0]].type == '2'" class="mgr-1 banner-img" :src="dataList[el[0]].giftImg" alt="奖品图">
-              <span class="mgr-1 flex-1">奖品名称：{{dataList[el[0]].type == '3' ? dataList[el[0]].prizeName + 'U贝' : dataList[el[0]].prizeName}}
-                &nbsp;({{dataList[el[0]].prizeNum}}位)
+              <span class="mgr-1 flex-1">奖品名称：
+                <span v-show="dataList[el[0]].type == '3'">{{dataList[el[0]].prizeNum}}</span>{{dataList[el[0]].type == '3' ? dataList[el[0]].prizeName + 'U贝' : dataList[el[0]].prizeName}}
               </span>
             </div>
           </span>
-          <span v-else-if="el[1] === '阳光普照奖'" style="flex: 1">
+          <!-- <span v-else-if="el[1] === '阳光普照奖'" style="flex: 1">
             <div style="display: flex;">
               <img v-if="dataList[el[0]].type == '2'" class="mgr-1 banner-img" :src="dataList[el[0]].prizeName" alt="奖品图">
-              <span class="mgr-1 flex-1">奖品名称：<span v-show="dataList[el[0]].type == '3'">&nbsp;{{dataList[el[0]].prizeNum}}</span>{{dataList[el[0]].type == '3' ? dataList[el[0]].prizeName + 'U贝' : dataList[el[0]].prizeName}}
-                <span v-show="dataList[el[0]].type != '3' && dataList[el[0]].prizeNum">&nbsp;({{dataList[el[0]].prizeNum}}位)</span>
+              <span class="mgr-1 flex-1">奖品名称：
+                <span v-show="dataList[el[0]].type == '3'">{{dataList[el[0]].prizeNum}}</span>{{dataList[el[0]].type == '3' ? dataList[el[0]].prizeName + 'U贝' : dataList[el[0]].prizeName}}
               </span>
             </div>
-          </span>
+          </span> -->
           <span v-else-if="el[1] === '参与对象'" style="flex: 1">{{dataList[el[0]] ? dataList[el[0]] : dataList.joinUserLevel == 0 ? '全部' : ''}}</span>
           <span v-else style="flex: 1">{{dataList[el[0]] !== undefined ? dataList[el[0]] : ''}}{{el[1] === '开团有效时间'? ' 分钟': ''}}</span>
         </div>
