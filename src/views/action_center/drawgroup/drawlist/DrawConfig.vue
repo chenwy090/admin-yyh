@@ -298,17 +298,6 @@ export default {
     this.queryTableList();
   },
   methods: {
-    // getData() {
-    //   const url = "/drawDaily/activity/selectById";
-    //   postRequest(url, { id: this.id }).then(res => {
-    //     console.log("修改", res);
-    //     if (res.code == 200) {
-    //       this.$emit("closeFormModal-event");
-    //     } else {
-    //       return this.$Message.error(res.msg);
-    //     }
-    //   });
-    // },
     async addOrEdit(type, row) {
       /**
        * 编辑：创建后未上架，可编辑修改所有信息，但是保存是需判断是否到开始时间，
@@ -489,7 +478,6 @@ export default {
       queryTotalTicketList({
         drawId: this.id
       }).then(res => {
-        console.log(res);
         if (res.code == 200) {
           this.totalTicketTableData = res.data;
         } else {

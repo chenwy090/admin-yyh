@@ -73,7 +73,7 @@ export default {
   },
   watch:{
     prizeType(){
-      console.log("prizeTypeprizeType",this.prizeType);
+      // console.log("prizeTypeprizeType",this.prizeType);
     }
   },
   data() {

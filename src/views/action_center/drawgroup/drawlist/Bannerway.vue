@@ -117,7 +117,6 @@ export default {
     const validateReason = (rule, value, callback) => {
       value += "";
       value = value.trim();
-      console.log(value.length);
       if (value == "") {
         callback(new Error("下架原因不能为空"));
       } else if (value.length < 10) {

@@ -194,7 +194,6 @@ export default {
       this.loadShops();
     },
     shopIdChange(item) {
-      console.log("shopIdChange111", item, this.shop.id);
       if (!item) {
         this.$emit("sendShopId", this.shopId, null, this.shop.id);
       } else {
@@ -246,7 +245,6 @@ export default {
               el => el.provinceCode == this.provinceCode
             ).provinceName;
           }
-          console.log("provinceCode", this.provinceCode);
 
           return res;
         })
@@ -263,7 +261,6 @@ export default {
                   ).cityName;
                 }
 
-                console.log("cityName", this.cityName);
               } else {
                 this.$Message.error(res.msg);
               }
@@ -299,7 +296,6 @@ export default {
   mounted() {
     this.$nextTick(() => {
       this.loadProvinceList();
-      // console.log(111,this.shop);
       // 修改 级联查询
       if (this.shop.provinceCode) {
         this.init();
