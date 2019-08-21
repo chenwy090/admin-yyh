@@ -8,7 +8,7 @@ export default {
   openDrawTimeNeedPlayers: 1, //type:2 满x人开奖 number
   
   winningRemarks: "", //领奖说明
-  joinUserLevel: 1, //参加对象 用户等级
+  joinUserLevel: 0, //参加对象 用户等级
 
   // 单人团 参加条件：
   couponId: "",	//优惠券ID（单人团参团条件）

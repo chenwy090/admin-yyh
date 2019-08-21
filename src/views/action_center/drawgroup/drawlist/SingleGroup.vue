@@ -159,7 +159,11 @@
         </Row>
       </template>
       <template v-else-if="form.bigPrizeTemp.type==3">
-        <FormItem label="U贝数：">
+        <FormItem
+          label="U贝数："
+          prop="bigPrizeTemp.prizeNum3"
+          :rules="{ required: true, validator: checkIsPositiveIntegerEx0 }"
+        >
           <Row>
             <Col span="10">
               <Input
@@ -224,7 +228,11 @@
         </Row>
       </template>
       <template v-else-if="form.normalPrizeTemp.type==3">
-        <FormItem label="U贝数：">
+        <FormItem
+          label="U贝数："
+          prop="normalPrizeTemp.prizeNum3"
+          :rules="{ required: true, validator: checkIsPositiveIntegerEx0 }"
+        >
           <Row>
             <Col span="10">
               <Input
@@ -263,21 +271,20 @@
           <!-- isFailureBackFee -->
           <Radio :label="2">优惠券</Radio>
         </RadioGroup>
-        <Row>
-          <Col span="10">
-            <FormItem
-              label
-              :label-width="100"
-              prop="couponName"
-              :rules="{ required: true, message: '请选择优惠券' }"
-            >
-              <Input :key="333" v-model="form.couponName" placeholder="点击按钮选择优惠券" disabled>
-                <Button @click="handleChoose('singlePrize')" slot="append">选择</Button>
-              </Input>
-            </FormItem>
-          </Col>
-        </Row>
       </FormItem>
+      <Row>
+        <Col span="10">
+          <FormItem
+            label=" "
+            prop="couponName"
+            :rules="{ required: true, message: '请选择优惠券' }"
+          >
+            <Input :key="333" v-model="form.couponName" placeholder="点击按钮选择优惠券" disabled>
+              <Button @click="handleChoose('singlePrize')" slot="append">选择</Button>
+            </Input>
+          </FormItem>
+        </Col>
+      </Row>
 
       <FormItem label="团失败u贝返还：">
         <RadioGroup v-model="form.isFailureBackFee">
@@ -322,7 +329,7 @@
       </FormItem>
       <!-- 广告主 banner图片url advertBannerImgUrl   广告主 logo图片url advertLogoImgUrl -->
 
-      <Alert type="warning">选择图片(不大于10M,JPG/PNG/JPEG/BMP）</Alert>
+      <Alert type="warning">选择图片(不大于1M,JPG/PNG/JPEG/BMP）</Alert>
       <Row type="flex" justify="end">
         <Col span="8">
           <!-- <FormItem label="Banner图：">
@@ -386,7 +393,6 @@ import UploadImage from "./UploadImage";
 
 import comm from "@/mixins/common";
 
-// this.$emit("closeFormModal-event");
 export default {
   name: "single-group",
   components: {
@@ -473,31 +479,12 @@ export default {
       couponModalShow: false,
       showStore: true,
       form: JSON.parse(JSON.stringify(singleFormData)),
-      formValite: {
-        firstSite: [{ required: true, message: "请选择投放渠道" }],
-        secondSite: [{ required: true, message: "请选择投放位置" }],
-        num: [
-          {
-            required: true,
-            validator: checkIsPositiveIntegerEx0,
-            trigger: "blur"
-          }
-        ],
-        showNum: [
-          {
-            required: true,
-            validator: checkIsPositiveIntegerEx0,
-            trigger: "blur"
-          }
-        ],
-        discounts: [
-          { required: true, validator: checkIsPositive, trigger: "blur" }
-        ]
-      }
+      formValite: {}
     };
   },
   mounted() {
     let { drawType, singleFormData, drawData } = this.$store.state;
+
     if (drawType == "add" || drawType == "add_cache") {
       this.form = JSON.parse(JSON.stringify(singleFormData));
     } else if (drawType == "edit") {
@@ -525,6 +512,15 @@ export default {
     }
   },
   methods: {
+    //验证正整数
+    checkIsPositiveIntegerEx0(rule, value, callback) {
+      var reg = /^([0-9][0-9]*)$/;
+      if (reg.test(value)) {
+        callback();
+      } else {
+        callback(new Error("请输入大于等于0的正整数"));
+      }
+    },
     // 广告主 banner图片url advertBannerImgUrl   广告主 logo图片url advertLogoImgUrl -->
     drawActiveUploadSuccess(data) {
       this.form.drawActiveUrl = data.imgUrl;

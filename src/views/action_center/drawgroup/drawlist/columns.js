@@ -191,15 +191,27 @@ export const bannerWayColumns = [
         key: "imgUrl",
         align: "center",
         slot: "img"
-    }, {
-        title: "修改人",
-        key: "modifiedBy",
+    },
+    // modifiedBy modifiedBy createBy 
+    {
+        title: "最近修改人",
+        key: "createAndModifiedBy",
         align: "center",
-    }, {
-        title: "修改时间",
-        key: "gmtModified",
+        minWidth: 105,
+        slot: 'createAndModifiedBy'
+    },
+    // gmtModified  gmtModified gmtCreate
+    {
+        title: "最近修改时间",
+        key: "gmtModifiedAndCreate",
         align: "center",
-    }, {
+        width: 170,
+        slot: 'gmtModifiedAndCreate'
+    },
+
+
+
+    {
         title: "上架时间",
         key: "onlineTime",
         align: "center",
