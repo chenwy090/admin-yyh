@@ -65,17 +65,16 @@ export default {
     }
   },
   watch: {
-    defaultList() {
-      const fileList = this.$refs.upload.fileList;
-      // this.$refs.upload.fileList.splice(0, fileList.length);
-      this.uploadList = [];
-      for (let i = 0; i < this.defaultList.length; i++) {
-        let item = this.defaultList[i];
-        // this.$refs.upload.fileList.push(item);
-
-        this.uploadList.push(item);
-      }
-      // this.$refs.upload.fileList
+    defaultList: {
+      handler: function() {
+        // console.log("watch", JSON.stringify(this.defaultList));
+        this.uploadList = [];
+        for (let i = 0; i < this.defaultList.length; i++) {
+          let item = this.defaultList[i];
+          this.uploadList.push(item);
+        }
+      },
+      immediate: true
     }
   },
   computed: {
@@ -112,7 +111,10 @@ export default {
     };
   },
   mounted() {
-    this.uploadList = this.$refs.upload.fileList;
+    // this.uploadList = this.$refs.upload.fileList;
+    if (this.defaultList.length) {
+      this.uploadList = this.defaultList;
+    }
   },
 
   methods: {

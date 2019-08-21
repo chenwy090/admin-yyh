@@ -364,6 +364,20 @@ export default {
           data.bigPrizeTemp = this.formatPrizeData(data.bigPrize);
           data.normalPrizeTemp = this.formatPrizeData(data.normalPrize);
 
+          // 大奖和阳光普照 实物图片
+          data.bigPrizeGifImageList = [];
+          data.normalPrizeGifImageList = [];
+
+          if (data.bigPrize.giftImg) {
+            data.bigPrizeGifImageList = [{ imgUrl: data.bigPrize.giftImg }];
+          }
+
+          if (data.normalPrize.giftImg) {
+            data.normalPrizeGifImageList = [
+              { imgUrl: data.normalPrize.giftImg }
+            ];
+          }
+
           //广告图数据
           data.defaultDrawActiveList = [];
           data.defaultBannerList = [];
@@ -405,10 +419,10 @@ export default {
         // 1:实物
         prizeName1: "",
         prizeNum1: 1, //不可编辑
+        giftImg: "", //奖品图片地址
 
         //2：优惠券
         couponType: 2, //优惠券类型1：周边券、2：商超券/ 超市券 优惠券：选择领优惠券和周边券
-        giftImg: "", //奖品图片地址
         prizeReferId: null, //优惠券奖品关联ID
         prizeNum2: "", //可编辑
 
@@ -420,16 +434,17 @@ export default {
         type,
         prizeName,
         prizeNum,
-        couponType,
         giftImg,
+        couponType,
         prizeReferId
       } = data;
       temp.type = type;
       if (type == 1) {
         temp.prizeName1 = prizeName;
+        temp.prizeNum1 = prizeNum;
+        temp.giftImg = giftImg;
       } else if (type == 2) {
         temp.couponType = couponType || 2;
-        temp.giftImg = giftImg;
         temp.prizeReferId = prizeReferId;
         temp.prizeName2 = prizeName;
       } else {
