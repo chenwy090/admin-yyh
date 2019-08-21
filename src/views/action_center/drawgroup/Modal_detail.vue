@@ -8,11 +8,7 @@
           <span v-if="el[1] === '投放门店'" style="flex: 1">{{handleAddress(dataList[el[0]])}}</span>
           <span v-else-if="el[1] === '活动大奖'" style="flex: 1;">
             <div style="display: flex;">
-<<<<<<< HEAD
               <img v-if="dataList[el[0]].type == '2'" class="mgr-1 banner-img" :src="dataList[el[0]].giftImg" alt="奖品图">
-=======
-              <img v-if="dataList[el[0]].type == '2'" class="mgr-1 " style="width: 100px; height: 100px;background: #ddd;" :src="dataList[el[0]].giftImg" alt="奖品图">
->>>>>>> feature/branch_zhanglei_1.5.4
               <span class="mgr-1 flex-1">奖品名称：{{dataList[el[0]].type == '3' ? dataList[el[0]].prizeName + 'U贝' : dataList[el[0]].prizeName}}
                 &nbsp;({{dataList[el[0]].prizeNum}}位)
               </span>
@@ -20,15 +16,9 @@
           </span>
           <span v-else-if="el[1] === '阳光普照奖'" style="flex: 1">
             <div style="display: flex;">
-<<<<<<< HEAD
               <img v-if="dataList[el[0]].type == '2'" class="mgr-1 banner-img" :src="dataList[el[0]].prizeName" alt="奖品图">
               <span class="mgr-1 flex-1">奖品名称：<span v-show="dataList[el[0]].type == '3'">&nbsp;{{dataList[el[0]].prizeNum}}</span>{{dataList[el[0]].type == '3' ? dataList[el[0]].prizeName + 'U贝' : dataList[el[0]].prizeName}}
                 <span v-show="dataList[el[0]].type != '3' && dataList[el[0]].prizeNum">&nbsp;({{dataList[el[0]].prizeNum}}位)</span>
-=======
-              <img v-if="dataList[el[0]].type == '2'" class="mgr-1 " style="width: 100px; height: 100px;background: #ddd;" :src="dataList[el[0]].prizeName" alt="奖品图">
-              <span class="mgr-1 flex-1">奖品名称：{{dataList[el[0]].type == '3' ? dataList[el[0]].prizeName + 'U贝' : dataList[el[0]].prizeName}}
-                &nbsp;({{dataList[el[0]].prizeNum}}位)
->>>>>>> feature/branch_zhanglei_1.5.4
               </span>
             </div>
           </span>
@@ -296,11 +286,7 @@ export default {
     color: #000;
   }
   .banner-img{
-<<<<<<< HEAD
     width: 200px; height: atuo;max-height: 600px;background: #ddd;
-=======
-    width: 100px; height: atuo;max-height: 200px;background: #ddd;
->>>>>>> feature/branch_zhanglei_1.5.4
   }
 }
 .flex{
