@@ -131,6 +131,14 @@
               />
             </FormItem>
           </Col>
+          <Col span="8">
+            <UploadImage
+              label="实物banner："
+              :fileUploadType="'bigPrizeGifImage'"
+              :defaultList="form.bigPrizeGifImageList"
+              @uploadSuccess="bigPrizeUploadSuccess"
+            ></UploadImage>
+          </Col>
         </Row>
       </template>
       <template v-else-if="form.bigPrizeTemp.type==2">
@@ -199,6 +207,14 @@
                 disabled
               />
             </FormItem>
+          </Col>
+          <Col span="8">
+            <UploadImage
+              label="实物banner："
+              :fileUploadType="'normalPrizeGifImage'"
+              :defaultList="form.normalPrizeGifImageList"
+              @uploadSuccess="normalPrizeUploadSuccess"
+            ></UploadImage>
           </Col>
         </Row>
       </template>
@@ -423,7 +439,7 @@
           <UploadImage
             label="列表banner："
             :fileUploadType="'drawActive'"
-            :defaultList="this.form.defaultDrawActiveList"
+            :defaultList="form.defaultDrawActiveList"
             @uploadSuccess="drawActiveUploadSuccess"
           ></UploadImage>
         </Col>
@@ -431,7 +447,7 @@
           <UploadImage
             label="详情Banner："
             :fileUploadType="'banner'"
-            :defaultList="this.form.defaultBannerList"
+            :defaultList="form.defaultBannerList"
             @uploadSuccess="bannerUploadSuccess"
           ></UploadImage>
         </Col>
@@ -439,7 +455,7 @@
           <UploadImage
             label="Logo："
             :fileUploadType="'logo'"
-            :defaultList="this.form.defaultLogoList"
+            :defaultList="form.defaultLogoList"
             @uploadSuccess="logoUploadSuccess"
           ></UploadImage>
         </Col>
@@ -586,8 +602,6 @@ export default {
   },
   deactivated() {
     let { drawType } = this.$store.state;
-
-    console.log("deactivated", drawType);
     if (drawType == "add_cache") {
       this.$store.commit("g_setData", {
         //多人团
@@ -604,6 +618,15 @@ export default {
       } else {
         callback(new Error("请输入大于等于0的正整数"));
       }
+    },
+    // 大奖和阳光普照奖
+    bigPrizeUploadSuccess({ imgUrl }) {
+      this.form.bigPrizeTemp.giftImg = imgUrl;
+      this.form.bigPrizeGifImageList = [{ imgUrl }];
+    },
+    normalPrizeUploadSuccess({ imgUrl }) {
+      this.form.normalPrizeTemp.giftImg = imgUrl;
+      this.form.normalPrizeGifImageList = [{ imgUrl }];
     },
     // 广告主 banner图片url advertBannerImgUrl   广告主 logo图片url advertLogoImgUrl -->
     drawActiveUploadSuccess(data) {
@@ -626,7 +649,6 @@ export default {
       this.form.openDrawTime = time;
     },
     selectedTrCallBack(data) {
-      console.log("selectedTrCallBack:", data);
       if (typeof data != "boolean") {
         // prizeType => 多人团 bigPrize normalPrize | singlePrize 单人团
         if (this.prizeType == data.prizeType) {
@@ -635,14 +657,12 @@ export default {
             this.form[`${this.prizeType}Temp`].prizeReferId = data.id;
             this.form[`${this.prizeType}Temp`].prizeName2 = data.name;
           }
-          console.log(11111111111111, this.form[`${this.prizeType}Temp`]);
         }
       }
       this.couponModalShow = false;
     },
 
     handleChoose(prizeType) {
-      console.log("handleChoose", prizeType);
       this.prizeType = prizeType;
       this.couponModalShow = true;
     },
@@ -716,12 +736,12 @@ export default {
 
             if (d1 >= d2) {
               let msg = "活动开奖时间不能小于等于活动开始时间";
-              console.log(msg);
               return this.msgErr(msg);
             }
           }
           //  /drawDaily/activity/add  新增
           const url = "/drawDaily/activity/add";
+
           //清洗数据
           let formData = JSON.parse(JSON.stringify(this.form));
           formData.bigPrize = this.formatFormData(formData.bigPrizeTemp);
@@ -744,8 +764,8 @@ export default {
         type: 1,
         prizeName: "", //实物名称 奖项名称  实物：选择后填写实物名称，最多15个汉字
         prizeNum: "", //实物个数 奖品个数
-        couponType: 2, //优惠券类型1：周边券、2：商超券/ 超市券 优惠券：选择领优惠券和周边券
         giftImg: "", //奖品图片地址
+        couponType: 2, //优惠券类型1：周边券、2：商超券/ 超市券 优惠券：选择领优惠券和周边券
         prizeReferId: null //优惠券奖品关联ID
       };
       let { type } = data;
@@ -753,9 +773,9 @@ export default {
       if (type == 1) {
         temp.prizeName = data.prizeName1;
         temp.prizeNum = data.prizeNum1;
+        temp.giftImg = data.giftImg;
       } else if (type == 2) {
         temp.couponType = data.couponType;
-        temp.giftImg = data.giftImg;
         temp.prizeReferId = data.prizeReferId;
         temp.prizeName = data.prizeName2;
       } else {
@@ -763,7 +783,6 @@ export default {
       }
       return temp;
     },
-
     handleReset(name) {
       this.$refs[name].resetFields();
       this.form.startDate = null;

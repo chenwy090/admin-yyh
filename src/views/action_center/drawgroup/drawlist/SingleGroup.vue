@@ -111,9 +111,9 @@
         </RadioGroup>
       </FormItem>
       <template v-if="form.bigPrizeTemp.type==1">
-        <FormItem label="实物名称：">
-          <Row>
-            <Col span="10">
+        <Row>
+          <Col span="10">
+            <FormItem label="实物名称：">
               <Input
                 style="width:90%"
                 v-model="form.bigPrizeTemp.prizeName1"
@@ -121,9 +121,18 @@
                 :maxlength="15"
                 clearable
               />
-            </Col>
-          </Row>
-        </FormItem>
+            </FormItem>
+          </Col>
+          <Col span="8">
+            <UploadImage
+              label="实物banner："
+              :fileUploadType="'bigPrizeGifImage'"
+              :defaultList="form.bigPrizeGifImageList"
+              @uploadSuccess="bigPrizeUploadSuccess"
+            ></UploadImage>
+          </Col>
+        </Row>
+
         <!-- 单人团的实物个数也不要 -->
         <!-- <Col span="8">
             <FormItem label="实物个数：">
@@ -194,6 +203,14 @@
                 clearable
               />
             </FormItem>
+          </Col>
+          <Col span="8">
+            <UploadImage
+              label="实物banner："
+              :fileUploadType="'normalPrizeGifImage'"
+              :defaultList="form.normalPrizeGifImageList"
+              @uploadSuccess="normalPrizeUploadSuccess"
+            ></UploadImage>
           </Col>
           <!-- <Col span="8">
             <FormItem label="实物个数：">
@@ -274,11 +291,7 @@
       </FormItem>
       <Row>
         <Col span="10">
-          <FormItem
-            label=" "
-            prop="couponName"
-            :rules="{ required: true, message: '请选择优惠券' }"
-          >
+          <FormItem label=" " prop="couponName" :rules="{ required: true, message: '请选择优惠券' }">
             <Input :key="333" v-model="form.couponName" placeholder="点击按钮选择优惠券" disabled>
               <Button @click="handleChoose('singlePrize')" slot="append">选择</Button>
             </Input>
@@ -490,7 +503,6 @@ export default {
     } else if (drawType == "edit") {
       this.form = JSON.parse(JSON.stringify(drawData));
     }
-    console.log("mountedmountedmounted", this.form);
   },
   activated() {
     let { drawType, singleFormData, drawData } = this.$store.state;
@@ -502,8 +514,6 @@ export default {
   },
   deactivated() {
     let { drawType } = this.$store.state;
-
-    console.log("deactivated", drawType);
     if (drawType == "add_cache") {
       this.$store.commit("g_setData", {
         //多人团
@@ -520,6 +530,15 @@ export default {
       } else {
         callback(new Error("请输入大于等于0的正整数"));
       }
+    },
+    // 大奖和阳光普照奖
+    bigPrizeUploadSuccess({ imgUrl }) {
+      this.form.bigPrizeTemp.giftImg = imgUrl;
+      this.form.bigPrizeGifImageList = [{ imgUrl }];
+    },
+    normalPrizeUploadSuccess({ imgUrl }) {
+      this.form.normalPrizeTemp.giftImg = imgUrl;
+      this.form.normalPrizeGifImageList = [{ imgUrl }];
     },
     // 广告主 banner图片url advertBannerImgUrl   广告主 logo图片url advertLogoImgUrl -->
     drawActiveUploadSuccess(data) {
@@ -542,7 +561,6 @@ export default {
       this.form.openDrawTime = time;
     },
     selectedTrCallBack(data) {
-      console.log("selectedTrCallBack:", data);
       if (typeof data != "boolean") {
         // prizeType => 多人团 bigPrize normalPrize | singlePrize 单人团
         if (this.prizeType == data.prizeType) {
@@ -636,7 +654,6 @@ export default {
 
             if (d1 >= d2) {
               let msg = "活动开奖时间不能小于等于活动开始时间";
-              console.log(msg);
               return this.msgErr(msg);
             }
           }
@@ -664,8 +681,8 @@ export default {
         type: 1,
         prizeName: "", //实物名称 奖项名称  实物：选择后填写实物名称，最多15个汉字
         prizeNum: "", //实物个数 奖品个数
-        couponType: 2, //优惠券类型1：周边券、2：商超券/ 超市券 优惠券：选择领优惠券和周边券
         giftImg: "", //奖品图片地址
+        couponType: 2, //优惠券类型1：周边券、2：商超券/ 超市券 优惠券：选择领优惠券和周边券
         prizeReferId: null //优惠券奖品关联ID
       };
       let { type } = data;
@@ -673,9 +690,9 @@ export default {
       if (type == 1) {
         temp.prizeName = data.prizeName1;
         temp.prizeNum = data.prizeNum1;
+        temp.giftImg = data.giftImg;
       } else if (type == 2) {
         temp.couponType = data.couponType;
-        temp.giftImg = data.giftImg;
         temp.prizeReferId = data.prizeReferId;
         temp.prizeName = data.prizeName2;
       } else {
