@@ -125,7 +125,7 @@ export default {
             this.formValidate.checkDrawType = drawType == 1 ? drawId : linkUrl;
 
             this.uploadList = [{ imgUrl: data.imgUrl }];
-            console.log("edit", this.formValidate);
+            // console.log("edit", this.formValidate);
           });
         }
       },
@@ -136,8 +136,8 @@ export default {
     const validateDrawType = (rule, value, callback) => {
       value += "";
       value = value.trim();
-      console.log("validateDrawType", value);
-      console.log("this.formValidate.drawType", this.formValidate);
+      // console.log("validateDrawType", value);
+      // console.log("this.formValidate.drawType", this.formValidate);
       if (value == "") {
         // drawType: 1, //  1.抽奖id：drawId 2抽奖链接 linkUrl
         callback(new Error("请选择类型"));
@@ -180,7 +180,7 @@ export default {
     };
     const validateRankNum = (rule, value, callback) => {
       value += "";
-      console.log("validateRankNum", rule, value);
+      // console.log("validateRankNum", rule, value);
       // 允许不填
       if (value.trim() == "") {
         return callback();
@@ -266,7 +266,6 @@ export default {
       this.formValidate.imgUrl = "";
     },
     handleUploadSuccess(res, file) {
-      console.log(file, res);
       if (res.code == 200) {
         let imgUrl = res.image_url;
         this.uploadList = [{ imgUrl }];
@@ -279,7 +278,7 @@ export default {
     },
     //文件上传
     handleMaxSize(file) {
-      this.$Message.error("图片不大于1M");
+      this.$Message.error("图片不大于10M");
     },
 
     handleFormatError() {
@@ -321,7 +320,7 @@ export default {
 
     save(name) {
       this.$refs[name].validate(async valid => {
-        console.log(JSON.stringify(this.formValidate));
+        // console.log(JSON.stringify(this.formValidate));
         if (valid) {
           // this.$Message.success("数据验证成功!");
           let oForm = JSON.parse(JSON.stringify(this.formValidate));
