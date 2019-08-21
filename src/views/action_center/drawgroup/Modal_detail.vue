@@ -8,7 +8,7 @@
           <span v-if="el[1] === '投放门店'" style="flex: 1">{{handleAddress(dataList[el[0]])}}</span>
           <span v-else-if="el[1] === '活动大奖' || el[1] === '阳光普照奖'" style="flex: 1;">
             <div style="display: flex;">
-              <img v-if="dataList[el[0]].type == '2'" class="mgr-1 banner-img" :src="dataList[el[0]].giftImg" alt="奖品图">
+              <img v-if="dataList[el[0]].type == '1' && dataList[el[0]].giftImg" class="mgr-1 banner-img" :src="dataList[el[0]].giftImg" alt="奖品图">
               <span class="mgr-1 flex-1">奖品名称：
                 <span v-show="dataList[el[0]].type == '3'">{{dataList[el[0]].prizeNum}}</span>{{dataList[el[0]].type == '3' ? dataList[el[0]].prizeName + 'U贝' : dataList[el[0]].prizeName}}
               </span>
