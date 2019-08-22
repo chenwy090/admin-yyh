@@ -21,6 +21,12 @@
         props: ['content'],
         watch: {
             content (newOne, oldOne) {
+                if(newOne.indexOf('<!--')!==-1){
+                    var strArr1 = newOne.split('<!--');
+                    var strArr2 = strArr1[1].split('-->');
+                    newOne = strArr1[0]+strArr2[1];
+                    this.$emit('on-change', newOne)
+                }
                 this.editor.txt.html(newOne);
             }
         },
@@ -37,6 +43,7 @@
                 this.editor.customConfig.uploadImgMaxSize = 2 * 1024 * 1024 // 将图片大小限制为 2M
                 this.editor.customConfig.uploadImgMaxLength = 6 // 限制一次最多上传 3 张图片
                 this.editor.customConfig.uploadImgTimeout = 3 * 60 * 1000 // 设置超时时间
+                // this.editor.customConfig.pasteFilterStyle = false
 
                 // 配置菜单
                 this.editor.customConfig.menus = [
