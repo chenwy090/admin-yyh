@@ -403,7 +403,16 @@
       >
         <Row>
           <Col span="10">
-            <Input v-model="form.drawRuleRemarks" type="textarea" :rows="6" placeholder="抽奖规则" />
+            <Tooltip trigger="focus" title="提醒" content="最多200个汉字" placement="right">
+              <Input
+                v-model="form.drawRuleRemarks"
+                type="textarea"
+                style="width:400px"
+                :autosize="{minRows: 4,maxRows: 8}"
+                placeholder="抽奖规则"
+                :maxlength="200"
+              />
+            </Tooltip>
           </Col>
         </Row>
       </FormItem>
@@ -423,7 +432,16 @@
       >
         <Row>
           <Col span="10">
-            <Input v-model="form.advertIntro" type="textarea" :rows="6" placeholder="请输入广告主 描述富文本" />
+            <Tooltip trigger="focus" title="提醒" content="最多200个汉字" placement="right">
+              <Input
+                v-model="form.advertIntro"
+                type="textarea"
+                style="width:400px"
+                :autosize="{minRows: 4,maxRows: 8}"
+                placeholder="请输入广告主 描述富文本"
+                :maxlength="200"
+              />
+            </Tooltip>
           </Col>
         </Row>
       </FormItem>
