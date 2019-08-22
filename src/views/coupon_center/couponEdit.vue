@@ -342,7 +342,7 @@
             <Col span="3" class="left-text">
               <span style="color:red">*</span> 是否活动券
             </Col>
-            <Col span="3">{{edit_info.isActivityCoupon}}
+            <Col span="3">
               <RadioGroup v-model="edit_info.isActivityCoupon">
                 <Radio :label="0">否</Radio>
                 <Radio :label="1">是</Radio>
@@ -1407,7 +1407,7 @@ export default {
           this.new_ticketMoney = this.edit_info.ticketMoney;
           this.new_ticketDiscount = this.edit_info.ticketDiscount;
       }*/
-      
+
       this.reqParams = {
         // 是否活动券 （默认否）0-否，1-是   isActivityCoupon
         isActivityCoupon: this.edit_info.isActivityCoupon,
@@ -1441,7 +1441,7 @@ export default {
         displayText: this.edit_info.displayText,
         merchantList: this.add_info.merchantList
       };
-      debugger
+
       if (this.camp_pageStatus === "add") {
         this.getUrl = "/merchantCouponTemplate/add";
 
