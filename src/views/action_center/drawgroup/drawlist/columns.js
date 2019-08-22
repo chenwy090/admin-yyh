@@ -150,6 +150,10 @@ export const detailColumns = [{
     key: "prize",
     align: "center",
 }, {
+    title: "收件人",
+    key: "realName",
+    align: "center",
+}, {
     title: "手机号",
     key: "phoneNumber",
     align: "center",
