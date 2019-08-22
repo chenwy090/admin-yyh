@@ -49,21 +49,23 @@
     <Card :bordered="false">
       <Table border :show-index="true" :loading="loading" :columns="columns" :data="tableData">
         <template slot-scope="{ row }" slot="action">
-          <!--0：未上架 1:未开始 2:进行中 3:开奖中 4:已开奖 5:已下架  -->
-          <template v-if="row.status == 4 || row.status == 5">
-            <Button
-              type="success"
-              size="small"
-              style="margin-right: 5px"
-              @click="checkDetailsFn(row)"
-            >查看</Button>
-          </template>
-          <template v-else>
+          <!--
+            0：未上架 1:未开始 2:进行中 3:开奖中 4:已开奖 5:已下架  6紧急下架
+            查看  0-6
+            编辑 0  上架 0   下架 1
+            紧急下架  2
+          -->
+          <Button
+            type="success"
+            size="small"
+            style="margin-right: 5px"
+            @click="checkDetailsFn(row)"
+          >查看</Button>
+          <template v-if="row.status == 0">
             <Button
               type="primary"
               size="small"
               style="margin-right: 5px"
-              v-if="row.status == 0 || row.status == 1"
               @click="addOrEdit('edit',row)"
             >编辑</Button>
             <Button
@@ -72,15 +74,19 @@
               v-if="row.status == 0"
               @click="updateOperationStatus(row)"
             >上架</Button>
+          </template>
+          <template v-else-if="row.status == 1">
+            <Button type="warning" size="small" @click="underUpdateOperationStatus(row)">下架</Button>
+          </template>
+          <template v-else-if="row.status == 2">
             <Button
-              type="warning"
+              type="error"
               size="small"
-              v-if="row.status == 1 || row.status == 2|| row.status == 3"
+              style="margin-left: 5px"
               @click="underUpdateOperationStatus(row)"
-            >下架</Button>
+            >紧急下架</Button>
           </template>
         </template>
-
         <template slot-scope="{ row }" slot="createAndModifiedBy">
           <span>{{ row.modifiedBy || row.createBy }}</span>
         </template>
@@ -267,6 +273,10 @@ export default {
         {
           value: "5",
           label: "已下架"
+        },
+        {
+          value: "6",
+          label: "紧急下架"
         }
       ],
       daterange: [],
