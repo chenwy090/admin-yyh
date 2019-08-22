@@ -687,12 +687,20 @@ export default {
         temp.prizeName = data.prizeName1;
         temp.prizeNum = data.prizeNum1;
         temp.giftImg = data.giftImg;
+        temp.couponType = 0;
+        temp.prizeReferId = null;
       } else if (type == 2) {
         temp.couponType = data.couponType;
         temp.prizeReferId = data.prizeReferId;
         temp.prizeName = data.prizeName2;
+        temp.giftImg = "";
       } else {
         temp.prizeNum = data.prizeNum3;
+
+        temp.prizeName = "";
+        temp.giftImg = "";
+        temp.couponType = 0;
+        temp.prizeReferId = null;
       }
       return temp;
     },
