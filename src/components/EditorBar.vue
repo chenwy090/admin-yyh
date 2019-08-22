@@ -4,6 +4,7 @@
         </div>
         <div ref="editor" class="text">
         </div>
+        <div style="width: 0px;height: 0;overflow: hidden" ref="noShow"></div>
     </div>
 </template>
 
@@ -27,11 +28,12 @@
                     newOne = strArr1[0]+strArr2[1];
                     this.$emit('on-change', newOne)
                 }
-                this.editor.txt.html(newOne);
+                this.editor.txt.text(newOne);
             }
         },
         mounted () {
-            this.seteditor()
+            this.seteditor();
+            this.$refs.noShow.innerHtml = '';
         },
         methods: {
             seteditor () {
@@ -44,6 +46,19 @@
                 this.editor.customConfig.uploadImgMaxLength = 6 // 限制一次最多上传 3 张图片
                 this.editor.customConfig.uploadImgTimeout = 3 * 60 * 1000 // 设置超时时间
                 // this.editor.customConfig.pasteFilterStyle = false
+                this.editor.customConfig.pasteTextHandle = function (content) {
+                    // content 即粘贴过来的内容（html 或 纯文本），可进行自定义处理然后返回
+                    if (content == '' && !content) return ''
+                    var str = content
+                    str = str.replace(/<xml>[\s\S]*?<\/xml>/ig, '')
+                    str = str.replace(/<\/?[^>]*>/g, '')
+                    str = str.replace(/[ | ]*\n/g, '\n')
+                    str = str.replace(/&nbsp;/ig, '')
+                    console.log('****', content)
+                    console.log('****', str)
+                    return str
+                }
+
 
                 // 配置菜单
                 this.editor.customConfig.menus = [
