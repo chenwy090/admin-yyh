@@ -1,11 +1,13 @@
 <template>
   <div class="yyh-modal">
-    <Modal class="yyh-modal" v-model="modalShow" title="详情" width="1000"
+    <Modal class="yyh-modal" v-model="modalShow" title="详情" width="800"
       :styles="{top: '20px'}">
       <div v-if="dataList.groupType !== -1">
         <div class="yyh-modal-item" v-for="(el, i) in descConfig[Number(dataList.groupType-1)]" :key="'modal_detail' + i">
           <span class="title" style="width: 8em">{{el[1]}}:</span>
-          <span v-if="el[1] === '投放门店'" style="flex: 1">{{handleAddress(dataList[el[0]])}}</span>
+          <template v-if="el[1] === '投放门店'">
+            <template v-for="(item,ii) in dataList[el[0]]"><span style="flex: 1" :key="'L9a'+ii">{{handleAddress(item)}}</span><br :key="'L9b'+ii"></template>
+          </template>
           <span v-else-if="el[1] === '活动大奖' || el[1] === '阳光普照奖'" style="flex: 1;">
             <div style="display: flex;">
               <img v-if="dataList[el[0]].type == '1' && dataList[el[0]].giftImg" class="mgr-1 banner-img" :src="dataList[el[0]].giftImg" alt="奖品图">
@@ -22,6 +24,7 @@
               </span>
             </div>
           </span> -->
+          <span v-else-if="el[1] === '活动开奖时间'" style="flex: 1">{{dataList[el[0]] ? dataList[el[0]] : ''}} &nbsp;&nbsp; {{dataList.openDrawTimeType == 2? ' 满' + dataList.openDrawTimeNeedPlayers + '人开奖': ''}}</span>
           <span v-else-if="el[1] === '参与对象'" style="flex: 1">{{dataList[el[0]] ? dataList[el[0]] : dataList.joinUserLevel == 0 ? '全部' : ''}}</span>
           <span v-else style="flex: 1">{{dataList[el[0]] !== undefined ? dataList[el[0]] : ''}}{{el[1] === '开团有效时间'? ' 分钟': ''}}</span>
         </div>
@@ -85,6 +88,7 @@ export default {
 
       ["bigPrize", "活动大奖"],
       ["normalPrize", "阳光普照奖"],
+      ["winningRemarks", "领奖说明"],
       ["joinUserLevelName", "参与对象"],
       ["couponName", "参加用券"],
       ["drawRuleRemarks", "抽奖规则"]
@@ -99,6 +103,7 @@ export default {
       ["drawDailyShopList", "投放门店"],
       ["bigPrize", "活动大奖"],
       ["normalPrize", "阳光普照奖"],
+      ["winningRemarks", "领奖说明"],
       ["joinUserLevelName", "参与对象"],
       ["maxOpenGroupCount", "开团总次数"],
       ["groupPlayerCount", "成团人数"],
@@ -121,10 +126,10 @@ export default {
       return `- ${e}`
     },
     handleAddress(val) {
-      if (!val || !val[0]) {
+      if (!val) {
         return ''
       }
-      let e = val[0];
+      let e = val;
       let shopName = '';
       if (typeof e.shopName === 'string') {
         shopName = ' ' + e.shopName;
