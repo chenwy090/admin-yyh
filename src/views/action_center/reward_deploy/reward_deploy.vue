@@ -712,7 +712,7 @@
                 }
             },
             ok3 (name) {
-                if(this.modal3.context){
+                if(this.modal3.newcontext){
                     this.saveChange3();
                 }else{
                     this.$Message.error('请检查表单');
