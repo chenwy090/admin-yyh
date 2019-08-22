@@ -9,10 +9,12 @@
       <div class="table-box">
         <Table border :columns="columns" :data="tableData">
           <template slot-scope="{ row }" slot="logistics">
+            <!-- prizeType 1 实物需要编辑 3 普通 不需要编辑地址 -->
             <Button
               type="success"
               size="small"
               style="margin-right: 5px"
+              :disabled="row.prizeType == 3? true:false"
               @click="showLogistics(row)"
             >编辑</Button>
           </template>
@@ -105,12 +107,12 @@ export default {
       this.modalDetail = true;
       const res = await queryWinningList({ drawId });
       if (res.code == 200) {
-        //  '0' COMMENT '0:阳光普照奖 1:大奖',
+        //  1: 大奖、2：普通奖
         let arr = res.data.map(item => {
-          if (item.isAwards == 0) {
-            item.prize = "阳光普照奖";
-          } else {
+          if (item.isAwards == 1) {
             item.prize = "大奖";
+          } else {
+            item.prize = "普通奖";
           }
           return item;
         });

@@ -1,6 +1,5 @@
 // 抽奖团配置表格列表
-export default [
-    {
+export default [{
         title: "操作",
         align: "center",
         width: 200,
@@ -174,8 +173,7 @@ export const detailColumns = [{
 }]
 
 // --------------抽奖团banner位---------------------------------
-export const bannerWayColumns = [
-    {
+export const bannerWayColumns = [{
         title: "操作",
         align: "center",
         width: 200,
@@ -215,4 +213,5 @@ export const bannerWayColumns = [
         title: "上架时间",
         key: "onlineTime",
         align: "center",
-    }]
+    }
+]
