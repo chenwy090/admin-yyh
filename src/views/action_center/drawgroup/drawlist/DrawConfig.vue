@@ -147,7 +147,7 @@
       </div>
     </Modal>
     <!-- 下架抽奖活动 -->
-    <Modal v-model="undercarriage" :closable="true" width="400">
+    <Modal v-model="undercarriage" :closable="true" :mask-closable="false" width="400">
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="ios-information-circle"></Icon>
         <span>下架抽奖活动</span>

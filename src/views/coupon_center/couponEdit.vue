@@ -340,6 +340,18 @@
 
           <Row class="box">
             <Col span="3" class="left-text">
+              <span style="color:red">*</span> 是否活动券
+            </Col>
+            <Col span="3">
+              <RadioGroup v-model="edit_info.isActivityCoupon">
+                <Radio :label="0">否</Radio>
+                <Radio :label="1">是</Radio>
+              </RadioGroup>
+            </Col>
+          </Row>
+
+          <Row class="box">
+            <Col span="3" class="left-text">
               <span style="color:red">*</span> 优惠券缩略图
             </Col>
             <Col span="3">
@@ -746,6 +758,8 @@ export default {
         openid: ""
       },
       edit_info: {
+        // 是否活动券 （默认否）0-否，1-是   isActivityCoupon
+        isActivityCoupon: 0,
         orderBy: "",
         merchantList: [],
         startDate: "",
@@ -780,7 +794,7 @@ export default {
     };
   },
 
-  created: function() {
+  created() {
     this.userToken = { jwttoken: localStorage.getItem("jwttoken") };
     this.init();
   },
@@ -854,6 +868,8 @@ export default {
     //新增
     addInfo() {
       this.edit_info = {
+        // 是否活动券 （默认否）0-否，1-是   isActivityCoupon
+        isActivityCoupon: 0,
         startDate: "",
         endDate: "",
         useStartDate: "",
@@ -1391,7 +1407,10 @@ export default {
           this.new_ticketMoney = this.edit_info.ticketMoney;
           this.new_ticketDiscount = this.edit_info.ticketDiscount;
       }*/
+
       this.reqParams = {
+        // 是否活动券 （默认否）0-否，1-是   isActivityCoupon
+        isActivityCoupon: this.edit_info.isActivityCoupon,
         title: this.edit_info.title,
         // subTitle: this.edit_info.subTitle,
         couponType: this.edit_info.couponType,
@@ -1422,6 +1441,7 @@ export default {
         displayText: this.edit_info.displayText,
         merchantList: this.add_info.merchantList
       };
+
       if (this.camp_pageStatus === "add") {
         this.getUrl = "/merchantCouponTemplate/add";
 
