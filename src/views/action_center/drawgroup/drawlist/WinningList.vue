@@ -1,7 +1,7 @@
 <template>
   <div class="winningList">
     <!-- 查看 开奖结果 -->
-    <Modal v-model="modalDetail" :closable="true" width="700">
+    <Modal v-model="modalDetail" :closable="true" width="800">
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="ios-information-circle"></Icon>
         <span>查看开奖结果</span>
@@ -9,12 +9,13 @@
       <div class="table-box">
         <Table border :columns="columns" :data="tableData">
           <template slot-scope="{ row }" slot="logistics">
+            <!-- `prize_type` tinyint(2) NOT NULL DEFAULT '0' COMMENT '奖品类型1:实物、2：优惠券、3：U贝', -->
             <!-- prizeType 1 实物需要编辑 3 普通 不需要编辑地址 -->
             <Button
               type="success"
               size="small"
               style="margin-right: 5px"
-              :disabled="row.prizeType == 3? true:false"
+              :disabled="row.prizeType != 1? true:false"
               @click="showLogistics(row)"
             >编辑</Button>
           </template>
@@ -107,6 +108,7 @@ export default {
       this.modalDetail = true;
       const res = await queryWinningList({ drawId });
       if (res.code == 200) {
+        // `is_awards` tinyint(2) NOT NULL DEFAULT '2' COMMENT '1: 大奖、2：普通奖',
         //  1: 大奖、2：普通奖
         let arr = res.data.map(item => {
           if (item.isAwards == 1) {
