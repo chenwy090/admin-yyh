@@ -52,8 +52,8 @@
           <!--
             0：未上架 1:未开始 2:进行中 3:开奖中 4:已开奖 5:已下架  6紧急下架
             查看  0-6
-            编辑 0  上架 0   下架 1
-            紧急下架  2
+            编辑 05  上架 05   下架 1
+            紧急下架  2 
           -->
           <Button
             type="success"
@@ -61,7 +61,7 @@
             style="margin-right: 5px"
             @click="checkDetailsFn(row)"
           >查看</Button>
-          <template v-if="row.status == 0">
+          <template v-if="row.status == 0 ||row.status == 5">
             <Button
               type="primary"
               size="small"
