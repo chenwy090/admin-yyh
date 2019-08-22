@@ -684,6 +684,9 @@
             },
             ok1 (name) {
                 if(!this.modal1.type||this.modal1.type!='3'){
+                    if(this.modal1.code =='11'||this.modal1.code =='12'||this.modal1.code =='13'||this.modal1.code =='14'){
+                        this.modal1.value = this.modal1.value1+','+this.modal1.value2+','+this.modal1.value3
+                    }
                     if(this.modal1.value){
                         this.saveChange1();
                     }else{
@@ -766,9 +769,6 @@
             },
             saveChange1(){
                 var that = this;
-                if(this.modal1.code =='11'||this.modal1.code =='12'||this.modal1.code =='13'||this.modal1.code =='14'){
-                    this.modal1.value = this.modal1.value1+','+this.modal1.value2+','+this.modal1.value3
-                }
                 postRequest("/commonConfig/updateConfigById",{
                     overallCommonConfig:{
                         "id": this.modal1.id,
