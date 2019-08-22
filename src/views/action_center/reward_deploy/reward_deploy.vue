@@ -687,7 +687,7 @@
                     if(this.modal1.code =='11'||this.modal1.code =='12'||this.modal1.code =='13'||this.modal1.code =='14'){
                         this.modal1.value = this.modal1.value1+','+this.modal1.value2+','+this.modal1.value3
                     }
-                    if(this.modal1.value){
+                    if(this.modal1.value||this.modal1.value === 0){
                         this.saveChange1();
                     }else{
                         this.$Message.error('请检查表单');
