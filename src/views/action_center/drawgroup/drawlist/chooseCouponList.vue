@@ -240,7 +240,7 @@ export default {
       } else {
         url = "/merchantCouponTemplate/backList";
         data = {
-          isActivityCoupon:1,
+          isActivityCoupon:null,
           templateStatus: "进行中",
           title: this.searchForm.name
         };
