@@ -1,6 +1,6 @@
 <template>
   <div class="yyh-modal">
-    <Modal class="yyh-modal" v-model="modalShow" title="详情" width="800"
+    <Modal class="yyh-modal" v-model="modalShow" :title="`详情${dataList.groupType > 0 ? ' - ' + types[dataList.groupType - 1] :''}`" width="800"
       :styles="{top: '20px'}">
       <div v-if="dataList.groupType !== -1">
         <div class="yyh-modal-item" v-for="(el, i) in descConfig[Number(dataList.groupType-1)]" :key="'modal_detail' + i">
@@ -57,6 +57,7 @@ export default {
   name: "ModalDetail",
   data() {
     return {
+      types: ['单人团', '多人团'],
       dataList: {
         groupType: -1
       },
@@ -72,6 +73,7 @@ export default {
       // 2 开奖类型，需要单独配置
       ["openDrawTime", "活动开奖时间"],
 
+      ["drawDailyShopList", "投放门店"],
       ["bigPrize", "活动大奖"],
       ["normalPrize", "阳光普照奖"],
       ["winningRemarks", "领奖说明"],
@@ -98,6 +100,7 @@ export default {
       ["openGroupFee", "开团消耗U贝"],
       ["userOpenGroupCount", "参团次数"],
       ["joinGroupFee", "参团消耗U贝"],
+      ["isFailureBackFee", "团失败u贝返还"],
       ["drawRuleRemarks", "抽奖规则"]
     ];
   },
@@ -142,7 +145,13 @@ export default {
           console.log(res);
           // 接口成功返回数据
           if (res.code == 200) {
-            this.dataList = res.data;
+            let _item = res.data;
+            if (_item.isFailureBackFee == 1) {
+              _item.isFailureBackFee = '是'
+            } else {
+              _item.isFailureBackFee = '否'
+            }
+            this.dataList = _item;
           }
         })
         .catch(err => {
