@@ -50,7 +50,7 @@
           >{{ row.totalTicket }}</a>
         </template>
         <template slot-scope="{ row }" slot="idLinkUrl">
-          <span>{{ row.id || row.linkUrl }}</span>
+          <span>{{ row.drawId || row.linkUrl }}</span>
         </template>
         <template slot-scope="{ row }" slot="img">
           <!-- <img :src="row.imgUrl" style="width:74px;height:43px;" @click="showBigImg(row)" /> -->
