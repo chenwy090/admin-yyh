@@ -16,14 +16,6 @@
               </span>
             </div>
           </span>
-          <!-- <span v-else-if="el[1] === '阳光普照奖'" style="flex: 1">
-            <div style="display: flex;">
-              <img v-if="dataList[el[0]].type == '2'" class="mgr-1 banner-img" :src="dataList[el[0]].prizeName" alt="奖品图">
-              <span class="mgr-1 flex-1">奖品名称：
-                <span v-show="dataList[el[0]].type == '3'">{{dataList[el[0]].prizeNum}}</span>{{dataList[el[0]].type == '3' ? dataList[el[0]].prizeName + 'U贝' : dataList[el[0]].prizeName}}
-              </span>
-            </div>
-          </span> -->
           <span v-else-if="el[1] === '活动开奖时间'" style="flex: 1">{{dataList[el[0]] ? dataList[el[0]] : ''}} &nbsp;&nbsp; {{dataList.openDrawTimeType == 2? ' 满' + dataList.openDrawTimeNeedPlayers + '人开奖': ''}}</span>
           <span v-else-if="el[1] === '参与对象'" style="flex: 1">{{dataList[el[0]] ? dataList[el[0]] : dataList.joinUserLevel == 0 ? '全部' : ''}}</span>
           <span v-else style="flex: 1">{{dataList[el[0]] !== undefined ? dataList[el[0]] : ''}}{{el[1] === '开团有效时间'? ' 分钟': ''}}</span>
@@ -59,7 +51,6 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
 import { postJson } from "@/libs/axios";
 import { baseUrl } from "@/api/index";
 export default {
@@ -72,11 +63,6 @@ export default {
       modalShow: false,
       descConfig: []
     };
-  },
-  computed: {
-    ...mapState({
-      singleData: state => state.singleModalData
-    })
   },
   created() {
     // 单人团配置
@@ -115,9 +101,6 @@ export default {
       ["drawRuleRemarks", "抽奖规则"]
     ];
   },
-  mounted() {},
-  watch: {},
-
   methods: {
     handleNone(e) {
       if (e === '' || typeof e !== 'string') {
@@ -168,117 +151,6 @@ export default {
 
       this.$Spin.hide();
       this.modalShow = true;
-    },
-    cancel() {},
-
-    /**
-     * 下面这些公共方法可以抽离到 \libs\util.js 或者mixin
-     */
-    /**
-     * 时间戳转时间
-     */
-    // 根据毫秒数格式化时间,时间格式有三种，根据format的数值改变：2位年月，3为年月日，5为年月日时分，6为年月日时分秒，默认5
-    // str 为yyyy-mm-dd分隔符
-    ms2date: (time, format, str) => {
-      var currentdate,
-        ms = Number(time),
-        date = new Date(time),
-        cut1 = "-",
-        cut2 = ":";
-
-      if (!isNaN(ms) && ms > 99999999) {
-        date = new Date(Number(ms));
-      }
-      if (isNaN(date.getTime())) {
-        // 非法时间 Invalid Date
-        return time;
-      }
-      if (ms === 0) {
-        // 传了 空
-        return time;
-      }
-      let objYear = date.getFullYear(),
-        objMonth = date.getMonth() + 1,
-        objDate = date.getDate(),
-        objHours = date.getHours(),
-        objMinutes = date.getMinutes(),
-        objSeconds = date.getSeconds();
-      if (typeof str === "string") {
-        cut1 = str;
-      }
-      if (objMonth >= 1 && objMonth <= 9) {
-        objMonth = "0" + objMonth;
-      }
-      if (objDate >= 0 && objDate <= 9) {
-        objDate = "0" + objDate;
-      }
-      if (objHours >= 0 && objHours <= 9) {
-        objHours = "0" + objHours;
-      }
-      if (objMinutes >= 0 && objMinutes <= 9) {
-        objMinutes = "0" + objMinutes;
-      }
-      if (objSeconds >= 0 && objSeconds <= 9) {
-        objSeconds = "0" + objSeconds;
-      }
-      if (format == 2) {
-        currentdate = objYear + cut1 + objMonth;
-      } else if (format == 3) {
-        currentdate = objYear + cut1 + objMonth + cut1 + objDate;
-      } else if (format == 5) {
-        currentdate =
-          objYear +
-          cut1 +
-          objMonth +
-          cut1 +
-          objDate +
-          " " +
-          objHours +
-          cut2 +
-          objMinutes;
-      } else if (format == 6) {
-        currentdate =
-          objYear +
-          cut1 +
-          objMonth +
-          cut1 +
-          objDate +
-          " " +
-          objHours +
-          cut2 +
-          objMinutes +
-          cut2 +
-          objSeconds;
-      } else {
-        currentdate =
-          objYear +
-          cut1 +
-          objMonth +
-          cut1 +
-          objDate +
-          " " +
-          objHours +
-          cut2 +
-          objMinutes;
-      }
-      return currentdate;
-    },
-    cloneObj(obj) {
-      return JSON.parse(JSON.stringify(obj));
-    },
-    // 全局提示
-    msgOk(txt) {
-      this.$Message.info({
-        content: txt,
-        duration: 3
-      });
-    },
-
-    msgErr(txt) {
-      this.$Message.error({
-        content: txt,
-        duration: 3
-      });
     }
   }
 };
