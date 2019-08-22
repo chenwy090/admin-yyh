@@ -57,16 +57,14 @@
         <FormItem label prop="openDrawTime" :rules="{ required: true, message: '请选择活动开奖时间' }">
           <Row>
             <Col span="10">
-              <DatePicker
+              <TimePicker
                 style="width:90%"
                 :value="form.openDrawTime"
-                type="datetime"
-                format="yyyy-MM-dd HH:mm"
+                format="HH:mm"
                 placeholder="请选择活动开奖时间"
-                :options="m_dateOptions"
                 @on-change="openDrawTimeChange"
                 class="date-range"
-              ></DatePicker>
+              ></TimePicker>
             </Col>
           </Row>
         </FormItem>
