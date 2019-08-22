@@ -52,7 +52,7 @@
           <!--
             0：未上架 1:未开始 2:进行中 3:开奖中 4:已开奖 5:已下架  6紧急下架
             查看  0-6
-            编辑 05  上架 05   下架 1
+            编辑 05(创建后未上架0、已下架5的活动，才可编辑)  上架 05   下架 1 
             紧急下架  2 
           -->
           <Button
@@ -71,7 +71,6 @@
             <Button
               type="success"
               size="small"
-              v-if="row.status == 0"
               @click="updateOperationStatus(row)"
             >上架</Button>
           </template>
@@ -330,8 +329,9 @@ export default {
           singleFormData: JSON.parse(JSON.stringify(singleFormData))
         });
       } else if (type == "edit") {
-        if (!(row.status == 0 || row.status == 1)) {
-          return this.msgErr("创建后未上架、未开始的活动，才可编辑");
+        //  0：未上架 1:未开始 2:进行中 3:开奖中 4:已开奖 5:已下架  6紧急下架
+        if (!(row.status == 0 || row.status == 5)) {
+          return this.msgErr("创建后未上架、已下架的活动，才可编辑");
         }
         //
         const url = "/drawDaily/activity/selectById";
