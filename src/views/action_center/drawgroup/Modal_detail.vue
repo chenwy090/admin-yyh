@@ -1,6 +1,6 @@
 <template>
   <div class="yyh-modal">
-    <Modal class="yyh-modal" v-model="modalShow" title="详情"
+    <Modal class="yyh-modal" v-model="modalShow" title="详情" width="1000"
       :styles="{top: '20px'}">
       <div v-if="dataList.groupType !== -1">
         <div class="yyh-modal-item" v-for="(el, i) in descConfig[Number(dataList.groupType-1)]" :key="'modal_detail' + i">
@@ -37,7 +37,11 @@
         </div>
         <div class="par mgl-2 yyh-modal-item">
           <span class="flex" style="width: 280px;">
-            <span class="title width-5">banner图</span>
+            <span class="title width-5">列表banner</span>
+              <img class="mgr-1 banner-img" :src="dataList.drawActiveUrl" alt="banner">                        
+          </span>
+          <span class="flex" style="width: 280px;">
+            <span class="title width-5">详情banner</span>
               <img class="mgr-1 banner-img" :src="dataList.advertBannerImgUrl" alt="banner">                        
           </span>
           <span class="flex" style="width: 280px;">
@@ -286,7 +290,7 @@ export default {
     color: #000;
   }
   .banner-img{
-    width: 120px; height: atuo;max-height: 600px;background: #ddd;
+    width: 110px; height: atuo;max-height: 600px;background: #eee;
   }
 }
 .flex{
