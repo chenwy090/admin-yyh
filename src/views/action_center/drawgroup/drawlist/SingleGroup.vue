@@ -297,16 +297,16 @@
         </Col>
       </Row>
 
-      <FormItem label="团失败u贝返还：">
+      <!-- 单人团不显示 -->
+      <!-- <FormItem label="团失败u贝返还：">
         <RadioGroup v-model="form.isFailureBackFee">
-          <!-- isFailureBackFee -->
           <Radio
             v-for="item in failureBackFeeList"
             :key="item.value"
             :label="item.value"
           >{{ item.label }}</Radio>
         </RadioGroup>
-      </FormItem>
+      </FormItem> -->
 
       <FormItem
         label="抽奖规则："
