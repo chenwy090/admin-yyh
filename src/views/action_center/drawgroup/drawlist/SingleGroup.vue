@@ -116,7 +116,7 @@
                 style="width:90%"
                 v-model="form.bigPrizeTemp.prizeName1"
                 placeholder="请输入实物名称"
-                :maxlength="15"
+                :maxlength="40"
                 clearable
               />
             </FormItem>
