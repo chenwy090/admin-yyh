@@ -8,7 +8,7 @@
           <template v-if="el[1] === '投放门店'">
             <template v-for="(item,ii) in dataList[el[0]]"><span style="flex: 1" :key="'L9a'+ii">{{handleAddress(item)}}</span><br :key="'L9b'+ii"></template>
           </template>
-          <span v-else-if="el[1] === '活动大奖' || el[1] === '阳光普照奖'" style="flex: 1;">
+          <span class="modal-content" v-else-if="el[1] === '活动大奖' || el[1] === '阳光普照奖'" style="flex: 1;">
             <div style="display: flex;">
               <img v-if="dataList[el[0]].type == '1' && dataList[el[0]].giftImg" class="mgr-1 banner-img" :src="dataList[el[0]].giftImg" alt="奖品图">
               <span class="mgr-1 flex-1">奖品名称：
@@ -16,19 +16,22 @@
               </span>
             </div>
           </span>
-          <span v-else-if="el[1] === '活动开奖时间'" style="flex: 1">{{dataList[el[0]] ? dataList[el[0]] : ''}} &nbsp;&nbsp; {{dataList.openDrawTimeType == 2? ' 满' + dataList.openDrawTimeNeedPlayers + '人开奖': ''}}</span>
-          <span v-else-if="el[1] === '参与对象'" style="flex: 1">{{dataList[el[0]] ? dataList[el[0]] : dataList.joinUserLevel == 0 ? '全部' : ''}}</span>
-          <span v-else style="flex: 1">{{dataList[el[0]] !== undefined ? dataList[el[0]] : ''}}{{el[1] === '开团有效时间'? ' 分钟': ''}}</span>
+          <span class="modal-content" v-else-if="el[1] === '活动开奖时间'" style="flex: 1">{{dataList[el[0]] ? dataList[el[0]] : ''}} &nbsp;&nbsp; {{dataList.openDrawTimeType == 2? ' 满' + dataList.openDrawTimeNeedPlayers + '人开奖': ''}}</span>
+          <span class="modal-content" v-else-if="el[1] === '参与对象'" style="flex: 1">{{dataList[el[0]] ? dataList[el[0]] : dataList.joinUserLevel == 0 ? '全部' : ''}}</span>
+          <span class="modal-content" v-else-if="el[1] === '抽奖规则'" style="flex: 1">
+            {{dataList[el[0]]}}
+          </span>
+          <span class="modal-content" v-else style="flex: 1">{{dataList[el[0]] !== undefined ? dataList[el[0]] : ''}}{{el[1] === '开团有效时间'? ' 分钟': ''}}</span>
         </div>
         <!-- 广告主相关 -->
         <div class="par">
           广告主信息:
         </div>
         <div class="par mgl-2 yyh-modal-item">
-          <span class="title" style="width: 3em">名称：</span><span class="flex-1">{{typeof dataList.advertName === 'string' ? dataList.advertName : ''}}</span>
+          <span class="title" style="width: 3em">名称：</span><span class="flex-1 modal-content">{{typeof dataList.advertName === 'string' ? dataList.advertName : ''}}</span>
         </div>
         <div class="par mgl-2 yyh-modal-item">
-          <span class="title" style="width: 3em">简介：</span><span class="flex-1" v-html="typeof dataList.advertIntro === 'string' ? dataList.advertIntro : ''"></span>
+          <span class="title" style="width: 3em">简介：</span><span class="flex-1 modal-content" v-html="typeof dataList.advertIntro === 'string' ? dataList.advertIntro : ''"></span>
         </div>
         <div class="par mgl-2 yyh-modal-item">
           <span class="flex" style="width: 280px;">
@@ -200,5 +203,11 @@ export default {
 }
 .title{
   display: inline-block;
+}
+.modal-content{
+  max-width: 960px;
+  max-height: 150px;
+  overflow: auto;
+  word-break: break-all;
 }
 </style>
