@@ -367,7 +367,7 @@ export default {
 
             this.edit_info.helpAwardLower = this.edit_info.helpAwardLower * 100;
             this.edit_info.helpAwardUpper = this.edit_info.helpAwardUpper * 100;
-            this.edit_info.discountRatio = this.edit_info.discountRatio * 100;
+            this.edit_info.discountRatio = parseInt(this.edit_info.discountRatio * 100);
              this.edit_info.laterDiscountRatio = this.edit_info.laterDiscountRatio * 100;
             this.edit_info.limitTime = this.edit_info.limitTime / 60;
 
