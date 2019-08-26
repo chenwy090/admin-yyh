@@ -61,6 +61,7 @@
       v-model="addStaffDisplay"
       :title="modalTitle"
       width="885"
+      :style="{top: '8px'}"
       footer-hide
       :closable="false"
       :mask-closable="false"

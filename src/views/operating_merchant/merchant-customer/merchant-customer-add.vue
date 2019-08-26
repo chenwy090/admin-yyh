@@ -15,6 +15,17 @@
       <Row style="margin-left:15%;">
         <Row class="box">
           <Col span="3" class="left-text">
+            <span style="color:red">*</span>商户类型
+          </Col>
+          <Col span="15">
+            <RadioGroup v-model="add_info.shopType" class="mgt-5">
+              <Radio label="local_single">本地商户（单店）</Radio>
+              <Radio label="local_multi">本地商户（多店）</Radio>
+            </RadioGroup>
+          </Col>
+        </Row>
+        <Row class="box">
+          <Col span="3" class="left-text">
             <span style="color:red">*</span>所属商户
           </Col>
           <Col span="15">
@@ -389,6 +400,8 @@ export default {
         }
       ],
       add_info: {
+        // 商户类型 - 1.5.4.1
+        shopType: '',
         remark: "",
         serviceCode: "merchant_customer",
         serviceName: "精准拓客",
