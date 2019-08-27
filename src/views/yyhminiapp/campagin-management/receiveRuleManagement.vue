@@ -37,7 +37,7 @@
                 style="width:400px"
                 @on-change="statusCheckChange"
               ></InputNumber>
-            </FormItem> -->
+            </FormItem>-->
 
             <FormItem label="每人限领总数" required>
               <InputNumber
@@ -52,19 +52,25 @@
               <span style="color:red">&nbsp;&nbsp;张</span>
             </FormItem>
 
-
-
             <FormItem label="投放渠道" required>
-              <Select v-model="edit_info.sendChannel" style="width:400px" @on-change="statusCheckChange">
-                <Option v-for="item in res_list" :value="item.dictValue" :key="item.id">{{ item.dictLabel }}</Option>
+              <Select
+                v-model="edit_info.sendChannel"
+                style="width:400px"
+                @on-change="statusCheckChange"
+              >
+                <Option
+                  v-for="item in res_list"
+                  :value="item.dictValue"
+                  :key="item.id"
+                >{{ item.dictLabel }}</Option>
               </Select>
             </FormItem>
 
             <FormItem label="是否在领优惠列表显示" required v-if="edit_info.sendChannel==1">
               <Select
-                      v-model="edit_info.displayStatus"
-                      style="width:400px"
-                      @on-change="statusCheckChange"
+                v-model="edit_info.displayStatus"
+                style="width:400px"
+                @on-change="statusCheckChange"
               >
                 <Option value="1">显示</Option>
                 <Option value="0">不显示</Option>
@@ -81,9 +87,8 @@
                 style="width:400px"
                 @on-change="statusCheckChange"
               ></InputNumber>
-             <span style="color:red">&nbsp;&nbsp;人</span>
+              <span style="color:red">&nbsp;&nbsp;人</span>
             </FormItem>
-
 
             <FormItem label="是否限抢券" required>
               <Select
@@ -96,12 +101,11 @@
               </Select>
             </FormItem>
 
-
-          <FormItem label="排序" required>
+            <FormItem label="排序" required>
               <InputNumber
                 :min="0"
                 type="text"
-                 :step="1"
+                :step="1"
                 v-model="edit_info.orderBy"
                 placeholder="请输入"
                 style="width:400px"
@@ -109,13 +113,8 @@
               ></InputNumber>
             </FormItem>
 
-
-         <FormItem label="是否限制库存数量" required>
-              <Select
-                v-model="isStockCount"
-                style="width:400px"
-                @on-change="statusCheckChange"
-              >
+            <FormItem label="是否限制库存数量" required>
+              <Select v-model="isStockCount" style="width:400px" @on-change="statusCheckChange">
                 <Option value="0">否</Option>
                 <Option value="1">是</Option>
               </Select>
@@ -131,9 +130,9 @@
                 style="width:400px"
                 @on-change="statusCheckChange"
               ></InputNumber>
-               <span style="color:red"> &nbsp;&nbsp;张</span>
+              <span style="color:red">&nbsp;&nbsp;张</span>
             </FormItem>
-         <FormItem label=" 默认推荐排除" required>
+            <FormItem label=" 默认推荐排除" required>
               <Select
                 v-model="edit_info.isBlack"
                 style="width:400px"
@@ -145,7 +144,12 @@
             </FormItem>
 
             <FormItem :label-width="220">
-              <Alert type="warning" show-icon v-if="isCheckDisabled == true" style="width:500px">修改后才能保存</Alert>
+              <Alert
+                type="warning"
+                show-icon
+                v-if="isCheckDisabled == true"
+                style="width:500px"
+              >修改后才能保存</Alert>
               <Button
                 type="primary"
                 @click="editOk()"
@@ -162,36 +166,39 @@
             </FormItem>
           </Form>
 
-
-
           <!--分享奖励配置-->
-          <Form ref="shareModal" v-if="formShareModal.shareData.length&&camp_pageStatus==='edit'&&isNext" :model="formShareModal" :label-width="220" style="margin-top:20px">
-            <FormItem v-for="item in formShareModal.shareData" :key="item.id" :label="item.name" required>
+          <Form
+            ref="shareModal"
+            v-if="formShareModal.shareData.length&&camp_pageStatus==='edit'&&isNext"
+            :model="formShareModal"
+            :label-width="220"
+            style="margin-top:20px"
+          >
+            <FormItem
+              v-for="item in formShareModal.shareData"
+              :key="item.id"
+              :label="item.name"
+              required
+            >
               <InputNumber
-                      :min="item.name== '倍数'?1:0"
-                      :step="1"
-                      type="text"
-                      v-model="item.value"
-                      placeholder="请输入"
-                      style="width:320px"
+                :min="item.name== '倍数'?1:0"
+                :step="1"
+                type="text"
+                v-model="item.value"
+                placeholder="请输入"
+                style="width:320px"
               ></InputNumber>
               <span v-if="item.name!= '倍数'">&nbsp;&nbsp;U贝</span>
               <span v-if="item.name== '倍数'">&nbsp;&nbsp;倍</span>
             </FormItem>
             <FormItem>
               <Button style="float: left;" type="primary" @click="shareSave()">保存</Button>
-              <Button
-                      type="dashed"
-                      @click="nextInfo2()"
-                      style="width:150px;margin-left: 5%"
-              >下一步</Button>
+              <Button type="dashed" @click="nextInfo2()" style="width:150px;margin-left: 5%">下一步</Button>
             </FormItem>
           </Form>
         </Card>
       </div>
     </div>
-
-
 
     <div v-if="campaginGrabInfoPage">
       <campaginGrabInfoSet @changeStatus="showcampaginGrabInfo"></campaginGrabInfoSet>
@@ -232,34 +239,42 @@ export default {
     campaginManagement
   },
   props: {
-      camp_pageStatus:String
+    camp_pageStatus: String
   },
 
   data() {
     return {
-        formShareModal:{
-            shareData:[]
-        },
+      formShareModal: {
+        shareData: []
+      },
       next_modal: false,
-        isNext:false,
+      isNext: false,
       campaginGrabInfoPage: false,
       campaginManagementPage: false,
       edit_info: {
         // addRequiredScore: 0,
         // freeTimes: 0,
-        isLimitGrap: "0",
-        isBlack: "0",
-        sendChannel: "1",
+
+        // 是否在领优惠列表显示  edit_info.displayStatus  1 0
+        displayStatus: "", //【必选】
+        // isLimitGrap: "0",
+        isLimitGrap: "", //是否限抢券 0 1 【必选】
+        // isBlack: "0",
+        isBlack: "", //默认推荐排除 0 1  【必选】
+        sendChannel: "1", //投放渠道
         label: "",
         shareInvitedAwardAmount: 0,
-        shareInvitedCount: 0,
+        shareInvitedCount: 0,//邀请人数
         // shareUseRakeBackPercent: 0,
         orderBy: 9999,
-        stockCount: 0,
-        totalGetLimit: 0,
-          displayStatus: "0"
+        // stockCount: 0,
+        stockCount: "", //库存数量  【必填】
+        totalGetLimit: 0, //每人限领总数
+        // displayStatus: "0"
+        displayStatus: "" //是否在领优惠列表显示  1 0  【必选】
       },
-      isStockCount: "0",
+      // isStockCount: "0",
+      isStockCount: "", //是否限制库存数量 默认不选择  0 1 【必选】
       edit_loading: false,
       campId: "",
       status: "",
@@ -373,65 +388,64 @@ export default {
       this.updateTableList();
       this.getTicketTemplate();
     },
-      share(campId){
-          this.formShareModal.shareData = [];
-          postRequest('/commonConfig/queryConfigByCode',{
-                  code:campId
-              }
-          ).then(res => {
-              if (res.code == 200) {
-                  if(res.data||res.data.noOverallCommonConfigList){
-                      this.formShareModal.shareData = res.data.noOverallCommonConfigList||[];
-                      this.formShareModal.shareData.forEach(function(v){
-                          v.value = Number(v.value)||0;
-                      })
-                      this.shareDisplay = true;
-                  }else{
-                      this.$Message.error('未查询到数据');
-                  }
-              } else {
-                  this.$Message.error(res.msg);
-              }
-          });
-      },
-      shareSave(name){
-          let canSave = true;
-          let msg = ''
-          this.formShareModal.shareData.forEach(function(v){
-              v.createTime = null;
-              v.updateTime = null;
-              v.updateBy = null;
-              if(!v.value&&v.value!==0){
-                  canSave = false
-                  msg='请输入完整表单'
-              }
-              if(v.name=='倍数'&&v.value<1){
-                  canSave = false
-                  msg='请输入大于等于1的倍数'
-              }
-          })
-          if(!canSave){
-              this.$Message.error(msg);
-              return;
+    share(campId) {
+      this.formShareModal.shareData = [];
+      postRequest("/commonConfig/queryConfigByCode", {
+        code: campId
+      }).then(res => {
+        if (res.code == 200) {
+          if (res.data || res.data.noOverallCommonConfigList) {
+            this.formShareModal.shareData =
+              res.data.noOverallCommonConfigList || [];
+            this.formShareModal.shareData.forEach(function(v) {
+              v.value = Number(v.value) || 0;
+            });
+            this.shareDisplay = true;
+          } else {
+            this.$Message.error("未查询到数据");
           }
-          postRequest(
-              "/commonConfig/updateConfigBatch",
-              {"noOverallCommonConfigList":this.formShareModal.shareData}
-          ).then(res => {
-              if (res.code == 200) {
-                  //this.formCustom.remark='';
-                  this.$Message.success('保存成功')
-                  if(name){
-                      setTimeout(() => {
-                          this.campaginGrabInfoPage = true;
-                          this.campaginManagementPage = false;
-                      }, 1200);
-                  }
-              } else {
-                  this.$Message.error(res.msg);
-              }
-          });
-      },
+        } else {
+          this.$Message.error(res.msg);
+        }
+      });
+    },
+    shareSave(name) {
+      let canSave = true;
+      let msg = "";
+      this.formShareModal.shareData.forEach(function(v) {
+        v.createTime = null;
+        v.updateTime = null;
+        v.updateBy = null;
+        if (!v.value && v.value !== 0) {
+          canSave = false;
+          msg = "请输入完整表单";
+        }
+        if (v.name == "倍数" && v.value < 1) {
+          canSave = false;
+          msg = "请输入大于等于1的倍数";
+        }
+      });
+      if (!canSave) {
+        this.$Message.error(msg);
+        return;
+      }
+      postRequest("/commonConfig/updateConfigBatch", {
+        noOverallCommonConfigList: this.formShareModal.shareData
+      }).then(res => {
+        if (res.code == 200) {
+          //this.formCustom.remark='';
+          this.$Message.success("保存成功");
+          if (name) {
+            setTimeout(() => {
+              this.campaginGrabInfoPage = true;
+              this.campaginManagementPage = false;
+            }, 1200);
+          }
+        } else {
+          this.$Message.error(res.msg);
+        }
+      });
+    },
 
     updateTableList() {
       this.TableLoading = true;
@@ -444,6 +458,8 @@ export default {
         "/campaignReceiveRule/queryRule?campId=" + this.campId,
         reqParams
       ).then(res => {
+        console.log("xxxxx", res);
+
         if (res.isSuccess) {
           if (res.data) {
             this.edit_info = res.data;
@@ -463,15 +479,19 @@ export default {
             this.edit_info = {
               // addRequiredScore: 0,
               // freeTimes: 0,
-              isLimitGrap: "0",
-              isBlack: "0",
+              // isLimitGrap: "0",
+              // isBlack: "0",
+              displayStatus: "", //是否在领优惠列表显示
+              isLimitGrap: "", //是否限抢券
+              isBlack: "", //默认推荐排除
               sendChannel: "1",
               label: "",
               shareInvitedAwardAmount: 0,
               shareInvitedCount: 0,
               // shareUseRakeBackPercent: 0,
               orderBy: 9999,
-              stockCount: 0,
+              // stockCount: 0,//库存数量
+              stockCount: "", //库存数量
               totalGetLimit: 0
             };
             this.status = "add";
@@ -505,40 +525,50 @@ export default {
 
     editOk() {
       if (!this.edit_info.sendChannel) {
-        this.$Message.error("投放渠道不能为空");
-        return;
+        return this.$Message.error("投放渠道不能为空");
+      }
+      // 是否在领优惠列表显示  edit_info.displayStatus  1 0
+      if (this.edit_info.displayStatus === "") {
+        return this.$Message.error("请选择是否在领优惠列表显示");
       }
       if (this.edit_info.sendChannel == 1) {
         if (
           !this.edit_info.shareInvitedCount &&
           this.edit_info.shareInvitedCount != 0
         ) {
-          this.$Message.error("邀请人数不能为空");
-          return;
+          return this.$Message.error("邀请人数不能为空");
+        }
+      }
+      // 是否限抢券   edit_info.isLimitGrap  0 1
+      if (this.edit_info.isLimitGrap === "") {
+        return this.$Message.error("请选择是否限抢券");
+      }
+      if (!this.edit_info.orderBy && this.edit_info.orderBy != 0) {
+        return this.$Message.error("排序不能为空");
+      }
+      // 是否限制库存数量  isStockCount    0 否 1 是
+      if (this.isStockCount === "") {
+        return this.$Message.error("请选择是否限制库存数量");
+      } else {
+        if (this.isStockCount == 0) {
+          this.edit_info.stockCount = "999999999";
+        }
+        if (this.isStockCount == 1) {
+          if (!this.edit_info.stockCount) {
+            return this.$Message.error("库存数量不能为空");
+          }
         }
       }
 
-      if (!this.edit_info.orderBy && this.edit_info.orderBy != 0) {
-        this.$Message.error("排序不能为空");
-        return;
-      }
-
-      if (!this.edit_info.stockCount && this.edit_info.stockCount != 0) {
-        this.$Message.error("库存数量不能为空");
-        return;
-      }
-      if (this.isStockCount == 0) {
-        this.edit_info.stockCount = "999999999";
-      } else {
-        this.edit_info.stockCount = this.edit_info.stockCount;
-      }
       if (this.edit_info.isLimitGrap == 1) {
         if (this.daySum > this.edit_info.stockCount) {
-          this.$Message.error("设置总天数不能大于库存数量");
-          return;
+          return this.$Message.error("设置总天数不能大于库存数量");
         }
       }
-
+      //默认推荐排除  edit_info.isBlack  0 1
+      if (this.edit_info.isBlack === "") {
+        return this.$Message.error("请选择默认推荐排除");
+      }
       this.edit_loading = true;
       const reqParams = {
         campId: this.campId,
@@ -555,7 +585,7 @@ export default {
         orderBy: this.edit_info.orderBy,
         stockCount: this.edit_info.stockCount,
         totalGetLimit: this.edit_info.totalGetLimit,
-          displayStatus: this.edit_info.displayStatus,
+        displayStatus: this.edit_info.displayStatus
       };
 
       if (this.status == "add") {
@@ -610,26 +640,26 @@ export default {
 
     nextInfo() {
       this.dataProcessing();
-      this.isNext=true;
-      if(this.camp_pageStatus!=='edit'){
-          this.campaginGrabInfoPage = true;
-          this.campaginManagementPage = false;
+      this.isNext = true;
+      if (this.camp_pageStatus !== "edit") {
+        this.campaginGrabInfoPage = true;
+        this.campaginManagementPage = false;
       }
     },
-      nextInfo2(){
-          this.shareSave('next');
-          this.isNext=true;
-          this.campaginGrabInfoPage = true;
-          this.campaginManagementPage = false;
-      },
+    nextInfo2() {
+      this.shareSave("next");
+      this.isNext = true;
+      this.campaginGrabInfoPage = true;
+      this.campaginManagementPage = false;
+    },
 
     showcampaginGrabInfo(e) {
       if (e.type == 1) {
         this.$emit("changeStatus", { Return: false, type: 1 });
       }
       this.campaginGrabInfoPage = e.Return;
-      if(this.camp_pageStatus==='edit'){
-          this.isNext = e.isNext;
+      if (this.camp_pageStatus === "edit") {
+        this.isNext = e.isNext;
       }
     },
 
@@ -638,11 +668,11 @@ export default {
     },
 
     goback() {
-        if(this.isNext){
-            this.isNext = false;
-        }else{
-            this.$emit("changeStatus", { Return: false });
-        }
+      if (this.isNext) {
+        this.isNext = false;
+      } else {
+        this.$emit("changeStatus", { Return: false });
+      }
     },
 
     statusCheckChange() {

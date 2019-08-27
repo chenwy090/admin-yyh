@@ -15,7 +15,7 @@ export default {
     couponName: "", //优惠券名称
     couponType: "", //优惠券类型1：周边券、2：商超券
 
-    isFailureBackFee: 1, //团失败u贝返还
+    // isFailureBackFee: 1, //团失败u贝返还 【单人团不能传此参数给后台】
     drawRuleRemarks: "", //抽奖规则
     //----广告主信息：
     advertName: "", //广告主 名称
