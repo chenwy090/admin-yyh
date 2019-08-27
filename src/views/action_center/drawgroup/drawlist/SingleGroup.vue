@@ -86,21 +86,36 @@
         </FormItem>
       </template>
 
-      <FormItem label="投放门店：" v-for="(item,index) in form.drawDailyShopList" :key="item.id">
-        <storeView
-          :id="item.id"
-          :index="index"
-          v-on:sendProvinceId="sendProvinceId"
-          v-on:sendCityId="sendCityId"
-          v-on:sendAreaId="sendAreaId"
-          v-on:sendShopId="sendShopId"
-          @handleRemove-event="handleRemove"
-          :shop="item"
-        ></storeView>
+      <!-- 门店类型： storeType 0 全国 1门店 -->
+      <FormItem label="投放门店：">
+        <RadioGroup v-model="form.storeType">
+          <Radio
+            v-for="item in storeTypeList"
+            :key="item.value"
+            :label="item.value"
+          >{{ item.label }}</Radio>
+        </RadioGroup>
       </FormItem>
-      <FormItem label>
-        <Button type="dashed" long @click="handleAdd" icon="md-add" style="width:100px;"></Button>
-      </FormItem>
+
+      <template v-if="form.storeType==1">
+        <FormItem>
+          <storeView
+            v-for="(item,index) in form.drawDailyShopList"
+            :key="item.id"
+            :id="item.id"
+            :index="index"
+            v-on:sendProvinceId="sendProvinceId"
+            v-on:sendCityId="sendCityId"
+            v-on:sendAreaId="sendAreaId"
+            v-on:sendShopId="sendShopId"
+            @handleRemove-event="handleRemove"
+            :shop="item"
+          ></storeView>
+        </FormItem>
+        <FormItem label>
+          <Button type="dashed" long @click="handleAdd" icon="md-add" style="width:100px;"></Button>
+        </FormItem>
+      </template>
 
       <!-- 1:实物、2：优惠券、3：U贝 -->
       <FormItem label="活动大奖：">
@@ -145,14 +160,14 @@
         <!-- </Row> -->
       </template>
       <template v-else-if="form.bigPrizeTemp.type==2">
-        <Row>
-          <Col span="10">
-            <!-- 这里需要跟后端对一下 -->
-            <FormItem
-              label="选择优惠券"
-              prop="bigPrizeTemp.prizeName2"
-              :rules="{ required: true, message: '请选择优惠券' }"
-            >
+        <FormItem
+          :key="11"
+          label="选择优惠券"
+          prop="bigPrizeTemp.prizeName2"
+          :rules="{ required: true, message: '请选择优惠券' }"
+        >
+          <Row>
+            <Col span="10">
               <Input
                 :key="11"
                 v-model="form.bigPrizeTemp.prizeName2"
@@ -161,9 +176,9 @@
               >
                 <Button @click="handleChoose('bigPrize')" slot="append">选择</Button>
               </Input>
-            </FormItem>
-          </Col>
-        </Row>
+            </Col>
+          </Row>
+        </FormItem>
       </template>
       <template v-else-if="form.bigPrizeTemp.type==3">
         <FormItem
@@ -223,13 +238,14 @@
         </Row>
       </template>
       <template v-else-if="form.normalPrizeTemp.type==2">
-        <Row>
-          <Col span="10">
-            <FormItem
-              label="选择优惠券"
-              prop="normalPrizeTemp.prizeName2"
-              :rules="{ required: true, message: '请选择优惠券' }"
-            >
+        <FormItem
+          :key="22"
+          label="选择优惠券"
+          prop="normalPrizeTemp.prizeName2"
+          :rules="{ required: true, message: '请选择优惠券' }"
+        >
+          <Row>
+            <Col span="10">
               <Input
                 :key="22"
                 v-model="form.normalPrizeTemp.prizeName2"
@@ -238,9 +254,9 @@
               >
                 <Button @click="handleChoose('normalPrize')" slot="append">选择</Button>
               </Input>
-            </FormItem>
-          </Col>
-        </Row>
+            </Col>
+          </Row>
+        </FormItem>
       </template>
       <template v-else-if="form.normalPrizeTemp.type==3">
         <FormItem
@@ -306,7 +322,7 @@
             :label="item.value"
           >{{ item.label }}</Radio>
         </RadioGroup>
-      </FormItem> -->
+      </FormItem>-->
 
       <FormItem
         label="抽奖规则："
@@ -315,14 +331,14 @@
       >
         <Row>
           <Col span="10">
-            <Tooltip trigger="focus" title="提醒" content="最多200个汉字" placement="right">
+            <Tooltip trigger="focus" title="提醒" content="最多600个汉字" placement="right">
               <Input
                 v-model="form.drawRuleRemarks"
                 type="textarea"
                 style="width:400px"
                 :autosize="{minRows: 4,maxRows: 8}"
                 placeholder="抽奖规则"
-                :maxlength="200"
+                :maxlength="600"
               />
             </Tooltip>
           </Col>
@@ -343,14 +359,14 @@
       >
         <Row>
           <Col span="10">
-            <Tooltip trigger="focus" title="提醒" content="最多200个汉字" placement="right">
+            <Tooltip trigger="focus" title="提醒" content="最多600个汉字" placement="right">
               <Input
                 v-model="form.advertIntro"
                 type="textarea"
                 style="width:400px"
                 :autosize="{minRows: 4,maxRows: 8}"
                 placeholder="请输入广告主 描述富文本"
-                :maxlength="200"
+                :maxlength="600"
               />
             </Tooltip>
           </Col>
@@ -463,6 +479,8 @@ export default {
         { value: 1, label: "固定时间" },
         { value: 2, label: "相对时间（满x人开奖）" }
       ],
+      // 门店类型 storeType 0 全国 1 门店
+      storeTypeList: [{ value: 0, label: "全国" }, { value: 1, label: "门店" }],
 
       // 优惠券类型1：周边券、2：商超券
       couponType: 2,
@@ -676,6 +694,10 @@ export default {
           formData.bigPrize = this.formatFormData(formData.bigPrizeTemp);
           formData.normalPrize = this.formatFormData(formData.normalPrizeTemp);
           formData.groupType = 1;
+          if (formData.storeType == 0) {
+            //全国
+            formData.drawDailyShopList = [];
+          }
           postRequest(url, formData).then(res => {
             if (res.code == 200) {
               this.$emit("closeFormModal-event");

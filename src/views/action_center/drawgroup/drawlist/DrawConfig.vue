@@ -22,6 +22,9 @@
               >{{ item.label }}</Option>
             </Select>
           </FormItem>
+          <FormItem label="抽奖id：" :label-width="85">
+            <Input style="width:120px" type="text" v-model="searchData.id" placeholder="请输入"></Input>
+          </FormItem>
           <FormItem label="抽奖名称：" :label-width="85">
             <Input style="width:200px" type="text" v-model="searchData.name" placeholder="请输入"></Input>
           </FormItem>
@@ -36,11 +39,12 @@
           </FormItem>
           <FormItem :label-width="0">
             <Button type="primary" icon="ios-search" @click="queryTableList()">搜索</Button>
-            <Button icon="md-refresh" @click="reset">重置</Button>
+            <Button icon="md-refresh"  class="marginLeft20" @click="reset">重置</Button>
           </FormItem>
         </Form>
         <Row type="flex" justify="start">
           <Button type="primary" icon="md-add" @click="addOrEdit('add')">新增</Button>
+          <Button icon="md-refresh" class="marginLeft20" @click="refresh">刷新</Button>
           <Button type="primary" class="marginLeft20" @click="changeComp('schedule-daily')">每日排期</Button>
           <Button type="primary" class="marginLeft20" @click="changeComp('bannerway')">抽奖团banner位</Button>
         </Row>
@@ -68,11 +72,7 @@
               style="margin-right: 5px"
               @click="addOrEdit('edit',row)"
             >编辑</Button>
-            <Button
-              type="success"
-              size="small"
-              @click="updateOperationStatus(row)"
-            >上架</Button>
+            <Button type="success" size="small" @click="updateOperationStatus(row)">上架</Button>
           </template>
           <template v-else-if="row.status == 1">
             <Button type="warning" size="small" @click="underUpdateOperationStatus(row)">下架</Button>
@@ -282,6 +282,7 @@ export default {
       searchData: {
         // 查询参数
         groupType: 0,
+        id: "",
         name: "",
         status: "all", //提交后台过滤为 ""空字符串
         operationType: "",
@@ -551,6 +552,10 @@ export default {
       this.searchData.startTime = arr[0];
       this.searchData.endTime = arr[1];
     },
+    // 刷新搜索
+    refresh() {
+      this.queryTableList(this.page.pageNum);
+    },
     // 分页（点击第几页）
     changeCurrent(pageNum) {
       this.queryTableList(pageNum);
@@ -588,6 +593,7 @@ export default {
       // 重置查询参数
       this.searchData = {
         groupType: 0,
+        id: "",
         name: "",
         status: "all",
         operationType: "",
