@@ -157,7 +157,7 @@
                 type="dashed"
                 @click="nextInfo()"
                 style="width:150px;margin-left: 5%"
-                v-if=" status=='edit'"
+                v-if=" status=='edit'||(status!='edit'&&edit_info.isLimitGrap=='1')"
               >下一步</Button>
             </FormItem>
           </Form>
@@ -629,16 +629,20 @@ export default {
     nextInfo() {
       this.dataProcessing();
       this.isNext=true;
-      if(this.camp_pageStatus!=='edit'){
+      if(this.camp_pageStatus=='add' && this.edit_info.isLimitGrap=='1'){
           this.campaginGrabInfoPage = true;
           this.campaginManagementPage = false;
+      }else if(this.camp_pageStatus=='add' &&this.edit_info.isLimitGrap!='1'){
+          this.next_modal = true;
       }
     },
       nextInfo2(){
-          this.shareSave('next');
           this.isNext=true;
           this.campaginGrabInfoPage = true;
           this.campaginManagementPage = false;
+          if(this.edit_info.isLimitGrap!='1'){
+              this.next_modal = true;
+          }
       },
 
     showcampaginGrabInfo(e) {
