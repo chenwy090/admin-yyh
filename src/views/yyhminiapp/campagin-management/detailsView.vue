@@ -337,6 +337,26 @@
                 </Col>
               </Row>
             </Form>
+
+
+
+
+            <!--分享奖励配置-->
+            <Form ref="shareModal" v-if="formShareModal.shareData.length" :model="formShareModal" :label-width="160" style="margin-top:20px">
+              <FormItem v-for="item in formShareModal.shareData" :key="item.id" :label="item.name" required>
+                <InputNumber
+                        :min="item.name== '倍数'?1:0"
+                        :step="1"
+                        type="text"
+                        v-model="item.value"
+                        placeholder="请输入"
+                        style="width:320px"
+                        disabled
+                ></InputNumber>
+                <span v-if="item.name!= '倍数'">&nbsp;&nbsp;U贝</span>
+                <span v-if="item.name== '倍数'">&nbsp;&nbsp;倍</span>
+              </FormItem>
+            </Form>
           </div>
         </div>
       </TabPane>
@@ -473,6 +493,9 @@ export default {
     },
   data() {
     return {
+        formShareModal:{
+            shareData:[]
+        },
        bigImgDialog: false,
       big_Image_url: "",
     // 基础设置---------------------------------------------------------------------------------------------
@@ -532,9 +555,9 @@ export default {
         // campId: "",
         status: "",
         daySum: "",
-   
+
         currentid: "", // 点击单选框得到的id（临时）
-        
+
     // 规则设置---------------------------------------------------------------------------------------------
 
     // 整点抢设置-------------------------------------------------------------------------------------------
@@ -545,16 +568,16 @@ export default {
         ],
         campaginGrabInfo_campId: "",
         campaginGrabInfo_delId: [],
-      
+
     // 整点抢设置-------------------------------------------------------------------------------------------
       };
- 
+
   },
 
     created: function() {
     },
     methods: {
-    
+
       init() {
         // 基础设置------------------------------------------------------------------
         this.camp_pageStatus = this.getStore("camp_pageStatus");
@@ -565,17 +588,38 @@ export default {
 
         // 规则设置------------------------------------------------------
         this.campId = this.camp_Info.campId
-    
+
         this.updateTableList();
              this.getTicketTemplate();
         // 规则设置------------------------------------------------------
 
         // 整点抢设置----------------------------------------------------------------
-       
+
         this.getCampaginGrabInfoList();
         // 整点抢设置----------------------------------------------------------------
+          this.share(this.campId);
       },
-
+        share(campId){
+            this.formShareModal.shareData = [];
+            postRequest('/commonConfig/queryConfigByCode',{
+                    code:campId
+                }
+            ).then(res => {
+                if (res.code == 200) {
+                    if(res.data||res.data.noOverallCommonConfigList){
+                        this.formShareModal.shareData = res.data.noOverallCommonConfigList||[];
+                        this.formShareModal.shareData.forEach(function(v){
+                            v.value = Number(v.value)||0;
+                        })
+                        this.shareDisplay = true;
+                    }else{
+                        this.$Message.error('未查询到数据');
+                    }
+                } else {
+                    this.$Message.error(res.msg);
+                }
+            });
+        },
       // 基础设置---------------------------------------------------------------------------------------------
       getCampInfo() {
           this.editInfo();
@@ -610,7 +654,7 @@ export default {
       //基础设置
       editInfo() {
         this.edit_info = this.camp_Info;
-     
+
         this.edit_info.appid = this.camp_Info.appid;
         this.campId = this.camp_Info.campId;
 

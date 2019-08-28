@@ -177,16 +177,20 @@
                 <Row v-else-if="modal1.code == '8'||modal1.code == '18'||modal1.code == '19'||modal1.code == '21'||modal1.code == '26'">
                     <Col span="18">
                     <FormItem label="金额">
-                        <InputNumber
-                                :min="0"
-                                :step="1"
-                                type="text"
-                                v-model="modal1.value"
-                                :precision="2"
-                                :active-change="true"
-                                placeholder="请输入"
-                                style="width: 100%"
-                        ></InputNumber>
+                        <!--<InputNumber-->
+                                <!--:min="0"-->
+                                <!--:step="1"-->
+                                <!--type="text"-->
+                                <!--v-model="modal1.value"-->
+                                <!--:precision="2"-->
+                                <!--:active-change="true"-->
+                                <!--placeholder="请输入"-->
+                                <!--style="width: 100%"-->
+                        <!--&gt;</InputNumber>-->
+                        <div class="ivu-input-number ivu-input-number-default" style="width: 100%">
+                            <input class="ivu-input-number-input" min="0" v-model="modal1.value"
+                                   v-numformatter = 'modal1.value'/>
+                        </div>
                     </FormItem>
                     </Col>
                     <Col span="4" offset="1">
@@ -380,7 +384,7 @@
                 :mask-closable="false" footer-hide>
             <Form :model="modal3" label-position="right" ref="modalErf3" :rules="ruleValidate3">
                 <Row>
-                    <editor-bar v-model="modal3.context" :content="modal3.context" @on-change="change"></editor-bar>
+                    <editor-bar v-model="modal3.context" :content="modal3.context" @on-change="change" @on-blur="blur"></editor-bar>
                 </Row>
                 <FormItem>
                     <Button style="float: right;margin-left: 20px" type="primary" @click="ok3('modalErf3')">确认</Button>
@@ -454,7 +458,8 @@
                 modal3:{
                     name:'',
                     isopen:false,
-                    context:''
+                    context:'',
+                    newcontext:'',
                 },
                 columns1: [
                     {
@@ -580,17 +585,34 @@
             }
         },
         methods: {
-            formatter(value){
-                if(String(value).split('.').length>2){
-                    value = String(value).split('.')[0]+'.'+String(value).split('.')[1];
-                };
-                if(String(value).split('.').length==2&&String(value).split('.')[1].length>2){
-                    value = String(value).split('.')[0]+'.'+String(value).split('.')[1].slice(0,2);
+            inputNum(e){
+                if (!String.fromCharCode(e.keyCode).match(/[0-9\.]/)) {
+                    return false;
                 }
-                return Number(value)
             },
+            formatter(e){
+                // if ( !this.isNumber(e.keyCode) )  return false
+                // let value = e.target.value;
+                // if (value.indexOf('.')&&e.keyCode==190) return false
+                // if (value.split('.')[1]&&value.split('.')[1].length>=2) return false
+                console.log(e);
+                e.target.value = e.target.value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3'); //只能输入两个小数
+            },
+            // 仅能输入数字
+            isNumber(keyCode) {
+                 // 数字
+                if (keyCode >= 48 && keyCode <= 57 ) return true
+                 // 小数字键盘
+                if (keyCode == 190) return true
+                    // Backspace键
+                if (keyCode == 8) return true
+                    return false
+                },
             change(e){
-                this.modal3.context = e;
+                this.modal3.newcontext = e;
+            },
+            blur(e){
+                this.modal3.newcontext = e;
             },
             handleView (name) {
                 this.imgName = name;
@@ -658,10 +680,14 @@
                 this.modal3.code = item.code;
                 this.modal3.isopen = true;
                 this.modal3.context = item.context;
+                this.modal3.newcontext = item.context;
             },
             ok1 (name) {
                 if(!this.modal1.type||this.modal1.type!='3'){
-                    if(this.modal1.value){
+                    if(this.modal1.code =='11'||this.modal1.code =='12'||this.modal1.code =='13'||this.modal1.code =='14'){
+                        this.modal1.value = this.modal1.value1+','+this.modal1.value2+','+this.modal1.value3
+                    }
+                    if(this.modal1.value||this.modal1.value === 0){
                         this.saveChange1();
                     }else{
                         this.$Message.error('请检查表单');
@@ -686,7 +712,7 @@
                 }
             },
             ok3 (name) {
-                if(this.modal3.context){
+                if(this.modal3.newcontext){
                     this.saveChange3();
                 }else{
                     this.$Message.error('请检查表单');
@@ -701,6 +727,11 @@
                         this.TableLoading1 = false;
                         if(res.data){
                             this.list1 = res.data.noOverallCommonConfigList||[];
+                            this.list1.forEach(function(v){
+                                if(v.code == '8'||v.code == '18'||v.code == '19'||v.code == '21'||v.code == '26'){
+                                    v.value = v.value/100;
+                                }
+                            })
                         }
                     } else {
                         this.$Message.error(res.msg);
@@ -738,9 +769,6 @@
             },
             saveChange1(){
                 var that = this;
-                if(this.modal1.code =='11'||this.modal1.code =='12'||this.modal1.code =='13'||this.modal1.code =='14'){
-                    this.modal1.value = this.modal1.value1+','+this.modal1.value2+','+this.modal1.value3
-                }
                 postRequest("/commonConfig/updateConfigById",{
                     overallCommonConfig:{
                         "id": this.modal1.id,
@@ -789,7 +817,7 @@
                 var that = this;
                 postRequest("/rewardNotice/updateNotice",{
                         "code": this.modal3.code,
-                        "context": this.modal3.context
+                        "context": this.modal3.newcontext
                     }
                 ).then(res => {
                     if (res.code == 200) {

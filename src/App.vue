@@ -1,5 +1,5 @@
 <template>
-    <div id="main" class="app-main">
+    <div id="main" class="app-main" :data-updated="updated">
         <router-view></router-view>
     </div>
 </template>
@@ -7,7 +7,10 @@
 <script>
 export default {
   data() {
-    return {};
+    return {
+      // 上线之后可以看到是什么时候打的包
+      updated: __UPDATED__
+    };
   },
   mounted() {
 

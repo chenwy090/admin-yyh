@@ -436,10 +436,14 @@ export default {
           //this.formCustom.remark='';
           this.$Message.success("保存成功");
           if (name) {
-            setTimeout(() => {
-              this.campaginGrabInfoPage = true;
-              this.campaginManagementPage = false;
-            }, 1200);
+            if (this.edit_info.isLimitGrap == "1") {
+                      setTimeout(() => {
+                          this.campaginGrabInfoPage = true;
+                          this.campaginManagementPage = false;
+                      }, 1200);
+                  } else {
+                      this.next_modal = true;
+                  }
           }
         } else {
           this.$Message.error(res.msg);
@@ -524,6 +528,10 @@ export default {
     },
 
     editOk() {
+      if(this.isCheckDisabled){
+            this.nextInfo();
+            return
+        }
       if (!this.edit_info.sendChannel) {
         return this.$Message.error("投放渠道不能为空");
       }

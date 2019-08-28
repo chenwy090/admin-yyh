@@ -355,7 +355,7 @@
           </FormItem>
         </Form>
         <!--分享奖励配置-->
-        <Form v-if="formShareModal.shareData.length" ref="shareModal" :model="formShareModal" :label-width="180" style="margin-top:20px">
+        <Form v-if="formShareModal.shareData.length&&tab_model!=64" ref="shareModal" :model="formShareModal" :label-width="180" style="margin-top:20px">
           <FormItem v-for="item in formShareModal.shareData" :key="item.id" :label="item.name" required>
             <span v-if="item.name!= '倍数'&&item.name!= '上限'">&nbsp;优惠面额  X</span>
             <InputNumber
