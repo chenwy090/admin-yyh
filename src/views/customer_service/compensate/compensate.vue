@@ -74,7 +74,7 @@
               <Radio label="1" value="1" checked >
                   <span>优惠券</span>
               </Radio>
-              <Radio label="2" value="2"  disabled>
+              <Radio label="2" value="2">
                   <span>U贝</span>
               </Radio>
           </RadioGroup>
