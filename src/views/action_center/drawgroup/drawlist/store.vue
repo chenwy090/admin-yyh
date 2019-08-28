@@ -260,7 +260,6 @@ export default {
                     el => el.cityCode == this.cityCode
                   ).cityName;
                 }
-
               } else {
                 this.$Message.error(res.msg);
               }
