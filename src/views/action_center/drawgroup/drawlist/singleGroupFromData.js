@@ -15,7 +15,7 @@ export default {
     couponName: "", //优惠券名称
     couponType: "", //优惠券类型1：周边券、2：商超券
 
-    // isFailureBackFee: 1, //团失败u贝返还
+    // isFailureBackFee: 1, //团失败u贝返还 【单人团不能传此参数给后台】
     drawRuleRemarks: "", //抽奖规则
     //----广告主信息：
     advertName: "", //广告主 名称
@@ -42,7 +42,7 @@ export default {
         prizeReferId: null //优惠券奖品关联ID
     },
 
-    //   1:实物、2：优惠券、3：U贝 
+    //   1:实物、2：优惠券、3：U贝
     bigPrizeTemp: {
         type: 1,
         // 1:实物
@@ -54,7 +54,7 @@ export default {
         couponType: 2, //优惠券类型1：周边券、2：商超券/ 超市券 优惠券：选择领优惠券和周边券
         prizeReferId: null, //优惠券奖品关联ID
 
-        //3 U贝 
+        //3 U贝
         prizeNum3: "", //可编辑
 
     },
@@ -67,7 +67,7 @@ export default {
         couponType: 2,
         prizeReferId: null
     },
-    //   1:实物、2：优惠券、3：U贝 
+    //   1:实物、2：优惠券、3：U贝
     normalPrizeTemp: {
         type: 1,
         // 1:实物
@@ -80,7 +80,7 @@ export default {
         prizeReferId: null, //优惠券奖品关联ID
         prizeName2: "",
 
-        //3 U贝 
+        //3 U贝
         prizeNum3: "", //可编辑
 
     },
