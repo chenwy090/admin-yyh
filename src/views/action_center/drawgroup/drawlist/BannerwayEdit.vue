@@ -24,7 +24,7 @@
             </RadioGroup>
           </FormItem>
           <FormItem
-            v-show="formValidate.drawType==1"
+            v-if="formValidate.drawType==1"
             prop="checkDrawType"
             :rules="{ required: true, validator: validateCheckDrawType, trigger: 'blur' }"
           >
