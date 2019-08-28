@@ -28,11 +28,11 @@
 
 
         <div class="header-avator-con">
-            
-       
+
+
             <full-screen v-model="isFullScreen" @on-change="fullscreenChange"></full-screen>
 
-         
+
           <!-- <Dropdown @on-click="handleLanDropdown" class="options">
             <Icon type="md-globe" :size="24" class="language"></Icon>
             <DropdownMenu slot="list">
@@ -42,7 +42,7 @@
           </Dropdown> -->
 
           <lock-screen></lock-screen>
-    
+
           <div class="user-dropdown-menu-con">
             <Row type="flex" justify="end" align="middle" class="user-dropdown-innercon">
               <Dropdown transfer trigger="hover" @on-click="handleClickUserDropdown">
@@ -75,7 +75,7 @@
     </div>
   </div>
 </template>
-     
+
 <script>
 import shrinkableMenu from "./main-components/shrinkable-menu/shrinkable-menu.vue";
 import tagsPageOpened from "./main-components/tags-page-opened.vue";
@@ -114,7 +114,7 @@ export default {
     currentPath() {
       return this.$store.state.app.currentPath; // 当前面包屑数组
     },
-   
+
     cachePage() {
       return this.$store.state.app.cachePage;
     },
@@ -242,3 +242,10 @@ widgetChange(){
   }
 };
 </script>
+<style scoped>
+  .single-page{
+    height: 100%;
+    margin: 0!important;
+    padding: 10px;
+  }
+</style>
