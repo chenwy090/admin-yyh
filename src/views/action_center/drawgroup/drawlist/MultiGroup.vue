@@ -149,12 +149,12 @@
         <Row>
           <Col span="8">
             <FormItem label="实物名称：">
-              <Tooltip trigger="focus" title="提醒" content="最多20个字" placement="right">
+              <Tooltip trigger="focus" title="提醒" content="最多15个字" placement="right">
                 <Input
                   style="width:90%"
                   v-model="form.bigPrizeTemp.prizeName1"
                   placeholder="请输入实物名称"
-                  :maxlength="20"
+                  :maxlength="15"
                   clearable
                 />
               </Tooltip>
