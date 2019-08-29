@@ -4,6 +4,8 @@ import Vuex from 'vuex';
 import app from './modules/app';
 import user from './modules/user';
 import comm from './common';
+// 财务中心
+import financial from './modules/financial';
 
 Vue.use(Vuex);
 
@@ -22,7 +24,8 @@ const store = new Vuex.Store({
     modules: {
         app,
         user,
-        comm
+        comm,
+        financial
     }
 });
 
