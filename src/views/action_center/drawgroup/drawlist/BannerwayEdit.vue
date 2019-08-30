@@ -15,7 +15,7 @@
         >
           <!-- 1.抽奖id 2抽奖链接 -->
           <FormItem prop="drawType">
-            <RadioGroup v-model="formValidate.drawType">
+            <RadioGroup v-model="formValidate.drawType" @on-change="changeDrawType">
               <!-- <Radio label="1">抽奖id</Radio>
               <Radio label="2">抽奖链接</Radio>-->
               <Radio v-for="item in drawTypeList" :label="item.value" :key="item.value">
@@ -23,7 +23,11 @@
               </Radio>
             </RadioGroup>
           </FormItem>
-          <FormItem prop="checkDrawType">
+          <FormItem
+            v-if="formValidate.drawType==1"
+            prop="checkDrawType"
+            :rules="{ required: true, validator: validateCheckDrawType, trigger: 'blur' }"
+          >
             <Input v-model="formValidate.checkDrawType" type="text"></Input>
           </FormItem>
 
@@ -61,11 +65,24 @@
           <FormItem label="上线时间：" prop="onlineTime">
             <DatePicker
               type="datetime"
+              :options="m_dateOptions"
               placeholder="请选择抽奖日期"
               format="yyyy-MM-dd HH:mm"
               style="display:inline-block;width: 200px"
               :value="formValidate.onlineTime"
               @on-change="changeTime"
+            ></DatePicker>
+          </FormItem>
+
+          <FormItem label="下线时间：" prop="offlineTime">
+            <DatePicker
+              type="datetime"
+              :options="m_dateOptions"
+              placeholder="请选择抽奖日期"
+              format="yyyy-MM-dd HH:mm"
+              style="display:inline-block;width: 200px"
+              :value="formValidate.offlineTime"
+              @on-change="changeOfflineTime"
             ></DatePicker>
           </FormItem>
 
@@ -89,7 +106,9 @@
 import { addBannerWay, editBannerWay } from "@/api/sys";
 import { baseUrl, uploadOperationImage2AliOssURl } from "@/api/index";
 import { checkImage } from "@/libs/date";
+import comm from "@/mixins/common";
 export default {
+  mixins: [comm],
   name: "bannerway-edit",
   props: {
     // action: "add", //新增 add、修改 edit
@@ -146,39 +165,7 @@ export default {
         callback();
       }
     };
-    const validateCheckDrawType = (rule, value, callback) => {
-      if (value === "") {
-        // drawType: 1, //  1.抽奖id：drawId 2抽奖链接 linkUrl
-        let msg = "";
-        if (this.formValidate.drawType == "") {
-          return this.$refs.formValidate.validateField("drawType");
-        } else if (this.formValidate.drawType == 1) {
-          msg = "请输入抽奖id";
-        } else {
-          msg = "请输入抽奖链接";
-        }
-        callback(new Error(msg));
-      } else {
-        if (this.formValidate.drawType == 1) {
-          //id必须输入数字
-          value += "";
-          if (value.indexOf(".") != -1) {
-            return callback(new Error("请输入整数"));
-          }
 
-          let n = parseInt(value);
-
-          if (isNaN(n)) {
-            return callback(new Error("请输入整数"));
-          }
-
-          if (n != value) {
-            return callback(new Error("请输入整数"));
-          }
-        }
-        callback();
-      }
-    };
     const validateRankNum = (rule, value, callback) => {
       value += "";
       // console.log("validateRankNum", rule, value);
@@ -223,27 +210,36 @@ export default {
       ],
       formValidate: {
         id: "",
-        drawType: 1, //  1.抽奖id 2抽奖链接
+        drawType: "", //  1.抽奖id 2抽奖链接
         checkDrawType: "",
         drawId: "", //抽奖活动ID
         linkUrl: "", //外置链接跳转地址
         imgUrl: "", // banner图片访问地址
         onlineTime: "", //上线时间
+        offlineTime: "", //下线时间
         rankNum: "" //排序字段，值越大优先级越高
       },
       ruleValidate: {
         drawType: [
           { required: true, validator: validateDrawType, trigger: "blur" }
         ],
-        checkDrawType: [
-          { required: true, validator: validateCheckDrawType, trigger: "blur" }
-        ],
+        // checkDrawType: [
+        //   { required: true, validator: validateCheckDrawType, trigger: "blur" }
+        // ],
         imgUrl: [{ required: true, message: "请上传图片", trigger: "blur" }],
         onlineTime: [
           {
             required: true,
             type: "string",
-            message: "请选择开始时间",
+            message: "请选择上线时间",
+            trigger: "change"
+          }
+        ],
+        offlineTime: [
+          {
+            required: true,
+            type: "string",
+            message: "请选择下线时间",
             trigger: "change"
           }
         ],
@@ -257,6 +253,42 @@ export default {
     };
   },
   methods: {
+    validateCheckDrawType(rule, value, callback) {
+      if (value === "") {
+        // drawType: 1, //  1.抽奖id：drawId 2抽奖链接 linkUrl
+        let msg = "";
+        if (this.formValidate.drawType == "") {
+          return this.$refs.formValidate.validateField("drawType");
+        } else if (this.formValidate.drawType == 1) {
+          msg = "请输入抽奖id";
+        } else {
+          // msg = "请输入抽奖链接";
+        }
+        callback(new Error(msg));
+      } else {
+        if (this.formValidate.drawType == 1) {
+          //id必须输入数字
+          value += "";
+          if (value.indexOf(".") != -1) {
+            return callback(new Error("请输入整数"));
+          }
+
+          let n = parseInt(value);
+
+          if (isNaN(n)) {
+            return callback(new Error("请输入整数"));
+          }
+
+          if (n != value) {
+            return callback(new Error("请输入整数"));
+          }
+        }
+        callback();
+      }
+    },
+    changeDrawType(type) {
+      console.log(type);
+    },
     closeDialog() {
       //关闭对话框清除表单数据
       this.$refs.formValidate.resetFields();
@@ -296,6 +328,9 @@ export default {
     changeTime(time) {
       this.formValidate.onlineTime = time;
     },
+    changeOfflineTime(time) {
+      this.formValidate.offlineTime = time;
+    },
     // 显示大图
     showBigImg: function(row) {
       this.bigImgDialog = true;
@@ -319,6 +354,7 @@ export default {
           linkUrl: "", //外置链接跳转地址
           imgUrl: "", // banner图片访问地址
           onlineTime: "", //上线时间
+          offlineTime: "", //下线时间
           rankNum: "" //排序字段，值越大优先级越高
         };
       });
@@ -331,7 +367,6 @@ export default {
           // this.$Message.success("数据验证成功!");
           let oForm = JSON.parse(JSON.stringify(this.formValidate));
           let { drawType, checkDrawType } = oForm;
-          debugger;
           if (drawType == 1) {
             oForm.drawId = checkDrawType;
           } else {

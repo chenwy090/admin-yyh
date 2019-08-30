@@ -4,7 +4,13 @@
       <FormItem label="活动名称：" prop="name" :rules="{ required: true, message: '请输入活动名称' }">
         <Row>
           <Col span="10">
-            <Input style="width:90%" v-model="form.name" placeholder="请输入" clearable />
+            <Input
+              style="width:90%"
+              v-model="form.name"
+              :maxlength="40"
+              placeholder="请输入"
+              clearable
+            />
           </Col>
         </Row>
       </FormItem>
@@ -143,13 +149,15 @@
         <Row>
           <Col span="8">
             <FormItem label="实物名称：">
-              <Input
-                style="width:90%"
-                v-model="form.bigPrizeTemp.prizeName1"
-                placeholder="请输入实物名称"
-                :maxlength="40"
-                clearable
-              />
+              <Tooltip trigger="focus" title="提醒" content="最多15个字" placement="right">
+                <Input
+                  style="width:90%"
+                  v-model="form.bigPrizeTemp.prizeName1"
+                  placeholder="请输入实物名称"
+                  :maxlength="15"
+                  clearable
+                />
+              </Tooltip>
             </FormItem>
           </Col>
           <Col span="8">
@@ -222,12 +230,15 @@
         <Row>
           <Col span="8">
             <FormItem label="实物名称：">
-              <Input
-                style="width:90%"
-                v-model="form.normalPrizeTemp.prizeName1"
-                placeholder="请输入实物名称"
-                clearable
-              />
+              <Tooltip trigger="focus" title="提醒" content="最多20个字" placement="right">
+                <Input
+                  style="width:90%"
+                  v-model="form.normalPrizeTemp.prizeName1"
+                  placeholder="请输入实物名称"
+                  :maxlength="20"
+                  clearable
+                />
+              </Tooltip>
             </FormItem>
           </Col>
           <Col span="8">
@@ -778,7 +789,6 @@ export default {
     },
     handleSubmit(name) {
       this.$refs[name].validate(valid => {
-
         if (valid) {
           let { openDrawTimeType, startTime, openDrawTime } = this.form;
           if (openDrawTimeType == 1) {
