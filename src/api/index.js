@@ -23,13 +23,13 @@ import {
 
 // 正式环境 http://crm.52iuh.com:8088/zex-mgr
 
-export const baseUrl = "http://crm.52iuh.com:8088/zex-mgr";
-export const downloadUrl = "http://crm.52iuh.com:8088/zex-mgr";
+// export const baseUrl = "http://crm.52iuh.com:8088/zex-mgr";
+// export const downloadUrl = "http://crm.52iuh.com:8088/zex-mgr";
 
-// 开发环境 http://crmdev.52iuh.cn:8088/zex-mgr/
+// 开发环境 http://47.102.126.157:8088/zex-mgr/
 
-// export const baseUrl = "http://crmdev.52iuh.com:8088/zex-mgr";
-// export const downloadUrl = "http://crmdev.52iuh.com:8088/zex-mgr";
+export const baseUrl = "http://47.102.126.157:8088/zex-mgr";
+export const downloadUrl = "http://47.102.126.157:8088/zex-mgr";
 
 
 
