@@ -6,7 +6,10 @@
         <div class="yyh-modal-item" v-for="(el, i) in descConfig[Number(dataList.groupType-1)]" :key="'modal_detail' + i">
           <span class="title" style="width: 8em">{{el[1]}}:</span>
           <template v-if="el[1] === '投放门店'">
-            <template v-for="(item,ii) in dataList[el[0]]"><span style="flex: 1" :key="'L9a'+ii">{{handleAddress(item)}}</span><br :key="'L9b'+ii"></template>
+            <span v-if="String(dataList.storeType) === '0'">全国</span>
+            <template v-else>
+              <template v-for="(item,ii) in dataList[el[0]]"><span style="flex: 1" :key="'L9a'+ii">{{handleAddress(item)}}</span><br :key="'L9b'+ii"></template>
+            </template>
           </template>
           <span class="modal-content" v-else-if="el[1] === '活动大奖' || el[1] === '阳光普照奖'" style="flex: 1;">
             <div style="display: flex;">
