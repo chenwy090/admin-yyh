@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="merchant-add">
     <Card>
       <Button type="dashed" icon="md-arrow-round-back" @click="goback">返回列表</Button>
 
@@ -12,32 +12,32 @@
         <span style="color:red">{{packageId}}</span>
         <span slot="desc"></span>
       </Alert>
-      <Row style="margin-left:15%;">
-        <Row class="box">
-          <Col span="3" class="left-text">
+      <Row style="margin-left:1em;">
+        <Row class="box flex-ac">
+          <Col span="5" class="left-text">
             <span style="color:red">*</span>商户类型
           </Col>
           <Col span="15">
-            <RadioGroup v-model="add_info.shopType" class="mgt-5">
-              <Radio label="local_single">本地商户（单店）</Radio>
-              <Radio label="local_multi">本地商户（多店）</Radio>
+            <RadioGroup v-model="add_info.merchantType">
+              <Radio :label="1">本地商户（单店）</Radio>
+              <Radio :label="2">本地商户（多店）</Radio>
             </RadioGroup>
           </Col>
         </Row>
         <Row class="box">
-          <Col span="3" class="left-text">
-            <span style="color:red">*</span>所属商户
+          <Col span="5" class="left-text">
+            <span style="color:red">*</span>所属{{currentTitle}}
           </Col>
           <Col span="15">
-            <Button @click="addMerchantList" style="width: 150px" :disabled="disabled2">点击选择所属商户</Button>
+            <Button @click="addMerchantList" style="width: 150px" :disabled="disabled2">点击选择所属{{currentTitle}}</Button>
             <Alert
-              v-if="this.chooseMerchant.merchantId != ''"
+              v-if="this.chooseMerchant.merchantId != '' && selectIsConfirm"
               type="success"
               show-icon
               style="width: 300px;margin-top: 15px"
             >
-              <div>商户名称：{{this.chooseMerchant.name}}</div>
-              <div style="margin-top: 5px">商户编号：{{this.chooseMerchant.merchantId}}</div>
+              <div>{{currentTitle}}名称：{{this.chooseMerchant.name}}</div>
+              <div style="margin-top: 5px">{{currentTitle}}编号：{{this.chooseMerchant.merchantId}}</div>
             </Alert>
             <Alert
               v-if="this.chooseMerchant.merchantId == ''"
@@ -45,14 +45,33 @@
               show-icon
               style="width: 300px;margin-top: 15px"
             >
-              <div>请选择所属商户！只能选择一个哦！</div>
+              <div>请选择所属{{currentTitle}}！只能选择一个哦！</div>
               <div></div>
             </Alert>
           </Col>
         </Row>
+        <Row class="box">
+          <Col span="5" class="left-text">
+            <span style="color:red">*</span>商户列表
+          </Col>
+          <Col span="4" class="pdt-5">
+            已选：{{listByBrand.length}} / {{listByBrand.length + listByBrandTrash.length}}
+          </Col>
+          <Col span="8">
+            <div class="merchant-list">
+              <div v-for="(item,i) in listByBrand" :key="'merchantaddL59' + i">
+                {{item.name}}
+                <Button>移出</Button>
+              </div>
+            </div>
+          </Col>
+          <Col span="2">
+            <Button>增加</Button>
+          </Col>
+        </Row>
 
         <Row class="box">
-          <Col span="3" class="left-text">
+          <Col span="5" class="left-text">
             <span style="color:red">*</span>套餐
           </Col>
           <Col span="5">
@@ -65,11 +84,12 @@
             </Select>
           </Col>
         </Row>
+
         <Row class="box">
-          <Col span="3" class="left-text">
+          <Col span="5" class="left-text">
             <span style="color:red">*</span>推送客户数上限
           </Col>
-          <Col span="5">
+          <Col span="10">
             <InputNumber
               placeholder="请输入正整数，比如1"
               v-model="add_info.pushCustomerNum"
@@ -83,7 +103,7 @@
         </Row>
 
         <Row class="box">
-          <Col span="3" class="left-text">
+          <Col span="5" class="left-text">
             <span style="color:red">*</span>套餐有效期
           </Col>
           <Col span="16">
@@ -97,6 +117,7 @@
               :disabled="disabled2"
             ></DatePicker>
             <DatePicker
+              class="mgl-10"
               type="date"
               placeholder="请选择"
               style="width: 150px"
@@ -108,7 +129,7 @@
           </Col>
         </Row>
         <Row class="box">
-          <Col span="3" class="left-text">
+          <Col span="5" class="left-text">
             <span style="color:red">*</span>应收款
           </Col>
           <Col span="5">
@@ -124,7 +145,7 @@
         </Row>
 
         <Row class="box">
-          <Col span="3" class="left-text">
+          <Col span="5" class="left-text">
             <span style="color:red">*</span>合同号
           </Col>
           <Col span="16">
@@ -142,7 +163,7 @@
         </Row>
 
         <Row class="box">
-          <Col span="3" class="left-text">
+          <Col span="5" class="left-text">
             <span style="color:red">*</span>签单销售
           </Col>
           <Col span="16">
@@ -160,7 +181,7 @@
         </Row>
 
         <Row class="box">
-          <Col span="3" class="left-text">备注</Col>
+          <Col span="5" class="left-text">备注</Col>
           <Col span="16">
             <Tooltip trigger="focus" title="提醒" content="最多输入500个字符" placement="right">
               <Input
@@ -175,8 +196,8 @@
           </Col>
         </Row>
 
-        <Row class="box">
-          <Col span="3" class="left-text">
+        <Row class="box flex-ac">
+          <Col span="5" class="left-text">
             <span style="color:red">*</span>收费条目
           </Col>
           <Col span="2">
@@ -184,42 +205,34 @@
           </Col>
         </Row>
 
-        <Alert v-if="compatibleList.length>0">
+        <Alert class="merchant-alert" v-if="compatibleList.length>0">
           <Row class="box" v-for="(item, index) in compatibleList" :key="index">
-            <Col span="2" class="left-text"></Col>
+            <!-- <Col span="2" class="left-text"></Col> -->
 
-            <Col span="4">
-              <Select v-model="item.paymentMode" style="width:120px" placeholder="请选择支付方式">
+            <Col span="24" class="flex alert-content">
+              <Select v-model="item.paymentMode" style="width:100px" placeholder="支付方式">
                 <Option v-for="item in payTypeList" :value="item.id" :key="item.id">{{ item.name }}</Option>
               </Select>
-            </Col>
-            <Col span="4">
               <InputNumber
-                placeholder="请填写实际收款金额"
+                placeholder="实际收款金额"
                 v-model="item.actualAmount"
-                style="width:150px"
-                :max="999999"
+                style="width:120px"
+                :max="99999999"
                 :min="0"
               />
-            </Col>
-            <Col span="4">
               <Input
                 v-model="item.payee"
                 :maxlength="10"
-                style="width:150px"
-                placeholder="请填写收款人"
+                style="width:100px"
+                placeholder="收款人"
                 clearable
               />
-            </Col>
-            <Col span="4">
               <DatePicker
                 type="date"
                 placeholder="请填写收款日期"
                 style="width: 150px"
                 v-model="item.receivedDate"
               ></DatePicker>
-            </Col>
-            <Col span="4">
               <Input
                 v-model="item.serialNumber"
                 :maxlength="20"
@@ -227,15 +240,13 @@
                 placeholder="请填写流水号"
                 clearable
               />
-            </Col>
-            <Col span="2">
               <Button
                 type="error"
                 icon="md-trash"
                 size="small"
-                style="margin-left: 35px"
+                style="margin-left: 5px"
                 @click="compatible_delInfo(index,item)"
-              >删除</Button>
+              ></Button>
             </Col>
           </Row>
         </Alert>
@@ -259,30 +270,29 @@
 
     <Modal
       v-model="merchantTabDisplay"
-      title="商户列表"
+      :title="add_info.merchantType === 2? '品牌列表': '商户列表'"
       width="800"
       footer-hide
-      :closable="false"
       :mask-closable="false"
     >
       <div>
         <row>
           <Form ref="searchItem" :model="searchItem" inline :label-width="70" class="search-form">
-            <FormItem label="商户编号">
+            <FormItem :label="currentTitle + '编号'">
               <Input
                 type="text"
                 v-model="searchItem.merchantId"
                 clearable
-                placeholder="请输入商户编号"
+                :placeholder="`请输入${currentTitle}编号`"
                 style="width: 150px"
               />
             </FormItem>
-            <FormItem label="商户名称">
+            <FormItem :label="currentTitle+'名称'">
               <Input
                 type="text"
                 v-model="searchItem.name"
                 clearable
-                placeholder="请输入商户名称"
+                :placeholder="`请输入${currentTitle}名称`"
                 style="width: 150px"
               />
             </FormItem>
@@ -325,16 +335,29 @@
             </FormItem>
           </Form>
         </row>
+        
+        <!-- 品牌列表 -->
+        <Table
+          v-if="add_info.merchantType === 2"
+          border
+          width="100%"
+          :columns="columnsBrand"
+          :data="merchantList"
+          :loading="TableLoading"
+        >
+        </Table>
 
         <!-- 商户列表 -->
         <Table
+          v-else
           ref="selection"
           border
           width="100%"
           :columns="columnsMerchant"
           :data="merchantList"
           :loading="TableLoading"
-        ></Table>
+        >
+        </Table>
         <Row type="flex" justify="end" class="page">
           <Page
             :total="totalSize"
@@ -359,6 +382,7 @@ import { getMerchantList, addStaff, editStaff } from "@/api/sys";
 import {
   getRequest,
   postRequest,
+  postJson,
   putRequest,
   deleteRequest,
   uploadFileRequest
@@ -373,6 +397,76 @@ export default {
   },
   data() {
     return {
+      listByBrandTrash: [],
+      listByBrand: [
+        {
+          address: "天安门广场",
+          areaCode: "110114",
+          city: "北京市",
+          cityCode: "110100",
+          createBy: "test",
+          createTime: "2019-07-24 19:29:57",
+          district: "昌平区",
+          industry: "",
+          industryId: 8,
+          latitude: "39.90374",
+          logoImg: "http://image.52iuh.cn/wx_mini/DEtlibJjw1.jpg",
+          longitude: "116.39783",
+          mainBrandId: 19,
+          merchantId: "20190724274716",
+          merchantProfileList: [],
+          name: "大润发1111",
+          operatingStatus: 0,
+          province: "北京",
+          provinceCode: "110000",
+          telephone: "18999090077",
+        },
+        {
+          address: "天安门广场",
+          areaCode: "110114",
+          city: "北京市",
+          cityCode: "110100",
+          createBy: "test",
+          createTime: "2019-07-24 19:29:57",
+          district: "昌平区",
+          industry: "",
+          industryId: 8,
+          latitude: "39.90374",
+          logoImg: "http://image.52iuh.cn/wx_mini/DEtlibJjw1.jpg",
+          longitude: "116.39783",
+          mainBrandId: 19,
+          merchantId: "20190724274716",
+          merchantProfileList: [],
+          name: "大润发1111",
+          operatingStatus: 0,
+          province: "北京",
+          provinceCode: "110000",
+          telephone: "18999090077",
+        },
+        {
+          address: "天安门广场",
+          areaCode: "110114",
+          city: "北京市",
+          cityCode: "110100",
+          createBy: "test",
+          createTime: "2019-07-24 19:29:57",
+          district: "昌平区",
+          industry: "",
+          industryId: 8,
+          latitude: "39.90374",
+          logoImg: "http://image.52iuh.cn/wx_mini/DEtlibJjw1.jpg",
+          longitude: "116.39783",
+          mainBrandId: 19,
+          merchantId: "20190724274716",
+          merchantProfileList: [],
+          name: "大润发1111",
+          operatingStatus: 0,
+          province: "北京",
+          provinceCode: "110000",
+          telephone: "18999090077",
+        }
+      ],
+      selectIsConfirm: false,
       userToken: {}, //用户token
       disabled2: false,
       payTypeList: [
@@ -397,11 +491,15 @@ export default {
         {
           serviceCode: "merchant_customer",
           serviceName: "精准拓客"
+        },
+        {
+          serviceCode: "merchant_platform",
+          serviceName: "平台拓客"
         }
       ],
+      // 权益订购 增加
       add_info: {
         // 商户类型 - 1.5.4.1
-        shopType: '',
         remark: "",
         serviceCode: "merchant_customer",
         serviceName: "精准拓客",
@@ -411,6 +509,8 @@ export default {
         receivables: null,
         biller: "",
         contractNumber: "",
+        // 商户类型
+        merchantType: "",
         id: ""
       },
       edit_loading: false,
@@ -431,12 +531,12 @@ export default {
       avatarUrl_url: "", // 查看二维码路径
       avatarUrlDisplay: false, // 查看二维码对话框显示
       currentChooseID: "",
-      chooseResArray: [],
       columnsMerchant: [
         {
           title: "选择",
           key: "chooseMerchantId",
           width: 70,
+          slot: 'check',
           align: "center",
           render: (h, params) => {
             let merchantId = params.row.merchantId;
@@ -490,6 +590,53 @@ export default {
           }
         }
       ],
+      columnsBrand: [
+        {
+          title: "选择",
+          key: "chooseMerchantId",
+          width: 70,
+          slot: 'check',
+          align: "center",
+          render: (h, params) => {
+            let id = params.row.id;
+            let name = params.row.name;
+            let flag = false;
+            if (this.chooseMerchant.merchantId === id) {
+              flag = true;
+            } else {
+              flag = false;
+            }
+            let self = this;
+            return h("div", [
+              h("Radio", {
+                props: {
+                  value: flag
+                },
+                on: {
+                  "on-change": () => {
+                    self.chooseMerchant.merchantId = id;
+                    self.chooseMerchant.name = name;
+                    // 品牌等级
+                    self.chooseMerchant.brandLevel = params.row.brandLevel
+                  }
+                }
+              })
+            ]);
+          }
+        },
+        // {
+        //   title: "编号",
+        //   align: "center",
+        //   minWidth: 160,
+        //   key: "id"
+        // },
+        {
+          title: "品牌名称",
+          align: "center",
+          // width: 230,
+          key: "name"
+        }
+      ],
       merchantList: [],
       current: 1,
       totalSize: 0, //总条数
@@ -510,12 +657,22 @@ export default {
       deleteChargesList: []
     };
   },
+  computed: {
+    currentTitle() {
+      let _title = "商户";
+      if (this.add_info.merchantType === 2) {
+        _title = '品牌';
+      }
+      return _title
+    }
+  },
   created: function() {
     this.userToken = {
       jwttoken: localStorage.getItem("jwttoken")
     };
   },
   methods: {
+    
     // 增加兼容品牌
     compatible_addInfo() {
       this.compatibleList.push({
@@ -645,6 +802,7 @@ export default {
     // 关闭商户选择框
     cancel() {
       this.chooseMerchant = {
+        brandLevel: '',
         merchantId: "",
         name: ""
       };
@@ -669,16 +827,23 @@ export default {
     getMerchantListFn() {
       this.TableLoading = false;
       const reqParams = {
-        merchantId: this.searchItem.merchantId,
-        name: this.searchItem.name,
-        provinceCode: this.searchItem.provinceId,
-        cityCode: this.searchItem.cityId,
-        areaCode: this.searchItem.areaId
+        // merchantId: this.searchItem.merchantId,
+        // name: this.searchItem.name,
+        // provinceCode: this.searchItem.provinceId,
+        // cityCode: this.searchItem.cityId,
+        // areaCode: this.searchItem.areaId
       };
-      postRequest(
-        "/merchant/merchantInfo/list?isAsc=DESC&orderByColumn=1&pageNum=" +
-          this.pageNum +
-          "&pageSize=10",
+      // 接口：       商户列表-单个,                 商户列表-单个,                   商户列表-多个（品牌）
+      const urls = ['/merchant/merchantInfo/list', '/merchant/merchantInfo/list', '/merchant/brandMain/list/data'];
+      let host = baseUrl;
+      if (process.env.NODE_ENV === 'development') {
+        host = 'http://192.168.31.208:8088/zex-mgr';
+      }
+      if (this.add_info.merchantType === 2){
+        delete reqParams.name
+      }
+      postJson(
+        host + urls[Number(this.add_info.merchantType)] + `?isAsc=DESC&orderByColumn=1&pageSize=10&pageNum=${this.pageNum}`,
         reqParams
       ).then(res => {
         if (res.code == 200) {
@@ -693,16 +858,36 @@ export default {
 
     //确定选择商户
     selectMerchant() {
+      this.selectIsConfirm = true;
+      // return;
       if (
         this.chooseMerchant.merchantId &&
         this.chooseMerchant.merchantId != ""
       ) {
         this.merchantTabDisplay = false;
+        this.getMerchantByBrand();
       } else {
         this.msgErr("至少选一个商户");
       }
     },
-
+    // 新增权益时 根据品牌选商户
+    getMerchantByBrand() {
+      // /merchant/merchantBrand/list/merchant 查询品牌下的商户
+      let host = baseUrl;
+      if (process.env.NODE_ENV === 'development') {
+        host = 'http://192.168.31.208:8088/zex-mgr';
+      } else {
+        this.listByBrand = [];
+      }
+      let params = {brandId: this.chooseMerchant.merchantId, brandLevel: this.chooseMerchant.brandLevel};
+      postJson(host + "/merchant/merchantBrand/list/merchant", params).then(res => {
+        if (res.code == 200) {
+          this.listByBrand = res.data;
+        } else {
+          // this.msgErr(res.msg);
+        }
+      });
+    },
     //重置商户搜索条件
     refresh() {
       // this.updateTableList(this.params);
@@ -784,8 +969,64 @@ export default {
       this.edit_loading = true;
       this.isCheckDisabled = true;
       console.info(JSON.stringify(reqParam));
-
-      postRequest("/merchant/merchantPackageInfo/add", reqParam).then(res => {
+      // 参数结构
+      // let params = {
+      //   // 签单销售
+      //   "biller": "qiandan222",
+      //   // 品牌ID 选择的是单店则不需要此字段
+      //   brandId: '',
+      //   // 
+      //   // "merchantId": "2019082253207", 去掉了？ ！！！！！！！！！！！！
+      //   // 商户id集合
+      //   merchantIdList: [],
+      //   // 合同号
+      //   "contractNumber": "hetonghao1",
+      //   // 有效期start - end
+      //   "startDate": "2019-09-03",
+      //   "endDate": "2019-09-10",
+      //   "id": "",
+      //   // 商户类型 1: 单店、2: 多店
+      //   "merchantType": '',
+      //   // 推送人数上限
+      //   "pushCustomerNum": 1,
+      //   // 应收款额
+      //   "receivables": 1,
+      //   // 备注
+      //   "remark": "备注",
+      //   // 收款条目
+      //   "serviceChargesList": [
+      //     {
+      //       "id": "",
+      //       // 支付方式
+      //       "paymentMode": "3",
+      //       // 实际收款金额
+      //       "actualAmount": 1,
+      //       // 收款人
+      //       "payee": "2",
+      //       // 收款日期
+      //       "receivedDate": "2019-09-03",
+      //       // 流水号
+      //       "serialNumber": "test001"
+      //     }
+      //   ],
+      //   // 套餐类型 string
+      //   "serviceCode": "merchant_customer",
+      //   // "serviceName": "精准拓客",
+      //   // "deleteChargesList": []
+      // }
+      if (this.add_info.merchantType === 2) {
+        reqParam.brandId = reqParam.merchantId;
+      } else {
+        reqParam.merchantIdList = [reqParam.merchantId];
+      }
+      delete reqParam.merchantId;
+      delete reqParam.serviceName;
+      delete reqParam.deleteChargesList;
+      let host = baseUrl;
+      if (process.env.NODE_ENV === 'development') {
+        host = 'http://192.168.31.208:8088/zex-mgr';
+      }
+      postJson(host + "/merchant/merchantPackageInfo/add", reqParam).then(res => {
         if (res.code == 200) {
           console.log(msg);
           this.msgOk(msg + "成功");
@@ -837,8 +1078,12 @@ export default {
     },
     // 验证
     ruleValidate() {
+      if (this.add_info.merchantType === "") {
+        this.msgErr("请选择商户类型");
+        return;
+      }
       if (this.chooseMerchant.merchantId == "") {
-        this.msgErr("所属商户不能为空");
+        this.msgErr(`所属${this.currentTitle}不能为空`);
         return;
       }
       if (this.add_info.serviceCode == "") {
@@ -855,6 +1100,10 @@ export default {
       }
       if (this.add_info.biller == "") {
         this.msgErr("签单销售不能为空");
+        return;
+      }
+      if (this.compatibleList.length < 1) {
+        this.msgErr("请至少添加一个收费条目");
         return;
       }
       return true;
@@ -906,5 +1155,21 @@ export default {
 }
 .box {
   margin-bottom: 20px;
+}
+.flex-ac{
+  display: flex;
+  align-items: center;
+}
+.merchant-add .merchant-alert{
+  padding: 8px 16px;
+  max-width: 760px;
+  margin: 0 auto;
+}
+.alert-content{
+  justify-content: space-between;
+}
+.merchant-list{
+  max-height: 380px;
+  overflow: auto
 }
 </style>

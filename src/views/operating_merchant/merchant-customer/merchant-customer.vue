@@ -157,7 +157,7 @@
         uploadFileRequest
     } from "@/libs/axios";
     import merchantCustomerAdd from "./merchant-customer-add";
-    import { uploadOperationImage2AliOssURl } from "@/api/index";
+    import { uploadOperationImage2AliOssURl, baseUrl } from "@/api/index";
 
 import industryView from "./industry";
 
@@ -415,7 +415,7 @@ import industryView from "./industry";
                 this.stopModalShow = true;
                 this.selectRow = row;
             },
-
+            // 开票
             invoice(row) {
                 console.info(JSON.stringify(row))
                 var contractNumber = row.contractNumber ? row.contractNumber : '';
