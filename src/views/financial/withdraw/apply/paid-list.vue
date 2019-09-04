@@ -86,8 +86,8 @@ export default {
           key: "realName"
         },
         {
-          title: "OpenId",
-          key: "openId"
+          title: "userId",
+          key: "userId"
         },
         {
           title: "手机号码",

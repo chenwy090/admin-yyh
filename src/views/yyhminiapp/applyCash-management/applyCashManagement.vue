@@ -225,7 +225,7 @@
           },
           {
             title: "获得积分者",
-            key: "openid",
+            key: "userId",
             minWidth: 225,
             align: "center"
           },

@@ -338,8 +338,7 @@ export default {
                 serviceContent: "",
                 roleIdList: [],
                 merchantList: [],
-                memberId: "",
-                openid: "",
+                userId: "",
             },
             edit_loading: false,
             isCheckDisabled: false,
@@ -352,8 +351,7 @@ export default {
             checkResult: 0,
             checkMsg: "",
             chooseUser: {
-              openid: "",
-              memberId: "",
+                userId: "",
             },
             columns: [
                 {
@@ -362,10 +360,9 @@ export default {
                     width: 70,
                     align: "center",
                     render: (h, params) => {
-                        let openid = params.row.openid;
-                        let memberId = params.row.memberId;
+                        let userId = params.row.userId;
                         let flag = false;
-                        if (this.chooseUser.openid === openid) {
+                        if (this.chooseUser.userId === userId) {
                             flag = true;
                         } else {
                             flag = false;
@@ -378,8 +375,7 @@ export default {
                                 },
                                 on: {
                                     "on-change": () => {
-                                        self.chooseUser.openid = openid;
-                                        self.chooseUser.memberId = memberId;
+                                        self.chooseUser.userId = userId;
                                     }
                                 }
                             })
@@ -403,13 +399,13 @@ export default {
                     title: '用户ID',
                     align: 'center',
                     width: 240,
-                    key: 'memberId',
+                    key: 'userId',
                 },
                 {
-                    title: 'openID',
+                    title: 'userId',
                     align: 'center',
                     width: 270,
-                    key: 'openid',
+                    key: 'userId',
                 },
             ],
             userList: [],
@@ -660,9 +656,9 @@ export default {
         },
 
         addUser(){
-            if (this.chooseUser && this.chooseUser.openid){
-                this.add_info.openid = this.chooseUser.openid;
-                this.add_info.memberId = this.chooseUser.memberId;
+            if (this.chooseUser && this.chooseUser.userId){
+                this.add_info.userId = this.chooseUser.userId;
+                this.add_info.userId = this.chooseUser.userId;
                 this.userInfoDisplay = false;
                 this.checkResult = 1;
             }else {
@@ -754,8 +750,8 @@ export default {
         },
 
         clearOpenid(){
-            this.add_info.openid = "";
-            this.add_info.memberId = "";
+            this.add_info.userId = "";
+            this.add_info.userId = "";
             this.checkResult = 0;
         },
 
@@ -768,11 +764,11 @@ export default {
         },
 
         checkMobile(){
-            this.add_info.openid = "";
-            this.add_info.memberId = "";
+            this.add_info.userId = "";
+            this.add_info.userId = "";
             this.chooseUser = {
-                openid: "",
-                memberId: ""
+                userId: "",
+                userId: ""
             };
             if (!this.add_info.mobile){
                 this.$Message.error('请输入手机号');
@@ -782,8 +778,8 @@ export default {
             postRequest(url).then(res => {
                 if (res.code == 200) {
                     this.checkResult = 1;
-                    this.add_info.memberId = res.data[0].memberId;
-                    this.add_info.openid = res.data[0].openid;
+                    this.add_info.userId = res.data[0].userId;
+                    this.add_info.userId = res.data[0].userId;
                 } else {
                     this.$Message.error(res.msg);
                     this.checkMsg = res.msg;
@@ -826,8 +822,7 @@ export default {
                 serviceContent: this.add_info.serviceContent,
                 roleIdList: this.add_info.roleIdList,
                 merchantIdList: merchantIdList,
-                memberId: this.add_info.memberId,
-                openid: this.add_info.openid,
+                userId: this.add_info.userId
             };
             var msg = "新增";
             if (this.pageStatus == 'edit' && this.employeeId){
@@ -865,7 +860,7 @@ export default {
                 this.msgErr('员工电话不能为空')
                 return
             }
-            if(this.add_info.memberId == "" || this.add_info.openid == ""){
+            if(this.add_info.userId == "" || this.add_info.userId == ""){
                 this.msgErr('请检查手机号')
                 return
             }
