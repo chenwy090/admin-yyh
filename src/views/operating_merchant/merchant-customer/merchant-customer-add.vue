@@ -19,8 +19,8 @@
           </Col>
           <Col span="15">
             <RadioGroup v-model="add_info.merchantType">
-              <Radio :label="1">本地商户（单店）</Radio>
-              <Radio :label="2">本地商户（多店）</Radio>
+              <Radio :label="1" :disabled="pageStatus === 'read'">本地商户（单店）</Radio>
+              <Radio :label="2" :disabled="pageStatus === 'read'">本地商户（多店）</Radio>
             </RadioGroup>
           </Col>
         </Row>
@@ -50,23 +50,34 @@
             </Alert>
           </Col>
         </Row>
-        <Row class="box">
+        <Row class="box" v-if="add_info.merchantType === 2">
           <Col span="5" class="left-text">
             <span style="color:red">*</span>商户列表
           </Col>
-          <Col span="4" class="pdt-5">
-            已选：{{listByBrand.length}} / {{listByBrand.length + listByBrandTrash.length}}
-          </Col>
-          <Col span="8">
+          <!-- <Col span="3" class="pdt-5">
+          </Col> -->
+          <Col span="6">
+            <div>
+              已选：{{listByBrand.length}} / {{listByBrand.length + listByBrandTrash.length}}
+            </div>
             <div class="merchant-list">
-              <div v-for="(item,i) in listByBrand" :key="'merchantaddL59' + i">
+              <div class="merchant-list-item" v-for="(item,i) in listByBrand" :key="'merchantaddL59' + i">
                 {{item.name}}
-                <Button>移出</Button>
+                <Button class="select-btn" @click="delOne(i)" :disabled="pageStatus === 'read'">移出</Button>
+              </div>
+              <div class="yyh-nodata pdt-5">
+                暂未选择任何商户
               </div>
             </div>
           </Col>
-          <Col span="2">
-            <Button>增加</Button>
+          <Col span="6" class="mgl-2">
+            <div>已移出{{listByBrandTrash.length}}</div>
+            <div class="merchant-list" v-show="listByBrandTrash.length > 0">
+              <div class="merchant-list-item" v-for="(item,i) in listByBrandTrash" :key="'merchantaddL59' + i">
+                {{item.name}}
+                <Button class="select-btn" @click="addOne(i)" :disabled="pageStatus === 'read'">增加</Button>
+              </div>
+            </div>
           </Col>
         </Row>
 
@@ -80,6 +91,7 @@
                 v-for="(item,index) in servicelist"
                 :key="index"
                 :value="item.serviceCode"
+                :disabled="pageStatus === 'read'"
               >{{item.serviceName}}</Option>
             </Select>
           </Col>
@@ -201,7 +213,7 @@
             <span style="color:red">*</span>收费条目
           </Col>
           <Col span="2">
-            <Button type="primary" icon="md-add-circle" size="small" @click="compatible_addInfo">新增</Button>
+            <Button type="primary" icon="md-add-circle" size="small" :disabled="disabled2" @click="compatible_addInfo">新增</Button>
           </Col>
         </Row>
 
@@ -211,10 +223,11 @@
 
             <Col span="24" class="flex alert-content">
               <Select v-model="item.paymentMode" style="width:100px" placeholder="支付方式">
-                <Option v-for="item in payTypeList" :value="item.id" :key="item.id">{{ item.name }}</Option>
+                <Option v-for="item in payTypeList" :value="item.id" :key="item.id" :disabled="disabled2">{{ item.name }}</Option>
               </Select>
               <InputNumber
                 placeholder="实际收款金额"
+                :disabled="disabled2"
                 v-model="item.actualAmount"
                 style="width:120px"
                 :max="99999999"
@@ -222,6 +235,7 @@
               />
               <Input
                 v-model="item.payee"
+                :disabled="disabled2"
                 :maxlength="10"
                 style="width:100px"
                 placeholder="收款人"
@@ -230,11 +244,13 @@
               <DatePicker
                 type="date"
                 placeholder="请填写收款日期"
+                :disabled="disabled2"
                 style="width: 150px"
                 v-model="item.receivedDate"
               ></DatePicker>
               <Input
                 v-model="item.serialNumber"
+                :disabled="disabled2"
                 :maxlength="20"
                 style="width:150px"
                 placeholder="请填写流水号"
@@ -245,18 +261,19 @@
                 icon="md-trash"
                 size="small"
                 style="margin-left: 5px"
+                :disabled="disabled2"
                 @click="compatible_delInfo(index,item)"
               ></Button>
             </Col>
           </Row>
         </Alert>
 
-        <Row style="margin-top:54px">
+        <Row style="margin-top:54px" v-show="pageStatus !== 'read'">
           <Button
             type="info"
             @click="goback"
             style="width:240px;margin-right: 20px; float: left;"
-          >取&nbsp&nbsp&nbsp消</Button>
+          >取&nbsp;&nbsp;&nbsp;消</Button>
           <Button
             type="primary"
             :loading="edit_loading"
@@ -398,74 +415,7 @@ export default {
   data() {
     return {
       listByBrandTrash: [],
-      listByBrand: [
-        {
-          address: "天安门广场",
-          areaCode: "110114",
-          city: "北京市",
-          cityCode: "110100",
-          createBy: "test",
-          createTime: "2019-07-24 19:29:57",
-          district: "昌平区",
-          industry: "",
-          industryId: 8,
-          latitude: "39.90374",
-          logoImg: "http://image.52iuh.cn/wx_mini/DEtlibJjw1.jpg",
-          longitude: "116.39783",
-          mainBrandId: 19,
-          merchantId: "20190724274716",
-          merchantProfileList: [],
-          name: "大润发1111",
-          operatingStatus: 0,
-          province: "北京",
-          provinceCode: "110000",
-          telephone: "18999090077",
-        },
-        {
-          address: "天安门广场",
-          areaCode: "110114",
-          city: "北京市",
-          cityCode: "110100",
-          createBy: "test",
-          createTime: "2019-07-24 19:29:57",
-          district: "昌平区",
-          industry: "",
-          industryId: 8,
-          latitude: "39.90374",
-          logoImg: "http://image.52iuh.cn/wx_mini/DEtlibJjw1.jpg",
-          longitude: "116.39783",
-          mainBrandId: 19,
-          merchantId: "20190724274716",
-          merchantProfileList: [],
-          name: "大润发1111",
-          operatingStatus: 0,
-          province: "北京",
-          provinceCode: "110000",
-          telephone: "18999090077",
-        },
-        {
-          address: "天安门广场",
-          areaCode: "110114",
-          city: "北京市",
-          cityCode: "110100",
-          createBy: "test",
-          createTime: "2019-07-24 19:29:57",
-          district: "昌平区",
-          industry: "",
-          industryId: 8,
-          latitude: "39.90374",
-          logoImg: "http://image.52iuh.cn/wx_mini/DEtlibJjw1.jpg",
-          longitude: "116.39783",
-          mainBrandId: 19,
-          merchantId: "20190724274716",
-          merchantProfileList: [],
-          name: "大润发1111",
-          operatingStatus: 0,
-          province: "北京",
-          provinceCode: "110000",
-          telephone: "18999090077",
-        }
-      ],
+      listByBrand: [],
       selectIsConfirm: false,
       userToken: {}, //用户token
       disabled2: false,
@@ -509,7 +459,7 @@ export default {
         receivables: null,
         biller: "",
         contractNumber: "",
-        // 商户类型
+        // 商户类型 1单店 2品牌（多店
         merchantType: "",
         id: ""
       },
@@ -672,7 +622,12 @@ export default {
     };
   },
   methods: {
-    
+    addOne(i) {
+      this.listByBrand.push(...this.listByBrandTrash.splice(i, 1));
+    },
+    delOne(i) {
+      this.listByBrandTrash.push(...this.listByBrand.splice(i, 1));
+    },
     // 增加兼容品牌
     compatible_addInfo() {
       this.compatibleList.push({
@@ -794,7 +749,7 @@ export default {
 
       console.info(this.pageStatus);
       if (this.pageStatus == "edit1") {
-      } else if (this.pageStatus == "edit2") {
+      } else if (this.pageStatus == "edit2" || this.pageStatus === 'read') {
         this.disabled2 = true;
       }
     },
@@ -836,9 +791,6 @@ export default {
       // 接口：       商户列表-单个,                 商户列表-单个,                   商户列表-多个（品牌）
       const urls = ['/merchant/merchantInfo/list', '/merchant/merchantInfo/list', '/merchant/brandMain/list/data'];
       let host = baseUrl;
-      if (process.env.NODE_ENV === 'development') {
-        host = 'http://192.168.31.208:8088/zex-mgr';
-      }
       if (this.add_info.merchantType === 2){
         delete reqParams.name
       }
@@ -874,18 +826,22 @@ export default {
     getMerchantByBrand() {
       // /merchant/merchantBrand/list/merchant 查询品牌下的商户
       let host = baseUrl;
-      if (process.env.NODE_ENV === 'development') {
-        host = 'http://192.168.31.208:8088/zex-mgr';
-      } else {
+      if (process.env.NODE_ENV !== 'development') {
         this.listByBrand = [];
       }
       let params = {brandId: this.chooseMerchant.merchantId, brandLevel: this.chooseMerchant.brandLevel};
       postJson(host + "/merchant/merchantBrand/list/merchant", params).then(res => {
+        console.log(res);
         if (res.code == 200) {
           this.listByBrand = res.data;
+          if (res.data.length < 1) {
+            this.msgErr("未获取到该品牌下门店，（您可以去添加或与我们联系）");
+          }
         } else {
-          // this.msgErr(res.msg);
+          this.msgErr(res.msg);
         }
+      }).catch(err=>{
+        console.log(err, 'operating_merchant/merchant-customer/merchant-customer-add, Line929')
       });
     },
     //重置商户搜索条件
@@ -927,6 +883,10 @@ export default {
       }
       let reqParam = this.add_info;
       var serviceChargesList = [];
+      if (this.add_info.merchantType === 2 && this.listByBrand.length < 1) {
+        this.msgErr('至少选择一个商户');
+        return;
+      }
       for (let obj of this.compatibleList) {
         let paymentMode = obj.paymentMode;
         if (paymentMode == "") {
@@ -1016,15 +976,18 @@ export default {
       // }
       if (this.add_info.merchantType === 2) {
         reqParam.brandId = reqParam.merchantId;
+        reqParam.merchantIdList = this.listByBrand.map(el=>{
+          return {id: el.merchantId}
+        })
       } else {
-        reqParam.merchantIdList = [reqParam.merchantId];
+        reqParam.merchantIdList = [{id: reqParam.merchantId}];
       }
       delete reqParam.merchantId;
       delete reqParam.serviceName;
       delete reqParam.deleteChargesList;
       let host = baseUrl;
-      if (process.env.NODE_ENV === 'development') {
-        host = 'http://192.168.31.208:8088/zex-mgr';
+      if (msg === '新增') {
+        delete reqParam.id
       }
       postJson(host + "/merchant/merchantPackageInfo/add", reqParam).then(res => {
         if (res.code == 200) {
@@ -1046,6 +1009,7 @@ export default {
         ).then(res => {
           if (res.code == 200) {
             this.add_info = {
+              merchantType: res.data.merchantType,
               serviceCode: "merchant_customer",
               serviceName: "精准拓客",
               pushCustomerNum: parseInt(res.data.pushCustomerNum),
@@ -1062,6 +1026,12 @@ export default {
               name: res.data.merchantName
             };
             this.compatibleList = res.data.serviceChargesList;
+            this.listByBrand = res.data.merchantIdList;
+            if (this.add_info.merchantType === 2) {
+              // brandId merchantName
+              this.this.chooseMerchant.name = res.data.merchantName;
+              this.this.chooseMerchant.merchantId = res.data.brandId;
+            }
             console.info(JSON.stringify(this.add_info));
           } else {
             this.$Message.error(res.msg);
@@ -1169,7 +1139,20 @@ export default {
   justify-content: space-between;
 }
 .merchant-list{
-  max-height: 380px;
-  overflow: auto
+  max-height: 180px;
+  overflow: auto;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 5px 10px;
+}
+.merchant-list-item {
+  margin-top: 4px;
+  padding-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #eee;
+}
+.merchant-list .select-btn{
+  padding: .2em .5em;
 }
 </style>

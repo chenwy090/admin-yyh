@@ -66,12 +66,13 @@
                     <!-- 列表 -->
                     <Table border width="100%" :columns="columns" :data="packageList" :loading="TableLoading">
                         <template slot-scope="{ row }" slot="action">
-                            <!--<Button
+                            <Button
                                     type="text"
                                     size="small"
                                     style="color: #f39913"
+                                    @click="lookDetail(row.id)"
                             >查看</Button>
-                            <Button
+                            <!--<Button
                                     type="text"
                                     size="small"
                                     style="color: #368029"
@@ -89,20 +90,20 @@
                                     size="small"
                                     style="color: red"
                                     @click="stop(row)"
-                                    v-if="row.status == '生效中' "
+                                    v-if="row.status == '2' "
                             >终止</Button>
                             <Button
                                     type="text"
                                     size="small"
                                     style="color:#2db7f5"
-                                    @click="editInfo(row)"
-                                    v-if="row.status == '未开始' || row.status == '生效中'"
+                                    @click="editInfo({id: row.id, status: row.status})"
+                                    v-if="row.status == '1' || row.status == '2'"
                             >编辑</Button>
                             <Button type="text"
                                     size="small"
                                     style="color:#ed4014"
                                     @click="del(row)"
-                                    v-if="row.status == '未开始'"
+                                    v-if="row.status == '1'"
                             >删除</Button>
                         </template>
                     </Table>
@@ -152,6 +153,7 @@
     import {
         getRequest,
         postRequest,
+        postJson,
         putRequest,
         deleteRequest,
         uploadFileRequest
@@ -195,10 +197,10 @@ import industryView from "./industry";
                     status: null 
                 },
                 statusList: [
-                    {name: '已终止',val:"1"},
-                    {name: '生效中',val:"0"},
-                    {name: '未开始',val:"10"},
-                    {name: '已结束',val:"20"}
+                    {name: '已终止',val:"4"},
+                    {name: '生效中',val:"2"},
+                    {name: '未开始',val:"1"},
+                    {name: '已结束',val:"3"}
                 ],
                 columns: [
                     {
@@ -287,6 +289,16 @@ import industryView from "./industry";
             };
         },
         methods: {
+            // 查看 详情
+            lookDetail(id) {
+              // /merchant/merchantPackageInfo/selectById 查询
+              // 参数接收一个id
+              // 在组件中
+              this.pageStatus = 'read';
+              this.setStore("pageStatus", 'read');
+              this.packageId = '' + id;
+              this.merchantCustomerAddPage = true;
+            },
             showMerchantStaffAddStatus(e) {
                 this.merchantCustomerAddPage = e;
                 this.search();
@@ -300,9 +312,9 @@ import industryView from "./industry";
             editInfo(item) {
                 console.info(JSON.stringify(item))
                 var pageStatus = '';
-                if (item.status == '未开始'){
+                if (item.status == '1'){
                     pageStatus = 'edit1';
-                }else if (item.status == '生效中'){
+                }else if (item.status == '2'){
                     pageStatus = 'edit2';
                 }
                 this.setStore("pageStatus", pageStatus);
