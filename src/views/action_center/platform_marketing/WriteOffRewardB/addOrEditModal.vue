@@ -31,7 +31,7 @@
                     <Col span="18">
                     <FormItem label="活动时间:">
                         <DatePicker
-                                :value="modal.applyDateRangeOpen"
+                                :value="modal.startTime"
                                 type="date"
                                 placeholder
                                 style="width: 160px"
@@ -40,7 +40,7 @@
                         ></DatePicker>
                         <div style="width: 2%;display: inline-block"></div>
                         <DatePicker
-                                :value="modal.applyDateRangeClose"
+                                :value="modal.endTime"
                                 type="date"
                                 placeholder
                                 style="width: 160px"
@@ -54,22 +54,25 @@
                 <Row class="padding-left-12">
                     <Col span="18">
                     <FormItem label="参与活动券:">
-                        <Button type="dashed" @click="openCoupon">{{couponObj[0]&&couponObj[0].name?couponObj[0].name:'参与活动券'}}</Button>
+                        <Button type="dashed" @click="openCoupon">
+                            <span v-if="couponObj.length===0">参与活动券</span>
+                            <span v-for="item in couponObj">{{item.name+','}}</span>
+                        </Button>
                     </FormItem>
                     </Col>
                 </Row>
                 <h3>赠送规则</h3>
                 <Row class="padding-left-12">
                     <Col span="24">
-                    <RadioGroup v-model="modal.type" vertical style="width: 100%">
-                        <Radio label="type1" style="display: inline-block">
+                    <RadioGroup v-model="modal.wardType" vertical style="width: 100%" :on-change="changeRadio">
+                        <Radio label="1" style="display: inline-block">
                             <span>核销赠券</span>
                         </Radio>
                             <div style="width: 2%;display: inline-block"></div>
                             <span class="colof-a2">(在核销商户券码时，赠送优惠券至店员卡包，前提店员是要优惠C端用户)</span>
                             <div style="width: 2%;display: inline-block"></div>
                             <Button style="float: right;" type="primary" icon="md-add" @click="addJList">新增</Button>
-                                <div  v-for="(item,index) in JList" class="radio-item">
+                                <div  v-for="(item,index) in JawardRuleDtos" class="radio-item">
                                     <div>
                                         <span>每日核销范围在&nbsp;</span>
                                         <InputNumber
@@ -77,7 +80,7 @@
                                                 :step="1"
                                                 type="text"
                                                 :precision="0"
-                                                v-model="item.min"
+                                                v-model="item.verifyCountMin"
                                                 placeholder="请输入数值"
                                         ></InputNumber>
                                         <div style="width: 2%;display: inline-block"></div>
@@ -86,7 +89,7 @@
                                                 :step="1"
                                                 type="text"
                                                 :precision="0"
-                                                v-model="item.max"
+                                                v-model="item.verifyCountMax"
                                                 placeholder="请输入数值"
                                         ></InputNumber>
                                         <span>&nbsp;张时，赠送以下优惠券</span>
@@ -94,27 +97,27 @@
                                         <span class="colof-a2">(后面文本框的数值不填写，表示无限大)</span>
                                     </div>
                                     <div style="margin: 10px 0;">
-                                        <Button type="dashed" @click="openVolume(item)">{{item.JObj&&item.JObj.name?item.JObj.name:'请选择优惠券'}}</Button>
+                                        <Button type="dashed" @click="openVolume(item)">{{item.awardName?item.awardName:'请选择优惠券'}}</Button>
                                     </div>
                                     <div class="reduce-btn">
-                                        <Button type="error" v-if="JList.length>1" shape="circle" icon="ios-trash" @click="reduce(JList,index)"></Button>
+                                        <Button type="error" v-if="JawardRuleDtos.length>1" shape="circle" icon="ios-trash" @click="reduce(JawardRuleDtos,index)"></Button>
                                     </div>
                                 </div>
-                        <Radio label="type2" style="display: inline-block">
+                        <Radio label="2" style="display: inline-block">
                             <span>核销赠U贝</span>
                         </Radio>
                             <div style="width: 2%;display: inline-block"></div>
                             <span class="colof-a2">(在核销主商户券码时，赠送平台U贝，前提店员是要优惠C端用户)</span>
                             <div style="width: 2%;display: inline-block"></div>
                             <Button  style="float: right;" type="primary" icon="md-add" @click="addUList">新增</Button>
-                                <div  v-for="(item,index) in UList" class="radio-item">
+                                <div  v-for="(item,index) in UawardRuleDtos" class="radio-item">
                                     <span>每日核销范围在&nbsp;</span>
                                     <InputNumber
                                             :min="0"
                                             :step="1"
                                             type="text"
                                             :precision="0"
-                                            v-model="item.min"
+                                            v-model="item.verifyCountMin"
                                             placeholder="请输入数值"
                                     ></InputNumber>
                                     <div style="width: 2%;display: inline-block"></div>
@@ -123,7 +126,7 @@
                                             :step="1"
                                             type="text"
                                             :precision="0"
-                                            v-model="item.max"
+                                            v-model="item.verifyCountMax"
                                             placeholder="请输入数值"
                                     ></InputNumber>
                                     <span>&nbsp;张时，赠送以下U贝</span>
@@ -134,13 +137,13 @@
                                                 :step="1"
                                                 type="text"
                                                 :precision="0"
-                                                v-model="item.Unum"
+                                                v-model="item.awardAmount"
                                                 placeholder="请输入U贝数量"
                                                 style="width: 150px"
                                         ></InputNumber>
                                     </div>
                                     <div class="reduce-btn">
-                                        <Button type="error" v-if="UList.length>1" shape="circle" icon="ios-trash" @click="reduce(UList,index)"></Button>
+                                        <Button type="error" v-if="UawardRuleDtos.length>1" shape="circle" icon="ios-trash" @click="reduce(UawardRuleDtos,index)"></Button>
                                     </div>
                                 </div>
                     </RadioGroup>
@@ -159,6 +162,7 @@
 </template>
 
 <script>
+    import { postRequest, getRequest,getSyncRequest,uploadformData } from "@/libs/axios";
     import volumeModal from "./volumeModal"
     import couponModal from "./couponModalB"
     export default {
@@ -176,12 +180,10 @@
                 couponObj:[],
                 modal:{
                     name:'',
-                    applyDateRangeOpen:'',
-                    applyDateRangeClose:'',
-                    active:'',
-                    type:'type1',
-                    uNum:0,
-                    mark:''
+                    startTime:'',
+                    endTime:'',
+                    wardType:'1',
+                    type:'1'
                 },
                 options2:{
                     disabledDate(date){
@@ -193,39 +195,40 @@
                         return date.valueOf() < Date.now()-1000*60*60*24;
                     }
                 },
-                JList:[{min:null,max:null,JObj:{}}],
-                UList:[{min:null,max:null,Unum:null}],
+                JawardRuleDtos:[{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'',couponType:'',awardName:''}],
+                UawardRuleDtos:[{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'',couponType:'',awardName:''}],
                 ruleValidate: {}
             }
         },
         methods:{
             numArrayValidator(list){
+                var flag = true;
                 var arr = list.sort(function(a,b){
                     return a.min - b.min
                 })
                 for(let i=0;i<arr.length-1;i++){
-                    if(arr[i].max<=arr[i].min){
+                    if(arr[i].verifyCountMax<=arr[i].verifyCountMin){
                         this.$Message.error({
                             content: "最小值不能大于等于最大值",
                             duration: 3
                         });
-                        this.falg = false;
+                        flag = false;
                         break;
-                    }else if(arr[i].max>=arr[i+1].min){
+                    }else if(arr[i].verifyCountMax>=arr[i+1].verifyCountMin){
                         this.$Message.error({
                             content: "请输入正确区间数值",
                             duration: 3
                         });
-                        this.falg = false;
+                        flag = false;
                         break;
                     }
                 }
-                return falg;
+                return flag;
             },
             changeDateTime(datetime, index) {
                 switch (index) {
                 case 1:
-                    this.modal.applyDateRangeOpen = datetime;
+                    this.modal.startTime = datetime;
                     this.options2 = {
                         disabledDate(date){
                             return date.valueOf() <  new Date(datetime)-1000*60*60*24;
@@ -233,7 +236,7 @@
                     }
                     break;
                 case 2:
-                    this.modal.applyDateRangeClose = datetime;
+                    this.modal.endTime = datetime;
                     this.options1 = {
                         disabledDate(date){
                             return date.valueOf() < Date.now()-1000*60*60*24||date.valueOf() > new Date(datetime);
@@ -242,17 +245,45 @@
                     break;
                 }
             },
+            changeRadio(){
+                // this.awardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'',couponType:'',awardName:''}];
+            },
             resetRow(row){
                 if(row){
                     this.titleName = "编辑";
-                    this.modal.active =  "测试参与活动券"
-                    this.modal.applyDateRangeClose= "2019-08-30"
-                    this.modal.applyDateRangeOpen= "2019-08-27"
-                    this.modal.mark= "测试核销赠酒案"
-                    this.modal.name= "测试编辑"
-                    this.modal.type= "type1"
+                    this.modal.id= row.id;
+                    // /merchant/activity/award/activity/{id}
+                    getRequest(`/merchant/activity/award/activity/${row.id}`).then(res => {
+                        if (res.code === "200") {
+                            var data = res.data;
+                            this.modal.name = data.name;
+                            this.modal.startTime = data.startTime;
+                            this.modal.wardType = data.wardType.toString();
+                            this.modal.endTime = data.endTime;
+                            this.modal.type = '2';
+                            this.modal.coupons = data.coupons;
+                            this.modal.status = data.status;
+                            if(data.wardType=='1'){
+                                this.JawardRuleDtos = data.awardRuleVos;
+                                this.UawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'',couponType:'',awardName:''}];
+                            }else if(data.wardType=='2'){
+                                this.UawardRuleDtos = data.awardRuleVos;
+                                this.JawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'',couponType:'',awardName:''}];
+                            }
+                        } else {
+                            this.$Message.error(res.msg);
+                        }
+                    });
                 }else{
                     this.titleName = '新增';
+                    this.modal.name = '';
+                    this.modal.startTime = '';
+                    this.modal.wardType = '';
+                    this.modal.endTime = '';
+                    this.modal.type = '1';
+                    this.couponObj = [];
+                    this.JawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'',couponType:'',awardName:''}];
+                    this.UawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'',couponType:'',awardName:''}];
                 }
             },
             openCoupon(){
@@ -273,17 +304,59 @@
                 this.selectActiveVolumeModal = false;
             },
             addJList(){
-                this.JList.push({min:null,max:null,JObj:{}});
+                this.JawardRuleDtos.push({verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'',couponType:'',awardName:''});
             },
             addUList(){
-                this.UList.push({min:null,max:null,Unum:0});
+                this.UawardRuleDtos.push({verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'',couponType:'',awardName:''});
             },
             reduce(list,index){
                 list.splice(index,1);
             },
             ok(){
-                this.numArrayValidator(this.UList);
-                console.log(this.modal);
+
+                // /merchant/activity/award/add/activity
+                // /merchant/activity/award/update/activity
+                let params =  {
+                    "endTime": this.modal.endTime,
+                    "id": this.modal.id,
+                    "name": this.modal.name,
+                    "startTime": this.modal.startTime,
+                    "type": this.modal.type,
+                    "wardType": this.modal.wardType
+                }
+                let couponIds = [];
+                this.couponObj.forEach(function(v,i){
+                    couponIds.push(v.id);
+                });
+                    params.couponIds = couponIds;
+                if(this.modal.wardType=='1'){
+                    params.awardRuleDtos = this.JawardRuleDtos;
+                }else if(this.modal.wardType=='2'){
+                    params.awardRuleDtos = this.UawardRuleDtos;
+                }
+                if(this.numArrayValidator( params.awardRuleDtos)){
+                    if(this.titleName=='新增'){
+                        postRequest(`/merchant/activity/award/add/activity`,params).then(res => {
+                            if (res.code === "200") {
+                                this.$Message.success("新增成功");
+                                this.$emit('setViewDialogVisible', false)
+                                this.$emit('search')
+                            } else {
+                                this.$Message.error(res.msg);
+                            }
+                        });
+                    }else{
+                        uploadformData(`/merchant/activity/award/update/activity`,params).then(res => {
+                            if (res.code === "200") {
+                                this.$Message.success("编辑成功");
+                                this.$emit('setViewDialogVisible', false)
+                                this.$emit('search')
+                            } else {
+                                this.$Message.error(res.msg);
+                            }
+                        })
+                    }
+                }
             },
             close() {
                 this.$emit('setViewDialogVisible', false)

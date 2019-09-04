@@ -13,7 +13,7 @@
                                <Input v-model="searchForm.name" placeholder="活动名称" :maxlength=20 />
                            </FormItem>
                            <FormItem label="赠送方式" span="24"  style="width:23%">
-                               <Select v-model="searchForm.type" style="width:100%">
+                               <Select v-model="searchForm.awardType" style="width:100%">
                                    <Option v-for="item in typeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
                                </Select>
                            </FormItem>
@@ -45,7 +45,7 @@
                                    @on-selection-change="handleSelect"
                            >
                                <template slot-scope="{ row }" slot="action">
-                                   <Button
+                                   <Button v-if="row.status!=2"
                                            type="success"
                                            style="margin-right: 5px"
                                            size="small"
@@ -57,13 +57,15 @@
                                            size="small"
                                            @click="showDetail(row)"
                                    >查看</Button>
-                                   <!--<Button-->
-                                           <!--type="error"-->
-                                           <!--style="margin-right: 5px"-->
-                                           <!--size="small"-->
-                                           <!--@click="del(row)"-->
-                                   <!--&gt;删除</Button>-->
                                    <Button
+                                           v-if="row.status!=2"
+                                           type="error"
+                                           style="margin-right: 5px"
+                                           size="small"
+                                           @click="del(row)"
+                                   >删除</Button>
+                                   <Button
+                                           v-if="row.status==2"
                                            type="error"
                                            style="margin-right: 5px"
                                            size="small"
@@ -71,7 +73,13 @@
                                    >终止</Button>
                                </template>
                                <template slot-scope="{ row }" slot="activeTime">
-                                   <div>{{row.activeTime}}</div>
+                                   <div>{{row.startTime+' - '+row.endTime}}</div>
+                               </template>
+                               <template slot-scope="{ row }" slot="status">
+                                   <div>{{statusList[row.status].label}}</div>
+                               </template>
+                               <template slot-scope="{ row }" slot="awardType">
+                                   <div>{{typeList[Number(row.awardType)-1].label}}</div>
                                </template>
                            </Table>
                        </Row>
@@ -90,12 +98,13 @@
                </div>
            </Card>
        </div>
-       <AddOrEdit ref="AddOrEdit" :viewDialogVisible="AddViewDialogVisible" @setViewDialogVisible="closeTab"></AddOrEdit>
+       <AddOrEdit ref="AddOrEdit" :viewDialogVisible="AddViewDialogVisible" @setViewDialogVisible="closeTab" @search="search"></AddOrEdit>
        <showDetail ref="showDetail" :viewDialogVisible="ShowViewDialogVisible" @setViewDialogVisible="closeTab"></showDetail>
    </div>
 </template>
 
 <script>
+    import { postRequest, getRequest,getSyncRequest } from "@/libs/axios";
     import AddOrEdit from "./addOrEditModal";
     import showDetail from "./showDetailModal";
     export default {
@@ -104,19 +113,12 @@
         data(){
             return{
                 typeList:[{value:1,label:'核销赠券'},{value:2,label:'核销赠U贝'}],
-                statusList:[{value:0,label:'未开始'},{value:1,label:'进行中'},{value:2,label:'已终止'},{value:3,label:'已结束'}],
+                statusList:[{value:0,label:'已删除'},{value:1,label:'未开始'},{value:2,label:'进行中'},{value:3,label:'已结束'},{value:4,label:'已终止'}],
                 TableLoading: false,
                 auditing:0,
                 totalSize: 0,
                 current: 1,
-                listData: [
-                    {name:'一兆韦德核销券赠脉动饮料',
-                        type:'核销赠券',
-                        activeTime:'2019-08-03-- 2019-08-15',
-                    static:'未开始',
-                    openId:'test',
-                    openTime:'2019-08-03'}
-                ],
+                listData: [],
                 selectDataList: [],
                 auditData:{},
                 auditFlag: 0,
@@ -130,12 +132,15 @@
                     },
                     {
                         title: "活动名称",
-                        width: 220,
+                        width: 200,
+                        align: "center",
                         key: "name"
                     },
                     {
                         title: "赠送方式",
-                        key: "type"
+                        width: 150,
+                        align: "center",
+                        slot: "awardType"
                     },
                     {
                         title: "活动时间",
@@ -145,23 +150,29 @@
                     },
                     {
                         title: "状态",
-                        key: "static"
+                        width: 100,
+                        align: "center",
+                        slot: "status"
                     },
                     {
                         title: "操作人",
-                        key: "openId"
+                        width: 100,
+                        align: "center",
+                        key: "createBy"
                     },
                     {
                         title: "操作时间",
-                        key: "openTime"
+                        width: 150,
+                        align: "center",
+                        key: "createTime"
                     }
                 ],
                 searchForm: {
-                    type:'',
-                    name: '',
-                    status:0,
-                    current: "1",
-                    pageSize: "10"
+                    awardType: "",
+                    name: "",
+                    page: 0,
+                    size: 10,
+                    status:""
                 },
                 AddViewDialogVisible:false,
                 ShowViewDialogVisible:false,
@@ -175,7 +186,7 @@
         },
         methods:{
             search() {
-                this.searchForm.current = 1;
+                this.current = 1;
                 this.loadTableData(this.searchForm);
             },
             reset(){
@@ -185,16 +196,14 @@
                 this.totalSize = 0;
                 this.listData = [];
                 this.TableLoading = true;
-                financialWithdrawApplyAuditList(formData).then(res => {
+                postRequest(`/merchant/activity/award/activity/list?pageNum=${this.current}&pageSize=10`,this.searchForm
+                ).then(res => {
                     this.TableLoading = false;
                     if (res.code === "200") {
                         this.totalSize = res.data.total;
                         this.listData = res.data.records;
                     } else {
-                        this.$Message.error({
-                            content: "获取数据失败",
-                            duration: 3
-                        });
+                        this.$Message.error("获取数据失败");
                     }
                 });
             },
@@ -224,7 +233,15 @@
                     title: '确认删除',
                     content: '<p>您确定要删除该条活动吗？</p>',
                     onOk: () => {
-                        this.$Message.info('Clicked ok');
+                        postRequest(`/merchant/activity/award/activity/status`,{id:row.id,status:0}
+                        ).then(res => {
+                            this.TableLoading = false;
+                            if (res.code === "200") {
+                                this.search();
+                            } else {
+                                this.$Message.error(res.msg);
+                            }
+                        });
                     },
                     onCancel: () => {
                     }
@@ -235,7 +252,16 @@
                     title: '确认终止',
                     content: '<p>您确定要终止该条活动吗？</p>',
                     onOk: () => {
-                        this.$Message.info('Clicked ok');
+                        // /merchant/activity/award/activity/status
+                        postRequest(`/merchant/activity/award/activity/status`,{id:row.id,status:4}
+                        ).then(res => {
+                            this.TableLoading = false;
+                            if (res.code === "200") {
+                                this.search();
+                            } else {
+                                this.$Message.error(res.msg);
+                            }
+                        });
                     },
                     onCancel: () => {
                     }
@@ -248,8 +274,8 @@
 
             },
             changeCurrent(current) {
-                if (this.searchForm.current != current) {
-                    this.searchForm.current = current;
+                if (this.current != current) {
+                    this.current = current;
                     this.loadTableData(this.searchForm);
                 }
             },
@@ -261,6 +287,9 @@
             close(){
                 this.$emit("close",false);
             }
+        },
+        created(){
+            this.loadTableData();
         }
     }
 </script>

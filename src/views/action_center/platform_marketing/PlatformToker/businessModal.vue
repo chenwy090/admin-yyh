@@ -13,7 +13,7 @@
                             <Input v-model="businessModal.name" placeholder=" 请填写商户名称" :maxlength=20 />
                         </FormItem>
                         <FormItem label="省/市" span="24"  style="width:40%">
-                            <Cascader :data="addressData" :load-data="addressLoad"></Cascader>
+                            <Cascader :data="addressData" :load-data="addressLoad" v-model="addressValue"></Cascader>
                         </FormItem>
                         <FormItem span="24" :label-width="1" style="float: right;">
                             <Button type="primary" class="submit" icon="ios-search" @click="search('searchForm')" style="margin-right: 5px">搜索</Button>
@@ -36,8 +36,8 @@
                                 <template slot-scope="{ row,index }" slot="action">
                                     <Radio :label="index"><span></span></Radio>
                                 </template>
-                                <template slot-scope="{ row }" slot="activeTime">
-                                    <div>{{row.activeTime}}</div>
+                                <template slot-scope="{ row }" slot="address">
+                                    <div>{{row.province+'/'+row.city}}</div>
                                 </template>
                             </Table>
                         </RadioGroup>
@@ -55,7 +55,7 @@
                     </Row>
             </div>
         </div>
-        <div style="text-align: center">
+        <div style="text-align: center;margin:10px">
             <Button style="margin-left: 8px;" type="primary" @click="businessSave">保存</Button>
             <Button style="margin-left: 8px;" @click="businessClose">关闭</Button>
         </div>
@@ -63,6 +63,7 @@
 </template>
 
 <script>
+    import { postRequest,getSyncRequest} from "@/libs/axios";
     export default {
         name: "businessModal",
         props: {
@@ -75,6 +76,7 @@
                     name:'',
 
                 },
+                addressValue:[],
                 selectRow:'',
                 selectIndex:"",
                 addressData:[
@@ -96,7 +98,7 @@
                 tableColumns: [
                     {
                         title: "操作",
-                        width: 50,
+                        width: 80,
                         align: "center",
                         slot: "action",
                         fixed: "left"
@@ -108,7 +110,7 @@
                     },
                     {
                         title: "省/市",
-                        key: "address",
+                        slot: "address",
                         align: 'center',
                     }
                 ],
@@ -120,39 +122,46 @@
             }
         },
         methods:{
+            resetRow(){
+                this.getProvinceList();
+                this.loadTableData();
+            },
+            getProvinceList() {
+                postRequest(`/system/area/province/list`,{}).then(res => {
+                    if (res.code === "200") {
+                        this.addressData = res.data||[];
+                        if(this.addressData.length){
+                            this.addressData.forEach(function(v){
+                                v.value = v.provinceCode
+                                v.label = v.shortName;
+                                v.children= [];
+                                v.loading = false
+                            })
+                        }
+                    } else {
+                        this.$Message.error("获取数据失败");
+                    }
+                });
+            },
             addressLoad(item,callback){
                 item.loading = true;
-                setTimeout(() => {
-                    if (item.value === 'beijing') {
-                        item.children = [
-                            {
-                                value: 'talkingdata',
-                                label: 'TalkingData'
-                            },
-                            {
-                                value: 'baidu',
-                                label: '百度'
-                            },
-                            {
-                                value: 'sina',
-                                label: '新浪'
-                            }
-                        ];
-                    } else if (item.value === 'hangzhou') {
-                        item.children = [
-                            {
-                                value: 'ali',
-                                label: '阿里巴巴'
-                            },
-                            {
-                                value: '163',
-                                label: '网易'
-                            }
-                        ];
+                getSyncRequest("/system/area/city/" + item.provinceCode).then(res =>{
+                    if (res.code === "200") {
+                        item.children = res.data||[];
+                        item.loading = false;
+                        if(item.children.length){
+                            item.children.forEach(function(v){
+                                v.label = v.shortName;
+                                v.value = v.provinceCode
+                            })
+                        }
+                        callback();
+                    } else {
+                        this.$Message.error("获取数据失败");
+                        item.loading = false;
+                        callback();
                     }
-                    item.loading = false;
-                    callback();
-                }, 1000);
+                });
             },
             search(){
                 this.TableLoading = false;
@@ -162,19 +171,43 @@
 
             },
             loadTableData(){
-
+                let that = this;
+                this.totalSize = 0;
+                this.listData = [];
+                this.TableLoading = true;
+                this.selectIndex = '';
+                postRequest(`/merchant/merchantInfo/list?pageNum=${this.current}&pageSize=10`,{
+                        "cityCode": this.addressValue[1]||'',
+                        "provinceCode": this.addressValue[0]||'',
+                        "name":this.businessModal.name||''
+                    }
+                ).then(res => {
+                    this.TableLoading = false;
+                    if (res.code === "200") {
+                        this.totalSize = res.data.total;
+                        this.listData = res.data.records;
+                        if(this.selectRow.merchantId){
+                            res.data.records.forEach(function(v,i){
+                                if(v.merchantId === that.selectRow.merchantId){
+                                    that.selectIndex = i;
+                                }
+                            })
+                        }
+                    } else {
+                        this.$Message.error("获取数据失败");
+                    }
+                });
             },
             handleSelect(selection, index) {
                 this.selectDataList = selection;
             },
             changeCurrent(current) {
-                if (this.businessModal.current != current) {
-                    this.businessModal.current = current;
-                    this.loadTableData(this.searchForm);
+                if (this.current != current) {
+                    this.current = current;
+                    this.loadTableData();
                 }
             },
             selectBusiness(){
-                console.log(this.selectIndex);
                 this.selectRow = this.listData[this.selectIndex]
             },
             businessClose(){
@@ -189,8 +222,6 @@
             }
         },
         created(){
-            this.TableLoading=false,
-                console.log(2);
         }
     }
 </script>

@@ -58,7 +58,7 @@
                 </Row>
             </div>
         </div>
-        <div style="text-align: center">
+        <div style="text-align: center;margin:10px 0;">
             <Button style="margin-left: 8px;" type="primary" @click="couponSave">保存</Button>
             <Button style="margin-left: 8px;" @click="couponClose">关闭</Button>
         </div>
@@ -66,6 +66,7 @@
 </template>
 
 <script>
+    import { postRequest} from "@/libs/axios";
     export default {
         name: "couponModal",
         props: {
@@ -125,16 +126,15 @@
                         align: 'center',
                     }
                 ],
-                listData: [
-                    {name:'一兆韦德核销券赠脉动饮料',address:'浙江省/杭州市',coupon:'满100减50',time:'2019-08-29 -- 2019-09-10'},
-                    {name:'阿里巴巴',address:'浙江省/杭州市',coupon:'满100减50',time:'2019-08-29 -- 2019-09-10'}
-                ],
+                listData: [],
                 selectDataList: [],
             }
         },
         methods:{
-            resetRow(row){
+            resetRow(row,coupon){
                 this.copponForm.name = row.name;
+                this.selectRow = coupon;
+                this.loadTableData();
             },
             addressLoad(item,callback){
                 item.loading = true;
@@ -177,7 +177,26 @@
 
             },
             loadTableData(){
-
+                postRequest(
+                    "/campagin/list?pageNum=" + this.current + "&pageSize=" + '10',
+                    // this.copponForm
+                    {}
+                ).then(res => {
+                    this.TableLoading = false;
+                    if (res.code == 200) {
+                        this.totalSize = res.data.total;
+                        this.listData = res.data.records;
+                        if(this.selectRow.id){
+                            res.data.records.forEach(function(v,i){
+                                if(v.campId === that.selectRow.campId){
+                                    that.selectIndex = i;
+                                }
+                            })
+                        }
+                    } else {
+                        this.msgErr(res.msg);
+                    }
+                });
             },
             handleSelect(selection, index) {
                 this.selectDataList = selection;
@@ -185,19 +204,18 @@
             changeCurrent(current) {
                 if (this.copponForm.current != current) {
                     this.copponForm.current = current;
-                    this.loadTableData(this.searchForm);
+                    this.loadTableData();
                 }
             },
             selectBusiness(){
-                console.log(this.selectIndex);
-                this.selectRow = this.listData[this.selectIndex]
+               this.selectRow = this.listData[this.selectIndex]
             },
             couponClose(){
                 this.$emit('setViewDialogVisible', false)
             },
             couponSave(){
                 if(!this.selectIndex&&this.selectIndex!==0){
-                    this.$Message.error('请选择品牌');
+                    this.$Message.error('请选择优惠卷');
                     return;
                 }
                 this.$emit('setViewDialogVisible', this.selectRow)

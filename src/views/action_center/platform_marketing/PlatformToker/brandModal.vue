@@ -52,7 +52,7 @@
                     </Row>
             </div>
         </div>
-        <div style="text-align: center">
+        <div style="text-align: center;margin:10px">
             <Button style="margin-left: 8px;" type="primary" @click="brandSave">保存</Button>
             <Button style="margin-left: 8px;" @click="brandClose">关闭</Button>
         </div>
@@ -60,6 +60,7 @@
 </template>
 
 <script>
+    import { postRequest} from "@/libs/axios";
     export default {
         name: "brandModal",
         props: {
@@ -98,21 +99,22 @@
             }
         },
         methods:{
+            resetRow(){
+                this.loadTableData()
+            },
             search(){
                 this.loadTableData();
             },
             reset(){
-
-            },
-            loadTableData(){
-
+                this.brandForm.current = 1;
+                this.brandForm.name = '';
             },
             handleSelect(selection, index) {
                 this.selectDataList = selection;
             },
             changeCurrent(current) {
-                if (this.brandForm.current != current) {
-                    this.brandForm.current = current;
+                if (this.current != current) {
+                    this.current = current;
                     this.loadTableData(this.searchForm);
                 }
             },
@@ -129,11 +131,36 @@
                     return;
                 }
                 this.$emit('setViewDialogVisible', this.selectRow)
+            },
+            loadTableData(){
+                let that = this;
+                this.TableLoading=true;
+                this.selectIndex = '';
+                postRequest(`/merchant/brandMain/list?pageNum=${this.current}&pageSize=10`,{
+                        name:this.brandForm.name,
+                        pageNum: this.current,
+                        pageSize: 10
+                    }
+                ).then(res => {
+                    this.TableLoading=false;
+                    if (res.code === "200") {
+                        this.totalSize = res.data.total;
+                        this.listData = res.data.records;
+                        if(this.selectRow.id){
+                            res.data.records.forEach(function(v,i){
+                                if(v.id === that.selectRow.id){
+                                    that.selectIndex = i;
+                                }
+                            })
+                        }
+                    } else {
+                        this.$Message.error("获取数据失败");
+                    }
+                });
             }
         },
         created(){
-            this.TableLoading=false,
-            console.log(2);
+            //
         }
     }
 </script>

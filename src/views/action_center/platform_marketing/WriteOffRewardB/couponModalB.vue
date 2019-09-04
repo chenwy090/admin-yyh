@@ -61,6 +61,7 @@
 </template>
 
 <script>
+    import { postRequest, getRequest,getSyncRequest } from "@/libs/axios";
     export default {
         name: "couponModal",
         props: {
@@ -77,20 +78,7 @@
                 current: 1,
                 selectIndex:'',
                 selectRow:{},
-                addressData:[
-                    {
-                        value: 'beijing',
-                        label: '北京',
-                        children: [],
-                        loading: false
-                    },
-                    {
-                        value: 'hangzhou',
-                        label: '杭州',
-                        children: [],
-                        loading:false
-                    }
-                ],
+                addressData:[],
                 tableColumns: [
                     {
                         type: 'selection', width: 60, align: 'center'
@@ -117,8 +105,8 @@
                     }
                 ],
                 listData: [
-                    {name:'一兆韦德核销券赠脉动饮料',address:'浙江省/杭州市',coupon:'满100减50',time:'2019-08-29 -- 2019-09-10'},
-                    {name:'阿里巴巴',address:'浙江省/杭州市',coupon:'满100减50',time:'2019-08-29 -- 2019-09-10'}
+                    {id:'223',name:'一兆韦德核销券赠脉动饮料',address:'浙江省/杭州市',coupon:'满100减50',time:'2019-08-29 -- 2019-09-10'},
+                    {id:'223',name:'阿里巴巴',address:'浙江省/杭州市',coupon:'满100减50',time:'2019-08-29 -- 2019-09-10'}
                 ],
                 selectDataList: [],
             }
@@ -127,39 +115,43 @@
             resetRow(row){
                 // this.copponForm.name = row.name;
             },
+            getProvinceList(formData) {
+                postRequest(`/system/area/province/list`,{}).then(res => {
+                    if (res.code === "200") {
+                        console.log(res);
+                        this.addressData = res.data||[];
+                        if(this.addressData.length){
+                            this.addressData.forEach(function(v){
+                                v.value = v.provinceCode
+                                v.label = v.shortName;
+                                v.children= [];
+                                v.loading = false
+                            })
+                        }
+                    } else {
+                        this.$Message.error("获取数据失败");
+                    }
+                });
+            },
             addressLoad(item,callback){
                 item.loading = true;
-                setTimeout(() => {
-                    if (item.value === 'beijing') {
-                        item.children = [
-                            {
-                                value: 'talkingdata',
-                                label: 'TalkingData'
-                            },
-                            {
-                                value: 'baidu',
-                                label: '百度'
-                            },
-                            {
-                                value: 'sina',
-                                label: '新浪'
-                            }
-                        ];
-                    } else if (item.value === 'hangzhou') {
-                        item.children = [
-                            {
-                                value: 'ali',
-                                label: '阿里巴巴'
-                            },
-                            {
-                                value: '163',
-                                label: '网易'
-                            }
-                        ];
+                getSyncRequest("/system/area/city/" + item.provinceCode).then(res =>{
+                    if (res.code === "200") {
+                        item.children = res.data||[];
+                        item.loading = false;
+                        if(item.children.length){
+                            item.children.forEach(function(v){
+                                v.label = v.shortName;
+                                v.value = v.provinceCode
+                            })
+                        }
+                        callback();
+                    } else {
+                        this.$Message.error("获取数据失败");
+                        item.loading = false;
+                        callback();
                     }
-                    item.loading = false;
-                    callback();
-                }, 1000);
+                });
             },
             search(){
                 this.loadTableData();
