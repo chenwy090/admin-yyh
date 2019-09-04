@@ -35,8 +35,11 @@
                             ref="table"
                             @on-selection-change="handleSelect"
                     >
-                        <template slot-scope="{ row }" slot="activeTime">
-                            <div>{{row.activeTime}}</div>
+                        <template slot-scope="{ row }" slot="time">
+                            <div>{{row.time}}</div>
+                        </template>
+                        <template slot-scope="{ row,index }" slot="address">
+                            <div>{{row.province+'/'+row.city}}</div>
                         </template>
                     </Table>
                 </Row>
@@ -53,7 +56,7 @@
                 </Row>
             </div>
         </div>
-        <div style="text-align: center">
+        <div style="text-align: center;margin: 10px 0;">
             <Button style="margin-left: 8px;" type="primary" @click="couponSave">保存</Button>
             <Button style="margin-left: 8px;" @click="couponClose">关闭</Button>
         </div>
@@ -85,28 +88,26 @@
                     },
                     {
                         title: "商家名称",
-                        key: "name",
+                        key: "merchantName",
                         align: 'center',
                     },
                     {
                         title: "省/市",
-                        key: "address",
+                        slot: "address",
                         align: 'center',
                     },
                     {
                         title: "优惠卷名称",
-                        key: "coupon",
+                        key: "title",
                         align: 'center',
                     },
                     {
                         title: "有效期",
-                        key: "time",
+                        slot: "time",
                         align: 'center',
                     }
                 ],
                 listData: [
-                    {id:'223',name:'一兆韦德核销券赠脉动饮料',address:'浙江省/杭州市',coupon:'满100减50',time:'2019-08-29 -- 2019-09-10'},
-                    {id:'223',name:'阿里巴巴',address:'浙江省/杭州市',coupon:'满100减50',time:'2019-08-29 -- 2019-09-10'}
                 ],
                 selectDataList: [],
             }
@@ -114,6 +115,7 @@
         methods:{
             resetRow(row){
                 // this.copponForm.name = row.name;
+                this.loadTableData(row);
             },
             getProvinceList(formData) {
                 postRequest(`/system/area/province/list`,{}).then(res => {
@@ -159,21 +161,47 @@
             reset(){
 
             },
-            loadTableData(){
-
+            loadTableData(row){
+                var that = this;
+                this.selectDataList = [];
+                this.totalSize = 0;
+                this.listData = [];
+                this.TableLoading = true;
+                let params = {
+                    page:this.current,
+                    size:10,
+                }
+                //商户券列表
+                postRequest(`/coupon/merchant/list`,params
+                ).then(res => {
+                    this.TableLoading = false;
+                    if (res.code === "200") {
+                        this.totalSize = res.data.total;
+                        this.listData = res.data.records||[];
+                        if(row.length){
+                            that.listData.forEach(function(v,i){
+                                row.forEach(function(item,index){
+                                    if(v.templateId == item.id&&v.title == item.title){
+                                        that.selectDataList.push(v);
+                                        v._checked = true;
+                                    }
+                                })
+                            })
+                        }
+                    } else {
+                        this.$Message.error("获取数据失败");
+                    }
+                });
             },
             handleSelect(selection, index) {
                 this.selectDataList = selection;
+                console.log(that.$refs.table);
             },
             changeCurrent(current) {
-                if (this.copponForm.current != current) {
-                    this.copponForm.current = current;
-                    this.loadTableData(this.searchForm);
+                if (this.current != current) {
+                    this.current = current;
+                    this.loadTableData();
                 }
-            },
-            selectBusiness(){
-                console.log(this.selectIndex);
-                this.selectRow = this.listData[this.selectIndex]
             },
             couponClose(){
                 this.$emit('setViewDialogVisible', false)

@@ -56,7 +56,7 @@
                     <FormItem label="参与活动券:">
                         <Button type="dashed" @click="openCoupon">
                             <span v-if="couponObj.length===0">参与活动券</span>
-                            <span v-for="item in couponObj">{{item.name+','}}</span>
+                            <span v-for="item in couponObj">{{item.title +'&nbsp&nbsp'}}</span>
                         </Button>
                     </FormItem>
                     </Col>
@@ -182,7 +182,7 @@
                     name:'',
                     startTime:'',
                     endTime:'',
-                    wardType:'1',
+                    awardType:'1',
                     type:'1'
                 },
                 options2:{
@@ -195,8 +195,8 @@
                         return date.valueOf() < Date.now()-1000*60*60*24;
                     }
                 },
-                JawardRuleDtos:[{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'',couponType:'',awardName:''}],
-                UawardRuleDtos:[{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'',couponType:'',awardName:''}],
+                JawardRuleDtos:[{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'1',couponType:'',awardName:''}],
+                UawardRuleDtos:[{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'2',couponType:'',awardName:''}],
                 ruleValidate: {}
             }
         },
@@ -258,17 +258,17 @@
                             var data = res.data;
                             this.modal.name = data.name;
                             this.modal.startTime = data.startTime;
-                            this.modal.wardType = data.wardType.toString();
+                            this.modal.wardType = data.awardType.toString();
                             this.modal.endTime = data.endTime;
                             this.modal.type = '2';
-                            this.modal.coupons = data.coupons;
+                            this.couponObj = data.coupons;
                             this.modal.status = data.status;
-                            if(data.wardType=='1'){
+                            if(data.awardType=='1'){
                                 this.JawardRuleDtos = data.awardRuleVos;
-                                this.UawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'',couponType:'',awardName:''}];
-                            }else if(data.wardType=='2'){
+                                this.UawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'1',couponType:'',awardName:''}];
+                            }else if(data.awardType=='2'){
                                 this.UawardRuleDtos = data.awardRuleVos;
-                                this.JawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'',couponType:'',awardName:''}];
+                                this.JawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'2',couponType:'',awardName:''}];
                             }
                         } else {
                             this.$Message.error(res.msg);
@@ -282,17 +282,21 @@
                     this.modal.endTime = '';
                     this.modal.type = '1';
                     this.couponObj = [];
-                    this.JawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'',couponType:'',awardName:''}];
-                    this.UawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'',couponType:'',awardName:''}];
+                    this.JawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'1',couponType:'',awardName:''}];
+                    this.UawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'2',couponType:'',awardName:''}];
                 }
             },
             openCoupon(){
                 this.couponViewDialogModal = true;
+                this.$nextTick(() => {
+                    this.$refs['couponModal'].resetRow(this.couponObj);
+                })
             },
             selectCoupon(e){
                 this.couponViewDialogModal = false;
-                this.couponObj = e;
-
+                if(e){
+                    this.couponObj = e;
+                }
             },
             openVolume(item){
                 this.selectActiveVolumeModal = true;
@@ -304,10 +308,10 @@
                 this.selectActiveVolumeModal = false;
             },
             addJList(){
-                this.JawardRuleDtos.push({verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'',couponType:'',awardName:''});
+                this.JawardRuleDtos.push({verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'1',couponType:'',awardName:''});
             },
             addUList(){
-                this.UawardRuleDtos.push({verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'',couponType:'',awardName:''});
+                this.UawardRuleDtos.push({verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'2',couponType:'',awardName:''});
             },
             reduce(list,index){
                 list.splice(index,1);
@@ -326,7 +330,7 @@
                 }
                 let couponIds = [];
                 this.couponObj.forEach(function(v,i){
-                    couponIds.push(v.id);
+                    couponIds.push(v.templateId);
                 });
                     params.couponIds = couponIds;
                 if(this.modal.wardType=='1'){

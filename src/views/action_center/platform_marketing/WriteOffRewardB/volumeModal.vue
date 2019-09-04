@@ -35,7 +35,7 @@
                                 <Row>
                                     <RadioGroup v-model="selectIndex1" @on-change="selectBusiness(1)" style="width: 100%;">
                                         <Table
-                                                :loading="TableLoading"
+                                                :loading="TableLoading1"
                                                 border
                                                 :columns="tableColumns"
                                                 :data="listData1"
@@ -46,18 +46,21 @@
                                             <template slot-scope="{ row,index }" slot="action">
                                                 <Radio :label="index"><span></span></Radio>
                                             </template>
+                                            <template slot-scope="{ row,index }" slot="address">
+                                                <div>{{row.province+'/'+row.city}}</div>
+                                            </template>
                                         </Table>
                                     </RadioGroup>
                                 </Row>
                                 <!-- 分页 -->
                                 <Row type="flex" justify="end" class="page">
                                     <Page
-                                            :total="totalSize"
+                                            :total="totalSize1"
                                             show-total
                                             show-elevator
-                                            @on-change="changeCurrent"
+                                            @on-change="changeCurrent1"
                                             style="float: right"
-                                            :current.sync="current"
+                                            :current.sync="current1"
                                     ></Page>
                                 </Row>
                             </Card>
@@ -91,7 +94,7 @@
                             <Row>
                                 <RadioGroup v-model="selectIndex2" @on-change="selectBusiness(2)" style="width: 100%;">
                                     <Table
-                                            :loading="TableLoading"
+                                            :loading="TableLoading2"
                                             border
                                             :columns="tableColumns"
                                             :data="listData2"
@@ -102,18 +105,21 @@
                                         <template slot-scope="{ row,index }" slot="action">
                                             <Radio :label="index"><span></span></Radio>
                                         </template>
+                                        <template slot-scope="{ row,index }" slot="address">
+                                            <div>{{row.province+'/'+row.city}}</div>
+                                        </template>
                                     </Table>
                                 </RadioGroup>
                             </Row>
                             <!-- 分页 -->
                             <Row type="flex" justify="end" class="page">
                                 <Page
-                                        :total="totalSize"
+                                        :total="totalSize2"
                                         show-total
                                         show-elevator
-                                        @on-change="changeCurrent"
+                                        @on-change="changeCurrent2"
                                         style="float: right"
-                                        :current.sync="current"
+                                        :current.sync="current2"
                                 ></Page>
                             </Row>
                         </Card>
@@ -137,21 +143,23 @@
         },
         data(){
           return{
-              TableLoading:'',
+              TableLoading1:'',
+              TableLoading2:'',
               volumeForm:{
                   name:'',
-
               },
               volumeObj:{},
               addressData:[],
-              totalSize: 0,
-              current: 1,
+              totalSize1: 0,
+              totalSize2: 0,
+              current1: 1,
+              current2: 1,
               selectIndex1:'',
               selectIndex2:'',
               tableColumns: [
                   {
                       title: "操作",
-                      width: 60,
+                      width: 80,
                       align: "center",
                       slot: "action",
                       fixed: "left"
@@ -159,49 +167,27 @@
                   {
                       title: "商户名称",
                       width: 220,
-                      key: "name"
+                      key: "merchantName"
                   },
                   {
                       title: "省/市",
                       width: 200,
-                      key: "type"
+                      slot: "address"
                   },
                   {
                       title: "优惠卷名称",
                       width: 200,
                       align: "center",
-                      key: "jName",
+                      key: "title",
                   },
                   {
                       title: "有效期",
                       width: 200,
-                      key: "time"
+                      key: "templateId"
                   }
               ],
-              listData1: [
-                  {name:'一兆韦德核销券赠脉动饮料1',
-                      id:'1234',
-                      type:'浙江/杭州',
-                      time:'2019-08-03-- 2019-08-15',
-                      jName:'满100减20'},
-                  {name:'动饮料1',
-                      id:'1234',
-                      type:'浙江/杭州',
-                      time:'2019-08-03-- 2019-08-15',
-                      jName:'满100减20'},
-              ],
-              listData2: [
-                  {name:'一兆韦德核销券赠脉动饮2',
-                      type:'浙江/杭州',
-                      id:'1234',
-                      time:'2019-08-03-- 2019-08-15',
-                      jName:'满100减20'},
-                  {name:'动饮料2',
-                      type:'浙江/杭州',
-                      id:'1234',
-                      time:'2019-08-03-- 2019-08-15',
-                      jName:'满100减20'},
-              ],
+              listData1: [],
+              listData2: [],
               selectDataList: [],
           }
         },
@@ -213,6 +199,8 @@
                 console.log(123);
                 this.volumeObj = item;
                 this.TableLoading = false;
+                this.loadTableData1(item);
+                this.loadTableData2(item);
             },
             reset(){
 
@@ -255,16 +243,73 @@
                     }
                 });
             },
-            loadTableData(){
-
+            loadTableData1(item){
+                this.totalSize1 = 0;
+                this.listData1 = [];
+                this.TableLoading1 = true;
+                let params = {
+                    page:this.current1,
+                    size:10,
+                }
+                //商户券列表
+                postRequest(`/coupon/superMarket/list?pageNum=${this.current1}&pageSize=10`,params
+                ).then(res => {
+                    this.TableLoading1 = false;
+                    if (res.code === "200") {
+                        this.totalSize1 = res.data.total;
+                        this.listData1 = res.data.records;
+                        if(item&&item.awardAmount){
+                            res.data.records.forEach(function(v,i){
+                                if(v.templateId ===item.awardAmount){
+                                    that.selectIndex1 = i;
+                                }
+                            })
+                        }
+                    } else {
+                        this.$Message.error("获取数据失败");
+                    }
+                });
+            },
+            loadTableData2(item){
+                this.totalSize2 = 0;
+                this.listData2 = [];
+                this.TableLoading2 = true;
+                let params = {
+                    page:this.current2,
+                    size:10,
+                }
+                //商超券列表
+                postRequest(`/coupon/merchant/list?pageNum=${this.current2}&pageSize=10`,params
+                ).then(res => {
+                    this.TableLoading2 = false;
+                    if (res.code === "200") {
+                        this.totalSize2 = res.data.total;
+                        this.listData2 = res.data.records;
+                        if(item&&item.awardAmount){
+                            res.data.records.forEach(function(v,i){
+                                if(v.templateId === item.awardAmount){
+                                    that.selectIndex2 = i;
+                                }
+                            })
+                        }
+                    } else {
+                        this.$Message.error("获取数据失败");
+                    }
+                });
             },
             handleSelect(selection, index) {
                 this.selectDataList = selection;
             },
-            changeCurrent(current) {
-                if (this.volumeForm.current != current) {
-                    this.volumeForm.current = current;
-                    this.loadTableData(this.searchForm);
+            changeCurrent1(current) {
+                if (this.current1 != current) {
+                    this.current1 = current;
+                    this.loadTableData1();
+                }
+            },
+            changeCurrent2(current) {
+                if (this.current2 != current) {
+                    this.current2 = current;
+                    this.loadTableData2();
                 }
             },
             selectBusiness(index){
@@ -272,16 +317,16 @@
                 case 1:
                     this.selectIndex2 = '';
                     this.volumeObj.JObj = this.listData1[this.selectIndex1];
-                    this.volumeObj.awardName = this.listData1[this.selectIndex1].name;
+                    this.volumeObj.awardName = this.listData1[this.selectIndex1].title;
                     this.volumeObj.couponType = '1';
-                    this.volumeObj.awardAmount = this.listData1[this.selectIndex1].id;
+                    this.volumeObj.awardAmount = this.listData1[this.selectIndex1].templateId;
                     break;
                 case 2:
                     this.selectIndex1 = '';
                     this.volumeObj.JObj = this.listData2[this.selectIndex2];
-                    this.volumeObj.awardName = this.listData1[this.selectIndex1].name;
-                    this.volumeObj.couponType = '1';
-                    this.volumeObj.awardAmount = this.listData1[this.selectIndex1].id;
+                    this.volumeObj.awardName = this.listData1[this.selectIndex1].title;
+                    this.volumeObj.couponType = '2';
+                    this.volumeObj.awardAmount = this.listData1[this.selectIndex1].templateId;
                     break;
                 }
             },
