@@ -91,15 +91,13 @@
                         align: 'center',
                     }
                 ],
-                listData: [
-                    {name:'一兆韦德核销券赠脉动饮料'},
-                    {name:'阿里巴巴'}
-                ],
+                listData: [],
                 selectDataList: [],
             }
         },
         methods:{
-            resetRow(){
+            resetRow(row){
+                this.selectRow = row;
                 this.loadTableData()
             },
             search(){
@@ -123,13 +121,14 @@
                 this.selectRow = this.listData[this.selectIndex]
             },
             brandClose(){
-                this.$emit('setViewDialogVisible', false)
+                this.$emit('setViewDialogVisible',this.selectRow)
             },
             brandSave(){
                 if(!this.selectIndex&&this.selectIndex!==0){
                     this.$Message.error('请选择品牌');
                     return;
                 }
+                debugger
                 this.$emit('setViewDialogVisible', this.selectRow)
             },
             loadTableData(){
@@ -144,10 +143,12 @@
                 ).then(res => {
                     this.TableLoading=false;
                     if (res.code === "200") {
+                        debugger
                         this.totalSize = res.data.total;
                         this.listData = res.data.records;
                         if(this.selectRow.id){
                             res.data.records.forEach(function(v,i){
+                                console.log(111);
                                 if(v.id === that.selectRow.id){
                                     that.selectIndex = i;
                                 }

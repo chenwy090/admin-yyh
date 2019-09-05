@@ -56,7 +56,10 @@
                     <FormItem label="参与活动券:">
                         <Button type="dashed" @click="openCoupon">
                             <span v-if="couponObj.length===0">参与活动券</span>
-                            <span v-for="item in couponObj">{{item.title +'&nbsp&nbsp'}}</span>
+                            <Button v-for="(item,index) in couponObj" class="coupon-item">
+                                {{item.title +'&nbsp&nbsp'}}
+                                <Icon @click="reMoveCoupon(index)" type="ios-close"/>
+                            </Button>
                         </Button>
                     </FormItem>
                     </Col>
@@ -97,7 +100,7 @@
                                         <span class="colof-a2">(后面文本框的数值不填写，表示无限大)</span>
                                     </div>
                                     <div style="margin: 10px 0;">
-                                        <Button type="dashed" @click="openVolume(item)">{{item.awardName?item.awardName:'请选择优惠券'}}</Button>
+                                        <Button type="dashed" @click="openVolume(item)">{{item.awardName||item.title?item.awardName||item.title:'请选择优惠券'}}</Button>
                                     </div>
                                     <div class="reduce-btn">
                                         <Button type="error" v-if="JawardRuleDtos.length>1" shape="circle" icon="ios-trash" @click="reduce(JawardRuleDtos,index)"></Button>
@@ -162,7 +165,7 @@
 </template>
 
 <script>
-    import { postRequest, getRequest,getSyncRequest,uploadformData } from "@/libs/axios";
+    import { postRequest, getRequest,getSyncRequest } from "@/libs/axios";
     import volumeModal from "./volumeModal"
     import couponModal from "./couponModalB"
     export default {
@@ -249,6 +252,16 @@
                 // this.awardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'',couponType:'',awardName:''}];
             },
             resetRow(row){
+                this.options2={
+                    disabledDate(date){
+                        return date.valueOf() < Date.now()-1000*60*60*24;
+                    }
+                };
+                this.options1={
+                    disabledDate(date){
+                        return date.valueOf() < Date.now()-1000*60*60*24;
+                    }
+                };
                 if(row){
                     this.titleName = "编辑";
                     this.modal.id= row.id;
@@ -295,7 +308,15 @@
             selectCoupon(e){
                 this.couponViewDialogModal = false;
                 if(e){
-                    this.couponObj = e;
+                    var that = this;
+                    e.forEach(function (v,i) {
+                        that.couponObj.forEach(function(value,index){
+                            if(v.templateId === (value.templateId||value.id)){
+                                e.splice(i,1);
+                            }
+                        })
+                    })
+                    this.couponObj = this.couponObj.concat(e);
                 }
             },
             openVolume(item){
@@ -316,6 +337,9 @@
             reduce(list,index){
                 list.splice(index,1);
             },
+            reMoveCoupon(index){
+                this.couponObj.splice(index,1);
+            },
             ok(){
 
                 // /merchant/activity/award/add/activity
@@ -326,13 +350,17 @@
                     "name": this.modal.name,
                     "startTime": this.modal.startTime,
                     "type": this.modal.type,
-                    "wardType": this.modal.wardType
+                    "wardType": this.modal.wardType,
+                    type:2
                 }
                 let couponIds = [];
                 this.couponObj.forEach(function(v,i){
                     couponIds.push(v.templateId);
                 });
-                    params.couponIds = couponIds;
+                params.couponIds = couponIds;
+                if(!this.modal.wardType){
+                    this.$Message.error('请选择赠送类型');
+                }
                 if(this.modal.wardType=='1'){
                     params.awardRuleDtos = this.JawardRuleDtos;
                 }else if(this.modal.wardType=='2'){
@@ -350,7 +378,7 @@
                             }
                         });
                     }else{
-                        uploadformData(`/merchant/activity/award/update/activity`,params).then(res => {
+                        postRequest(`/merchant/activity/award/update/activity`,params).then(res => {
                             if (res.code === "200") {
                                 this.$Message.success("编辑成功");
                                 this.$emit('setViewDialogVisible', false)
@@ -406,5 +434,8 @@
         padding: 10px;
         margin: 10px 0;
         position: relative;
+    }
+    .coupon-item{
+
     }
 </style>

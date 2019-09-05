@@ -120,8 +120,6 @@
                 current: 1,
                 listData: [],
                 selectDataList: [],
-                auditData:{},
-                auditFlag: 0,
                 tableColumns: [
                     {
                         title: "操作",
@@ -170,8 +168,9 @@
                 searchForm: {
                     awardType: "",
                     name: "",
-                    page: 0,
+                    page: 1,
                     size: 10,
+                    type:2,
                     status:""
                 },
                 AddViewDialogVisible:false,
@@ -179,10 +178,10 @@
             }
         },
         created(){
-            console.log(2);
+            // console.log(2);
         },
         activated(){
-            console.log(22);
+            this.loadTableData();
         },
         methods:{
             search() {
@@ -233,7 +232,7 @@
                     title: '确认删除',
                     content: '<p>您确定要删除该条活动吗？</p>',
                     onOk: () => {
-                        postRequest(`/merchant/activity/award/activity/status`,{id:row.id,status:0}
+                        postRequest(`/merchant/activity/award/activity/status`,{id:row.id,status:0,type:2}
                         ).then(res => {
                             this.TableLoading = false;
                             if (res.code === "200") {
@@ -253,7 +252,7 @@
                     content: '<p>您确定要终止该条活动吗？</p>',
                     onOk: () => {
                         // /merchant/activity/award/activity/status
-                        postRequest(`/merchant/activity/award/activity/status`,{id:row.id,status:4}
+                        postRequest(`/merchant/activity/award/activity/status`,{id:row.id,status:4,type:2}
                         ).then(res => {
                             this.TableLoading = false;
                             if (res.code === "200") {
@@ -287,9 +286,6 @@
             close(){
                 this.$emit("close",false);
             }
-        },
-        created(){
-            this.loadTableData();
         }
     }
 </script>

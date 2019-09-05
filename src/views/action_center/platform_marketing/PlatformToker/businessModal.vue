@@ -79,20 +79,7 @@
                 addressValue:[],
                 selectRow:'',
                 selectIndex:"",
-                addressData:[
-                    {
-                        value: 'beijing',
-                        label: '北京',
-                        children: [],
-                        loading: false
-                    },
-                    {
-                        value: 'hangzhou',
-                        label: '杭州',
-                        children: [],
-                        loading:false
-                    }
-                ],
+                addressData:[],
                 totalSize: 0,
                 current: 1,
                 tableColumns: [
@@ -114,15 +101,15 @@
                         align: 'center',
                     }
                 ],
-                listData: [
-                    {name:'一兆韦德核销券赠脉动饮料',address:'浙江省/杭州市',coupon:'满100减50',time:'2019-08-29 -- 2019-09-10'},
-                    {name:'阿里巴巴',address:'浙江省/杭州市',coupon:'满100减50',time:'2019-08-29 -- 2019-09-10'}
-                ],
+                listData: [],
                 selectDataList: [],
             }
         },
         methods:{
-            resetRow(){
+            resetRow(row){
+                this.selectRow = row;
+                this.businessModal.name = '';
+                this.addressData = [];
                 this.getProvinceList();
                 this.loadTableData();
             },
@@ -152,7 +139,7 @@
                         if(item.children.length){
                             item.children.forEach(function(v){
                                 v.label = v.shortName;
-                                v.value = v.provinceCode
+                                v.value = v.cityCode
                             })
                         }
                         callback();
@@ -211,7 +198,7 @@
                 this.selectRow = this.listData[this.selectIndex]
             },
             businessClose(){
-                this.$emit('setViewDialogVisible', false)
+                this.$emit('setViewDialogVisible',this.selectRow)
             },
             businessSave(){
                 if(!this.selectIndex&&this.selectIndex!==0){

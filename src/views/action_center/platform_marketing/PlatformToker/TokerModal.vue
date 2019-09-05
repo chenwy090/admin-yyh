@@ -245,8 +245,9 @@
                     }
                     params.cityCode = this.selectBusinessObj.cityCode;
                     params.cityName = this.selectBusinessObj.city;
-                    params.couponId = this.selectCouponObj.campId;
+                    params.couponId = this.selectCouponObj.templateId;
                     params.couponType = this.selectCouponObj.couponType;
+                    params.couponName = this.selectCouponObj.title;
                     params.expandTime = this.modal.tokerDate+":00";
                     params.expandType = '2';
                     params.maxPushCount = this.modal.uNum;
@@ -271,6 +272,7 @@
                     // params.cityName = this.selectBrandObj.cityName;
                     params.couponId = this.selectCouponObj.campId;
                     params.couponType = this.selectCouponObj.couponType;
+                    params.couponName = this.selectCouponObj.name;
                     params.expandTime = this.modal.tokerDate+":00";
                     params.expandType = '2';
                     params.maxPushCount = this.modal.uNum;

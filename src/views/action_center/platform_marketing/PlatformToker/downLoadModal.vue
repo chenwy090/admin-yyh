@@ -9,19 +9,32 @@
                 <Row class="padding-left-12">
                     <Col span="24">
                     <FormItem label="商户名称：">
-                        <Select v-model="modal.type" style="width:150px" placeholder="请选择商户类型">
+                        <Select v-model="modal.expandType" style="width:150px" placeholder="请选择商户类型">
                             <Option v-for="item in typeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
                         </Select>
                         <div style="width: 2%;display: inline-block"></div>
-                        <Button v-if="modal.type==1" type="dashed" :disabled="!modal.type"  style="min-width: 150px" @click="businessVolumeModal = true;">{{selectBusinessObj&&selectBusinessObj.name?selectBusinessObj.name:'请选择商户名称'}}</Button>
-                        <Button v-if="modal.type==2" type="dashed" :disabled="!modal.type"  style="min-width: 150px" @click="brandVolumeModal = true;">{{selectBrandObj&&selectBrandObj.name?selectBrandObj.name:'请选择品牌名称'}}</Button>
+                        <Button v-if="modal.expandType==1" type="dashed" :disabled="!modal.expandType"  style="min-width: 150px" @click="openBusiness">
+                            <span v-if="!selectBusinessObj.name">请选择商户名称</span>
+                            <span v-if="selectBusinessObj.name">{{selectBusinessObj.name}}</span>
+                        </Button>
+                        <Button v-if="modal.expandType==2" type="dashed" :disabled="!modal.expandType"  style="min-width: 150px" @click="openBrand">
+                            <span v-if="!selectBrandObj.name">请选择品牌名称</span>
+                            <span v-if="selectBrandObj.name">{{selectBrandObj.name}}</span>
+                        </Button>
+                    </FormItem>
+                    </Col>
+                </Row>
+                <Row v-if="modal.expandType==2&&brandList.length">
+                    <Col span="24">
+                    <FormItem label="">
+                        <div v-for="item in brandList">{{item.merchantName}}</div>
                     </FormItem>
                     </Col>
                 </Row>
                 <Row class="padding-left-12">
                     <Col span="18">
                     <FormItem label="套餐：" span="24">
-                        <Select v-model="modal.status" style="width:150px">
+                        <Select v-model="modal.merchantType" style="width:150px">
                             <Option v-for="item in packageList" :value="item.value" :key="item.value">{{ item.label }}</Option>
                         </Select>
                     </FormItem>
@@ -31,7 +44,7 @@
                     <Col span="18">
                     <FormItem label="拓客时间：">
                         <DatePicker
-                                :value="modal.applyDateRangeOpen"
+                                :value="modal.expandTimeStart"
                                 type="date"
                                 style="width: 150px"
                                 :options="options1"
@@ -39,7 +52,7 @@
                         ></DatePicker>
                         <div style="width: 2%;display: inline-block"></div>
                         <DatePicker
-                                :value="modal.applyDateRangeClose"
+                                :value="modal.expandTimeEnd"
                                 type="date"
                                 :options="options2"
                                 style="width: 150px"
@@ -64,6 +77,7 @@
 </template>
 
 <script>
+    import { postRequest,downloadSteam} from "@/libs/axios";
     import brandModal from "./brandModal";
     import businessModal from "./businessModal"
     export default {
@@ -79,37 +93,19 @@
                 timeList1:24,
                 timeList2:60,
                 typeList:[{value:'1',label:'本地商户(单店)'},{value:'2',label:'本地商户(多店)'}],
-                statusList:[{value:0,label:'未开始'},{value:1,label:'进行中'},{value:2,label:'已终止'},{value:3,label:'已结束'}],
-                packageList:[{value:0,label:'全部'},{value:1,label:'精准拓客'},{value:2,label:'平台拓客'}],
+                statusList:[{value:'1',label:'未生效'},{value:2,label:'已生效'},{value:3,label:'已完成'}],
+                packageList:[{value:'',label:'全部'},{value:1,label:'精准拓客'},{value:2,label:'平台拓客'}],
                 modal:{
-                    type:'1',
-                    name:'',
-                    date:new Date(Date.now()+2*1000*60*60*24),
-                    applyDateRangeOpen:'',
-                    applyDateRangeClose:'',
-                    active:'',
-                    type:'核销赠U贝',
-                    uNum:0,
-                    mark:'',
-                    static:'0',
+                    expandType:'1',
+                    expandTimeStart:'',
+                    expandTimeEnd:'',
+                    static:'',
                 },
+                brandList:[],
                 options1:{},
                 options2:{},
                 selectBusinessObj:{},
                 selectBrandObj:{},
-                brandList:[
-                    {name:'aaaa',num:0},
-                    {name:'bbbb',num:0},
-                    {name:'cccc',num:0},
-                    {name:'dddd',num:0},
-                ],
-                oldBrandList:[
-                    {name:'aaaa',num:0},
-                    {name:'bbbb',num:0},
-                    {name:'cccc',num:0},
-                    {name:'dddd',num:0},
-                ],
-                selectCouponObj:{},
                 ruleValidate:{
                     requiredType: [{ required: true, message: '', trigger: 'blur' }]
                 }
@@ -119,7 +115,7 @@
             changeDateTime(datetime, index) {
                 switch (index) {
                 case 1:
-                    this.modal.applyDateRangeOpen = datetime;
+                    this.modal.expandTimeStart = datetime;
                     this.options2 = {
                         disabledDate(date){
                             return date.valueOf() <  new Date(datetime)-1000*60*60*24;
@@ -127,7 +123,7 @@
                     }
                     break;
                 case 2:
-                    this.modal.applyDateRangeClose = datetime;
+                    this.modal.expandTimeEnd = datetime;
                     this.options1 = {
                         disabledDate(date){
                             return date.valueOf() > new Date(datetime);
@@ -136,19 +132,105 @@
                     break;
                 }
             },
-            resetRow(row){
-
+            resetRow(){
+                this.expandType='1';
+                this.expandTimeStart='';
+                this.expandTimeEnd='';
+                this.static='';
+                this.brandList=[];
+                this.selectBusinessObj = {};
+                this.selectBrandObj = {};
+            },
+            getPackageData(id,type){
+                postRequest(`/merchant/merchantPackageInfo/getPackage`,{id:id,type: type}).then(res => {
+                    if (res.code === "200") {
+                        console.log(res);
+                        this.upData = res.data;
+                        if(this.modal.expandType==2){
+                            this.brandList = res.data.merchantReqList||[];
+                        }
+                    } else {
+                        this.$Message.error(res.msg);
+                        this.brandList = [];
+                    }
+                });
+            },
+            openBusiness(e){
+                this.businessVolumeModal = true;
+                this.$nextTick(() => {
+                    this.$refs['businessModal'].resetRow(this.selectBusinessObj);
+                })
             },
             selectBusiness(e){
                 this.selectBusinessObj = e;
                 this.businessVolumeModal = false;
+                if(e&&e.merchantId){
+                    this.getPackageData(e.merchantId,1);
+                }
+            },
+            openBrand(e){
+                this.brandVolumeModal = true;
+                this.$nextTick(() => {
+                    this.$refs['brandModal'].resetRow(this.selectBrandObj);
+                })
             },
             selectBrand(e){
+                debugger
                 this.selectBrandObj = e;
                 this.brandVolumeModal = false;
+                if(e&&e.id){
+                    this.getPackageData(e.id,2);
+                }
             },
             downLoad(){
-                this.$emit('setViewDialogVisible', false)
+                if(!this.modal.expandType){
+                    this.$Message.error("请选择商户类型");
+                    return
+                }
+                if(this.modal.expandType=='1'&&!this.selectBusinessObj.name){
+                    this.$Message.error("请选择商户名称");
+                    return
+                }
+                if(this.modal.expandType=='2'&&!this.selectBrandObj.name){
+                    this.$Message.error("请选择品牌名称");
+                    return
+                }
+                let params = {
+                    expandTimeEnd :this.modal.expandTimeEnd,
+                    expandTimeStart :this.modal.expandTimeStart,
+                    expandType :this.modal.expandType,
+                    merchantName :this.modal.merchantName,
+                    merchantType :this.modal.merchantType,
+                    status :this.modal.status,
+                }
+                params.merchantIds = [];
+                if(this.modal.expandType =='1'){
+                    params.merchantName = this.selectBusinessObj.name
+                }else if(this.modal.expandType =='2'){
+                    params.merchantName = this.selectBrandObj.name
+                }
+                this.brandList.forEach(function(v,i){
+                    params.merchantIds.push(v.merchantId);
+                })
+                downloadSteam(`/merchant/platform/expand/download`,params).then(res => {
+                    const content = res.data;
+                    let fileName = res.headers["filename"];
+                    const blob = new Blob([content], { type: "application/vnd.ms-excel" });
+                    if ("download" in document.createElement("a")) {
+                        // 非IE下载
+                        const elink = document.createElement("a");
+                        elink.download = decodeURI(fileName);
+                        elink.style.display = "none";
+                        elink.href = URL.createObjectURL(blob);
+                        document.body.appendChild(elink);
+                        elink.click();
+                        URL.revokeObjectURL(elink.href); // 释放URL 对象
+                        document.body.removeChild(elink);
+                    } else {
+                        // IE10+下载
+                        navigator.msSaveBlob(blob, fileName);
+                    }
+                });
             },
             close() {
                 this.$emit('setViewDialogVisible', false)

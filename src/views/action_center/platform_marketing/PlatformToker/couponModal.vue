@@ -8,15 +8,15 @@
         <div>
             <div>
                 <Card :bordered="false" style="margin-bottom:2px">
-                    <Form ref="copponForm" label-position="right" :label-width="80" :model="copponForm" inline>
+                    <Form ref="couponForm" label-position="right" :label-width="80" :model="couponForm" inline>
                         <FormItem label="商家名称" span="24" style="width:45%">
-                            <Input v-model="copponForm.name" placeholder=" 请填写商家名称" :maxlength=20 />
+                            <Input v-model="couponForm.merchantName" placeholder=" 请填写商家名称" :maxlength=20 />
                         </FormItem>
                         <FormItem label="省/市" span="24"  style="width:50%">
-                            <Cascader :data="addressData" :load-data="addressLoad"></Cascader>
+                            <Cascader :data="addressData" :load-data="addressLoad" v-model="addressValue"></Cascader>
                         </FormItem>
                         <FormItem label="优惠卷名称" span="24" style="width:25%">
-                            <Input v-model="copponForm.name" placeholder=" 请填写优惠卷名称" :maxlength=20 />
+                            <Input v-model="couponForm.couponName" placeholder=" 请填写优惠卷名称" :maxlength=20 />
                         </FormItem>
                         <FormItem span="24" :label-width="1" style="float: right;">
                             <Button type="primary" class="submit" icon="ios-search" @click="search('searchForm')" style="margin-right: 5px">搜索</Button>
@@ -39,8 +39,11 @@
                             <template slot-scope="{ row,index }" slot="action">
                                 <Radio :label="index"><span></span></Radio>
                             </template>
-                            <template slot-scope="{ row }" slot="activeTime">
-                                <div>{{row.activeTime}}</div>
+                            <template slot-scope="{ row,index }" slot="address">
+                                <div>{{row.province+'/'+row.city}}</div>
+                            </template>
+                            <template slot-scope="{ row,index }" slot="timer">
+                                <div>{{row.useStartTime+' -- '+row.useEndTime}}</div>
                             </template>
                         </Table>
                     </RadioGroup>
@@ -75,28 +78,15 @@
         data(){
             return{
                 TableLoading:'',
-                copponForm:{
-                    name:'',
-
+                couponForm:{
+                    merchantName:'',
+                    couponName:''
                 },
                 totalSize: 0,
                 current: 1,
                 selectIndex:'',
                 selectRow:{},
-                addressData:[
-                    {
-                        value: 'beijing',
-                        label: '北京',
-                        children: [],
-                        loading: false
-                    },
-                    {
-                        value: 'hangzhou',
-                        label: '杭州',
-                        children: [],
-                        loading:false
-                    }
-                ],
+                addressData:[],
                 tableColumns: [
                     {
                         title: "操作",
@@ -107,32 +97,35 @@
                     },
                     {
                         title: "商家名称",
-                        key: "name",
+                        key: "merchantName",
                         align: 'center',
                     },
                     {
                         title: "省/市",
-                        key: "address",
+                        slot: "address",
                         align: 'center',
                     },
                     {
                         title: "优惠卷名称",
-                        key: "coupon",
+                        key: "title",
                         align: 'center',
                     },
                     {
                         title: "有效期",
-                        key: "time",
+                        slot: "time",
                         align: 'center',
                     }
                 ],
                 listData: [],
                 selectDataList: [],
+                addressValue:[]
             }
         },
         methods:{
             resetRow(row,coupon){
-                this.copponForm.name = row.name;
+                this.couponForm.couponName = row.couponName;
+                this.couponForm.merchantName = row.merchantName;
+                this.addressValue = [];
                 this.selectRow = coupon;
                 this.loadTableData();
             },
@@ -174,27 +167,40 @@
                 this.loadTableData();
             },
             reset(){
-
+                this.couponForm.couponName = row.couponName;
+                this.couponForm.merchantName = row.merchantName;
+                this.addressValue = [];
             },
-            loadTableData(){
-                postRequest(
-                    "/campagin/list?pageNum=" + this.current + "&pageSize=" + '10',
-                    // this.copponForm
-                    {}
+            loadTableData(row){
+                var that = this;
+                this.selectDataList = [];
+                this.totalSize = 0;
+                this.listData = [];
+                this.TableLoading = true;
+                let params = {
+                    page:this.current,
+                    size:10,
+                    cityCode:this.addressValue[1]||'',
+                    couponName:this.couponForm.couponName,
+                    merchantName:this.couponForm.merchantName,
+                    provinceCode:this.addressValue[0]||'',
+                }
+                //商户券列表
+                postRequest(`/coupon/merchant/list`,params
                 ).then(res => {
                     this.TableLoading = false;
-                    if (res.code == 200) {
+                    if (res.code === "200") {
                         this.totalSize = res.data.total;
-                        this.listData = res.data.records;
-                        if(this.selectRow.id){
-                            res.data.records.forEach(function(v,i){
-                                if(v.campId === that.selectRow.campId){
+                        this.listData = res.data.records||[];
+                        if(this.selectRow.templateId){
+                            this.listData.forEach(function(v,i){
+                                if(v.templateId == this.selectRow.templateId){
                                     that.selectIndex = i;
                                 }
                             })
                         }
                     } else {
-                        this.msgErr(res.msg);
+                        this.$Message.error("获取数据失败");
                     }
                 });
             },
@@ -202,8 +208,8 @@
                 this.selectDataList = selection;
             },
             changeCurrent(current) {
-                if (this.copponForm.current != current) {
-                    this.copponForm.current = current;
+                if (this.couponForm.current != current) {
+                    this.couponForm.current = current;
                     this.loadTableData();
                 }
             },

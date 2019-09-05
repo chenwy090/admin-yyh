@@ -210,7 +210,7 @@
                         if(item.children.length){
                             item.children.forEach(function(v){
                                 v.label = v.shortName;
-                                v.value = v.provinceCode
+                                v.value = v.cityCode
                             })
                         }
                         callback();

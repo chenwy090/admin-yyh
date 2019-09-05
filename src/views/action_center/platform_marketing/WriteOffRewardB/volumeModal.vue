@@ -15,7 +15,7 @@
                                         <Input v-model="volumeForm.name" placeholder=" 请填写商户名称" :maxlength=20 />
                                     </FormItem>
                                     <FormItem label="省/市" span="24"  style="width:23%">
-                                        <Cascader :data="addressData" :load-data="addressLoad"></Cascader>
+                                        <Cascader :data="addressData" :load-data="addressLoad" v-model="addressValue"></Cascader>
                                     </FormItem>
                                     <FormItem label="优惠卷名称" span="24"  style="width:23%">
                                         <!--<Select v-model="searchForm.status" style="width:100%">-->
@@ -24,7 +24,7 @@
                                         <Input v-model="volumeForm.name" placeholder="请填写优惠卷名称" :maxlength=20 />
                                     </FormItem>
                                     <FormItem span="24" :label-width="1" style="width:23%">
-                                        <Button type="primary" class="submit" icon="ios-search" @click="search('searchForm')" style="margin-right: 5px">搜索</Button>
+                                        <Button type="primary" class="submit" icon="ios-search" @click="search(1)" style="margin-right: 5px">搜索</Button>
                                         <!--<Button type="primary" icon="ios-search" @click="search">搜索</Button>-->
                                         <Button icon="md-refresh" @click="reset">重置</Button>
                                     </FormItem>
@@ -48,6 +48,9 @@
                                             </template>
                                             <template slot-scope="{ row,index }" slot="address">
                                                 <div>{{row.province+'/'+row.city}}</div>
+                                            </template>
+                                            <template slot-scope="{ row,index }" slot="timer">
+                                                <div>{{row.startDate+'/'+row.endDate}}</div>
                                             </template>
                                         </Table>
                                     </RadioGroup>
@@ -74,7 +77,7 @@
                                     <Input v-model="volumeForm.name" placeholder=" 请填写商户名称" :maxlength=20 />
                                 </FormItem>
                                 <FormItem label="省/市" span="24"  style="width:23%">
-                                    <Cascader :data="addressData" :load-data="addressLoad"></Cascader>
+                                    <Cascader :data="addressData" :load-data="addressLoad" v-model="addressValue"></Cascader>
                                 </FormItem>
                                 <FormItem label="优惠卷名称" span="24"  style="width:23%">
                                     <!--<Select v-model="searchForm.status" style="width:100%">-->
@@ -83,7 +86,7 @@
                                     <Input v-model="volumeForm.name" placeholder="请填写优惠卷名称" :maxlength=20 />
                                 </FormItem>
                                 <FormItem span="24" :label-width="1" style="width:23%">
-                                    <Button type="primary" class="submit" icon="ios-search" @click="search('searchForm')" style="margin-right: 5px">搜索</Button>
+                                    <Button type="primary" class="submit" icon="ios-search" @click="search(2)" style="margin-right: 5px">搜索</Button>
                                     <!--<Button type="primary" icon="ios-search" @click="search">搜索</Button>-->
                                     <Button icon="md-refresh" @click="reset">重置</Button>
                                 </FormItem>
@@ -107,6 +110,9 @@
                                         </template>
                                         <template slot-scope="{ row,index }" slot="address">
                                             <div>{{row.province+'/'+row.city}}</div>
+                                        </template>
+                                        <template slot-scope="{ row,index }" slot="timer">
+                                            <div>{{row.useStartTime+'/'+row.useEndTime}}</div>
                                         </template>
                                     </Table>
                                 </RadioGroup>
@@ -154,6 +160,7 @@
               totalSize2: 0,
               current1: 1,
               current2: 1,
+              addressValue:[],
               selectIndex1:'',
               selectIndex2:'',
               tableColumns: [
@@ -183,7 +190,7 @@
                   {
                       title: "有效期",
                       width: 200,
-                      key: "templateId"
+                      slot: "timer"
                   }
               ],
               listData1: [],
@@ -192,11 +199,20 @@
           }
         },
         methods:{
-            search(){
-                this.loadTableData();
+            search(type){
+                switch (type) {
+                case 1:
+                    this.loadTableData1();
+                    break;
+                case 2:
+                    this.loadTableData2();
+                    break;
+                }
             },
             resetRow(item){
-                console.log(123);
+                this.volumeForm.merchantName = '';
+                this.volumeForm.couponName = '';
+                this.addressValue = [];
                 this.volumeObj = item;
                 this.TableLoading = false;
                 this.loadTableData1(item);
@@ -232,7 +248,7 @@
                         if(item.children.length){
                             item.children.forEach(function(v){
                                 v.label = v.shortName;
-                                v.value = v.provinceCode
+                                v.value = v.cityCode
                             })
                         }
                         callback();
@@ -243,13 +259,20 @@
                     }
                 });
             },
-            loadTableData1(item){
+            loadTableData1(){
+                var that = this;
+                var item = this.volumeObj
                 this.totalSize1 = 0;
                 this.listData1 = [];
                 this.TableLoading1 = true;
+                this.selectIndex1 = '';
                 let params = {
                     page:this.current1,
                     size:10,
+                    cityCode:this.addressValue[1]||'',
+                    couponName:this.volumeForm.couponName,
+                    merchantName:this.volumeForm.merchantName,
+                    provinceCode:this.addressValue[0]||'',
                 }
                 //商户券列表
                 postRequest(`/coupon/superMarket/list?pageNum=${this.current1}&pageSize=10`,params
@@ -260,7 +283,7 @@
                         this.listData1 = res.data.records;
                         if(item&&item.awardAmount){
                             res.data.records.forEach(function(v,i){
-                                if(v.templateId ===item.awardAmount){
+                                if(v.templateId ===(item.awardAmount||item.award)){
                                     that.selectIndex1 = i;
                                 }
                             })
@@ -270,13 +293,20 @@
                     }
                 });
             },
-            loadTableData2(item){
+            loadTableData2(){
+                var that = this;
+                var item = this.volumeObj
                 this.totalSize2 = 0;
                 this.listData2 = [];
                 this.TableLoading2 = true;
+                this.selectIndex2 = '';
                 let params = {
                     page:this.current2,
                     size:10,
+                    cityCode:this.addressValue[1]||'',
+                    couponName:this.volumeForm.couponName,
+                    merchantName:this.volumeForm.merchantName,
+                    provinceCode:this.addressValue[0]||'',
                 }
                 //商超券列表
                 postRequest(`/coupon/merchant/list?pageNum=${this.current2}&pageSize=10`,params
@@ -287,7 +317,7 @@
                         this.listData2 = res.data.records;
                         if(item&&item.awardAmount){
                             res.data.records.forEach(function(v,i){
-                                if(v.templateId === item.awardAmount){
+                                if(v.templateId === (item.awardAmount||item.award)){
                                     that.selectIndex2 = i;
                                 }
                             })
@@ -342,6 +372,9 @@
                 }
                 this.$emit('setViewDialogVisible', this.volumeObj)
             }
+        },
+        created(){
+            this.getProvinceList();
         }
     }
 </script>

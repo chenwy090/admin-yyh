@@ -10,13 +10,13 @@
                 <Card :bordered="false" style="margin-bottom:2px">
                     <Form ref="copponForm" label-position="right" :label-width="80" :model="copponForm" inline>
                         <FormItem label="商家名称" span="24" style="width:45%">
-                            <Input v-model="copponForm.name" placeholder=" 请填写商家名称" :maxlength=20 />
+                            <Input v-model="copponForm.merchantName" placeholder=" 请填写商家名称" :maxlength=20 />
                         </FormItem>
                         <FormItem label="省/市" span="24"  style="width:50%">
-                            <Cascader :data="addressData" :load-data="addressLoad"></Cascader>
+                            <Cascader :data="addressData" :load-data="addressLoad" v-model="addressValue"></Cascader>
                         </FormItem>
                         <FormItem label="优惠卷名称" span="24" style="width:25%">
-                            <Input v-model="copponForm.name" placeholder=" 请填写优惠卷名称" :maxlength=20 />
+                            <Input v-model="copponForm.couponName" placeholder=" 请填写优惠卷名称" :maxlength=20 />
                         </FormItem>
                         <FormItem span="24" :label-width="1" style="float: right;">
                             <Button type="primary" class="submit" icon="ios-search" @click="search('searchForm')" style="margin-right: 5px">搜索</Button>
@@ -35,11 +35,11 @@
                             ref="table"
                             @on-selection-change="handleSelect"
                     >
-                        <template slot-scope="{ row }" slot="time">
-                            <div>{{row.time}}</div>
-                        </template>
                         <template slot-scope="{ row,index }" slot="address">
                             <div>{{row.province+'/'+row.city}}</div>
+                        </template>
+                        <template slot-scope="{ row,index }" slot="timer">
+                            <div>{{row.useStartTime+' -- '+row.useEndTime}}</div>
                         </template>
                     </Table>
                 </Row>
@@ -74,14 +74,15 @@
             return{
                 TableLoading:'',
                 copponForm:{
-                    name:'',
-
+                    merchantName:'',
+                    couponName:'',
                 },
                 totalSize: 0,
                 current: 1,
                 selectIndex:'',
                 selectRow:{},
                 addressData:[],
+                addressValue:[],
                 tableColumns: [
                     {
                         type: 'selection', width: 60, align: 'center'
@@ -114,8 +115,12 @@
         },
         methods:{
             resetRow(row){
+                this.copponForm.couponName = '';
+                this.copponForm.merchantName = '';
+                this.addressValue = [];
                 // this.copponForm.name = row.name;
                 this.loadTableData(row);
+                this.selectDataList = [];
             },
             getProvinceList(formData) {
                 postRequest(`/system/area/province/list`,{}).then(res => {
@@ -144,7 +149,7 @@
                         if(item.children.length){
                             item.children.forEach(function(v){
                                 v.label = v.shortName;
-                                v.value = v.provinceCode
+                                v.value = v.cityCode
                             })
                         }
                         callback();
@@ -159,7 +164,9 @@
                 this.loadTableData();
             },
             reset(){
-
+                this.copponForm.couponName = '';
+                this.copponForm.merchantName = '';
+                this.addressValue = [];
             },
             loadTableData(row){
                 var that = this;
@@ -170,6 +177,10 @@
                 let params = {
                     page:this.current,
                     size:10,
+                    cityCode:this.addressValue[1]||'',
+                    couponName:this.copponForm.couponName,
+                    merchantName:this.copponForm.merchantName,
+                    provinceCode:this.addressValue[0]||'',
                 }
                 //商户券列表
                 postRequest(`/coupon/merchant/list`,params
@@ -178,16 +189,6 @@
                     if (res.code === "200") {
                         this.totalSize = res.data.total;
                         this.listData = res.data.records||[];
-                        if(row.length){
-                            that.listData.forEach(function(v,i){
-                                row.forEach(function(item,index){
-                                    if(v.templateId == item.id&&v.title == item.title){
-                                        that.selectDataList.push(v);
-                                        v._checked = true;
-                                    }
-                                })
-                            })
-                        }
                     } else {
                         this.$Message.error("获取数据失败");
                     }
@@ -195,7 +196,6 @@
             },
             handleSelect(selection, index) {
                 this.selectDataList = selection;
-                console.log(that.$refs.table);
             },
             changeCurrent(current) {
                 if (this.current != current) {
@@ -215,8 +215,7 @@
             }
         },
         created(){
-            this.TableLoading=false,
-                console.log(2);
+            this.getProvinceList();
         }
     }
 </script>
