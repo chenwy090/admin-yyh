@@ -14,140 +14,274 @@ export default [{
     },
     {
         title: "商户类型",
-        key: "groupType",
+        key: "merchantTypeName",
         align: "center",
         width: 120
     },
     {
         title: "商户名称",
-        key: "name",
+        key: "merchantName",
         align: "center",
         width: 120
     },
     {
         title: "预充值余额（元）",
-        key: "groupType",
+        key: "money",
         align: "center",
         minWidth: 100
     },
     {
         title: "剩余U贝",
+        key: "ubay",
+        align: "center",
+        minWidth: 140
+    },
+    {
+        title: "创建时间",
+        key: "gmtCreate",
+        align: "center",
+        minWidth: 140
+    },
+]
+// 资金明细列表
+export const fundsColumns = [{
+        title: "序号",
+        type: 'index',
+        width: 80,
+        align: 'center'
+    },
+    {
+        title: "变更前账户余额",
+        key: "groupType",
+        align: "center",
+        width: 150
+    },
+    {
+        title: "变更金额",
+        key: "name",
+        align: "center",
+        width: 150
+    },
+    {
+        title: "变更账户余额",
+        key: "name",
+        align: "center",
+        width: 150
+    },
+    {
+        title: "类型",
+        key: "groupType",
+        align: "center",
+        minWidth: 80
+    },
+    {
+        title: "备注",
         key: "name",
 
         align: "center",
         minWidth: 140
     },
     {
-        title: "创建时间",
+        title: "操作时间",
         key: "bigPrizeName",
         align: "center",
         minWidth: 140
     },
+    {
+        title: "操作人",
+        key: "bigPrizeName",
+        align: "center",
+        minWidth: 120
+    }
 ]
-// 报名成功用户
-export const totalPlayerColumns = [{
-    title: "昵称",
-    key: "nickName",
-    align: "center",
-}, {
-    title: "手机号",
-    key: "phoneNumber",
-    align: "center",
-}, {
-    title: "报名时间",
-    key: "join_time",
-    align: "center",
-}]
 
-export const totalTicketColumns = [{
-    title: "昵称",
-    key: "nickName",
-    align: "center",
-}, {
-    title: "奖券",
-    key: "ticket_code",
-    align: "center",
-}, {
-    title: "手机号",
-    key: "phoneNumber",
-    align: "center",
-}]
 
-export const detailColumns = [{
-    title: "昵称",
-    key: "nickName",
-    align: "center",
-}, {
-    title: "奖项",
-    key: "prize",
-    align: "center",
-}, {
-    title: "收件人",
-    key: "realName",
-    align: "center",
-}, {
-    title: "手机号",
-    key: "phoneNumber",
-    align: "center",
-}, {
-    title: "邮寄地址",
-    key: "address",
-    align: "center",
-}, {
-    title: "发放状态",
-    key: "statusName",
-    align: "center",
-}, {
-    title: "奖品发送失败备注",
-    key: "memo",
-    align: "center",
-}, {
-    title: "物流信息",
-    key: "logistics",
-    align: "center",
-    slot: 'logistics'
-}]
 
-// --------------抽奖团banner位---------------------------------
-export const bannerWayColumns = [{
+// U贝消耗明细表
+export const ubayMColumns = [{
+        title: "序号",
+        type: 'index',
+        width: 80,
+        align: 'center'
+    },
+    {
+        title: "状态",
+        key: "groupType",
+        align: "center",
+        minWidth: 80
+    },
+    {
+        title: "商户/品牌名称",
+        key: "groupType",
+        align: "center",
+        minWidth: 80
+    },
+    {
+        title: "类型",
+        key: "groupType",
+        align: "center",
+        minWidth: 80
+    },
+    {
+        title: "变更前账户U贝",
+        key: "groupType",
+        align: "center",
+        width: 150
+    },
+    {
+        title: "变更U贝",
+        key: "name",
+        align: "center",
+        width: 150
+    },
+    {
+        title: "变更后账户U贝",
+        key: "name",
+        align: "center",
+        width: 150
+    },
+
+    {
+        title: "备注",
+        key: "name",
+
+        align: "center",
+        minWidth: 140
+    },
+    {
+        title: "操作时间",
+        key: "bigPrizeName",
+        align: "center",
+        minWidth: 140
+    },
+    {
+        title: "操作人",
+        key: "bigPrizeName",
+        align: "center",
+        minWidth: 120
+    }
+]
+
+
+// 6.2.2 充值管理列表
+export const rechargeMColumns = [{
         title: "操作",
         align: "center",
-        width: 200,
+        width: 100,
         fixed: "left",
         slot: "action"
     }, {
-        title: "抽奖id或链接",
-        key: "nickName",
-        align: "center",
-        slot: 'idLinkUrl'
-    }, {
-        title: "图片",
-        key: "imgUrl",
-        align: "center",
-        slot: "img"
+        title: "序号",
+        type: 'index',
+        width: 80,
+        align: 'center'
     },
-    // modifiedBy modifiedBy createBy 
     {
-        title: "最近修改人",
-        key: "createAndModifiedBy",
+        title: "合同号",
+        key: "groupType",
         align: "center",
-        minWidth: 105,
-        slot: 'createAndModifiedBy'
+        minWidth: 80
     },
-    // gmtModified  gmtModified gmtCreate
     {
-        title: "最近修改时间",
-        key: "gmtModifiedAndCreate",
+        title: "状态",
+        key: "groupType",
         align: "center",
-        width: 170,
-        slot: 'gmtModifiedAndCreate'
+        minWidth: 80
     },
+    {
+        title: "商户/品牌名称",
+        key: "groupType",
+        align: "center",
+        minWidth: 80
+    },
+    {
+        title: "类型",
+        key: "groupType",
+        align: "center",
+        minWidth: 80
+    },
+    {
+        title: "变更前账户余额",
+        key: "groupType",
+        align: "center",
+        width: 150
+    },
+    {
+        title: "变更金额",
+        key: "name",
+        align: "center",
+        width: 150
+    },
+    {
+        title: "变更账户余额",
+        key: "name",
+        align: "center",
+        width: 150
+    },
+    {
+        title: "操作时间",
+        key: "bigPrizeName",
+        align: "center",
+        minWidth: 140
+    },
+    {
+        title: "操作人",
+        key: "bigPrizeName",
+        align: "center",
+        minWidth: 120
+    }
+]
 
 
 
+// 6.2.1 U贝管理列表
+export const ubayColumns = [{
+        title: "序号",
+        type: 'index',
+        width: 80,
+        align: 'center'
+    },
     {
-        title: "上架时间",
-        key: "onlineTime",
+        title: "变更前账户U贝",
+        key: "groupType",
         align: "center",
+        width: 150
+    },
+    {
+        title: "变更U贝",
+        key: "name",
+        align: "center",
+        width: 150
+    },
+    {
+        title: "变更后账户U贝",
+        key: "name",
+        align: "center",
+        width: 150
+    },
+    {
+        title: "类型",
+        key: "groupType",
+        align: "center",
+        minWidth: 80
+    },
+    {
+        title: "备注",
+        key: "name",
+
+        align: "center",
+        minWidth: 140
+    },
+    {
+        title: "操作时间",
+        key: "bigPrizeName",
+        align: "center",
+        minWidth: 140
+    },
+    {
+        title: "操作人",
+        key: "bigPrizeName",
+        align: "center",
+        minWidth: 120
     }
 ]

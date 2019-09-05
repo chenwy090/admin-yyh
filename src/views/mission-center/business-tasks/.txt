@@ -1,0 +1,133 @@
+新增：
+/merchant/assignment/add
+修改
+/merchant/assignment/edit
+ /**
+     * 主键 （编辑用）
+     */
+    private  Integer id;
+ /**
+     * 任务名称
+     */
+    @NotBlank
+    @ApiModelProperty(value = "任务名称", required = true)
+    private String name;
+
+    /**
+     * 任务开始时间 (yyyy-MM-dd)
+     */
+    @NotBlank
+    @ApiModelProperty(value = "任务开始时间", required = true)
+    private String startTime;
+
+    /**
+     * 任务结束时间
+     */
+    @NotBlank
+    @ApiModelProperty(value = "任务结束时间", required = true)
+    private String endTime;
+    /**
+     * 规则描述
+     */
+    @NotBlank
+    @ApiModelProperty(value = "规则描述", required = true)
+    private String ruleDescribe;
+    /**
+     * 奖励规则
+     */
+    @NotEmpty
+    @ApiModelProperty(value = "规则描述", required = true)
+    private List<MerchantAssignmentRuleInfoReq> ruleInfoList;
+
+
+
+    /**
+     * 主键（编辑用）
+     */
+    private Integer id;
+    /**
+     * 商户类型 0-本地商户（单店），1-本地商户（多店）
+     */
+    @NotBlank
+    @ApiModelProperty(value = "商户类型 0-本地商户（单店），1-本地商户（多店）", required = true)
+    private Integer merchantType;
+
+    /**
+     * 商户id
+     */
+    @ApiModelProperty(value = "商户id", required = true)
+    private String merchantId;
+
+    /**
+     * 商户名称
+     */
+    @ApiModelProperty(value = "商户名称", required = true)
+    private String merhcantName;
+
+    /**
+     * 品牌id
+     */
+    @ApiModelProperty(value = "品牌id", required = true)
+    private Integer brandId;
+
+    /**
+     * 品牌名称
+     */
+    @ApiModelProperty(value = "品牌名称", required = true)
+    private String brandName;
+
+    /**
+     * 预计消耗u贝数量
+     */
+    @NotNull
+    @ApiModelProperty(value = "预计消耗u贝数量", required = true)
+    private Integer anticipatedUbay;
+
+    /**
+     * 券模板id
+     */
+    @NotNull
+    @ApiModelProperty(value = "券模板id", required = true)
+    private String templateId;
+
+    /**
+     * 任务中止时间。截止到此时间点，领取量不够任务自动中止
+     */
+    @NotBlank
+    @ApiModelProperty(value = "任务中止时间。截止到此时间点，领取量不够任务自动中止", required = true)
+    private String endTime;
+
+    /**
+     * 领取数量
+     */
+    @NotNull
+    @ApiModelProperty(value = "领取数量", required = true)
+    private Integer receivedNum;
+
+    /**
+     * 领取奖励，u贝数
+     */
+    @ApiModelProperty(value = " 领取奖励，u贝数", required = true)
+    private Integer receiveAwardUbay;
+
+    /**
+     * 核销奖励，u贝数
+     */
+    @ApiModelProperty(value = "核销奖励，u贝数", required = true)
+    private Integer useAwardUbay;
+
+    /**
+     * 分享后被领取奖励u贝数
+     */
+    @ApiModelProperty(value = "分享后被领取奖励u贝数", required = true)
+    private Integer shareReceiveAwardUbay;
+
+    /**
+     * 分享后被核销奖励u贝数
+     */
+    @ApiModelProperty(value = "分享后被核销奖励u贝数", required = true)
+    private Integer shareUseAwardUbay;
+
+
+    /merchant/assignment/selectById
+ Integer id

@@ -6,6 +6,8 @@ import user from './modules/user';
 import comm from './common';
 // 财务中心
 import financial from './modules/financial';
+// 任务中心
+import missionCenter from './modules/mission-center';
 
 Vue.use(Vuex);
 
@@ -25,7 +27,8 @@ const store = new Vuex.Store({
         app,
         user,
         comm,
-        financial
+        financial,
+        missionCenter
     }
 });
 

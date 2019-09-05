@@ -1,12 +1,13 @@
 <template>
   <div class="xxx">
+    <h2 class="header">财务中心 > 商户账务 > 商户预充值</h2>
     <div class="query-row">
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
           <FormItem label="商户类型：" :label-width="80">
-            <Select v-model="searchData.businessType" style="width:100px">
+            <Select v-model="searchData.merchantType" style="width:100px">
               <Option
-                v-for="item in businessTypeOption"
+                v-for="item in merchantTypeOption"
                 :value="item.value"
                 :key="item.value+item.label"
               >{{ item.label }}</Option>
@@ -14,16 +15,12 @@
           </FormItem>
 
           <FormItem label="商户名称：" :label-width="85">
-            <Input style="width:200px" type="text" v-model="searchData.name" placeholder="请输入"></Input>
-          </FormItem>
-
-          <FormItem label="省/市：" :label-width="60">
-            <Cascader
-              v-model="value"
-              :data="provinceCityData"
-              trigger="hover"
-              @on-change="handleChange"
-            ></Cascader>
+            <Input
+              style="width:200px"
+              type="text"
+              v-model="searchData.merchantName"
+              placeholder="请输入"
+            ></Input>
           </FormItem>
 
           <FormItem :label-width="0">
@@ -33,8 +30,12 @@
         </Form>
         <Row type="flex" justify="start">
           <Button icon="md-refresh" class="marginLeft20" @click="refresh">刷新</Button>
-          <Button type="success" class="marginLeft20" @click="changeComp('schedule-daily')">充值管理</Button>
-          <Button type="success" class="marginLeft20" @click="changeComp('bannerway')">U贝管理</Button>
+          <Button
+            type="success"
+            class="marginLeft20"
+            @click="changeComp('recharge-management')"
+          >充值管理</Button>
+          <Button type="success" class="marginLeft20" @click="changeComp('ubay-management')">U贝管理</Button>
         </Row>
       </Card>
     </div>
@@ -42,8 +43,8 @@
       <Table border :show-index="true" :loading="loading" :columns="columns" :data="tableData">
         <template slot-scope="{ row }" slot="action">
           <!-- @click="inputUnbinding(row)" -->
-          <Button type="text" size="small">资金明细</Button>
-          <Button type="text" size="small">U贝明细</Button>
+          <Button type="text" size="small" @click="linkTo('funds-details',row)">资金明细</Button>
+          <Button type="text" size="small" @click="linkTo('ubay-details',row)">U贝明细</Button>
         </template>
       </Table>
       <!-- 分页器 -->
@@ -64,16 +65,8 @@
 </template>
 <script>
 import { postRequest } from "@/libs/axios";
-import {
-  putup,
-  putoff,
-  queryLuckDrawList,
-  queryTotalPlayerList,
-  queryTotalTicketList
-} from "@/api/sys";
+import { queryBusinessRechargeList } from "@/api/sys";
 import columns from "./columns";
-import { provinceCityData } from "./data";
-console.log("provinceCityData", provinceCityData);
 
 // import DrawEdit from "./DrawEdit";
 // import WinningList from "./WinningList";
@@ -86,42 +79,29 @@ export default {
     // [DrawEdit.name]: DrawEdit,
     // [WinningList.name]: WinningList
   },
-  watch: {
-    value() {
-      console.log("watch:value", this.value);
-      //省 市
-      let [province = "", city = ""] = this.value;
-      this.searchData.province = province;
-      this.searchData.city = city;
-    }
-  },
   data() {
     return {
       id: "",
       // 商户类型：下拉选择框“全部、本地商户（多店）、本地商户（单店）”，默认“全部”。
-      businessTypeOption: [
+      //  '商户类型 0-本地商户（单店），1-本地商户（多店）'
+      merchantTypeOption: [
+        {
+          value: "",
+          label: "全部"
+        },
         {
           value: 0,
-          label: "全部"
+          label: "本地商户（单店）"
         },
         {
           value: 1,
           label: "本地商户（多店）"
-        },
-        {
-          value: 2,
-          label: "本地商户（单店）"
         }
       ],
-      value: [],
-      provinceCityData,
-      // 商户类型 、 商户名称 /省/市
+      // 查询参数
       searchData: {
-        // 查询参数
-        businessType: 0, //商户类型
-        name: "", //商户名称
-        province: "", //省
-        city: "" //市
+        merchantType: "", //商户类型
+        merchantName: "" //商户名称
       },
       loading: false, //列表加载动画
       page: {
@@ -140,8 +120,17 @@ export default {
     handleChange(value, selectedData) {
       console.log("handleChange:", value, selectedData);
     },
+    linkTo(compName, data) {
+      let { id: businessId, name: businessName } = data;
+      this.$store.dispatch("financial/showRechargeDetail", {
+        compName,
+        businessId,
+        businessName
+      });
+    },
     changeComp(compName) {
-      this.$emit("changeComp", compName);
+      // this.$emit("changeComp", compName);
+      this.$store.dispatch("financial/changeCompName", compName);
     },
 
     // 刷新搜索
@@ -153,41 +142,53 @@ export default {
       this.queryTableData(pageNum);
     },
     // 查询
-    queryTableData(pageNum) {
+    async queryTableData(pageNum) {
       this.page.pageNum = pageNum || 1;
       this.loading = true;
 
-      queryLuckDrawList({
+      const {
+        code,
+        data: { current, total, size, records },
+        msg
+      } = await queryBusinessRechargeList({
         ...this.searchData,
         ...this.page
-      }).then(res => {
-        // console.log(res);
-        if (res.code == 200) {
-          this.tableData = res.data.records;
-          // this.banner_page_req.start = res.data.current; //分页查询起始记录
-          this.page.pageNum = res.data.current; //分页查询起始记录
-          this.page.total = res.data.total; //列表总数
-          this.page.pageSize = res.data.size; //每页数据
-          this.loading = false;
-        } else {
-          this.$Message.error(res.code + " 数据加载失败!", 3);
-          this.loading = false;
-        }
       });
+      if (code == 200) {
+        // merchantTypeName
+        this.tableData = records.map(item => {
+          let merchantType = item.merchantType;
+
+          this.merchantTypeOption.some(({ value, label }) => {
+            let r = merchantType === value;
+            if (r) {
+              item.merchantTypeName = label;
+            }
+            return r;
+          });
+
+          return item;
+        });
+        this.page.pageNum = current; //分页查询起始记录
+        this.page.total = total; //列表总数
+        this.page.pageSize = size; //每页数据
+        this.loading = false;
+      } else {
+        this.$Message.error(code + " 数据加载失败!", 3);
+      }
+      this.loading = false;
     },
     reset() {
-      this.value = [];
       // 重置查询参数
       this.searchData = {
-        businessType: 0, //商户类型
-        name: "", //商户名称
-        province: "", //省
-        city: "" //市
+        merchantType: "", //商户类型
+        merchantName: "" //商户名称
       };
 
       this.page = {
         pageNum: 1, //页码
-        pageSize: 10 //每页数量
+        pageSize: 10, //每页数量
+        total: 0 //数据总数
       };
 
       //重新查询一遍

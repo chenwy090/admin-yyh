@@ -1,13 +1,15 @@
-
 <template>
-  <!-- 资金明细 -->
-  <div>
-    <h2 class="header"> 财务中心 > 商户账务 > 商户预充值 > 资金明细 -- {{businessId}}-- {{businessName}}</h2>
-    <h3 class="title">一兆韦德【浙江/杭州】</h3>
+  <div class="xxx">
+    <!-- 赏U查看 数据 RewardUData   -->
+    <h2 class="header">赏U查看 数据</h2>
     <div class="query-row">
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
-          <FormItem label="类型：" :label-width="80">
+          <FormItem label="用户手机：" :label-width="85">
+            <Input style="width:200px" type="text" v-model="searchData.name" placeholder="请输入"></Input>
+          </FormItem>
+
+          <FormItem label="类型：" :label-width="60">
             <Select v-model="searchData.type" style="width:100px">
               <Option
                 v-for="item in typeOption"
@@ -15,6 +17,29 @@
                 :key="item.value+item.label"
               >{{ item.label }}</Option>
             </Select>
+          </FormItem>
+          <!-- 商户类型：商户 品牌 -->
+          <FormItem label="商户类型：" :label-width="80">
+            <Select v-model="searchData.businessType" style="width:100px">
+              <Option
+                v-for="item in businessTypeOption"
+                :value="item.value"
+                :key="item.value+item.label"
+              >{{ item.label }}</Option>
+            </Select>
+          </FormItem>
+          <FormItem label="奖励类型：" :label-width="80">
+            <Select v-model="searchData.rewardsType" style="width:150px">
+              <Option
+                v-for="item in rewardsTypeOption"
+                :value="item.value"
+                :key="item.value+item.label"
+              >{{ item.label }}</Option>
+            </Select>
+          </FormItem>
+
+          <FormItem label="优惠券：" :label-width="85">
+            <Input style="width:200px" type="text" v-model="searchData.name" placeholder="请输入"></Input>
           </FormItem>
 
           <FormItem label="创建时间：" :label-width="100">
@@ -57,41 +82,97 @@
   </div>
 </template>
 <script>
-import { createNamespacedHelpers } from "vuex";
-const { mapState, mapActions } = createNamespacedHelpers("financial");
-
 import { postRequest } from "@/libs/axios";
 import { queryLuckDrawList } from "@/api/sys";
-import { fundsColumns } from "./columns";
+import { udataColumns as columns } from "./columns";
 
 export default {
-  name: "funds-details",
-  computed: {
-    ...mapState(["businessId", "businessName"])
-  },
+  name: "reward-u-data",
+  watch: {},
   data() {
     return {
-      //类型：全部、充值、兑换U贝；默认全部
+      id: "",
+      /**
+        投放：统计整个任务下所有券预计投放的U贝的数量。
+        奖励：统计整个任务下被用户已领取的U贝数量。
+      */
       typeOption: [
         {
           value: 0,
-          label: "全部"
+          label: "投放"
         },
         {
           value: 1,
-          label: "充值"
+          label: "奖励"
+        }
+      ],
+      // 商户类型：商户 品牌
+      businessTypeOption: [
+        {
+          value: 0,
+          label: "商户"
+        },
+        {
+          value: 1,
+          label: "品牌"
+        }
+      ],
+      // 奖励类型 rewards “领取、核销、作为分享者，对方领券获奖励、作为分享者，对方用券获奖励”。 默认显示“请选择”。
+      rewardsTypeOption: [
+        {
+          value: 0,
+          label: "领取"
+        },
+        {
+          value: 1,
+          label: "核销"
         },
         {
           value: 2,
-          label: "兑换U贝"
+          label: "作为分享者"
+        },
+        {
+          value: 3,
+          label: "对方领券获奖励"
+        },
+        {
+          value: 4,
+          label: "作为分享者"
+        },
+        {
+          value: 5,
+          label: "对方用券获奖励"
+        }
+      ],
+      // 状态 status 显示“未开始、进行中、已结束、已终止”选项。	默认显示“请选择”。
+      statusOption: [
+        {
+          value: 0,
+          label: "未开始"
+        },
+        {
+          value: 1,
+          label: "进行中"
+        },
+        {
+          value: 2,
+          label: "已结束"
+        },
+        {
+          value: 3,
+          label: "已终止"
         }
       ],
       daterange: [],
       // 查询参数
       searchData: {
-        type: 0, //类型
-        startTime: "", //开始时间
-        endTime: "" //结束时间
+        name: "", //任务名称
+        startTime: "",
+        endTime: "",
+        type: "",
+        businessType: "",
+        rewardsType: "",
+        status: "" // 状态
       },
       loading: false, //列表加载动画
       page: {
@@ -99,24 +180,37 @@ export default {
         pageSize: 10, //每页数量
         total: 0 //数据总数
       },
-      columns: fundsColumns,
+      columns,
       tableData: []
     };
   },
   created() {
     this.queryTableData();
   },
-  mounted() {},
   methods: {
-    goback() {
-      console.log("funds-details");
-      // this.$emit("changeComp", "business-recharge");
-      this.$store.dispatch("financial/changeCompName", "business-recharge");
-    },
     changeStartDate(arr) {
       // yyyy-MM-dd
       this.searchData.startTime = arr[0];
       this.searchData.endTime = arr[1];
+    },
+    goback() {
+      console.log("reward-u");
+      this.$store.dispatch("missionCenter/changeCompName", "reward-u");
+    },
+    handleChange(value, selectedData) {
+      console.log("handleChange:", value, selectedData);
+    },
+    linkTo(compName, data) {
+      let { id: businessId, name: businessName } = data;
+      this.$store.dispatch("financial/showRechargeDetail", {
+        compName,
+        businessId,
+        businessName
+      });
+    },
+    changeComp(compName) {
+      // this.$emit("changeComp", compName);
+      this.$store.dispatch("financial/changeCompName", compName);
     },
 
     // 刷新搜索
@@ -133,11 +227,6 @@ export default {
       this.loading = true;
 
       queryLuckDrawList({
-        businessId: this.businessId,
-        province: this.province,
-        provinceName: this.provinceName,
-        city: this.city,
-        cityName: this.cityName,
         ...this.searchData,
         ...this.page
       }).then(res => {
@@ -159,9 +248,13 @@ export default {
       this.daterange = [];
       // 重置查询参数
       this.searchData = {
-        type: 0, //类型
-        startTime: "", //开始时间
-        endTime: "" //结束时间
+        name: "", //任务名称
+        startTime: "",
+        endTime: "",
+        type: "",
+        businessType: "",
+        rewardsType: "",
+        status: "" // 状态
       };
 
       this.page = {
@@ -188,3 +281,17 @@ export default {
   }
 };
 </script>
+<style scoped>
+.underline {
+  text-decoration: underline;
+}
+.table-box {
+  min-height: 100px;
+  max-height: 400px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.marginLeft20 {
+  margin-left: 20px;
+}
+</style>

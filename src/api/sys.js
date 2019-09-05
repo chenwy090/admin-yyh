@@ -705,3 +705,20 @@ export const financialWithdrawApplyAwardRechargeDownload = (obj) => {
 
 //--------------------------------------财务中心 --------------------------
 // 商户充值
+export const queryBusinessRechargeList = params => postRequest("/merchant/account/list", params);
+
+
+//--------------------------------------任务中心 --------------------------
+// 商户任务
+// /merchant/assignment/list 赏U列表 RewardUList 
+export const queryRewardUList = params => postRequest("/merchant/assignment/list", params);
+
+/**
+    新增：/merchant/assignment/add
+    修改:/merchant/assignment/edit
+*/
+export const addOrEdit = (url, params) => postRequest(url, params);
+
+
+// /merchant/assignment/selectById 查看详情
+export const queryDetailById = id => postRequest(`/merchant/assignment/selectById?id=${id}`);

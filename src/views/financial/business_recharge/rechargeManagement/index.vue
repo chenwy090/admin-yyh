@@ -1,12 +1,25 @@
 <template>
-  <!-- U贝明细 -->
-  <div>
-    <h2 class="header">财务中心 > 商户账务 > 商户预充值 > U贝消耗明细 -- {{businessId}}-- {{businessName}}</h2>
-    <h3 class="title">一兆韦德【浙江/杭州】</h3>
+  <div class="xxx">
+    <h2 class="header">财务中心 > 商户账务 > 商户预充值</h2>
     <div class="query-row">
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
-          <FormItem label="创建时间：" :label-width="100">
+          <!-- 商户/品牌名称 -->
+          <FormItem label="商户/品牌名称：" :label-width="100">
+            <Input style="width:200px" type="text" v-model="searchData.name" placeholder="请输入"></Input>
+          </FormItem>
+
+          <FormItem label="状态：" :label-width="60">
+            <Select v-model="searchData.status" style="width:100px">
+              <Option
+                v-for="item in statusOption"
+                :value="item.value"
+                :key="item.value+item.label"
+              >{{ item.label }}</Option>
+            </Select>
+          </FormItem>
+
+          <FormItem label="创建时间：" :label-width="80">
             <DatePicker
               type="daterange"
               placeholder="请选择日期"
@@ -24,11 +37,17 @@
         <Row type="flex" justify="start">
           <Button type="dashed" icon="md-arrow-round-back" @click="goback">返回列表</Button>
           <Button icon="md-refresh" class="marginLeft20" @click="refresh">刷新</Button>
+          <Button type="primary" class="marginLeft20" @click="showRecharge=true">充值</Button>
+          <Button type="primary" class="marginLeft20" @click="showDeduction=true">扣款</Button>
         </Row>
       </Card>
     </div>
     <Card :bordered="false">
-      <Table border :show-index="true" :loading="loading" :columns="columns" :data="tableData"></Table>
+      <Table border :show-index="true" :loading="loading" :columns="columns" :data="tableData">
+        <template slot-scope="{ row }" slot="action">
+          <Button type="text" size="small" @click="linkTo()">查看</Button>
+        </template>
+      </Table>
       <!-- 分页器 -->
       <Row type="flex" justify="end" class="page">
         <!-- show-total 显示总数 共{{ total }}条 -->
@@ -43,26 +62,91 @@
         ></Page>
       </Row>
     </Card>
+
+    <!-- @on-close="closeDialog" -->
+    <Drawer
+      v-model="showRecharge"
+      :closable="true"
+      :mask-closable="false"
+      width="820"
+      :styles="styles"
+    >
+      <p slot="header" style="color:#f60;text-align:center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>充值信息</span>
+      </p>
+      <Recharge v-if="showRecharge" :showRecharge.sync="showRecharge" @refresh="queryTableData"></Recharge>
+    </Drawer>
+
+    <Drawer
+      v-model="showDeduction"
+      :closable="true"
+      :mask-closable="false"
+      width="820"
+      :styles="styles"
+    >
+      <p slot="header" style="color:#f60;text-align:center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>扣款信息</span>
+      </p>
+      <Deduction v-if="showDeduction" :showDeduction.sync="showDeduction" @refresh="queryTableData"></Deduction>
+    </Drawer>
+
+    <!-- 
+    <Recharge v-if="showRecharge" :showRecharge.sync="showRecharge" @refresh="queryTableData"></Recharge>
+    <Deduction v-if="showDeduction" :showDeduction.sync="showDeduction" @refresh="queryTableData"></Deduction>-->
   </div>
 </template>
 <script>
-import { createNamespacedHelpers } from "vuex";
-const { mapState, mapActions } = createNamespacedHelpers("financial");
-
 import { postRequest } from "@/libs/axios";
 import { queryLuckDrawList } from "@/api/sys";
-import { ubayColumns } from "./columns";
+import { rechargeMColumns as columns } from "../columns";
+
+import Recharge from "./Recharge";
+import Deduction from "./Deduction";
 
 export default {
-  name: "ubay-details",
-  computed: {
-    ...mapState(["businessId", "businessName"])
+  name: "recharge-management",
+  components: {
+    Recharge,
+    Deduction
   },
+  watch: {},
   data() {
     return {
+      showRecharge: false,
+      showDeduction: false,
+      styles: {
+        height: "calc(100% - 55px)",
+        overflow: "auto",
+        paddingBottom: "53px",
+        position: "static"
+      },
+      // 状态： 全部 、 待审核 、 已通过 、 审核失败 ；默认全部
+      statusOption: [
+        {
+          value: 0,
+          label: "全部"
+        },
+        {
+          value: 1,
+          label: "待审核"
+        },
+        {
+          value: 2,
+          label: "已通过"
+        },
+        {
+          value: 3,
+          label: "审核失败"
+        }
+      ],
       daterange: [],
       // 查询参数
       searchData: {
+        name: "", //商户名称
+        // status: 0, //状态
+        status: "", //状态
         startTime: "", //开始时间
         endTime: "" //结束时间
       },
@@ -72,19 +156,21 @@ export default {
         pageSize: 10, //每页数量
         total: 0 //数据总数
       },
-      columns: ubayColumns,
+      columns,
       tableData: []
     };
   },
   created() {
     this.queryTableData();
   },
-  mounted() {},
   methods: {
     goback() {
-      console.log("ubay-details");
-      //   this.$emit("changeComp", "business-recharge");
       this.$store.dispatch("financial/changeCompName", "business-recharge");
+    },
+    linkTo(compName, data) {},
+    changeComp(compName) {
+      // this.$emit("changeComp", compName);
+      this.$store.dispatch("financial/changeCompName", compName);
     },
     changeStartDate(arr) {
       // yyyy-MM-dd
@@ -106,11 +192,6 @@ export default {
       this.loading = true;
 
       queryLuckDrawList({
-        businessId: this.businessId,
-        province: this.province,
-        provinceName: this.provinceName,
-        city: this.city,
-        cityName: this.cityName,
         ...this.searchData,
         ...this.page
       }).then(res => {
@@ -132,6 +213,9 @@ export default {
       this.daterange = [];
       // 重置查询参数
       this.searchData = {
+        name: "", //商户名称
+        // status: 0, //状态
+        status: "", //状态
         startTime: "", //开始时间
         endTime: "" //结束时间
       };
@@ -160,3 +244,17 @@ export default {
   }
 };
 </script>
+<style scoped>
+.underline {
+  text-decoration: underline;
+}
+.table-box {
+  min-height: 100px;
+  max-height: 400px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.marginLeft20 {
+  margin-left: 20px;
+}
+</style>
