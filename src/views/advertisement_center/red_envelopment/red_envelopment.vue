@@ -58,16 +58,16 @@
                 style="margin-right: 5px"
                 disabled
                 v-else
-              >编辑</Button> 
+              >编辑</Button>
               <Button
                 type="success"
                 style="margin-right: 5px"
                 size="small"
                 @click="checkDetails(row)"
               >查看</Button>
-               <Button 
-              type="error" 
-              size="small" 
+               <Button
+              type="error"
+              size="small"
               style="margin-right: 5px"
               @click="materialinfo(row)"
                >
@@ -131,7 +131,7 @@
                   <span>按曝光次数</span>
               </Radio>
           </RadioGroup>
-        </FormItem> 
+        </FormItem>
          <FormItem label="冠名次数:" >
           <Input style="width:250px" v-model="formValidate.activityAmount" placeholder="请输入" clearable  v-if="formValidate.chargeType != 1" type="number"/>
         </FormItem>
@@ -171,7 +171,7 @@
               </template>
           </Table> -->
 
-       
+
       <Row style="margin:10px 0 0 739px">
           <Button type="text" @click="cancel">取消</Button>
           <Button type="primary" @click="addLuckyDrawFn()">保存</Button>
@@ -207,7 +207,7 @@
                   <span>按曝光次数</span>
               </Radio>
           </RadioGroup>
-        </FormItem> 
+        </FormItem>
         <FormItem label="冠名次数:" >
           <Input style="width:250px" v-model="formValidate.activityAmount" placeholder="请输入"   v-if="formValidate.chargeType != 1" type="number" disabled/>
         </FormItem>
@@ -264,7 +264,7 @@
       :mask-closable="false"
     >
     <!--   <Form ref="materialData" :model="materialData" :label-width="120">
-        
+
       </Form> -->
        <Row class="operation">
           <Button type="primary" icon="md-add" @click="addmateriaStaff">新增</Button>
@@ -313,7 +313,7 @@
           <Input style="width:250px" v-model="materiaformValidate.pageCode" placeholder="请输入" clearable />
         </FormItem>
         <FormItem label="文案:" >
-          <Input style="width:250px" type="textarea" v-model="materiaformValidate.textInfo" placeholder="请输入" clearable />
+          <Input style="width:250px" type="textarea" v-model="materiaformValidate.textInfo" placeholder="请输入" maxlength="20" clearable />
         </FormItem>
          <Form-item label="开始时间" required>
           <DatePicker
@@ -436,7 +436,7 @@
             minWidth: 160,
             key: "amount",
           },
-        
+
           {
             title: "开始时间",
             align: "center",
@@ -487,7 +487,7 @@
             align: "center",
             minWidth: 140,
             key: "pageCode"
-            
+
           },
            {
             title: "图片",
@@ -502,7 +502,7 @@
             key: "textInfo"
           }
         ],
-       
+
       // 链路素材活动列表
         columns5: [
         {
@@ -535,14 +535,14 @@
             align: "center",
             minWidth: 140,
             key: "pageName"
-            
+
           },
           {
             title: "红包冠名页面code",
             align: "center",
             minWidth: 140,
             key: "pageCode"
-            
+
           },
            {
             title: "图片",
@@ -570,7 +570,7 @@
           },
         ],
         materiaValidate:[],
-       
+
         personGiftList: [], //红包冠名活动列表数据
         CampaginList: [], //优惠活动列表数据
         campaginName: "", // 优惠活动名称
@@ -598,7 +598,7 @@
         modalTitle: "", // 对话框标题文字
         addStaffDisplay: false, // 新增对话框显示
         addmateriaStaffDisplay:false,//新增链路素材显示
-        // 新增表单 
+        // 新增表单
         formValidate: {
           name: "",
           saleName: "",
@@ -608,7 +608,7 @@
           endDate:"",
           remark: "" // 备注
         },
-         // 新增链路素材表单 
+         // 新增链路素材表单
         materiaformValidate: {
           chainName: "",
           chainCode: "",
@@ -981,7 +981,7 @@
           this.materiaValidate.imgUrl = "";
         this.materiaValidate.textInfo = "";
       },
-     
+
       // 关闭优惠券选择对话框
       campaginDisplayFn() {
         this.campaginDisplay = false;
