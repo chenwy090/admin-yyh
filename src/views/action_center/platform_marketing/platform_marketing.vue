@@ -83,7 +83,6 @@
         width: 100%;
         display: flex;
         height: 120px;
-        overflow-x: scroll;
         justify-content: space-around;
         box-sizing: border-box;
     }
