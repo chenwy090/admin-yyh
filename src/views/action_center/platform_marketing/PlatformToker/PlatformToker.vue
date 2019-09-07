@@ -20,11 +20,11 @@
                             <FormItem label="省/市：" span="24"  style="width:35%">
                                 <Cascader :data="addressData" :load-data="addressLoad" v-model="addressValue"></Cascader>
                             </FormItem>
-                            <FormItem label="套餐：" span="24"  style="width:20%">
-                                <Select v-model="searchForm.expandType" style="width:100%">
-                                    <Option v-for="item in expandTypeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
-                                </Select>
-                            </FormItem>
+                            <!--<FormItem label="套餐：" span="24"  style="width:20%">-->
+                                <!--<Select v-model="searchForm.expandType" style="width:100%">-->
+                                    <!--<Option v-for="item in expandTypeList" :value="item.value" :key="item.value">{{ item.label }}</Option>-->
+                                <!--</Select>-->
+                            <!--</FormItem>-->
                             <FormItem label="拓客时间：" span="35"  style="width:40%">
                                 <DatePicker
                                         :value="searchForm.expandTimeStart"
