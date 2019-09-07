@@ -21,6 +21,9 @@ import {
 
 export const downloadUrl = "http://47.103.117.70:8088/zex-mgr";
 
+
+
+
 // 正式环境 http://crm.52iuh.com:8088/zex-mgr
 
 // export const baseUrl = "http://crm.52iuh.com:8088/zex-mgr";
@@ -30,6 +33,12 @@ export const downloadUrl = "http://47.103.117.70:8088/zex-mgr";
 
 export const baseUrl = "http://47.102.126.157:8088/zex-mgr";
 export const downloadUrl = "http://47.102.126.157:8088/zex-mgr";
+
+
+// dev环境 http://crm.52iuh.com:8088/zex-mgr
+// http://crmdev.52iuh.cn/
+export const baseUrl = "http://crmdev.52iuh.cn:8088/zex-mgr";
+export const downloadUrl = "http://crmdev.52iuh.cn:8088/zex-mgr";
 
 
 

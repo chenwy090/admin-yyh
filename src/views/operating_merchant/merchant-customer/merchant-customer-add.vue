@@ -874,8 +874,7 @@ export default {
     },
 
     clearOpenid() {
-      this.add_info.openid = "";
-      this.add_info.memberId = "";
+      this.add_info.userId = "";
       this.checkResult = 0;
     },
 

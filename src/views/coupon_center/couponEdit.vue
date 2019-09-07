@@ -754,8 +754,8 @@ export default {
         serviceContent: "",
         roleIdList: [],
         merchantList: [],
-        memberId: "",
-        openid: ""
+          userId: "",
+          userId: ""
       },
       edit_info: {
         // 是否活动券 （默认否）0-否，1-是   isActivityCoupon
