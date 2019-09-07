@@ -789,21 +789,21 @@ export default {
         // cityCode: this.searchItem.cityId,
         // areaCode: this.searchItem.areaId
       };
-      if (this.add_info.merchantType == 2) {
+      if (this.add_info.merchantType == 1) {
         reqParams = {
-        merchantId: this.searchItem.merchantId,
-        name: this.searchItem.name,
-        provinceCode: this.searchItem.provinceId,
-        cityCode: this.searchItem.cityId,
-        areaCode: this.searchItem.areaId
-      }
+          merchantId: this.searchItem.merchantId,
+          name: this.searchItem.name,
+          provinceCode: this.searchItem.provinceId,
+          cityCode: this.searchItem.cityId,
+          areaCode: this.searchItem.areaId
+        }
       }
       // 接口：       商户列表-单个,                 商户列表-单个,                   商户列表-多个（品牌）
       const urls = ['/merchant/merchantInfo/list', '/merchant/merchantInfo/list', '/merchant/brandMain/list/data'];
       let host = baseUrl;
-      if (this.add_info.merchantType === 2){
-        delete reqParams.name
-      }
+      // if (this.add_info.merchantType === 2){
+      //   delete reqParams.name
+      // }
       postJson(
         host + urls[Number(this.add_info.merchantType)] + `?isAsc=DESC&orderByColumn=1&pageSize=10&pageNum=${this.pageNum}`,
         reqParams
