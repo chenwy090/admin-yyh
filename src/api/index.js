@@ -9,7 +9,7 @@ import {
 } from "@/libs/axios";
 
 //本地访问地址
-export const baseUrl = "http://192.168.31.179:8088/zex-mgr";
+// export const baseUrl = "http://192.168.31.179:8088/zex-mgr";
 //测试环境
 // export const baseUrl = "http://47.103.117.70:8088/zex-mgr";
 // export const baseUrl = "http://192.168.31.173:8088/zex-mgr";
@@ -17,7 +17,7 @@ export const baseUrl = "http://192.168.31.179:8088/zex-mgr";
 // export const baseUrl = "http://47.103.117.70:8088/zex-mgr";
 // export const baseUrl = "http://192.168.31.170:8088/zex-mgr";
 // export const baseUrl = "http://192.168.31.175:8088/zex-mgr";
-export const downloadUrl = "http://47.103.117.70:8088/zex-mgr";
+// export const downloadUrl = "http://47.103.117.70:8088/zex-mgr";
 
 
 // 正式环境 http://crm.52iuh.com:8088/zex-mgr
@@ -27,8 +27,8 @@ export const downloadUrl = "http://47.103.117.70:8088/zex-mgr";
 
 // 开发环境 http://47.102.126.157:8088/zex-mgr/
 
-// export const baseUrl = "http://47.102.126.157:8088/zex-mgr";
-// export const downloadUrl = "http://47.102.126.157:8088/zex-mgr";
+export const baseUrl = "http://47.102.126.157:8088/zex-mgr";
+export const downloadUrl = "http://47.102.126.157:8088/zex-mgr";
 
 
 

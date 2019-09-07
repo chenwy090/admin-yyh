@@ -23,7 +23,7 @@
                 </Col>
             </Row>
             <Row class="padding-left-12">
-                <Col span="18">
+                <Col span="24">
                 <FormItem label="状态">
                     <!--<DatePicker-->
                     <!--:value="modal.applyDateRangeOpen"-->
@@ -57,7 +57,7 @@
             </Row>
             <h3>赠送规则</h3>
             <Row class="padding-left-12">
-                <Col span="18">
+                <Col span="24">
                 <RadioGroup v-model="modal.wardType" vertical style="width: 100%">
                     <Radio label="1" style="display: inline-block">
                         <span>核销赠券</span>
@@ -66,31 +66,6 @@
                     <span class="colof-a2">(在核销商户券码时，赠送优惠券至店员卡包，前提店员是要优惠C端用户)</span>
                     <div style="width: 2%;display: inline-block"></div>
                     <div  v-for="(item,index) in JawardRuleDtos" class="radio-item">
-                        <div>
-                            <span>每日核销范围在&nbsp;</span>
-                            <InputNumber
-                                    :min="1"
-                                    :step="1"
-                                    type="text"
-                                    :precision="0"
-                                    v-model="item.verifyCountMin"
-                                    disabled
-                                    placeholder="请输入数值"
-                            ></InputNumber>
-                            <div style="width: 2%;display: inline-block"></div>
-                            <InputNumber
-                                    :min="1"
-                                    :step="1"
-                                    type="text"
-                                    :precision="0"
-                                    v-model="item.verifyCountMax"
-                                    disabled
-                                    placeholder="请输入数值"
-                            ></InputNumber>
-                            <span>&nbsp;张时，赠送以下优惠券</span>
-                            <div style="width: 2%;display: inline-block"></div>
-                            <span class="colof-a2">(后面文本框的数值不填写，表示无限大)</span>
-                        </div>
                         <div style="margin: 10px 0;">
                             <Button type="dashed">{{item.title}}</Button>
                         </div>
@@ -102,28 +77,6 @@
                     <span class="colof-a2">(在核销主商户券码时，赠送平台U贝，前提店员是要优惠C端用户)</span>
                     <div style="width: 2%;display: inline-block"></div>
                     <div  v-for="(item,index) in UawardRuleDtos" class="radio-item">
-                        <span>每日核销范围在&nbsp;</span>
-                        <InputNumber
-                                :min="0"
-                                :step="1"
-                                type="text"
-                                :precision="0"
-                                disabled
-                                v-model="item.verifyCountMin"
-                                placeholder="请输入数值"
-                        ></InputNumber>
-                        <div style="width: 2%;display: inline-block"></div>
-                        <InputNumber
-                                :min="1"
-                                :step="1"
-                                type="text"
-                                :precision="0"
-                                disabled
-                                v-model="item.verifyCountMax"
-                                placeholder="请输入数值"
-                        ></InputNumber>
-                        <span>&nbsp;张时，赠送以下U贝</span>
-                        <span class="colof-a2">(后面文本框的数值不填写，表示无限大)</span>
                         <div style="margin: 10px 0;">
                             <InputNumber
                                     :min="0"
@@ -191,7 +144,7 @@
                 if(row){
                     this.modal.id= row.id;
                     // /merchant/activity/award/activity/{id}
-                    getRequest(`/merchant/activity/award/activity/${row.id}`).then(res => {
+                    getRequest(`/customer/activity/award/activity/${row.id}`).then(res => {
                         if (res.code === "200") {
                             var data = res.data;
                             this.modal.name = data.name;
