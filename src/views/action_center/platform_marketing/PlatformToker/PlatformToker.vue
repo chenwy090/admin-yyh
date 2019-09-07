@@ -20,11 +20,11 @@
                             <FormItem label="省/市：" span="24"  style="width:35%">
                                 <Cascader :data="addressData" :load-data="addressLoad" v-model="addressValue"></Cascader>
                             </FormItem>
-                            <FormItem label="套餐：" span="24"  style="width:20%">
-                                <Select v-model="searchForm.expandType" style="width:100%">
-                                    <Option v-for="item in expandTypeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
-                                </Select>
-                            </FormItem>
+                            <!--<FormItem label="套餐：" span="24"  style="width:20%">-->
+                                <!--<Select v-model="searchForm.expandType" style="width:100%">-->
+                                    <!--<Option v-for="item in expandTypeList" :value="item.value" :key="item.value">{{ item.label }}</Option>-->
+                                <!--</Select>-->
+                            <!--</FormItem>-->
                             <FormItem label="拓客时间：" span="35"  style="width:40%">
                                 <DatePicker
                                         :value="searchForm.expandTimeStart"
@@ -163,12 +163,11 @@
                     },
                     {
                         title: "拓客时间",
-                        width: 200,
                         key: "expandTime"
                     },
                     {
                         title: "操作人",
-                        width: 100,
+                        width: 150,
                         key: "operatorBy"
                     }
                 ],
@@ -255,6 +254,7 @@
                 this.searchForm.merchantName= '';
                 this.searchForm.status= '';
                 this.searchForm.current = 1;
+                this.addressValue = [];
             },
             loadTableData(formData) {
                 this.totalSize = 0;
