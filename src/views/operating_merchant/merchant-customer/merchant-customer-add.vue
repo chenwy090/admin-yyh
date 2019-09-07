@@ -313,7 +313,7 @@
                 style="width: 150px"
               />
             </FormItem>
-            <FormItem style label="所在地区">
+            <FormItem style label="所在地区" v-show="add_info.merchantType == 1">
               <Select
                 v-model="searchItem.provinceId"
                 style="width:150px"
@@ -781,13 +781,23 @@ export default {
     // 获取商户列表
     getMerchantListFn() {
       this.TableLoading = false;
-      const reqParams = {
-        // merchantId: this.searchItem.merchantId,
-        // name: this.searchItem.name,
+      
+      let reqParams = {
+        merchantId: this.searchItem.merchantId,
+        name: this.searchItem.name,
         // provinceCode: this.searchItem.provinceId,
         // cityCode: this.searchItem.cityId,
         // areaCode: this.searchItem.areaId
       };
+      if (this.add_info.merchantType == 2) {
+        reqParams = {
+        merchantId: this.searchItem.merchantId,
+        name: this.searchItem.name,
+        provinceCode: this.searchItem.provinceId,
+        cityCode: this.searchItem.cityId,
+        areaCode: this.searchItem.areaId
+      }
+      }
       // 接口：       商户列表-单个,                 商户列表-单个,                   商户列表-多个（品牌）
       const urls = ['/merchant/merchantInfo/list', '/merchant/merchantInfo/list', '/merchant/brandMain/list/data'];
       let host = baseUrl;
@@ -817,7 +827,9 @@ export default {
         this.chooseMerchant.merchantId != ""
       ) {
         this.merchantTabDisplay = false;
-        this.getMerchantByBrand();
+        if (this.add_info.merchantType === 2) {
+          this.getMerchantByBrand();
+        }
       } else {
         this.msgErr("至少选一个商户");
       }
