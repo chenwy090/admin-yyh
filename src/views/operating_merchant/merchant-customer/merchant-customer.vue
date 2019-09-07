@@ -233,7 +233,7 @@ import industryView from "./industry";
                     },
                     {
                         title: '状态',
-                        key: 'status',
+                        key: 'statusDesc',
                         minWidth: 100,
                     },
                     {
