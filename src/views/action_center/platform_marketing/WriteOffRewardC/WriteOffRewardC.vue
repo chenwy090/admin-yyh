@@ -113,7 +113,7 @@
         data(){
             return{
                 typeList:[{value:1,label:'核销赠券'},{value:2,label:'核销赠U贝'}],
-                statusList:[{value:0,label:'已删除'},{value:1,label:'未开始'},{value:2,label:'进行中'},{value:3,label:'已结束'},{value:4,label:'已终止'}],
+                statusList:[{value:1,label:'未开始'},{value:2,label:'进行中'},{value:3,label:'已结束'},{value:4,label:'已终止'}],
                 TableLoading: false,
                 auditing:0,
                 totalSize: 0,
