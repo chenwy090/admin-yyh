@@ -68,17 +68,8 @@ import { postRequest } from "@/libs/axios";
 import { queryBusinessRechargeList } from "@/api/sys";
 import columns from "./columns";
 
-// import DrawEdit from "./DrawEdit";
-// import WinningList from "./WinningList";
-// import ModalDetail from "../Modal_detail";
-
 export default {
   name: "business-recharge",
-  components: {
-    // ModalDetail: ModalDetail,
-    // [DrawEdit.name]: DrawEdit,
-    // [WinningList.name]: WinningList
-  },
   data() {
     return {
       id: "",
@@ -121,11 +112,12 @@ export default {
       console.log("handleChange:", value, selectedData);
     },
     linkTo(compName, data) {
-      let { id: businessId, name: businessName } = data;
+      let { merchantType } = this.searchData;
+      let { merchantId, merchantName } = data;
       this.$store.dispatch("financial/showRechargeDetail", {
         compName,
-        businessId,
-        businessName
+        merchantId,
+        merchantName
       });
     },
     changeComp(compName) {

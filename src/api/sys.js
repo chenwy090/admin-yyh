@@ -708,6 +708,32 @@ export const financialWithdrawApplyAwardRechargeDownload = (obj) => {
 export const queryBusinessRechargeList = params => postRequest("/merchant/account/list", params);
 
 
+// 充值管理 
+export const queryRechargeMList = params => postRequest("/merchant/money/record/list", params);
+
+// 充值/扣款明细
+export const queyMoneyDetailById = id => postRequest("/merchant/money/record/selectById", { id });
+
+// 充值管理 -充值0 -扣款1  	"changeType":0-1,
+export const rechargeAndDeduction = params => postRequest("/merchant/money/record/add", params);
+
+
+// U贝管理 
+export const queryUbayMList = params => postRequest("/merchant/ubay/record/list", params);
+// U贝管理 -U贝兑换0 -U贝消耗1  	"changeType":0-1,
+export const exchangeAndConsume = params => postRequest("/merchant/ubay/record/add", params);
+
+// /commonConfig/queryConfigByCode  获得汇率的value就是汇率的值
+export const getUbayRate = () => postRequest("/commonConfig/queryConfigByCode", { code: 30 });
+
+// 资金明细 
+export const queryFundsList = params => postRequest("/merchant/money/record/selectByAccountIdAndType", params);
+
+// U贝明细 
+export const queryUbayList = params => postRequest("/merchant/ubay/record/selectByAccountIdAndType", params);
+
+
+
 //--------------------------------------任务中心 --------------------------
 // 商户任务
 // /merchant/assignment/list 赏U列表 RewardUList 
@@ -722,3 +748,14 @@ export const addOrEdit = (url, params) => postRequest(url, params);
 
 // /merchant/assignment/selectById 查看详情
 export const queryDetailById = id => postRequest(`/merchant/assignment/selectById?id=${id}`);
+
+//  /merchant/assignment/check 审核 {id,status,reason}
+export const checkMerchant = params => postRequest(`/merchant/assignment/check`, params);
+
+//   /merchant/assignment/dowm 下架 
+export const downMerchant = id => postRequest(`/merchant/assignment/dowm?id=${id}`);
+//  /merchant/assignment/delete 删除
+export const delMerchant = id => postRequest(`/merchant/assignment/delete?id=${id}`);
+
+//  /merchant/assignment/data 数据
+export const queryMerchantDataById = params => postRequest(`/merchant/assignment/data`, params);

@@ -49,7 +49,7 @@
           <!-- 只有“待审核”状态，才会显示审核按钮。 -->
           <Button type="success" size="small" @click="examine(row)">审核</Button>
           <!-- 只有“审核通过进行中、审核通过未开始”的活动，才显示“下架”按钮。 -->
-          <Button type="warning" size="small" @click="undercarriage(row)">下架</Button>
+          <Button type="warning" size="small" @click="dowm(row)">下架</Button>
           <!-- 只有“待审核、未通过”状态，才会显示“删除”按钮 -->
           <Poptip
             :transfer="true"
@@ -80,28 +80,97 @@
         ></Page>
       </Row>
     </Card>
+
+    <Modal v-model="examineModal" :closable="true" :mask-closable="false" width="400">
+      <p slot="header" style="color:#f60;text-align:center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>审核</span>
+      </p>
+      <div>
+        <Form label-position="left" ref="formValidate" :model="formValidate" :rules="ruleValidate">
+          <FormItem label="审核结果：" prop="status">
+            <RadioGroup v-model="formValidate.status">
+              <Radio v-for="(v,k) in examineStatusOption" :key="k" :label="k">{{ v }}</Radio>
+            </RadioGroup>
+          </FormItem>
+          <FormItem label="填写原因：" prop="reason">
+            <Row>
+              <Col span="16">
+                <Input
+                  v-model="formValidate.reason"
+                  type="textarea"
+                  :autosize="{minRows: 3,maxRows: 6}"
+                  :placeholder="reasonPlaceholder"
+                ></Input>
+              </Col>
+            </Row>
+          </FormItem>
+        </Form>
+      </div>
+      <div slot="footer">
+        <Button type="error" size="large" @click="check('formValidate')">确认</Button>
+        <Button @click="cancelHandleReset('formValidate')" style="margin-left: 8px">取消</Button>
+      </div>
+    </Modal>
   </div>
 </template>
 <script>
-import { postRequest } from "@/libs/axios";
-import { queryRewardUList, queryDetailById } from "@/api/sys";
+import {
+  queryRewardUList,
+  queryDetailById,
+  checkMerchant, // 审核
+  downMerchant, // 下架
+  delMerchant, // 删除
+  queryMerchantDataById // 数据
+} from "@/api/sys";
 import columns from "./columns";
-
-// import DrawEdit from "./DrawEdit";
-// import WinningList from "./WinningList";
-// import ModalDetail from "../Modal_detail";
 
 export default {
   name: "reward-u",
-  components: {
-    // ModalDetail: ModalDetail,
-    // [DrawEdit.name]: DrawEdit,
-    // [WinningList.name]: WinningList
+  watch: {
+    ["formValidate.status"]() {
+      const status = this.formValidate.status;
+      const arr = ["", "请输入通过原因", "请输入50字以内未通过原因"];
+      this.reasonPlaceholder = arr[status];
+      console.log("reasonPlaceholder", status, this.reasonPlaceholder);
+    }
   },
-  watch: {},
   data() {
+    const validateReason = (rule, value, callback) => {
+      value += "";
+      value = value.trim();
+      if (value == "") {
+        callback(new Error("审核原因不能为空"));
+      } else if (value.length >= 50) {
+        callback(new Error("请输入50字以内的字符"));
+      } else {
+        callback();
+      }
+    };
     return {
       id: "",
+      //审核
+      examineModal: false,
+      // 审核状态 1-审核通过 2-审核不通过
+      examineStatusOption: {
+        "1": "通过",
+        "2": "不通过"
+      },
+      // 请输入50字以内未通过原因
+      reasonPlaceholder: "请输入通过原因",
+      formValidate: {
+        status: "1",
+        reason: ""
+      },
+      ruleValidate: {
+        reason: [
+          {
+            required: true,
+            validator: validateReason,
+            trigger: "blur"
+          }
+        ]
+      },
       //审核 status examineType ： “待审核、已通过、未通过” 默认显示“请选择”。  审核状态 0-待审核 1-审核通过 2-审核失败
       statusOption: {
         "0": "待审核",
@@ -136,16 +205,77 @@ export default {
     this.queryTableData();
   },
   methods: {
+    async queryRowById(id) {
+      const { code, data } = await queryDetailById(id);
+      if (code == 200) {
+        data.daterange = [data.startTime, data.endTime];
+        data.ruleInfoList = data.ruleInfoList.map(item => {
+          const { merchantType, id, name } = item;
+          let row = null;
+          // 商户类型 0-本地商户（单店），1-本地商户（多店）
+          if (merchantType == 0) {
+            item.merchantId = id;
+            item.merhcantName = name;
+            item.brandId = "";
+            item.brandName = "";
+            row = { merchantId: item.id, name: item.name };
+          } else {
+            item.brandId = id;
+            item.brandName = name;
+            item.merchantId = "";
+            item.merhcantName = "";
+            row = { id: item.id, name: item.name };
+          }
+          item.tableData = [row];
+          return item;
+        });
+        return data;
+      } else {
+        // msgOk msgErr
+        return this.msgErr("数据查询失败！");
+      }
+    },
     async toDetail(row) {
-      const r = await queryDetailById(row.id);
+      const data = await this.queryRowById(row.id);
+
+      if (data) {
+        // this.linkTo("reward-u-detail", data);
+      }
     },
-    toData(data) {
-      this.linkTo("reward-u-data", data);
+    async toData({ id }) {
+      let { code } = await queryMerchantDataById(id);
+      this.linkTo("reward-u-data", { id });
     },
-    examine() {},
-    undercarriage() {},
-    del() {
+    examine(row) {
+      this.examineModal = true;
+      this.id = row.id;
+      // 审核状态 1-审核通过 2-审核不通过
+    },
+    check(name) {
+      this.$refs[name].validate(async valid => {
+        if (valid) {
+          const { code, msg } = await checkMerchant({
+            id: this.id,
+            ...this.formValidate
+          });
+
+          if (code == 200) {
+            this.msgOk("审核成功");
+            this.queryTableData();
+            this.cancelHandleReset(name);
+          } else {
+            this.msgErr(msg);
+          }
+        }
+      });
+    },
+    dowm({ id }) {
+      downMerchant(id);
+      this.refresh();
+    },
+    del({ id }) {
       console.log("del");
+      delMerchant(id);
     },
     ok() {
       this.$Message.info("正在删除");
@@ -153,18 +283,23 @@ export default {
     cancel() {
       this.$Message.info("已取消删除");
     },
-    async addOrEdit(type) {
-      let data = null;
-      let compName = "reward-u-edit";
-      if (type == "edit") {
+    async addOrEdit(type, row) {
+      let payload = null;
+      if (type == "add") {
+        payload = { type };
       }
-      this.linkTo(compName, data);
+      if (type == "edit") {
+        let data = await this.queryRowById(row.id);
+        payload = { type, id: row.id, name: row.name, data };
+      }
+      let compName = "reward-u-edit";
+      this.linkTo(compName, payload);
     },
 
     linkTo(compName, data) {
       this.$store.dispatch("missionCenter/changeView", {
         compName,
-        data
+        ...data
       });
     },
     // 刷新搜索
@@ -237,6 +372,13 @@ export default {
       this.$Message.error({
         content: txt,
         duration: 3
+      });
+    },
+    // 审核-------------------------------------
+    cancelHandleReset(name) {
+      this.examineModal = false;
+      this.$nextTick(() => {
+        this.$refs[name].resetFields();
       });
     }
   }

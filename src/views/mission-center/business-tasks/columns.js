@@ -65,54 +65,56 @@ export const udataColumns = [{
     },
     {
         title: "用户ID",
-        key: "id",
+        key: "userId",
         align: "center",
         width: 120
     },
     {
         title: "用户昵称",
-        key: "name",
+        key: "nickName",
         align: "center",
         width: 120
     },
     {
         title: "手机",
-        key: "groupType",
+        key: "telphone",
         align: "center",
         width: 120
     },
 
     {
-        title: "优惠券",
-        key: "groupType",
+        title: "优惠券名称",
+        key: "couponTitle",
         align: "center",
         minWidth: 100
     },
+    // merchantType
     {
-        title: "类型",
-        key: "name",
+        title: "商户类型",
+        key: "merchantTypeName",
         align: "center",
         minWidth: 140
     },
     {
         title: "名称",
-        key: "bigPrizeName",
+        key: "merchantNameText",
         align: "center",
         minWidth: 140
     },
+    // awardType
     {
         title: "奖励类型",
-        key: "bigPrizeName",
+        key: "awardTypeName",
         align: "center",
         minWidth: 140
     }, {
         title: "获得U贝",
-        key: "bigPrizeName",
+        key: "awardUbay",
         align: "center",
         minWidth: 140
     }, {
         title: "创建时间",
-        key: "bigPrizeName",
+        key: "gmtCreate",
         align: "center",
         minWidth: 140
     },

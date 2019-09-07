@@ -52,44 +52,49 @@ export const fundsColumns = [{
     },
     {
         title: "变更前账户余额",
-        key: "groupType",
+        key: "beforeAmount",
         align: "center",
         width: 150
     },
+
+    /**
+     * beforeAmount > afterAmount  => -changeAmount
+     * 
+     * */
     {
         title: "变更金额",
-        key: "name",
+        key: "changeAmount",
         align: "center",
         width: 150
     },
     {
         title: "变更账户余额",
-        key: "name",
+        key: "afterAmount",
         align: "center",
         width: 150
     },
     {
         title: "类型",
-        key: "groupType",
+        key: "changeType",
         align: "center",
         minWidth: 80
     },
     {
         title: "备注",
-        key: "name",
+        key: "remark",
 
         align: "center",
         minWidth: 140
     },
     {
         title: "操作时间",
-        key: "bigPrizeName",
+        key: "gmtCreate",
         align: "center",
         minWidth: 140
     },
     {
         title: "操作人",
-        key: "bigPrizeName",
+        key: "createBy",
         align: "center",
         minWidth: 120
     }
@@ -97,7 +102,7 @@ export const fundsColumns = [{
 
 
 
-// U贝消耗明细表
+//  6.2.1 U贝管理列表
 export const ubayMColumns = [{
         title: "序号",
         type: 'index',
@@ -106,57 +111,68 @@ export const ubayMColumns = [{
     },
     {
         title: "状态",
-        key: "groupType",
+        key: "status",
         align: "center",
         minWidth: 80
     },
+    /**
+     * merchantType:
+     * 0 merchantName
+     * 1 brandName
+     */
     {
         title: "商户/品牌名称",
-        key: "groupType",
+        key: "name",
         align: "center",
         minWidth: 80
     },
+    // changeType
     {
         title: "类型",
-        key: "groupType",
+        key: "changeType",
         align: "center",
         minWidth: 80
     },
+
     {
         title: "变更前账户U贝",
-        key: "groupType",
+        key: "beforeUbay",
         align: "center",
         width: 150
     },
+    /**
+     * changeType
+     * 兑换0 addUbay
+     * 消耗1 -reduceUbay
+     */
     {
         title: "变更U贝",
-        key: "name",
+        key: "addOrReduceUbay",
         align: "center",
         width: 150
     },
     {
         title: "变更后账户U贝",
-        key: "name",
+        key: "afterUbay",
         align: "center",
         width: 150
     },
 
     {
         title: "备注",
-        key: "name",
-
+        key: "remark",
         align: "center",
         minWidth: 140
     },
     {
         title: "操作时间",
-        key: "bigPrizeName",
+        key: "gmtCreate",
         align: "center",
         minWidth: 140
     },
     {
         title: "操作人",
-        key: "bigPrizeName",
+        key: "createBy",
         align: "center",
         minWidth: 120
     }
@@ -178,55 +194,65 @@ export const rechargeMColumns = [{
     },
     {
         title: "合同号",
-        key: "groupType",
+        key: "contractNumber",
         align: "center",
         minWidth: 80
     },
     {
         title: "状态",
-        key: "groupType",
+        key: "status",
         align: "center",
         minWidth: 80
     },
+    /**
+     * merchantType:
+     * 0 merchantName
+     * 1 brandName
+     */
     {
         title: "商户/品牌名称",
-        key: "groupType",
+        key: "name",
         align: "center",
         minWidth: 80
     },
     {
         title: "类型",
-        key: "groupType",
+        key: "changeType",
         align: "center",
         minWidth: 80
     },
     {
         title: "变更前账户余额",
-        key: "groupType",
+        key: "beforeAmount",
         align: "center",
         width: 150
     },
+
+    /**
+     * beforeAmount > afterAmount  => -changeAmount
+     * 
+     * */
     {
         title: "变更金额",
-        key: "name",
+        key: "changeAmount",
         align: "center",
         width: 150
     },
     {
         title: "变更账户余额",
-        key: "name",
+        key: "afterAmount",
         align: "center",
         width: 150
     },
     {
         title: "操作时间",
-        key: "bigPrizeName",
+        key: "gmtCreate",
         align: "center",
         minWidth: 140
     },
     {
         title: "操作人",
-        key: "bigPrizeName",
+        key: "createBy",
         align: "center",
         minWidth: 120
     }
@@ -234,7 +260,7 @@ export const rechargeMColumns = [{
 
 
 
-// 6.2.1 U贝管理列表
+// U贝消耗明细表 
 export const ubayColumns = [{
         title: "序号",
         type: 'index',
@@ -243,44 +269,49 @@ export const ubayColumns = [{
     },
     {
         title: "变更前账户U贝",
-        key: "groupType",
+        key: "beforeUbay",
         align: "center",
         width: 150
     },
+    /**
+     * changeType
+     * 兑换0 addUbay
+     * 消耗1 -reduceUbay
+     */
     {
         title: "变更U贝",
-        key: "name",
+        key: "addOrReduceUbay",
         align: "center",
         width: 150
     },
     {
         title: "变更后账户U贝",
-        key: "name",
+        key: "afterUbay",
         align: "center",
         width: 150
     },
     {
         title: "类型",
-        key: "groupType",
+        key: "changeType",
         align: "center",
         minWidth: 80
     },
     {
         title: "备注",
-        key: "name",
+        key: "remark",
 
         align: "center",
         minWidth: 140
     },
     {
         title: "操作时间",
-        key: "bigPrizeName",
+        key: "gmtCreate",
         align: "center",
         minWidth: 140
     },
     {
         title: "操作人",
-        key: "bigPrizeName",
+        key: "createBy",
         align: "center",
         minWidth: 120
     }

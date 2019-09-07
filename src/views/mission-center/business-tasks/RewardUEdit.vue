@@ -167,6 +167,14 @@ export default {
       ruleValidate: {}
     };
   },
+  mounted() {
+    let { type, data } = this.$store.state.missionCenter;
+    //修改
+    if (type == "edit") {
+      this.formData = data;
+      console.log("this.formData", data);
+    }
+  },
   methods: {
     goback() {
       console.log("reward-u");
@@ -256,6 +264,7 @@ export default {
         if (valid) {
           this.$Message.success("数据验证成功!");
           let oForm = JSON.parse(JSON.stringify(this.formData));
+
           console.log("add save:", oForm);
           let url = "";
           if (oForm.id) {
@@ -266,16 +275,20 @@ export default {
             url = "/merchant/assignment/add";
           }
 
+          oForm.ruleInfoList[0].templateId = "2019072277211";
+          oForm.ruleInfoList[0].merchantId = "20190726012428";
+
           let res = await addOrEdit(url, oForm);
 
-          // if (res.code == 200) {
-          //   // 关闭对话框
-          //   this.closeDialog();
-          //   //刷新列表数据
-          //   this.$emit("refresh");
-          // } else {
-          //   this.msgErr(res.msg);
-          // }
+          if (res.code == 200) {
+            // 关闭对话框
+            // this.closeDialog();
+            //刷新列表数据
+            // this.$emit("refresh");
+            this.msgErr("保存成功");
+          } else {
+            this.msgErr(res.msg);
+          }
         } else {
           this.$Message.error("数据验证失败！");
         }

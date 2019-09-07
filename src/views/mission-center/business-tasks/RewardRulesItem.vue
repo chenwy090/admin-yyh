@@ -235,6 +235,16 @@ export default {
         { value: 0, label: "商户" },
         { value: 1, label: "品牌" }
       ],
+       merchantTypeOption: [
+        {
+          value: 0,
+          label: "本地商户（单店）"
+        },
+        {
+          value: 1,
+          label: "本地商户（多店）"
+        }
+      ],
       payTypeList: [
         {
           id: "1",
@@ -286,7 +296,7 @@ export default {
           title: "品牌编号",
           align: "center",
           width: 200,
-          key: "merchantId"
+          key: "id"
         },
         {
           title: "品牌名称",

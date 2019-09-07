@@ -6,7 +6,12 @@
         <Form inline>
           <!-- 商户/品牌名称 -->
           <FormItem label="商户/品牌名称：" :label-width="100">
-            <Input style="width:200px" type="text" v-model="searchData.name" placeholder="请输入"></Input>
+            <Input
+              style="width:200px"
+              type="text"
+              v-model="searchData.merchantName"
+              placeholder="请输入"
+            ></Input>
           </FormItem>
 
           <FormItem label="状态：" :label-width="60">
@@ -45,7 +50,7 @@
     <Card :bordered="false">
       <Table border :show-index="true" :loading="loading" :columns="columns" :data="tableData">
         <template slot-scope="{ row }" slot="action">
-          <Button type="text" size="small" @click="linkTo()">查看</Button>
+          <Button type="text" size="small" @click="detail(row.id)">查看</Button>
         </template>
       </Table>
       <!-- 分页器 -->
@@ -92,30 +97,46 @@
       <Deduction v-if="showDeduction" :showDeduction.sync="showDeduction" @refresh="queryTableData"></Deduction>
     </Drawer>
 
+    <Drawer
+      v-model="showDetail"
+      :closable="true"
+      :mask-closable="true"
+      width="820"
+      :styles="styles"
+    >
+      <p slot="header" style="color:#f60;text-align:center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>{{detailTitle}}</span>
+      </p>
+      <Detail v-if="showDetail" :showDetail.sync="showDetail" :detailData="detailData"></Detail>
+    </Drawer>
+
     <!-- 
     <Recharge v-if="showRecharge" :showRecharge.sync="showRecharge" @refresh="queryTableData"></Recharge>
     <Deduction v-if="showDeduction" :showDeduction.sync="showDeduction" @refresh="queryTableData"></Deduction>-->
   </div>
 </template>
 <script>
-import { postRequest } from "@/libs/axios";
-import { queryLuckDrawList } from "@/api/sys";
+import { queryRechargeMList, queyMoneyDetailById } from "@/api/sys";
 import { rechargeMColumns as columns } from "../columns";
 
 import Recharge from "./Recharge";
 import Deduction from "./Deduction";
+import Detail from "./Detail";
 
 export default {
   name: "recharge-management",
   components: {
     Recharge,
-    Deduction
+    Deduction,
+    Detail
   },
   watch: {},
   data() {
     return {
       showRecharge: false,
       showDeduction: false,
+      showDetail: false,
       styles: {
         height: "calc(100% - 55px)",
         overflow: "auto",
@@ -123,32 +144,33 @@ export default {
         position: "static"
       },
       // 状态： 全部 、 待审核 、 已通过 、 审核失败 ；默认全部
+      // '审核状态 0-待审核 1-审核通过 2-审核失败',
       statusOption: [
         {
-          value: 0,
+          value: "",
           label: "全部"
         },
         {
-          value: 1,
+          value: 0,
           label: "待审核"
         },
         {
-          value: 2,
+          value: 1,
           label: "已通过"
         },
         {
-          value: 3,
+          value: 2,
           label: "审核失败"
         }
       ],
       daterange: [],
       // 查询参数
       searchData: {
-        name: "", //商户名称
+        merchantName: "", //商户名称
         // status: 0, //状态
         status: "", //状态
-        startTime: "", //开始时间
-        endTime: "" //结束时间
+        gmtCreateStart: "", //开始时间
+        gmtCreateEnd: "" //结束时间
       },
       loading: false, //列表加载动画
       page: {
@@ -157,13 +179,27 @@ export default {
         total: 0 //数据总数
       },
       columns,
-      tableData: []
+      tableData: [],
+      detailTitle: "充值信息", //充值信息 扣款信息
+      detailData: {} //查看详情
     };
   },
   created() {
     this.queryTableData();
   },
   methods: {
+    async detail(id) {
+      // id = 14;
+      const { code, data, msg } = await queyMoneyDetailById(id);
+      if (code == 200) {
+        const { changeType } = data;
+        this.detailTitle = changeType == 0 ? "充值信息" : "扣款信息";
+        this.detailData = data;
+        this.showDetail = true;
+      } else {
+        this.msgErr(msg);
+      }
+    },
     goback() {
       this.$store.dispatch("financial/changeCompName", "business-recharge");
     },
@@ -174,8 +210,8 @@ export default {
     },
     changeStartDate(arr) {
       // yyyy-MM-dd
-      this.searchData.startTime = arr[0];
-      this.searchData.endTime = arr[1];
+      this.searchData.gmtCreateStart = arr[0];
+      this.searchData.gmtCreateEnd = arr[1];
     },
 
     // 刷新搜索
@@ -191,13 +227,26 @@ export default {
       this.page.pageNum = pageNum || 1;
       this.loading = true;
 
-      queryLuckDrawList({
+      queryRechargeMList({
         ...this.searchData,
         ...this.page
       }).then(res => {
         // console.log(res);
         if (res.code == 200) {
-          this.tableData = res.data.records;
+          this.tableData = res.data.records.map(item => {
+            /**
+              merchantType:
+                0 merchantName
+                1 brandName
+            */
+            if (item.merchantType == 0) {
+              item.name = item.merchantName;
+            } else {
+              item.name = item.brandName;
+            }
+
+            return item;
+          });
           // this.banner_page_req.start = res.data.current; //分页查询起始记录
           this.page.pageNum = res.data.current; //分页查询起始记录
           this.page.total = res.data.total; //列表总数
@@ -213,11 +262,11 @@ export default {
       this.daterange = [];
       // 重置查询参数
       this.searchData = {
-        name: "", //商户名称
+        merchantName: "", //商户名称
         // status: 0, //状态
         status: "", //状态
-        startTime: "", //开始时间
-        endTime: "" //结束时间
+        gmtCreateStart: "", //开始时间
+        gmtCreateEnd: "" //结束时间
       };
 
       this.page = {

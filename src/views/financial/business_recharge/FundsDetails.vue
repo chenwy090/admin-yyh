@@ -2,13 +2,13 @@
 <template>
   <!-- 资金明细 -->
   <div>
-    <h2 class="header"> 财务中心 > 商户账务 > 商户预充值 > 资金明细 -- {{businessId}}-- {{businessName}}</h2>
+    <h2 class="header">财务中心 > 商户账务 > 商户预充值 > 资金明细 -- {{merchantId}}-- {{merchantName}}</h2>
     <h3 class="title">一兆韦德【浙江/杭州】</h3>
     <div class="query-row">
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
           <FormItem label="类型：" :label-width="80">
-            <Select v-model="searchData.type" style="width:100px">
+            <Select v-model="searchData.changeType" style="width:100px">
               <Option
                 v-for="item in typeOption"
                 :value="item.value"
@@ -60,38 +60,41 @@
 import { createNamespacedHelpers } from "vuex";
 const { mapState, mapActions } = createNamespacedHelpers("financial");
 
-import { postRequest } from "@/libs/axios";
-import { queryLuckDrawList } from "@/api/sys";
+import { queryFundsList } from "@/api/sys";
 import { fundsColumns } from "./columns";
 
 export default {
   name: "funds-details",
   computed: {
-    ...mapState(["businessId", "businessName"])
+    // merchantType: "", //商户类型
+    // merchantId: "", //商户id
+    // merchantName: "", //商户名称
+    ...mapState(["merchantType", "merchantId", "merchantName"])
+    // ...mapState(["businessId", "businessName"])
   },
   data() {
     return {
       //类型：全部、充值、兑换U贝；默认全部
       typeOption: [
         {
-          value: 0,
+          value: "",
           label: "全部"
         },
         {
-          value: 1,
+          value: 0,
           label: "充值"
         },
         {
-          value: 2,
-          label: "兑换U贝"
+          value: 1,
+          label: "扣款"
         }
       ],
       daterange: [],
       // 查询参数
       searchData: {
-        type: 0, //类型
-        startTime: "", //开始时间
-        endTime: "" //结束时间
+        changeType: "", //类型
+        gmtCreateStart: "", //开始时间
+        gmtCreateEnd: "" //结束时间
       },
       loading: false, //列表加载动画
       page: {
@@ -115,8 +118,8 @@ export default {
     },
     changeStartDate(arr) {
       // yyyy-MM-dd
-      this.searchData.startTime = arr[0];
-      this.searchData.endTime = arr[1];
+      this.searchData.gmtCreateStart = arr[0];
+      this.searchData.gmtCreateEnd = arr[1];
     },
 
     // 刷新搜索
@@ -128,45 +131,53 @@ export default {
       this.queryTableData(pageNum);
     },
     // 查询
-    queryTableData(pageNum) {
+    async queryTableData(pageNum) {
       this.page.pageNum = pageNum || 1;
       this.loading = true;
 
-      queryLuckDrawList({
-        businessId: this.businessId,
-        province: this.province,
-        provinceName: this.provinceName,
-        city: this.city,
-        cityName: this.cityName,
+      let {
+        code,
+        data: { records, current, total, size }
+      } = await queryFundsList({
+        merchantAccountId: this.merchantId,
+        changeType: this.merchantType,
         ...this.searchData,
         ...this.page
-      }).then(res => {
-        // console.log(res);
-        if (res.code == 200) {
-          this.tableData = res.data.records;
-          // this.banner_page_req.start = res.data.current; //分页查询起始记录
-          this.page.pageNum = res.data.current; //分页查询起始记录
-          this.page.total = res.data.total; //列表总数
-          this.page.pageSize = res.data.size; //每页数据
-          this.loading = false;
-        } else {
-          this.$Message.error(res.code + " 数据加载失败!", 3);
-          this.loading = false;
-        }
       });
+      // console.log(res);
+      if (code == 200) {
+        this.tableData = records.map(item => {
+          // beforeAmount > afterAmount  => -changeAmount
+          if (item.beforeAmount > item.afterAmount) {
+            item.changeAmount = -item.changeAmount;
+          }
+          return item;
+        });
+        // this.banner_page_req.start = res.data.current; //分页查询起始记录
+        this.page.pageNum = current; //分页查询起始记录
+        this.page.total = total; //列表总数
+        this.page.pageSize = size; //每页数据
+        this.loading = false;
+      } else {
+        this.$Message.error(code + " 数据加载失败!", 3);
+        this.loading = false;
+      }
+
+      this.loading = false;
     },
     reset() {
       this.daterange = [];
       // 重置查询参数
       this.searchData = {
-        type: 0, //类型
-        startTime: "", //开始时间
-        endTime: "" //结束时间
+        changeType: "", //类型
+        gmtCreateStart: "", //开始时间
+        gmtCreateEnd: "" //结束时间
       };
 
       this.page = {
         pageNum: 1, //页码
-        pageSize: 10 //每页数量
+        pageSize: 10, //每页数量
+        total: 0 //数据总数
       };
 
       //重新查询一遍

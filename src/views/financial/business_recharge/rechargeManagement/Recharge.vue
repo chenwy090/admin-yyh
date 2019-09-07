@@ -9,18 +9,20 @@
         :rules="ruleValidate"
         :label-width="100"
       >
-        <FormItem label="商户类型：" prop="businessType">
-          <RadioGroup v-model="formData.businessType">
-            <Radio v-for="item in businessTypeList" :label="item.value" :key="item.value">
+        <FormItem label="商户类型：" prop="merchantType">
+          <RadioGroup v-model="formData.merchantType">
+            <Radio v-for="item in merchantTypeOption" :label="item.value" :key="item.value">
               <span>{{item.label}}</span>
             </Radio>
           </RadioGroup>
         </FormItem>
-
+        <!-- prop="businessName" -->
+        {{`${formData.merchantType?'brandName':'merhcantName'}`}}
         <!-- :rules="{ required: true, message: '请选择${businessTypeLabel}' }" -->
+        <!-- :prop="`${formData.merchantType?'brandName':'merhcantName'}`" -->
         <FormItem
-          :label="`所属${businessTypeLabel}：`"
-          prop="businessName"
+          label="商户名称："
+          :prop="`businessName`"
           :rules="{ required: true, validator: validateBusinessName }"
         >
           <Row>
@@ -36,7 +38,13 @@
           </Row>
         </FormItem>
         <Row class="box" style="margin-bottom:20px;">
-          <Table size="small" border width="600px" :columns="dynamicColumns" :data="tableData">
+          <Table
+            size="small"
+            border
+            width="600px"
+            :columns="dynamicColumns"
+            :data="dynamicTableData"
+          >
             <template slot-scope="{ row }" slot="operate">
               <Button
                 size="small"
@@ -100,7 +108,7 @@
             <Col span="10">
               <Tooltip trigger="focus" title="提醒" content="最多500个汉字" placement="right">
                 <Input
-                  v-model="formData.remarks"
+                  v-model="formData.remark"
                   type="textarea"
                   style="width:300px"
                   :autosize="{minRows: 4,maxRows: 8}"
@@ -114,12 +122,15 @@
 
         <FormItem
           label="收费条目："
-          prop="compatibleList"
+          prop="merchantMoneyChargesRecords"
           :rules="{ required: true, validator: validateCompatibleList }"
         >
           <Button type="primary" icon="md-add-circle" size="small" @click="compatible_addInfo">新增</Button>
         </FormItem>
-        <FeeEntry v-if="formData.compatibleList.length" :compatibleList="formData.compatibleList"></FeeEntry>
+        <FeeEntry
+          v-if="formData.merchantMoneyChargesRecords.length"
+          :merchantMoneyChargesRecords="formData.merchantMoneyChargesRecords"
+        ></FeeEntry>
       </Form>
     </div>
     <div class="demo-drawer-footer">
@@ -132,17 +143,28 @@
       :showBusinessList.sync="showBusinessList"
       @seclectedTr-event="selectedTrCallBack"
     ></BusinessList>
+    <BrandList
+      v-if="showBrandList"
+      :showBrandList.sync="showBrandList"
+      @seclectedTr-event="selectedTrCallBack"
+    ></BrandList>
   </div>
 </template>
 <script>
+import { formatDate } from "@/libs/dataUtil";
+
 import BusinessList from "../BusinessList";
+import BrandList from "../BrandList";
 import FeeEntry from "./FeeEntry";
-// import columns from "../columns";
+
+import { rechargeAndDeduction } from "@/api/sys";
+
 export default {
   name: "recharge-edit",
   components: {
     BusinessList,
-    FeeEntry
+    FeeEntry,
+    BrandList
   },
   props: {
     showRecharge: {
@@ -152,21 +174,39 @@ export default {
   },
   computed: {
     dynamicColumns() {
-      return this.formData.businessType == 1 ? this.columns1 : this.columns2;
+      return this.formData.merchantType == 0 ? this.columns1 : this.columns2;
+    },
+    dynamicTableData() {
+      return this.formData.merchantType == 0
+        ? this.tableData1
+        : this.tableData2;
     }
   },
   watch: {
-    ["formData.businessType"]() {
-      const type = this.formData.businessType;
+    ["formData.merchantType"]() {
+      const type = this.formData.merchantType;
 
-      // this.$refs.form.resetFields();
-      this.businessTypeList.some(item => {
+      this.merchantTypeOption.some(item => {
         let r = item.value == type;
         if (r) {
           this.businessTypeLabel = item.label;
         }
         return r;
       });
+
+      if (type == 0) {
+        this.formData.brandId = this.formData.businessId;
+        this.formData.brandName = this.formData.businessName;
+
+        this.formData.businessId = this.formData.merchantId;
+        this.formData.businessName = this.formData.merchantName;
+      } else {
+        this.formData.merchantId = this.formData.businessId;
+        this.formData.merchantName = this.formData.businessName;
+
+        this.formData.businessId = this.formData.brandId;
+        this.formData.businessName = this.formData.brandName;
+      }
 
       this.$refs.form.validateField("businessName");
     }
@@ -176,35 +216,43 @@ export default {
       // 新增、修改 任务抽奖banner
       isShow: false,
       title: "扣款信息",
-      styles: {
-        height: "calc(100% - 55px)",
-        overflow: "auto",
-        paddingBottom: "53px",
-        position: "static"
-      },
       data: {},
-      // businessType 商户/品牌
+      // merchantType 商户/品牌
       businessTypeLabel: "商户",
-      businessTypeList: [
-        { value: 1, label: "商户" },
-        { value: 2, label: "品牌" }
+      merchantTypeOption: [
+        {
+          value: 0,
+          label: "本地商户（单店）"
+        },
+        {
+          value: 1,
+          label: "本地商户（多店）"
+        }
       ],
       formData: {
-        businessType: 1,
-        businessName: "", //
-        receivables: "", //应收款
-        contractNumber: "", //合同号
-        biller: "", //签单销售 销售名字 salesName
+        changeType: 0, //充值0 扣款1 写死
+        merchantType: 0,
+        businessId: "",
+        businessName: "",
+        merchantId: "",
+        merchantName: "",
+        brandId: "", //
+        brandName: "", //
+        receivables: "12", //应收款
+        contractNumber: "contractNumber", //合同号
+        biller: "biller", //签单销售 销售名字 salesName
         // 签单销售
-        remarks: "", //备注 必填
-        compatibleList: [] //收款明细
+        remark: "remarks", //备注 必填
+        merchantMoneyChargesRecords: [] //收款明细
       },
       ruleValidate: {},
       showBusinessList: false,
-      tableData: [],
+      showBrandList: false,
+      tableData1: [],
+      tableData2: [],
       columns1: [
         {
-          title: "商户编号1",
+          title: "商户编号",
           align: "center",
           width: 200,
           key: "merchantId"
@@ -214,12 +262,6 @@ export default {
           align: "center",
           width: 200,
           key: "name"
-        },
-        {
-          title: "地址",
-          align: "center",
-          minWidth: 300,
-          key: "address"
         },
         {
           title: "操作",
@@ -231,22 +273,16 @@ export default {
       ],
       columns2: [
         {
-          title: "商户编号2",
-          align: "center",
-          width: 200,
-          key: "merchantId"
-        },
-        {
-          title: "商户名称",
+          title: "品牌名称",
           align: "center",
           width: 200,
           key: "name"
         },
         {
-          title: "地址",
+          title: "关联店铺数",
           align: "center",
-          minWidth: 300,
-          key: "address"
+          width: 200,
+          key: "relationMerchantCount"
         },
         {
           title: "操作",
@@ -260,26 +296,35 @@ export default {
   },
   methods: {
     compatible_addInfo() {
-      this.formData.compatibleList.push({
+      this.formData.merchantMoneyChargesRecords.push({
         id: "",
         paymentMode: "",
         actualAmount: "",
         payee: "",
         receivedDate: "",
+        receivedDateStr: "",
         serialNumber: ""
       });
     },
     selectedTrCallBack(data) {
       console.log("selectedTrCallBack----", data);
-      this.formData.businessName = data.name;
-      this.tableData = [data.row];
+
+      const { merchantType, id, name, row } = data;
+      this.formData.businessId = id;
+      this.formData.businessName = name;
+      if (merchantType == 0) {
+        this.tableData1 = [row];
+      } else {
+        this.tableData2 = [row];
+      }
     },
     handleChoose() {
-      if (this.formData.businessType == 1) {
+      //  商户类型 0-本地商户（单店），1-本地商户（多店）
+      if (this.formData.merchantType == 0) {
         this.showBusinessList = true;
       } else {
         // brand品牌
-        this.showBusinessList = true;
+        this.showBrandList = true;
       }
     },
     validateCompatibleList(rule, value, callback) {
@@ -356,8 +401,20 @@ export default {
       }
     },
     remove() {
+      const type = this.formData.merchantType;
+
+      this.formData.businessId = "";
       this.formData.businessName = "";
-      this.tableData = [];
+
+      if (type == 0) {
+        this.formData.merchantId = "";
+        this.formData.merchantName = "";
+        this.tableData1 = [];
+      } else {
+        this.formData.brandId = "";
+        this.formData.brandName = "";
+        this.tableData2 = [];
+      }
     },
     changeDrawType(type) {
       console.log(type);
@@ -373,25 +430,41 @@ export default {
         // console.log(JSON.stringify(this.formValidate));
         if (valid) {
           this.$Message.success("数据验证成功!");
-          let oForm = JSON.parse(JSON.stringify(this.form));
-          let { drawType, checkDrawType } = oForm;
-          if (drawType == 1) {
-            oForm.drawId = checkDrawType;
+
+          let oForm = JSON.parse(JSON.stringify(this.formData));
+          console.log("o1Form", oForm);
+
+          oForm.merchantMoneyChargesRecords = oForm.merchantMoneyChargesRecords.map(
+            item => {
+              item.receivedDateStr = formatDate(
+                new Date(item.receivedDate),
+                "yyyy-MM-dd hh:mm:ss"
+              );
+              return item;
+            }
+          );
+
+          console.log("oForm", oForm);
+          const type = oForm.merchantType;
+
+          if (type == 0) {
+            oForm.merchantId = oForm.businessId;
+            oForm.merchantName = oForm.businessName;
           } else {
-            //drawType == 2
-            oForm.linkUrl = checkDrawType;
+            oForm.brandId = oForm.businessId;
+            oForm.brandName = oForm.businessName;
           }
+          let { code, msg } = await rechargeAndDeduction(oForm);
 
-          // let res = await fnName(oForm);
-
-          // if (res.code == 200) {
-          //   // 关闭对话框
-          //   this.closeDialog();
-          //   //刷新列表数据
-          //   this.$emit("refresh");
-          // } else {
-          //   this.msgErr(res.msg);
-          // }
+          if (code == 200) {
+            this.msgOk("保存成功");
+            // 关闭对话框
+            this.closeDialog();
+            //刷新列表数据
+            this.$emit("refresh");
+          } else {
+            this.msgErr(msg);
+          }
         } else {
           this.$Message.error("数据验证失败！");
         }

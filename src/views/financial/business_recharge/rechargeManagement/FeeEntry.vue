@@ -4,12 +4,18 @@
   <div>
     <Alert>
       <!-- :label="'Item ' + index" -->
-      <Row type="flex" justify="center" :gutter="10" v-for="(item, index) in compatibleList" :key="index">
+      <Row
+        type="flex"
+        justify="center"
+        :gutter="10"
+        v-for="(item, index) in merchantMoneyChargesRecords"
+        :key="index"
+      >
         <Col span="4">
           <FormItem
             :key="index"
             :label-width="0"
-            :prop="`compatibleList.${index}.paymentMode`"
+            :prop="`merchantMoneyChargesRecords.${index}.paymentMode`"
             :rules="{required: true,  validator: validateEmpty('请选择支付方式'), trigger: 'blur'}"
           >
             <Select v-model="item.paymentMode" placeholder="请选择支付方式">
@@ -21,7 +27,7 @@
           <FormItem
             :key="index"
             :label-width="0"
-            :prop="`compatibleList.${index}.actualAmount`"
+            :prop="`merchantMoneyChargesRecords.${index}.actualAmount`"
             :rules="{required: true,  validator: validateMoney}"
           >
             <Input v-model="item.actualAmount" placeholder="请填写实际收款金额，小数点后两位" clearable />
@@ -31,7 +37,7 @@
           <FormItem
             :key="index"
             :label-width="0"
-            :prop="`compatibleList.${index}.payee`"
+            :prop="`merchantMoneyChargesRecords.${index}.payee`"
             :rules="{required: true,  validator: validateEmpty('请填写收款人'), trigger: 'blur'}"
           >
             <Input v-model="item.payee" :maxlength="10" placeholder="请填写收款人" clearable />
@@ -41,17 +47,21 @@
           <FormItem
             :key="index"
             :label-width="0"
-            :prop="`compatibleList.${index}.receivedDate`"
+            :prop="`merchantMoneyChargesRecords.${index}.receivedDate`"
             :rules="{required: true, validator: validateEmpty('请填写收款日期'), trigger: 'blur'}"
           >
-            <DatePicker type="date" placeholder="请填写收款日期" v-model="item.receivedDate"></DatePicker>
+            <DatePicker
+              type="datetime"
+              placeholder="请填写收款日期"
+              v-model="item.receivedDate"
+            ></DatePicker>
           </FormItem>
         </Col>
         <Col span="5">
           <FormItem
             :key="index"
             :label-width="0"
-            :prop="`compatibleList.${index}.serialNumber`"
+            :prop="`merchantMoneyChargesRecords.${index}.serialNumber`"
             :rules="{required: true,  validator: validateEmpty('请填写流水号'), trigger: 'blur'}"
           >
             <Input v-model="item.serialNumber" :maxlength="20" placeholder="请填写流水号" clearable />
@@ -75,7 +85,7 @@
 export default {
   name: "fee-entry",
   props: {
-    compatibleList: {
+    merchantMoneyChargesRecords: {
       type: Array,
       default: function() {
         return [
@@ -115,7 +125,7 @@ export default {
   methods: {
     // 删除兼容品牌
     compatible_delInfo(index, item) {
-      this.compatibleList.splice(index, 1);
+      this.merchantMoneyChargesRecords.splice(index, 1);
     },
     validateEmpty(msg) {
       return function(rule, value, callback) {

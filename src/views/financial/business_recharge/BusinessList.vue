@@ -112,7 +112,7 @@ import {
 import { uniqueArray } from "@/libs/date";
 
 export default {
-  name: "merchant-staff-add",
+  name: "business-list",
   props: {
     employeeId: String
   },
@@ -156,6 +156,7 @@ export default {
                 on: {
                   "on-change": () => {
                     console.log("change", params.row);
+                    self.choice.merchantType = 0;
                     self.choice.id = id;
                     self.choice.name = name;
                     self.choice.row = params.row;
@@ -340,18 +341,10 @@ export default {
 .form > div {
   display: inline-block;
 }
-/*调整table cell间隔和行高*/
-.ivu-table-cell {
-  padding-left: 1px;
-  padding-right: 1px;
-}
-.ivu-table-small td {
-  height: 30px;
-}
 </style>
 
-<style  lang="less">
-.bussiness-list {
+<style lang="less">
+.bussiness-list-box {
   /*调整table cell间隔和行高*/
   .ivu-table-cell {
     padding-left: 1px;

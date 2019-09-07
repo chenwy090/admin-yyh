@@ -1,5 +1,5 @@
 <template>
-  <!--  消耗  -->
+  <!--  U贝消耗 changeType = 1  -->
   <div class="consume-edit">
     <Modal
       v-model="isShow"
@@ -16,13 +16,13 @@
         <Form
           label-position="right"
           ref="form"
-          :model="form"
+          :model="formData"
           :rules="ruleValidate"
           :label-width="100"
         >
-          <FormItem label="商户类型：" prop="businessType">
-            <RadioGroup v-model="form.businessType">
-              <Radio v-for="item in businessTypeList" :label="item.value" :key="item.value">
+          <FormItem label="商户类型：" prop="merchantType">
+            <RadioGroup v-model="formData.merchantType">
+              <Radio v-for="item in merchantTypeOption" :label="item.value" :key="item.value">
                 <span>{{item.label}}</span>
               </Radio>
             </RadioGroup>
@@ -30,14 +30,14 @@
 
           <!-- :rules="{ required: true, message: '请选择${businessTypeLabel}' }" -->
           <FormItem
-            :label="`所属${businessTypeLabel}：`"
+            label="商户名称："
             prop="businessName"
             :rules="{ required: true, validator: validateBusinessName }"
           >
             <Row>
               <Col span="16">
                 <Input
-                  v-model="form.businessName"
+                  v-model="formData.businessName"
                   :placeholder="`点击按钮选择${businessTypeLabel}`"
                   disabled
                 >
@@ -47,7 +47,13 @@
             </Row>
           </FormItem>
           <Row class="box" style="margin-bottom:20px;">
-            <Table size="small" border width="600px" :columns="dynamicColumns" :data="tableData">
+            <Table
+              size="small"
+              border
+              width="600px"
+              :columns="dynamicColumns"
+              :data="dynamicTableData"
+            >
               <template slot-scope="{ row }" slot="operate">
                 <Button
                   size="small"
@@ -58,20 +64,20 @@
               </template>
             </Table>
           </Row>
-          <FormItem label="消耗U贝：" prop="ubay" :rules="{ required: true, validator: validateUbay }">
+          <FormItem label="消耗U贝：" prop="reduceUbay" :rules="{ required: true, validator: validateUbay }">
             <Row>
               <Col span="16">
-                <Input style="width:80%" v-model="form.ubay" placeholder="请输入需要消耗U贝的数量" clearable />
+                <Input style="width:80%" v-model="formData.reduceUbay" placeholder="请输入需要消耗U贝的数量" clearable />
               </Col>
             </Row>
           </FormItem>
           <!-- 必填项 -->
-          <FormItem label="备注：" prop="remarks">
+          <FormItem label="备注：" prop="remark">
             <Row>
               <Col span="10">
                 <Tooltip trigger="focus" title="提醒" content="最多200个汉字" placement="right">
                   <Input
-                    v-model="form.remarks"
+                    v-model="formData.remark"
                     type="textarea"
                     style="width:300px"
                     :autosize="{minRows: 4,maxRows: 8}"
@@ -94,15 +100,24 @@
       :showBusinessList.sync="showBusinessList"
       @seclectedTr-event="selectedTrCallBack"
     ></BusinessList>
+    <BrandList
+      v-if="showBrandList"
+      :showBrandList.sync="showBrandList"
+      @seclectedTr-event="selectedTrCallBack"
+    ></BrandList>
   </div>
 </template>
 <script>
 import BusinessList from "../BusinessList";
-// import columns from "../columns";
+import BrandList from "../BrandList";
+
+import { exchangeAndConsume } from "@/api/sys";
+
 export default {
   name: "consume-edit",
   components: {
-    BusinessList
+    BusinessList,
+    BrandList
   },
   props: {
     showConsume: {
@@ -112,15 +127,19 @@ export default {
   },
   computed: {
     dynamicColumns() {
-      return this.form.businessType == 1 ? this.columns1 : this.columns2;
+      return this.formData.merchantType == 0 ? this.columns1 : this.columns2;
+    },
+    dynamicTableData() {
+      return this.formData.merchantType == 0
+        ? this.tableData1
+        : this.tableData2;
     }
   },
   watch: {
-    ["form.businessType"]() {
-      const type = this.form.businessType;
+    ["formData.merchantType"]() {
+      const type = this.formData.merchantType;
 
-      // this.$refs.form.resetFields();
-      this.businessTypeList.some(item => {
+      this.merchantTypeOption.some(item => {
         let r = item.value == type;
         if (r) {
           this.businessTypeLabel = item.label;
@@ -128,17 +147,31 @@ export default {
         return r;
       });
 
+      if (type == 0) {
+        this.formData.brandId = this.formData.businessId;
+        this.formData.brandName = this.formData.businessName;
+
+        this.formData.businessId = this.formData.merchantId;
+        this.formData.businessName = this.formData.merchantName;
+      } else {
+        this.formData.merchantId = this.formData.businessId;
+        this.formData.merchantName = this.formData.businessName;
+
+        this.formData.businessId = this.formData.brandId;
+        this.formData.businessName = this.formData.brandName;
+      }
+
       this.$refs.form.validateField("businessName");
     },
-    ["form.money"]() {
+    ["formData.money"]() {
       // 对第二个密码框单独验证 如果为空串则认为验证通过,
       this.$refs.form.validateField("money", errMsg => {
         if (errMsg.length) {
           //  有错误
-          this.form.ubay = 0;
+          this.formData.ubay = 0;
         } else {
           //  没错误
-          this.form.ubay = this.form.money * 1000;
+          this.formData.ubay = this.formData.money * 1000;
         }
       });
     }
@@ -162,24 +195,39 @@ export default {
       data: {},
       // businessType 商户/品牌
       businessTypeLabel: "商户",
-      businessTypeList: [
-        { value: 1, label: "商户" },
-        { value: 2, label: "品牌" }
+      merchantTypeOption: [
+        {
+          value: 0,
+          label: "本地商户（单店）"
+        },
+        {
+          value: 1,
+          label: "本地商户（多店）"
+        }
       ],
-      form: {
-        businessType: 1,
-        businessName: "", //
-        ubay: "", //
-        remarks: "" //备注 必填
+      formData: {
+        changeType: 1, //U贝兑换0 U贝消耗1 写死
+        merchantType: 0,
+        businessId: "",
+        businessName: "",
+        merchantId: "",
+        merchantName: "",
+        brandId: "", //
+        brandName: "", //
+        anticipatedDeduction: "", // 应扣款
+        actualDeduction: "", //实扣款
+        remark: "remarks" //备注 必填
       },
       ruleValidate: {
-        remarks: [{ validator: validateRemarks, trigger: "blur" }]
+        remark: [{ validator: validateRemarks, trigger: "blur" }]
       },
       showBusinessList: false,
-      tableData: [],
+      showBrandList: false,
+      tableData1: [],
+      tableData2: [],
       columns1: [
         {
-          title: "商户编号1",
+          title: "商户编号",
           align: "center",
           width: 200,
           key: "merchantId"
@@ -189,12 +237,6 @@ export default {
           align: "center",
           width: 200,
           key: "name"
-        },
-        {
-          title: "地址",
-          align: "center",
-          minWidth: 300,
-          key: "address"
         },
         {
           title: "操作",
@@ -206,22 +248,16 @@ export default {
       ],
       columns2: [
         {
-          title: "商户编号2",
-          align: "center",
-          width: 200,
-          key: "merchantId"
-        },
-        {
-          title: "商户名称",
+          title: "品牌名称",
           align: "center",
           width: 200,
           key: "name"
         },
         {
-          title: "地址",
+          title: "关联店铺数",
           align: "center",
-          minWidth: 300,
-          key: "address"
+          width: 200,
+          key: "relationMerchantCount"
         },
         {
           title: "操作",
@@ -236,15 +272,22 @@ export default {
   methods: {
     selectedTrCallBack(data) {
       console.log("selectedTrCallBack----", data);
-      this.form.businessName = data.name;
-      this.tableData = [data.row];
+      const { merchantType, id, name, row } = data;
+      this.formData.businessId = id;
+      this.formData.businessName = name;
+      if (merchantType == 0) {
+        this.tableData1 = [row];
+      } else {
+        this.tableData2 = [row];
+      }
     },
     handleChoose() {
-      if (this.form.businessType == 1) {
+      //  商户类型 0-本地商户（单店），1-本地商户（多店）
+      if (this.formData.merchantType == 0) {
         this.showBusinessList = true;
       } else {
         // brand品牌
-        this.showBusinessList = true;
+        this.showBrandList = true;
       }
     },
     validateBusinessName(rule, value, callback) {
@@ -267,8 +310,20 @@ export default {
       }
     },
     remove() {
-      this.form.businessName = "";
-      this.tableData = [];
+      const type = this.formData.merchantType;
+
+      this.formData.businessId = "";
+      this.formData.businessName = "";
+
+      if (type == 0) {
+        this.formData.merchantId = "";
+        this.formData.merchantName = "";
+        this.tableData1 = [];
+      } else {
+        this.formData.brandId = "";
+        this.formData.brandName = "";
+        this.tableData2 = [];
+      }
     },
     changeDrawType(type) {
       console.log(type);
@@ -284,25 +339,30 @@ export default {
         // console.log(JSON.stringify(this.formValidate));
         if (valid) {
           this.$Message.success("数据验证成功!");
-          let oForm = JSON.parse(JSON.stringify(this.form));
-          let { drawType, checkDrawType } = oForm;
-          if (drawType == 1) {
-            oForm.drawId = checkDrawType;
+
+          let oForm = JSON.parse(JSON.stringify(this.formData));
+
+          const type = oForm.merchantType;
+
+          if (type == 0) {
+            oForm.merchantId = oForm.businessId;
+            oForm.merchantName = oForm.businessName;
           } else {
-            //drawType == 2
-            oForm.linkUrl = checkDrawType;
+            oForm.brandId = oForm.businessId;
+            oForm.brandName = oForm.businessName;
           }
 
-          // let res = await fnName(oForm);
+          let { code, msg } = await exchangeAndConsume(oForm);
 
-          // if (res.code == 200) {
-          //   // 关闭对话框
-          //   this.closeDialog();
-          //   //刷新列表数据
-          //   this.$emit("refresh");
-          // } else {
-          //   this.msgErr(res.msg);
-          // }
+          if (code == 200) {
+            this.msgOk("保存成功");
+            // 关闭对话框
+            this.closeDialog();
+            //刷新列表数据
+            this.$emit("refresh");
+          } else {
+            this.msgErr(msg);
+          }
         } else {
           this.$Message.error("数据验证失败！");
         }

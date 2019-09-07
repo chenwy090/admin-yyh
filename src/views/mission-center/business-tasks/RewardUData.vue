@@ -2,44 +2,33 @@
   <div class="xxx">
     <!-- 赏U查看 数据 RewardUData   -->
     <h2 class="header">赏U查看 数据</h2>
+    <div v-show="tableData.length">投放{{xxxxxx}}U贝 &nnsp;&nnsp; 奖励 {{xxxxxx}}U贝</div>
     <div class="query-row">
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
           <FormItem label="用户手机：" :label-width="85">
-            <Input style="width:200px" type="text" v-model="searchData.name" placeholder="请输入"></Input>
-          </FormItem>
-
-          <FormItem label="类型：" :label-width="60">
-            <Select v-model="searchData.type" style="width:100px">
-              <Option
-                v-for="item in typeOption"
-                :value="item.value"
-                :key="item.value+item.label"
-              >{{ item.label }}</Option>
-            </Select>
+            <Input style="width:200px" type="text" v-model="searchData.mobile" placeholder="请输入"></Input>
           </FormItem>
           <!-- 商户类型：商户 品牌 -->
           <FormItem label="商户类型：" :label-width="80">
-            <Select v-model="searchData.businessType" style="width:100px">
-              <Option
-                v-for="item in businessTypeOption"
-                :value="item.value"
-                :key="item.value+item.label"
-              >{{ item.label }}</Option>
+            <Select v-model="searchData.merchantType" style="width:100px" clearable>
+              <Option v-for="(v,k) in merchantTypeOption" :value="k" :key="k">{{ v }}</Option>
             </Select>
           </FormItem>
           <FormItem label="奖励类型：" :label-width="80">
-            <Select v-model="searchData.rewardsType" style="width:150px">
-              <Option
-                v-for="item in rewardsTypeOption"
-                :value="item.value"
-                :key="item.value+item.label"
-              >{{ item.label }}</Option>
+            <Select v-model="searchData.awardType" style="width:150px" clearable>
+              <Option v-for="(v,k) in awardTypeOption" :value="k" :key="k">{{ v }}</Option>
             </Select>
           </FormItem>
 
-          <FormItem label="优惠券：" :label-width="85">
-            <Input style="width:200px" type="text" v-model="searchData.name" placeholder="请输入"></Input>
+          <FormItem label="优惠券名称：" :label-width="85">
+            <Input
+              style="width:200px"
+              type="text"
+              v-model="searchData.couponTitle"
+              placeholder="请输入"
+              clearable
+            ></Input>
           </FormItem>
 
           <FormItem label="创建时间：" :label-width="100">
@@ -82,97 +71,49 @@
   </div>
 </template>
 <script>
-import { postRequest } from "@/libs/axios";
-import { queryLuckDrawList } from "@/api/sys";
+import { createNamespacedHelpers } from "vuex";
+const { mapState } = createNamespacedHelpers("missionCenter");
+import { queryMerchantDataById } from "@/api/sys";
 import { udataColumns as columns } from "./columns";
 
 export default {
   name: "reward-u-data",
-  watch: {},
+  computed: {
+    ...mapState(["id"])
+  },
   data() {
     return {
-      id: "",
+      // id: "",
       /**
         投放：统计整个任务下所有券预计投放的U贝的数量。
         奖励：统计整个任务下被用户已领取的U贝数量。
       */
-      typeOption: [
-        {
-          value: 0,
-          label: "投放"
-        },
-        {
-          value: 1,
-          label: "奖励"
-        }
-      ],
+      receiveNum: "", //领取数量
+      anticipatedUbay: "", //核销数量
       // 商户类型：商户 品牌
-      businessTypeOption: [
-        {
-          value: 0,
-          label: "商户"
-        },
-        {
-          value: 1,
-          label: "品牌"
-        }
-      ],
+      merchantTypeOption: {
+        "0": "商户",
+        "1": "品牌"
+      },
       // 奖励类型 rewards “领取、核销、作为分享者，对方领券获奖励、作为分享者，对方用券获奖励”。 默认显示“请选择”。
-      rewardsTypeOption: [
-        {
-          value: 0,
-          label: "领取"
-        },
-        {
-          value: 1,
-          label: "核销"
-        },
-        {
-          value: 2,
-          label: "作为分享者"
-        },
-        {
-          value: 3,
-          label: "对方领券获奖励"
-        },
-        {
-          value: 4,
-          label: "作为分享者"
-        },
-        {
-          value: 5,
-          label: "对方用券获奖励"
-        }
-      ],
+      awardTypeOption: {
+        "1": "领取",
+        "2": "核销",
+        "3": "分享领取",
+        "4": "分享核销"
+      },
       // 状态 status 显示“未开始、进行中、已结束、已终止”选项。	默认显示“请选择”。
-      statusOption: [
-        {
-          value: 0,
-          label: "未开始"
-        },
-        {
-          value: 1,
-          label: "进行中"
-        },
-        {
-          value: 2,
-          label: "已结束"
-        },
-        {
-          value: 3,
-          label: "已终止"
-        }
-      ],
       daterange: [],
       // 查询参数
       searchData: {
-        name: "", //任务名称
-        startTime: "",
-        endTime: "",
-        type: "",
-        businessType: "",
-        rewardsType: "",
-        status: "" // 状态
+        mobile: "", //手机号
+        // 商户类型 0-本地商户（单店），1-本地商户（多店）
+        merchantType: "", //商户类型
+        // 奖励类型 1-领取 2-核销 3-分享领取 4-分享核销
+        awardType: "", //奖励类型
+        couponTitle: "", //优惠券名称
+        createTimeStart: "",
+        createTimeEnd: ""
       },
       loading: false, //列表加载动画
       page: {
@@ -184,35 +125,28 @@ export default {
       tableData: []
     };
   },
-  created() {
-    this.queryTableData();
+  mounted() {
+    this.$nextTick(_ => {
+      this.queryTableData();
+    });
   },
   methods: {
     changeStartDate(arr) {
       // yyyy-MM-dd
-      this.searchData.startTime = arr[0];
-      this.searchData.endTime = arr[1];
+      this.searchData.createTimeStart = arr[0];
+      this.searchData.createTimeEnd = arr[1];
     },
     goback() {
       console.log("reward-u");
-      this.$store.dispatch("missionCenter/changeCompName", "reward-u");
+      // this.$store.dispatch("missionCenter/changeCompName", "reward-u");
+      this.changeComp("reward-u");
     },
     handleChange(value, selectedData) {
       console.log("handleChange:", value, selectedData);
     },
-    linkTo(compName, data) {
-      let { id: businessId, name: businessName } = data;
-      this.$store.dispatch("financial/showRechargeDetail", {
-        compName,
-        businessId,
-        businessName
-      });
-    },
     changeComp(compName) {
-      // this.$emit("changeComp", compName);
-      this.$store.dispatch("financial/changeCompName", compName);
+      this.$store.dispatch("missionCenter/changeCompName", compName);
     },
-
     // 刷新搜索
     refresh() {
       this.queryTableData(this.page.pageNum);
@@ -222,44 +156,52 @@ export default {
       this.queryTableData(pageNum);
     },
     // 查询
-    queryTableData(pageNum) {
+    async queryTableData(pageNum) {
       this.page.pageNum = pageNum || 1;
       this.loading = true;
 
-      queryLuckDrawList({
+      let {
+        code,
+        data: { records, current, total, size }
+      } = await queryMerchantDataById({
+        id: this.id,
         ...this.searchData,
         ...this.page
-      }).then(res => {
-        // console.log(res);
-        if (res.code == 200) {
-          this.tableData = res.data.records;
-          // this.banner_page_req.start = res.data.current; //分页查询起始记录
-          this.page.pageNum = res.data.current; //分页查询起始记录
-          this.page.total = res.data.total; //列表总数
-          this.page.pageSize = res.data.size; //每页数据
-          this.loading = false;
-        } else {
-          this.$Message.error(res.code + " 数据加载失败!", 3);
-          this.loading = false;
-        }
       });
+
+      if (code == 200) {
+        this.tableData = records.map(item => {
+          // merchantTypeOption awardTypeOption
+          item.merchantTypeName = this.merchantTypeOption[item.merchantType];
+          item.awardTypeName = this.awardTypeOption[item.awardType];
+          return item;
+        });
+        this.page.pageNum = current; //分页查询起始记录
+        this.page.total = total; //列表总数
+        this.page.pageSize = size; //每页数据
+      } else {
+        this.$Message.error(res.code + " 数据加载失败!", 3);
+      }
+      this.loading = false;
     },
     reset() {
       this.daterange = [];
       // 重置查询参数
       this.searchData = {
-        name: "", //任务名称
-        startTime: "",
-        endTime: "",
-        type: "",
-        businessType: "",
-        rewardsType: "",
-        status: "" // 状态
+        mobile: "", //手机号
+        // 商户类型 0-本地商户（单店），1-本地商户（多店）
+        merchantType: "", //商户类型
+        // 奖励类型 1-领取 2-核销 3-分享领取 4-分享核销
+        awardType: "", //奖励类型
+        couponTitle: "", //优惠券名称
+        createTimeStart: "",
+        createTimeEnd: ""
       };
 
       this.page = {
         pageNum: 1, //页码
-        pageSize: 10 //每页数量
+        pageSize: 10, //每页数量
+        total: 0 //数据总数
       };
 
       //重新查询一遍

@@ -4,8 +4,11 @@ export default {
     namespaced: true,
     state: {
         compName: "business-recharge",
-        businessId: "", //商户id
-        businessName: "", //商户名称
+        merchantType: "", //商户类型
+        merchantId: "", //商户id
+        merchantName: "", //商户名称
+        // businessId: "", //商户id
+        // businessName: "", //商户名称
         province: "", //省
         city: "" //市
     },
@@ -16,8 +19,11 @@ export default {
         },
         showRechargeDetail(state, payload) {
             state.compName = payload.compName;
-            state.businessId = payload.businessId;
-            state.businessName = payload.businessName;
+            state.merchantType = payload.merchantType;
+            state.merchantId = payload.merchantId;
+            state.merchantName = payload.merchantName;
+            // state.businessId = payload.businessId;
+            // state.businessName = payload.businessName;
             console.log("mutation showRechargeDetail", payload);
         }
     },
