@@ -66,7 +66,7 @@
                 <Row class="padding-left-12">
                     <Col span="18">
                     <FormItem label="优惠卷：">
-                        <Button style="width: 150px" type="dashed" :disabled="!modal.type" @click="openCoupon">{{selectCouponObj&&selectCouponObj.name?selectCouponObj.name:'请选择优惠卷'}}</Button>
+                        <Button style="width: 150px" type="dashed" :disabled="!modal.type" @click="openCoupon">{{selectCouponObj&&selectCouponObj.merchantName?selectCouponObj.merchantName:'请选择优惠卷'}}</Button>
                     </FormItem>
                     </Col>
                 </Row>
@@ -236,7 +236,7 @@
                     }else if(!this.modal.uNum&&Number(this.modal.uNum)>Number(upData.remainderPushNum)){
                         this.$Message.error('请填写合适推送人数');
                         return
-                    }else if(!this.selectCouponObj&&!this.selectCouponObj.name){
+                    }else if(!this.selectCouponObj&&!this.selectCouponObj.merchantName){
                             this.$Message.error('请选择优惠卷');
                         return
                     }else if(!this.modal.tokerDate){
@@ -247,7 +247,7 @@
                     params.cityName = this.selectBusinessObj.city;
                     params.couponId = this.selectCouponObj.templateId;
                     params.couponType = this.selectCouponObj.couponType;
-                    params.couponName = this.selectCouponObj.title;
+                    params.couponName = this.selectCouponObj.merchantName;
                     params.expandTime = this.modal.tokerDate+":00";
                     params.expandType = '2';
                     params.maxPushCount = this.modal.uNum;
@@ -261,7 +261,7 @@
                     if(!this.selectBrandObj.name){
                         this.$Message.error('请选择品牌名称');
                         return
-                    }else if(!this.selectCouponObj&&!this.selectCouponObj.name){
+                    }else if(!this.selectCouponObj&&!this.selectCouponObj.merchantName){
                         this.$Message.error('请选择优惠卷');
                         return
                     }else if(!this.modal.tokerDate){
@@ -272,7 +272,7 @@
                     // params.cityName = this.selectBrandObj.cityName;
                     params.couponId = this.selectCouponObj.campId;
                     params.couponType = this.selectCouponObj.couponType;
-                    params.couponName = this.selectCouponObj.name;
+                    params.couponName = this.selectCouponObj.merchantName;
                     params.expandTime = this.modal.tokerDate+":00";
                     params.expandType = '2';
                     params.maxPushCount = this.modal.uNum;

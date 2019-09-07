@@ -80,7 +80,8 @@
                 TableLoading:'',
                 couponForm:{
                     merchantName:'',
-                    couponName:''
+                    couponName:'',
+                    current: 1,
                 },
                 totalSize: 0,
                 current: 1,
@@ -112,7 +113,7 @@
                     },
                     {
                         title: "有效期",
-                        slot: "time",
+                        slot: "timer",
                         align: 'center',
                     }
                 ],
@@ -178,7 +179,7 @@
                 this.listData = [];
                 this.TableLoading = true;
                 let params = {
-                    page:this.current,
+                    page:this.couponForm.current,
                     size:10,
                     cityCode:this.addressValue[1]||'',
                     couponName:this.couponForm.couponName,

@@ -27,7 +27,7 @@
                 <Row v-if="modal.expandType==2&&brandList.length">
                     <Col span="24">
                     <FormItem label="">
-                        <div v-for="item in brandList">{{item.merchantName}}</div>
+                        <div v-for="item in brandList">{{item.name}}</div>
                     </FormItem>
                     </Col>
                 </Row>
@@ -142,13 +142,12 @@
                 this.selectBrandObj = {};
             },
             getPackageData(id,type){
-                postRequest(`/merchant/merchantPackageInfo/getPackage`,{id:id,type: type}).then(res => {
+                if(type==1){
+                    return
+                }
+                postRequest(`/merchant/merchantBrand/list/merchant`,{brandId:id,brandLevel: 1}).then(res => {
                     if (res.code === "200") {
-                        console.log(res);
-                        this.upData = res.data;
-                        if(this.modal.expandType==2){
-                            this.brandList = res.data.merchantReqList||[];
-                        }
+                        this.brandList = res.data||[];
                     } else {
                         this.$Message.error(res.msg);
                         this.brandList = [];
@@ -175,7 +174,6 @@
                 })
             },
             selectBrand(e){
-                debugger
                 this.selectBrandObj = e;
                 this.brandVolumeModal = false;
                 if(e&&e.id){
