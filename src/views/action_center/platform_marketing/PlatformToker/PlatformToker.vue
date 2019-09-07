@@ -163,12 +163,11 @@
                     },
                     {
                         title: "拓客时间",
-                        width: 200,
                         key: "expandTime"
                     },
                     {
                         title: "操作人",
-                        width: 100,
+                        width: 150,
                         key: "operatorBy"
                     }
                 ],

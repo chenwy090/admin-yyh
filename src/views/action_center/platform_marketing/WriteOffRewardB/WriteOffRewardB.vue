@@ -160,7 +160,6 @@
                     },
                     {
                         title: "操作时间",
-                        width: 150,
                         align: "center",
                         key: "createTime"
                     }
