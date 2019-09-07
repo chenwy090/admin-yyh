@@ -167,7 +167,7 @@
                 searchForm: {
                     awardType: "",
                     name: "",
-                    page: 0,
+                    page: 1,
                     size: 10,
                     status:"",
                     type:1,
@@ -197,7 +197,7 @@
                 this.totalSize = 0;
                 this.listData = [];
                 this.TableLoading = true;
-                postRequest(`/customer/activity/award/activity/list?pageNum=${this.current}&pageSize=10`,this.searchForm
+                postRequest(`/customer/activity/award/activity/list?pageNum=${this.searchForm.page}&pageSize=10`,this.searchForm
                 ).then(res => {
                     this.TableLoading = false;
                     if (res.code === "200") {
@@ -275,8 +275,8 @@
 
             },
             changeCurrent(current) {
-                if (this.current != current) {
-                    this.current = current;
+                if (this.searchForm.page != current) {
+                    this.searchForm.page = current;
                     this.loadTableData(this.searchForm);
                 }
             },

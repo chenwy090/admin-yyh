@@ -71,7 +71,7 @@
                 TableLoading:'',
                 brandForm:{
                     name:'',
-
+                    current: 1,
                 },
                 totalSize: 0,
                 current: 1,
@@ -111,9 +111,9 @@
                 this.selectDataList = selection;
             },
             changeCurrent(current) {
-                if (this.current != current) {
-                    this.current = current;
-                    this.loadTableData(this.searchForm);
+                if (this.brandForm.current != current) {
+                    this.brandForm.current = current;
+                    this.loadTableData();
                 }
             },
             selectBusiness(){
@@ -135,7 +135,7 @@
                 let that = this;
                 this.TableLoading=true;
                 this.selectIndex = '';
-                postRequest(`/merchant/brandMain/list?pageNum=${this.current}&pageSize=10`,{
+                postRequest(`/merchant/brandMain/list?pageNum=${this.brandForm.current}&pageSize=10`,{
                         name:this.brandForm.name,
                         pageNum: this.current,
                         pageSize: 10

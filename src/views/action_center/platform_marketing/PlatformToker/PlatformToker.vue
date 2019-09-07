@@ -100,7 +100,7 @@
                                     show-elevator
                                     @on-change="changeCurrent"
                                     style="float: right"
-                                    :current.sync="searchForm.current"
+                                    :current.sync="current"
                             ></Page>
                         </Row>
                     </Card>
@@ -183,6 +183,7 @@
                     current: 1,
                     pageSize: 10
                 },
+                current: 1,
                 addressData:[],
                 options2:{},
                 options1:{},
@@ -344,8 +345,8 @@
 
             },
             changeCurrent(current) {
-                if (this.current != current) {
-                    this.current = current;
+                if (this.searchForm.current != current) {
+                    this.searchForm.current = current;
                     this.loadTableData(this.searchForm);
                 }
             },

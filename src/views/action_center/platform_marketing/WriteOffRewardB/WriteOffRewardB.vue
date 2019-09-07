@@ -275,8 +275,8 @@
 
             },
             changeCurrent(current) {
-                if (this.current != current) {
-                    this.current = current;
+                if (this.searchForm.page != current) {
+                    this.searchForm.page = current;
                     this.loadTableData(this.searchForm);
                 }
             },

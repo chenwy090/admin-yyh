@@ -74,7 +74,7 @@
                 TableLoading:'',
                 businessModal:{
                     name:'',
-
+                    current:1,
                 },
                 addressValue:[],
                 selectRow:'',
@@ -163,7 +163,7 @@
                 this.listData = [];
                 this.TableLoading = true;
                 this.selectIndex = '';
-                postRequest(`/merchant/merchantInfo/list?pageNum=${this.current}&pageSize=10`,{
+                postRequest(`/merchant/merchantInfo/list?pageNum=${this.businessModal.current}&pageSize=10`,{
                         "cityCode": this.addressValue[1]||'',
                         "provinceCode": this.addressValue[0]||'',
                         "name":this.businessModal.name||''
@@ -189,8 +189,9 @@
                 this.selectDataList = selection;
             },
             changeCurrent(current) {
-                if (this.current != current) {
-                    this.current = current;
+                debugger
+                if (this.businessModal.current != current) {
+                    this.businessModal.current = current;
                     this.loadTableData();
                 }
             },

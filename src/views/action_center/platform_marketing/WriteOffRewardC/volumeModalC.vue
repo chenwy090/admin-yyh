@@ -154,6 +154,8 @@
                 volumeForm:{
                     merchantName:'',
                     couponName:'',
+                    current1: 1,
+                    current2: 1,
                 },
                 volumeObj:{},
                 addressData:[],
@@ -270,7 +272,7 @@
                 this.TableLoading1 = true;
                 this.selectIndex1 = '';
                 let params = {
-                    page:this.current1,
+                    page:this.volumeForm.current1,
                     size:10,
                     cityCode:this.addressValue[1]||'',
                     couponName:this.volumeForm.couponName,
@@ -304,7 +306,7 @@
                 this.TableLoading2 = true;
                 this.selectIndex2 = '';
                 let params = {
-                    page:this.current2,
+                    page:this.volumeForm.current2,
                     size:10,
                     cityCode:this.addressValue[1]||'',
                     couponName:this.volumeForm.couponName,
@@ -334,14 +336,14 @@
                 this.selectDataList = selection;
             },
             changeCurrent1(current) {
-                if (this.current1 != current) {
-                    this.current1 = current;
+                if (this.volumeForm.current1 != current) {
+                    this.volumeForm.current1 = current;
                     this.loadTableData1();
                 }
             },
             changeCurrent2(current) {
-                if (this.current2 != current) {
-                    this.current2 = current;
+                if (this.volumeForm.current2 != current) {
+                    this.volumeForm.current2 = current;
                     this.loadTableData2();
                 }
             },

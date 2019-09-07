@@ -76,6 +76,7 @@
                 copponForm:{
                     merchantName:'',
                     couponName:'',
+                    current: 1,
                 },
                 totalSize: 0,
                 current: 1,
@@ -175,7 +176,7 @@
                 this.listData = [];
                 this.TableLoading = true;
                 let params = {
-                    page:this.current,
+                    page:this.copponForm.current,
                     size:10,
                     cityCode:this.addressValue[1]||'',
                     couponName:this.copponForm.couponName,
@@ -198,8 +199,8 @@
                 this.selectDataList = selection;
             },
             changeCurrent(current) {
-                if (this.current != current) {
-                    this.current = current;
+                if (this.copponForm.current != current) {
+                    this.copponForm.current = current;
                     this.loadTableData();
                 }
             },
