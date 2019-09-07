@@ -255,6 +255,7 @@
                 this.searchForm.merchantName= '';
                 this.searchForm.status= '';
                 this.searchForm.current = 1;
+                this.addressValue = [];
             },
             loadTableData(formData) {
                 this.totalSize = 0;

@@ -189,7 +189,10 @@
                 this.loadTableData(this.searchForm);
             },
             reset(){
-
+                this.searchForm.name = '';
+                this.searchForm.page = 1;
+                this.searchForm.awardType = '';
+                this.searchForm.status = '';
             },
             loadTableData(formData) {
                 this.totalSize = 0;
