@@ -128,7 +128,6 @@
                     this.$Message.error('请选择品牌');
                     return;
                 }
-                debugger
                 this.$emit('setViewDialogVisible', this.selectRow)
             },
             loadTableData(){
@@ -143,7 +142,6 @@
                 ).then(res => {
                     this.TableLoading=false;
                     if (res.code === "200") {
-                        debugger
                         this.totalSize = res.data.total;
                         this.listData = res.data.records;
                         if(this.selectRow.id){

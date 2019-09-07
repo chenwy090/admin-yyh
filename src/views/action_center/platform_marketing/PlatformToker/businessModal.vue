@@ -189,7 +189,6 @@
                 this.selectDataList = selection;
             },
             changeCurrent(current) {
-                debugger
                 if (this.businessModal.current != current) {
                     this.businessModal.current = current;
                     this.loadTableData();
