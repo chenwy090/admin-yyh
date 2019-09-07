@@ -16,10 +16,7 @@
             </Radio>
           </RadioGroup>
         </FormItem>
-        <!-- prop="businessName" -->
-        {{`${formData.merchantType?'brandName':'merhcantName'}`}}
-        <!-- :rules="{ required: true, message: '请选择${businessTypeLabel}' }" -->
-        <!-- :prop="`${formData.merchantType?'brandName':'merhcantName'}`" -->
+
         <FormItem
           label="商户名称："
           :prop="`businessName`"
@@ -238,11 +235,11 @@ export default {
         merchantName: "",
         brandId: "", //
         brandName: "", //
-        receivables: "12", //应收款
-        contractNumber: "contractNumber", //合同号
-        biller: "biller", //签单销售 销售名字 salesName
+        receivables: "", //应收款
+        contractNumber: "", //合同号
+        biller: "", //签单销售 销售名字 salesName
         // 签单销售
-        remark: "remarks", //备注 必填
+        remark: "", //备注 必填
         merchantMoneyChargesRecords: [] //收款明细
       },
       ruleValidate: {},

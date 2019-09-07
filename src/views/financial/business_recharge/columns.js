@@ -2,7 +2,7 @@
 export default [{
         title: "操作",
         align: "center",
-        width: 200,
+        width: 180,
         fixed: "left",
         slot: "action"
     },
@@ -16,7 +16,7 @@ export default [{
         title: "商户类型",
         key: "merchantTypeName",
         align: "center",
-        width: 120
+        width: 140
     },
     {
         title: "商户名称",
@@ -198,9 +198,10 @@ export const rechargeMColumns = [{
         align: "center",
         minWidth: 80
     },
+    // status
     {
-        title: "状态",
-        key: "status",
+        title: "审核状态",
+        key: "statusName",
         align: "center",
         minWidth: 80
     },
@@ -215,9 +216,10 @@ export const rechargeMColumns = [{
         align: "center",
         minWidth: 80
     },
+    // changeType 0 充值 1 扣款
     {
         title: "类型",
-        key: "changeType",
+        key: "changeTypeName",
         align: "center",
         minWidth: 80
     },

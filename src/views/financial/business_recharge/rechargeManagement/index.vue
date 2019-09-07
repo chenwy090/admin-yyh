@@ -14,13 +14,9 @@
             ></Input>
           </FormItem>
 
-          <FormItem label="状态：" :label-width="60">
+          <FormItem label="审核状态：" :label-width="80">
             <Select v-model="searchData.status" style="width:100px">
-              <Option
-                v-for="item in statusOption"
-                :value="item.value"
-                :key="item.value+item.label"
-              >{{ item.label }}</Option>
+              <Option v-for="(v,k) in statusOption" :value="k" :key="v">{{ v }}</Option>
             </Select>
           </FormItem>
 
@@ -145,24 +141,12 @@ export default {
       },
       // 状态： 全部 、 待审核 、 已通过 、 审核失败 ；默认全部
       // '审核状态 0-待审核 1-审核通过 2-审核失败',
-      statusOption: [
-        {
-          value: "",
-          label: "全部"
-        },
-        {
-          value: 0,
-          label: "待审核"
-        },
-        {
-          value: 1,
-          label: "已通过"
-        },
-        {
-          value: 2,
-          label: "审核失败"
-        }
-      ],
+      statusOption: {
+        "": "全部",
+        "0": "待审核",
+        "1": "已通过",
+        "2": "审核失败"
+      },
       daterange: [],
       // 查询参数
       searchData: {
@@ -234,6 +218,8 @@ export default {
         // console.log(res);
         if (res.code == 200) {
           this.tableData = res.data.records.map(item => {
+            item.statusName = this.statusOption[item.status];
+            item.changeTypeName = item.changeType == 0 ? "充值" : "扣款";
             /**
               merchantType:
                 0 merchantName
