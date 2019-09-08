@@ -228,7 +228,7 @@ export default {
         brandId: "", //
         brandName: "", //
         reduceUbay: "", //消耗U贝
-        remark: "remarks" //备注 必填
+        remark: "" //备注 必填
       },
       ruleValidate: {},
       showBusinessList: false,

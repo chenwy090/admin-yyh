@@ -1,21 +1,23 @@
 <template>
+  <!-- U贝管理 -->
   <div class="xxx">
-    <h2 class="header">财务中心 > 商户账务 > 商户预充值 > U贝消耗明细 {{showExchange?1:2}}</h2>
+    <h2 class="header">财务中心 > 商户账务 > 商户预充值 > U贝消耗明细</h2>
     <div class="query-row">
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
           <!-- 商户/品牌名称 -->
           <FormItem label="商户/品牌名称：" :label-width="100">
-            <Input style="width:200px" type="text" v-model="searchData.name" placeholder="请输入"></Input>
+            <Input
+              style="width:200px"
+              type="text"
+              v-model="searchData.merchantName"
+              placeholder="请输入"
+            ></Input>
           </FormItem>
 
-          <FormItem label="状态：" :label-width="60">
+          <FormItem label="审核状态：" :label-width="80">
             <Select v-model="searchData.status" style="width:100px">
-              <Option
-                v-for="item in statusOption"
-                :value="item.value"
-                :key="item.value+item.label"
-              >{{ item.label }}</Option>
+              <Option v-for="(v,k) in statusOption" :value="k" :key="v">{{ v }}</Option>
             </Select>
           </FormItem>
 
@@ -43,11 +45,7 @@
       </Card>
     </div>
     <Card :bordered="false">
-      <Table border :show-index="true" :loading="loading" :columns="columns" :data="tableData">
-        <template slot-scope="{ row }" slot="action">
-          <Button type="text" size="small" @click="linkTo()">查看</Button>
-        </template>
-      </Table>
+      <Table border :show-index="true" :loading="loading" :columns="columns" :data="tableData"></Table>
       <!-- 分页器 -->
       <Row type="flex" justify="end" class="page">
         <!-- show-total 显示总数 共{{ total }}条 -->
@@ -87,32 +85,21 @@ export default {
       showExchange: false,
       showConsume: false,
       // 状态： 全部 、 待审核 、 已通过 、 审核失败 ；默认全部
-      statusOption: [
-        {
-          value: 0,
-          label: "全部"
-        },
-        {
-          value: 1,
-          label: "待审核"
-        },
-        {
-          value: 2,
-          label: "已通过"
-        },
-        {
-          value: 3,
-          label: "审核失败"
-        }
-      ],
+      // '审核状态 0-待审核 1-审核通过 2-审核失败',
+      statusOption: {
+        "": "全部",
+        "0": "待审核",
+        "1": "已通过",
+        "2": "审核失败"
+      },
       daterange: [],
       // 查询参数
       searchData: {
-        name: "", //商户名称
+        merchantName: "", //商户名称
         // status: 0, //状态
         status: "", //状态
-        startTime: "", //开始时间
-        endTime: "" //结束时间
+        gmtCreateStart: "", //开始时间
+        gmtCreateEnd: "" //结束时间
       },
       loading: false, //列表加载动画
       page: {
@@ -138,8 +125,8 @@ export default {
     },
     changeStartDate(arr) {
       // yyyy-MM-dd
-      this.searchData.startTime = arr[0];
-      this.searchData.endTime = arr[1];
+      this.searchData.gmtCreateStart = arr[0];
+      this.searchData.gmtCreateEnd = arr[1];
     },
 
     // 刷新搜索
@@ -165,6 +152,13 @@ export default {
 
       if (code == 200) {
         this.tableData = records.map(item => {
+          item.statusName = this.statusOption[item.status];
+          /**
+              changeType
+              充值里面：changeType 0充值 1扣款    
+              ubay里面：changeType 0兑换 1消耗 
+          */
+          item.changeTypeName = item.changeType == 0 ? "兑换" : "消耗";
           if (item.changeType == 0) {
             item.addOrReduceUbay = item.addUbay;
           } else {
@@ -194,11 +188,11 @@ export default {
       this.daterange = [];
       // 重置查询参数
       this.searchData = {
-        name: "", //商户名称
+        merchantName: "", //商户名称
         // status: 0, //状态
         status: "", //状态
-        startTime: "", //开始时间
-        endTime: "" //结束时间
+        gmtCreateStart: "", //开始时间
+        gmtCreateEnd: "" //结束时间
       };
 
       this.page = {

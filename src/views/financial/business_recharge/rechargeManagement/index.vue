@@ -207,42 +207,42 @@ export default {
       this.queryTableData(pageNum);
     },
     // 查询
-    queryTableData(pageNum) {
+    async queryTableData(pageNum) {
       this.page.pageNum = pageNum || 1;
       this.loading = true;
 
-      queryRechargeMList({
+      let {
+        code,
+        data: { records, current, total, size }
+      } = await queryRechargeMList({
         ...this.searchData,
         ...this.page
-      }).then(res => {
-        // console.log(res);
-        if (res.code == 200) {
-          this.tableData = res.data.records.map(item => {
-            item.statusName = this.statusOption[item.status];
-            item.changeTypeName = item.changeType == 0 ? "充值" : "扣款";
-            /**
+      });
+      if (code == 200) {
+        this.tableData = records.map(item => {
+          item.statusName = this.statusOption[item.status];
+          item.changeTypeName = item.changeType == 0 ? "充值" : "扣款";
+          /**
               merchantType:
                 0 merchantName
                 1 brandName
             */
-            if (item.merchantType == 0) {
-              item.name = item.merchantName;
-            } else {
-              item.name = item.brandName;
-            }
+          if (item.merchantType == 0) {
+            item.name = item.merchantName;
+          } else {
+            item.name = item.brandName;
+          }
 
-            return item;
-          });
-          // this.banner_page_req.start = res.data.current; //分页查询起始记录
-          this.page.pageNum = res.data.current; //分页查询起始记录
-          this.page.total = res.data.total; //列表总数
-          this.page.pageSize = res.data.size; //每页数据
-          this.loading = false;
-        } else {
-          this.$Message.error(res.code + " 数据加载失败!", 3);
-          this.loading = false;
-        }
-      });
+          return item;
+        });
+
+        this.page.pageNum = current; //分页查询起始记录
+        this.page.total = total; //列表总数
+        this.page.pageSize = size; //每页数据
+      } else {
+        this.$Message.error(code + " 数据加载失败!", 3);
+      }
+      this.loading = false;
     },
     reset() {
       this.daterange = [];
