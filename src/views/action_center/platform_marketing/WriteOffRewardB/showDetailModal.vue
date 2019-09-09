@@ -230,9 +230,25 @@
                             this.modal.updateTime=data.updateTime;
                             if(data.awardType=='1'){
                                 this.JawardRuleDtos = data.awardRuleVos;
+                                this.JawardRuleDtos.forEach(function(v,i){
+                                    if(!v.verifyCountMax){
+                                        v.verifyCountMax = null;
+                                    }
+                                    if(!v.verifyCountMin){
+                                        v.verifyCountMin = null;
+                                    }
+                                })
                                 this.UawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'1',couponType:'',awardName:''}];
                             }else if(data.awardType=='2'){
                                 this.UawardRuleDtos = data.awardRuleVos;
+                                this.UawardRuleDtos.forEach(function(v,i){
+                                    if(!v.verifyCountMax){
+                                        v.verifyCountMax = null;
+                                    }
+                                    if(!v.verifyCountMin){
+                                        v.verifyCountMin = null;
+                                    }
+                                })
                                 this.JawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'2',couponType:'',awardName:''}];
                             }
                         } else {
