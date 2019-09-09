@@ -6,7 +6,7 @@
           <Button type="primary" @click="excelExport()">导出上个月记录</Button>
         </ButtonGroup>
         <ButtonGroup style="margin-left: 20px;">
-          <Button type="primary" @click="excelExportU()">U贝报表</Button>
+          <Button type="primary" @click="excelExportU()">U贝报表下载</Button>
         </ButtonGroup>
       </FormItem>
     </Form>
