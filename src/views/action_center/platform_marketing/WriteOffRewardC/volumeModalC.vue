@@ -359,9 +359,9 @@
                 case 2:
                     this.selectIndex1 = '';
                     this.volumeObj.JObj = this.listData2[this.selectIndex2];
-                    this.volumeObj.awardName = this.listData1[this.selectIndex1].title;
+                    this.volumeObj.awardName = this.listData2[this.selectIndex2].title;
                     this.volumeObj.couponType = '2';
-                    this.volumeObj.awardAmount = this.listData1[this.selectIndex1].templateId;
+                    this.volumeObj.awardAmount = this.listData2[this.selectIndex2].templateId;
                     break;
                 }
             },

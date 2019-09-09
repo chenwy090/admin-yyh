@@ -76,7 +76,7 @@
                                    <div>{{row.startTime+' - '+row.endTime}}</div>
                                </template>
                                <template slot-scope="{ row }" slot="status">
-                                   <div>{{statusList[row.status].label}}</div>
+                                   <div>{{statusList[row.status-0+1].label}}</div>
                                </template>
                                <template slot-scope="{ row }" slot="awardType">
                                    <div>{{typeList[Number(row.awardType)-1].label}}</div>

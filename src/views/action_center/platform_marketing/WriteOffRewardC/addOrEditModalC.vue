@@ -325,6 +325,7 @@
                 params.couponIds = couponIds;
                 if(!this.modal.wardType){
                     this.$Message.error('请选择赠送类型');
+                    return;
                 }
                 if(this.modal.wardType=='1'){
                     params.awardRuleDtos = this.JawardRuleDtos;
