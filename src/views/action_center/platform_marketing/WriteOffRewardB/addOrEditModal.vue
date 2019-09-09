@@ -355,7 +355,7 @@
                 }
                 let couponIds = [];
                 this.couponObj.forEach(function(v,i){
-                    couponIds.push(v.templateId);
+                    couponIds.push(v.templateId||v.id);
                 });
                 params.couponIds = couponIds;
                 if(!this.modal.wardType){
