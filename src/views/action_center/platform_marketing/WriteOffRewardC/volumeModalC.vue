@@ -176,23 +176,23 @@
                     },
                     {
                         title: "商户名称",
-                        width: 220,
+                        minWidth:200,
                         key: "merchantName"
                     },
                     {
                         title: "省/市",
-                        width: 200,
+                        minWidth:200,
                         slot: "address"
                     },
                     {
                         title: "优惠卷名称",
-                        width: 200,
+                        minWidth:200,
                         align: "center",
                         key: "title",
                     },
                     {
                         title: "有效期",
-                        width: 200,
+                        minWidth:200,
                         slot: "timer"
                     }
                 ],

@@ -180,7 +180,7 @@
                   },
                   {
                       title: "省/市",
-                      width: 200,
+                      minWidth:200,
                       slot: "address"
                   },
                   {
@@ -191,7 +191,7 @@
                   },
                   {
                       title: "有效期",
-                      width: 200,
+                      minWidth:200,
                       slot: "timer"
                   }
               ],

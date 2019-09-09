@@ -90,21 +90,25 @@
                     },
                     {
                         title: "商家名称",
+                        minWidth:150,
                         key: "merchantName",
                         align: 'center',
                     },
                     {
                         title: "省/市",
+                        minWidth:200,
                         slot: "address",
                         align: 'center',
                     },
                     {
                         title: "优惠卷名称",
+                        minWidth:200,
                         key: "title",
                         align: 'center',
                     },
                     {
                         title: "有效期",
+                        minWidth:200,
                         slot: "timer",
                         align: 'center',
                     }

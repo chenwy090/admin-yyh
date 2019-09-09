@@ -92,11 +92,13 @@
                     },
                     {
                         title: "商户名称",
+                        minWidth:200,
                         key: "name",
                         align: 'center',
                     },
                     {
                         title: "省/市",
+                        minWidth:250,
                         slot: "address",
                         align: 'center',
                     }

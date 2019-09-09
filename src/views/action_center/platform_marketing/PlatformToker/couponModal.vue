@@ -91,28 +91,32 @@
                 tableColumns: [
                     {
                         title: "操作",
-                        width: 200,
+                        width: 80,
                         align: "center",
                         slot: "action",
                         fixed: "left"
                     },
                     {
                         title: "商家名称",
+                        minWidth:150,
                         key: "merchantName",
                         align: 'center',
                     },
                     {
                         title: "省/市",
+                        minWidth:200,
                         slot: "address",
                         align: 'center',
                     },
                     {
                         title: "优惠卷名称",
+                        minWidth:150,
                         key: "title",
                         align: 'center',
                     },
                     {
                         title: "有效期",
+                        minWidth:200,
                         slot: "timer",
                         align: 'center',
                     }
