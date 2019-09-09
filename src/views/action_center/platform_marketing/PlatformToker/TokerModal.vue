@@ -211,8 +211,15 @@
                         console.log(res);
                         this.upData = res.data;
                        if(this.modal.type==2){
-                           this.oldBrandList = res.data.merchantReqList||[];
-                           this.brandList = res.data.merchantReqList||[];
+                           if(res.data.merchantReqList&&res.data.merchantReqList.length){
+                               res.data.merchantReqList.forEach(function(v,i){
+                                   v.maxPushCount = 0;
+                               });
+                               this.oldBrandList = res.data.merchantReqList;
+                               this.brandList = res.data.merchantReqList;
+                           }
+
+
                        }
                     } else {
                         this.$Message.error(res.msg);
@@ -268,6 +275,20 @@
                         this.$Message.error('请选择拓客时间');
                         return
                     }
+                    if(!this.brandList||!this.brandList.length){
+                        this.$Message.error('请重新选择品牌');
+                        return
+                    }
+                    var that = this;
+                    this.brandList.forEach(function(v,i){
+                        if(v.maxPushCount-0<=0){
+                            this.$Message.error('请填写推送人数');
+                            return
+                        }else if(v.maxPushCount-0>=Number(that.upData.remainderPushNum)){
+                            this.$Message.error('推送人数不能大于套餐剩余人数');
+                            return
+                        }
+                    });
                     // params.cityCode = this.selectBrandObj.cityCode;
                     // params.cityName = this.selectBrandObj.cityName;
                     params.couponId = this.selectCouponObj.templateId;

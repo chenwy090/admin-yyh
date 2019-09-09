@@ -163,6 +163,7 @@
                     },
                     {
                         title: "拓客时间",
+                        width: 250,
                         key: "expandTime"
                     },
                     {
