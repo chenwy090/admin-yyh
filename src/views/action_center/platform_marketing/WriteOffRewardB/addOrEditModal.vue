@@ -359,14 +359,28 @@
                     type:2
                 }
                 let couponIds = [];
-                this.couponObj.forEach(function(v,i){
-                    couponIds.push(v.templateId||v.id);
-                });
+                if(!this.couponObj||!this.couponObj.length){
+                    this.$Message.error('请选择优惠卷');
+                    return;
+                }else{
+                    this.couponObj.forEach(function(v,i){
+                        couponIds.push(v.templateId||v.id);
+                    });
+                }
                 params.couponIds = couponIds;
+                if(!this.modal.name){
+                    this.$Message.error('请填写活动名称');
+                    return;
+                }
+                if(!this.modal.startTime||!this.modal.endTime){
+                    this.$Message.error('请选择时间');
+                    return;
+                }
                 if(!this.modal.wardType){
                     this.$Message.error('请选择赠送类型');
                     return;
                 }
+
                 if(this.modal.wardType=='1'){
                     params.awardRuleDtos = this.JawardRuleDtos;
                 }else if(this.modal.wardType=='2'){
