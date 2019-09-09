@@ -284,10 +284,10 @@
                     var that = this;
                     this.brandList.forEach(function(v,i){
                         if(v.maxPushCount-0<=0){
-                            this.$Message.error('请填写推送人数');
+                            that.$Message.error('请填写推送人数');
                             return
                         }else if(v.maxPushCount-0>=Number(that.upData.remainderPushNum)){
-                            this.$Message.error('推送人数不能大于套餐剩余人数');
+                            that.$Message.error('推送人数不能大于套餐剩余人数');
                             return
                         }
                     });
