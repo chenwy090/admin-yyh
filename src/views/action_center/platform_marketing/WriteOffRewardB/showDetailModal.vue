@@ -90,7 +90,7 @@
                     <div v-if="modal.awardType==2">
                         <FormItem label="赠送规则">
                             <!--<Input v-model="modal.active" type="textarea" placeholder="请选择要参与活动优惠券" />-->
-                            <span>核销赠券</span>
+                            <span>核销赠U贝</span>
                             <div style="width: 2%;display: inline-block"></div>
                             <span class="colof-a2">(在核销主商户券码时，赠送平台U贝，前提店员是要优惠C端用户)</span>
                             <div style="width: 2%;display: inline-block"></div>
