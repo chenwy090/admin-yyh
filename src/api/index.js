@@ -31,7 +31,8 @@ import {
 // export const baseUrl = "http://192.168.31.7:8088/zex-mgr";//杨伟涛
 // export const baseUrl = "http://192.168.31.208:8088/zex-mgr";//明涛
 // export const baseUrl = "http://192.168.31.179:8088/zex-mgr";//卢彬
-export const baseUrl = "http://crmdev.52iuh.cn:8088/zex-mgr";//刘鹏
+// export const baseUrl = "http://crmdev.52iuh.cn:8088/zex-mgr";//刘鹏
+export const baseUrl = "http://47.102.126.157:8088/zex-mgr";//刘鹏
 // export const baseUrl = "http://192.168.31.54:8088/zex-mgr";//刘鹏
 export const downloadUrl = "http://47.103.117.70:8088/zex-mgr";
 // export const downloadUrl = "http://http://crmdev.52iuh.cn:8088/zex-mgr";

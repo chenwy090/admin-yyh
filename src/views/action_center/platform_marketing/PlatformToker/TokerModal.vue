@@ -270,7 +270,7 @@
                     }
                     // params.cityCode = this.selectBrandObj.cityCode;
                     // params.cityName = this.selectBrandObj.cityName;
-                    params.couponId = this.selectCouponObj.campId;
+                    params.couponId = this.selectCouponObj.templateId;
                     params.couponType = this.selectCouponObj.couponType;
                     params.couponName = this.selectCouponObj.merchantName;
                     params.expandTime = this.modal.tokerDate+":00";
