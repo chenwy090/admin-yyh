@@ -67,8 +67,8 @@
                 </Row>
                 <Row class="padding-left-12">
                     <Col span="18">
-                    <FormItem label="优惠卷：">
-                        <Button style="width: 150px" type="dashed" :disabled="!modal.type" @click="openCoupon">{{selectCouponObj&&selectCouponObj.title?selectCouponObj.title:'请选择优惠卷'}}</Button>
+                    <FormItem label="优惠券：">
+                        <Button style="width: 150px" type="dashed" :disabled="!modal.type" @click="openCoupon">{{selectCouponObj&&selectCouponObj.title?selectCouponObj.title:'请选择优惠券'}}</Button>
                     </FormItem>
                     </Col>
                 </Row>
@@ -246,7 +246,7 @@
                         this.$Message.error('请填写合适推送人数');
                         return
                     }else if(!this.selectCouponObj&&!this.selectCouponObj.merchantName){
-                            this.$Message.error('请选择优惠卷');
+                            this.$Message.error('请选择优惠券');
                         return
                     }else if(!this.modal.tokerDate){
                         this.$Message.error('请选择拓客时间');
@@ -271,7 +271,7 @@
                         this.$Message.error('请选择品牌名称');
                         return
                     }else if(!this.selectCouponObj&&!this.selectCouponObj.merchantName){
-                        this.$Message.error('请选择优惠卷');
+                        this.$Message.error('请选择优惠券');
                         return
                     }else if(!this.modal.tokerDate){
                         this.$Message.error('请选择拓客时间');

@@ -153,7 +153,7 @@
                 </Row>
                 <FormItem>
                     <Button style="margin:20px" type="primary" size="large" @click="ok()">保存</Button>
-                    <!--<Button style="margin-left: 8px;float: right;" @click="close">关闭</Button>-->
+                    <Button style="margin:20px" @click="close">返回</Button>
                 </FormItem>
             </Form>
         </Card>
@@ -184,7 +184,7 @@
                     name:'',
                     startTime:'',
                     endTime:'',
-                    awardType:'1',
+                    wardType:'1',
                     type:'1'
                 },
                 options2:{
@@ -268,7 +268,7 @@
                     this.titleName = '新增';
                     this.modal.name = '';
                     this.modal.startTime = '';
-                    this.modal.wardType = '';
+                    this.modal.wardType = '1';
                     this.modal.endTime = '';
                     this.modal.type = '1';
                     this.couponObj = [];

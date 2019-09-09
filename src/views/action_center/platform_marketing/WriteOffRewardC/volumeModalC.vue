@@ -17,11 +17,11 @@
                                 <FormItem label="省/市" span="24"  style="width:23%">
                                     <Cascader :data="addressData" :load-data="addressLoad" v-model="addressValue"></Cascader>
                                 </FormItem>
-                                <FormItem label="优惠卷名称" span="24"  style="width:23%">
+                                <FormItem label="优惠券名称" span="24"  style="width:23%">
                                     <!--<Select v-model="searchForm.status" style="width:100%">-->
                                     <!--<Option v-for="item in statusList" :value="item.value" :key="item.value">{{ item.label }}</Option>-->
                                     <!--</Select>-->
-                                    <Input v-model="volumeForm.couponName" placeholder="请填写优惠卷名称" :maxlength=20 />
+                                    <Input v-model="volumeForm.couponName" placeholder="请填写优惠券名称" :maxlength=20 />
                                 </FormItem>
                                 <FormItem span="24" :label-width="1" style="width:23%">
                                     <Button type="primary" class="submit" icon="ios-search" @click="search(1)" style="margin-right: 5px">搜索</Button>
@@ -79,11 +79,11 @@
                                 <FormItem label="省/市" span="24"  style="width:23%">
                                     <Cascader :data="addressData" :load-data="addressLoad" v-model="addressValue"></Cascader>
                                 </FormItem>
-                                <FormItem label="优惠卷名称" span="24"  style="width:23%">
+                                <FormItem label="优惠券名称" span="24"  style="width:23%">
                                     <!--<Select v-model="searchForm.status" style="width:100%">-->
                                     <!--<Option v-for="item in statusList" :value="item.value" :key="item.value">{{ item.label }}</Option>-->
                                     <!--</Select>-->
-                                    <Input v-model="volumeForm.couponName" placeholder="请填写优惠卷名称" :maxlength=20 />
+                                    <Input v-model="volumeForm.couponName" placeholder="请填写优惠券名称" :maxlength=20 />
                                 </FormItem>
                                 <FormItem span="24" :label-width="1" style="width:23%">
                                     <Button type="primary" class="submit" icon="ios-search" @click="search(2)" style="margin-right: 5px">搜索</Button>
@@ -185,7 +185,7 @@
                         slot: "address"
                     },
                     {
-                        title: "优惠卷名称",
+                        title: "优惠券名称",
                         minWidth:200,
                         align: "center",
                         key: "title",

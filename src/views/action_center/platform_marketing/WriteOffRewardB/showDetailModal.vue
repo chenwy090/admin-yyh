@@ -88,7 +88,7 @@
                         </FormItem>
                     </div>
                     <div v-if="modal.awardType==2">
-                        <FormItem label="核销赠U贝">
+                        <FormItem label="赠送规则">
                             <!--<Input v-model="modal.active" type="textarea" placeholder="请选择要参与活动优惠券" />-->
                             <span>核销赠券</span>
                             <div style="width: 2%;display: inline-block"></div>
@@ -123,11 +123,11 @@
                                             :step="1"
                                             type="text"
                                             :precision="0"
-                                            v-model="item.awardAmount"
+                                            v-model="item.award"
                                             disabled
                                             placeholder="请输入U贝数量"
                                             style="width: 150px"
-                                    ></InputNumber>
+                                    ></InputNumber> U贝
                                 </div>
                             </div>
                         </FormItem>
