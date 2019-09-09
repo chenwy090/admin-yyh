@@ -1,103 +1,112 @@
 <template>
-    <!--新增/编辑弹窗-->
-    <Modal width="800"
-           v-model="viewDialogVisible"
-           title="查看详情"
-           :closable="false"
-           :mask-closable="false"
-           footer-hide>
-        <Form :model="modal" ref="addOrEditModal" :rules="ruleValidate" :label-width="80" label-position="left">
-            <h3>活动信息</h3>
-            <Row class="padding-left-12">
-                <Col span="18">
-                <FormItem label="活动名称">
-                    {{modal.name}}
-                </FormItem>
-                </Col>
-            </Row>
-            <Row class="padding-left-12">
-                <Col span="18">
-                <FormItem label="活动时间">
-                    {{modal.startTime}} -- {{modal.endTime}}
-                </FormItem>
-                </Col>
-            </Row>
-            <Row class="padding-left-12">
-                <Col span="24">
-                <FormItem label="状态">
-                    <!--<DatePicker-->
-                    <!--:value="modal.applyDateRangeOpen"-->
-                    <!--type="date"-->
-                    <!--placeholder-->
-                    <!--style="width: 160px"-->
-                    <!--@on-change="(datetime) =>{ changeDateTime(datetime, 1)}"-->
-                    <!--&gt;</DatePicker>&#45;&#45;-->
-                    <!--<DatePicker-->
-                    <!--:value="modal.applyDateRangeClose"-->
-                    <!--type="date"-->
-                    <!--placeholder-->
-                    <!--style="width: 160px"-->
-                    <!--@on-change="(datetime) =>{ changeDateTime(datetime, 2)}"-->
-                    <!--&gt;</DatePicker>-->
-                    {{statusList[modal.static].label}}
-                </FormItem>
-                </Col>
-            </Row>
-            <h3>请选择参与活动券</h3>
-            <Row class="padding-left-12">
-                <Col span="18">
-                <FormItem label="参与活动券">
-                    <!--<Input v-model="modal.active" type="textarea" placeholder="请选择要参与活动优惠券" />-->
-                    <Button type="dashed">
-                        <span v-if="couponObj.length===0">参与活动券</span>
-                        <span v-for="item in couponObj">{{item.title +'&nbsp&nbsp'}}</span>
-                    </Button>
-                </FormItem>
-                </Col>
-            </Row>
-            <h3>赠送规则</h3>
-            <Row class="padding-left-12">
-                <Col span="24">
-                <RadioGroup v-model="modal.wardType" vertical style="width: 100%">
-                    <Radio label="1" style="display: inline-block">
-                        <span>核销赠券</span>
-                    </Radio>
-                    <div style="width: 2%;display: inline-block"></div>
-                    <span class="colof-a2">(在核销商户券码时，赠送优惠券至店员卡包，前提店员是要优惠C端用户)</span>
-                    <div style="width: 2%;display: inline-block"></div>
-                    <div  v-for="(item,index) in JawardRuleDtos" class="radio-item">
-                        <div style="margin: 10px 0;">
-                            <Button type="dashed">{{item.title}}</Button>
-                        </div>
+    <div v-if="viewDialogVisible" class="modal" @click.stop>
+        <Card>
+            <p slot="title">查看详情</p>
+            <a href="#" slot="extra">
+                <Button type="dashed" icon="md-arrow-round-back" @click="close()">返回上一层</Button>
+            </a>
+            <Form :model="modal" ref="addOrEditModal" :rules="ruleValidate" :label-width="100" label-position="left">
+                <h3>活动信息</h3>
+                <Row class="padding-left-12">
+                    <Col span="18">
+                    <FormItem label="活动名称">
+                        {{modal.name}}
+                    </FormItem>
+                    </Col>
+                </Row>
+                <Row class="padding-left-12">
+                    <Col span="18">
+                    <FormItem label="活动时间">
+                        {{modal.startTime}} -- {{modal.endTime}}
+                    </FormItem>
+                    </Col>
+                </Row>
+                <Row class="padding-left-12">
+                    <Col span="18">
+                    <FormItem label="状态">
+                        {{modal.status?statusList[modal.status-1].label:''}}
+                    </FormItem>
+                    </Col>
+                </Row>
+                <h3>请选择参与活动券</h3>
+                <Row class="padding-left-12">
+                    <Col span="18">
+                    <FormItem label="参与活动券">
+                        <Button type="dashed" v-if="couponObj.length">
+                            <span v-for="item in couponObj">{{item.title +'&nbsp&nbsp'}}</span>
+                        </Button>
+                    </FormItem>
+                    </Col>
+                </Row>
+                <h3>赠送规则</h3>
+                <Row class="padding-left-12">
+                    <Col span="24">
+                    <div v-if="modal.awardType==1">
+                        <FormItem label="赠送规则">
+                            <!--<Input v-model="modal.active" type="textarea" placeholder="请选择要参与活动优惠券" />-->
+                            <span>核销赠券</span>
+                            <div style="width: 2%;display: inline-block"></div>
+                            <span class="colof-a2">(在核销商户券码时，赠送优惠券至店员卡包，前提店员是要优惠C端用户)</span>
+                            <div style="width: 2%;display: inline-block"></div>
+                            <div  v-for="(item,index) in JawardRuleDtos" class="radio-item">
+                                <div style="margin: 10px 0;">
+                                    <Button type="dashed">{{item.title}}</Button>
+                                </div>
+                            </div>
+                        </FormItem>
                     </div>
-                    <Radio label="2" style="display: inline-block">
-                        <span>核销赠U贝</span>
-                    </Radio>
-                    <div style="width: 2%;display: inline-block"></div>
-                    <span class="colof-a2">(在核销主商户券码时，赠送平台U贝，前提店员是要优惠C端用户)</span>
-                    <div style="width: 2%;display: inline-block"></div>
-                    <div  v-for="(item,index) in UawardRuleDtos" class="radio-item">
-                        <div style="margin: 10px 0;">
-                            <InputNumber
-                                    :min="0"
-                                    :step="1"
-                                    type="text"
-                                    :precision="0"
-                                    v-model="item.awardAmount"
-                                    disabled
-                                    placeholder="请输入U贝数量"
-                                    style="width: 150px"
-                            ></InputNumber>
-                        </div>
+                    <div v-if="modal.awardType==2">
+                        <FormItem label="核销赠U贝">
+                            <!--<Input v-model="modal.active" type="textarea" placeholder="请选择要参与活动优惠券" />-->
+                            <span>核销赠券</span>
+                            <div style="width: 2%;display: inline-block"></div>
+                            <span class="colof-a2">(在核销主商户券码时，赠送平台U贝，前提店员是要优惠C端用户)</span>
+                            <div style="width: 2%;display: inline-block"></div>
+                            <div  v-for="(item,index) in UawardRuleDtos" class="radio-item">
+                                <div style="margin: 10px 0;">
+                                    <InputNumber
+                                            :min="0"
+                                            :step="1"
+                                            type="text"
+                                            :precision="0"
+                                            v-model="item.awardAmount"
+                                            disabled
+                                            placeholder="请输入U贝数量"
+                                            style="width: 150px"
+                                    ></InputNumber>
+                                </div>
+                            </div>
+                        </FormItem>
                     </div>
-                </RadioGroup>
-                </Col>
-            </Row>
-            <FormItem>
-                <Button style="margin-left: 8px;float: right;" @click="close">关闭</Button>
-            </FormItem>
-        </Form>
-    </Modal>
+                    </Col>
+                </Row>
+                <Row class="padding-left-12">
+                    <Col span="18">
+                    <FormItem label="创建时间" >
+                        <span>{{modal.createTime}}</span>
+                    </FormItem>
+                    </Col>
+                </Row>
+                <Row class="padding-left-12">
+                    <Col span="18">
+                    <FormItem label="最后修改时间">
+                        <span>{{modal.updateTime}}</span>
+                    </FormItem>
+                    </Col>
+                </Row>
+                <Row class="padding-left-12">
+                    <Col span="18">
+                    <FormItem label="最后修改人">
+                        <span>{{modal.updateBy}}</span>
+                    </FormItem>
+                    </Col>
+                </Row>
+                <FormItem>
+                    <Button style="margin-left: 8px;float: right;" @click="close">关闭</Button>
+                </FormItem>
+            </Form>
+        </Card>
+    </div>
 </template>
 
 <script>
@@ -109,8 +118,9 @@
         },
         data(){
             return{
+                data:{},
                 titleName:'',
-                statusList:[{value:0,label:'未开始'},{value:1,label:'进行中'},{value:2,label:'已终止'},{value:3,label:'已结束'}],
+                statusList:[{value:1,label:'未开始'},{value:2,label:'进行中'},{value:3,label:'已结束'},{value:4,label:'已终止'}],
                 modal:{
                     name:'',
                     startTime:'',
@@ -119,6 +129,9 @@
                     type:'1',
                     id:'',
                     static:'0',
+                    createTime:'',
+                    updateBy:'',
+                    updateTime:'',
                 },
                 JawardRuleDtos:[{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'1',couponType:'',awardName:''}],
                 UawardRuleDtos:[{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'2',couponType:'',awardName:''}],
@@ -141,7 +154,10 @@
                 }
             },
             resetRow(row){
+                this.modal = {};
+                this.couponObj = [];
                 if(row){
+                    this.data = row;
                     this.modal.id= row.id;
                     // /merchant/activity/award/activity/{id}
                     getRequest(`/customer/activity/award/activity/${row.id}`).then(res => {
@@ -154,6 +170,9 @@
                             this.modal.type = '2';
                             this.couponObj = data.coupons;
                             this.modal.status = data.status;
+                            this.modal.createTime=data.createTime;
+                            this.modal.updateBy=data.updateBy;
+                            this.modal.updateTime=data.updateTime;
                             if(data.awardType=='1'){
                                 this.JawardRuleDtos = data.awardRuleVos;
                                 this.UawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'1',couponType:'',awardName:''}];
@@ -162,7 +181,7 @@
                                 this.JawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'2',couponType:'',awardName:''}];
                             }
                         } else {
-                            this.$Message.error(res.msg);
+                            this.$Message.error('获取数据失败')
                         }
                     });
                 }
