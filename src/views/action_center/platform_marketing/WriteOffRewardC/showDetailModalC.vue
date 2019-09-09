@@ -41,7 +41,7 @@
                 <h3>赠送规则</h3>
                 <Row class="padding-left-12">
                     <Col span="24">
-                    <div v-if="modal.awardType==1">
+                    <div v-if="modal.wardType==1">
                         <FormItem label="赠送规则">
                             <!--<Input v-model="modal.active" type="textarea" placeholder="请选择要参与活动优惠券" />-->
                             <span>核销赠券</span>
@@ -55,7 +55,7 @@
                             </div>
                         </FormItem>
                     </div>
-                    <div v-if="modal.awardType==2">
+                    <div v-if="modal.wardType==2">
                         <FormItem label="核销赠U贝">
                             <!--<Input v-model="modal.active" type="textarea" placeholder="请选择要参与活动优惠券" />-->
                             <span>核销赠券</span>
@@ -69,7 +69,7 @@
                                             :step="1"
                                             type="text"
                                             :precision="0"
-                                            v-model="item.awardAmount"
+                                            v-model="item.award"
                                             disabled
                                             placeholder="请输入U贝数量"
                                             style="width: 150px"
@@ -125,7 +125,7 @@
                     name:'',
                     startTime:'',
                     endTime:'',
-                    awardType:'1',
+                    wardType:'1',
                     type:'1',
                     id:'',
                     static:'0',
