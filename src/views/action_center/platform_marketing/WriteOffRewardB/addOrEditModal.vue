@@ -358,9 +358,10 @@
                     "wardType": this.modal.wardType,
                     type:2
                 }
+                let that = this;
                 let couponIds = [];
                 if(!this.couponObj||!this.couponObj.length){
-                    this.$Message.error('请选择优惠卷');
+                    that.$Message.error('请选择优惠卷');
                     return;
                 }else{
                     this.couponObj.forEach(function(v,i){
@@ -390,7 +391,7 @@
                     params.awardRuleDtos = this.JawardRuleDtos;
                     params.awardRuleDtos.forEach(function(v,i){
                         if(!v.awardAmount){
-                            this.$Message.error('请选择优惠卷');
+                            that.$Message.error('请选择优惠卷');
                             return;
                         }
                     })
@@ -398,7 +399,7 @@
                     params.awardRuleDtos = this.UawardRuleDtos;
                     params.awardRuleDtos.forEach(function(v,i){
                         if(!v.awardAmount||v.awardAmount==0){
-                            this.$Message.error('请填写大于0的U贝数量');
+                            that.$Message.error('请填写大于0的U贝数量');
                             return;
                         }
                     })
