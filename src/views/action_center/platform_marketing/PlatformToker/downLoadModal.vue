@@ -142,9 +142,6 @@
                 this.selectBrandObj = {};
             },
             getPackageData(id,type){
-                if(type==1){
-                    return
-                }
                 postRequest(`/merchant/merchantBrand/list/merchant`,{brandId:id,brandLevel: 1}).then(res => {
                     if (res.code === "200") {
                         this.brandList = res.data||[];

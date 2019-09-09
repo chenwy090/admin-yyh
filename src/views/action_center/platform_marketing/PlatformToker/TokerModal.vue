@@ -240,7 +240,7 @@
                     if(!this.selectBusinessObj.name){
                         this.$Message.error('请选择商户名称');
                         return
-                    }else if(!this.modal.uNum&&Number(this.modal.uNum)>Number(upData.remainderPushNum)){
+                    }else if(!this.modal.uNum&&Number(this.modal.uNum)>Number(this.upData.remainderPushNum)){
                         this.$Message.error('请填写合适推送人数');
                         return
                     }else if(!this.selectCouponObj&&!this.selectCouponObj.merchantName){
