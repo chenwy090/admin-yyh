@@ -124,7 +124,7 @@
         data(){
             return{
                 merchantTypeList:[{value:'1',label:'本地商户(单店)'},{value:'2',label:'本地商户(多店)'}],
-                statusList:[{value:'0',label:'未生效'},{value:'1',label:'生效中'},{value:'2',label:'已完成'}],
+                statusList:[{value:'1',label:'未生效'},{value:'2',label:'已生效'},{value:'3',label:'已完成'}],
                 expandTypeList:[{value:'0',label:'全部'},{value:'1',label:'精准拓客'},{value:'2',label:'平台拓客'}],
                 TableLoading: false,
                 totalSize: 0,
@@ -163,6 +163,7 @@
                     },
                     {
                         title: "拓客时间",
+                        width: 250,
                         key: "expandTime"
                     },
                     {
@@ -193,12 +194,10 @@
             }
         },
         created(){
-            console.log(2);
             this.getProvinceList();
             this.loadTableData();
         },
         activated(){
-            console.log(22);
         },
         methods:{
             addressLoad(item,callback){

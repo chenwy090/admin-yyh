@@ -66,7 +66,7 @@
                 <Row class="padding-left-12">
                     <Col span="18">
                     <FormItem label="优惠卷：">
-                        <Button style="width: 150px" type="dashed" :disabled="!modal.type" @click="openCoupon">{{selectCouponObj&&selectCouponObj.merchantName?selectCouponObj.merchantName:'请选择优惠卷'}}</Button>
+                        <Button style="width: 150px" type="dashed" :disabled="!modal.type" @click="openCoupon">{{selectCouponObj&&selectCouponObj.title?selectCouponObj.title:'请选择优惠卷'}}</Button>
                     </FormItem>
                     </Col>
                 </Row>
@@ -211,8 +211,15 @@
                         console.log(res);
                         this.upData = res.data;
                        if(this.modal.type==2){
-                           this.oldBrandList = res.data.merchantReqList||[];
-                           this.brandList = res.data.merchantReqList||[];
+                           if(res.data.merchantReqList&&res.data.merchantReqList.length){
+                               res.data.merchantReqList.forEach(function(v,i){
+                                   v.maxPushCount = 0;
+                               });
+                               this.oldBrandList = res.data.merchantReqList;
+                               this.brandList = res.data.merchantReqList;
+                           }
+
+
                        }
                     } else {
                         this.$Message.error(res.msg);
@@ -247,7 +254,7 @@
                     params.cityName = this.selectBusinessObj.city;
                     params.couponId = this.selectCouponObj.templateId;
                     params.couponType = this.selectCouponObj.couponType;
-                    params.couponName = this.selectCouponObj.merchantName;
+                    params.couponName = this.selectCouponObj.title;
                     params.expandTime = this.modal.tokerDate+":00";
                     params.expandType = '2';
                     params.maxPushCount = this.modal.uNum;
@@ -268,11 +275,25 @@
                         this.$Message.error('请选择拓客时间');
                         return
                     }
+                    if(!this.brandList||!this.brandList.length){
+                        this.$Message.error('请重新选择品牌');
+                        return
+                    }
+                    var that = this;
+                    this.brandList.forEach(function(v,i){
+                        if(v.maxPushCount-0<=0){
+                            this.$Message.error('请填写推送人数');
+                            return
+                        }else if(v.maxPushCount-0>=Number(that.upData.remainderPushNum)){
+                            this.$Message.error('推送人数不能大于套餐剩余人数');
+                            return
+                        }
+                    });
                     // params.cityCode = this.selectBrandObj.cityCode;
                     // params.cityName = this.selectBrandObj.cityName;
                     params.couponId = this.selectCouponObj.templateId;
                     params.couponType = this.selectCouponObj.couponType;
-                    params.couponName = this.selectCouponObj.merchantName;
+                    params.couponName = this.selectCouponObj.title;
                     params.expandTime = this.modal.tokerDate+":00";
                     params.expandType = '2';
                     params.maxPushCount = this.modal.uNum;
