@@ -22,6 +22,12 @@ export default {
           }
         }
         return obj
+      },
+      m_cloneObj(e) {
+        if (Object.prototype.toString.call(e) !== '[object Object]') {
+          return e;
+        }
+        return JSON.parse(JSON.stringify(e));
       }
   }
 }

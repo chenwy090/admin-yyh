@@ -349,7 +349,7 @@
             </FormItem>
             <FormItem style="margin-left:-35px;" class="br">
               <Button @click="search" type="primary" icon="ios-search">搜索</Button>
-              <Button @click="refresh">重置</Button>
+              <Button @click="resetData">重置</Button>
             </FormItem>
           </Form>
         </row>
@@ -621,6 +621,13 @@ export default {
     }
   },
   created: function() {
+    this.resetData = (() => {
+      const originData = this.m_cloneObj(this.searchItem);
+      return () => {
+        this.searchItem = this.m_cloneObj(originData);
+        this.updateTableList();
+      }
+    })()
     this.userToken = {
       jwttoken: localStorage.getItem("jwttoken")
     };
@@ -861,7 +868,7 @@ export default {
       });
     },
     //重置商户搜索条件
-    refresh() {
+    resetData() {
       // this.updateTableList(this.params);
       this.searchItem.merchantId = "";
       this.searchItem.name = "";
