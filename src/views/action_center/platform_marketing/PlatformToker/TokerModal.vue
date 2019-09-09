@@ -66,7 +66,7 @@
                 <Row class="padding-left-12">
                     <Col span="18">
                     <FormItem label="优惠卷：">
-                        <Button style="width: 150px" type="dashed" :disabled="!modal.type" @click="openCoupon">{{selectCouponObj&&selectCouponObj.merchantName?selectCouponObj.merchantName:'请选择优惠卷'}}</Button>
+                        <Button style="width: 150px" type="dashed" :disabled="!modal.type" @click="openCoupon">{{selectCouponObj&&selectCouponObj.title?selectCouponObj.title:'请选择优惠卷'}}</Button>
                     </FormItem>
                     </Col>
                 </Row>
@@ -254,7 +254,7 @@
                     params.cityName = this.selectBusinessObj.city;
                     params.couponId = this.selectCouponObj.templateId;
                     params.couponType = this.selectCouponObj.couponType;
-                    params.couponName = this.selectCouponObj.merchantName;
+                    params.couponName = this.selectCouponObj.title;
                     params.expandTime = this.modal.tokerDate+":00";
                     params.expandType = '2';
                     params.maxPushCount = this.modal.uNum;
@@ -293,7 +293,7 @@
                     // params.cityName = this.selectBrandObj.cityName;
                     params.couponId = this.selectCouponObj.templateId;
                     params.couponType = this.selectCouponObj.couponType;
-                    params.couponName = this.selectCouponObj.merchantName;
+                    params.couponName = this.selectCouponObj.title;
                     params.expandTime = this.modal.tokerDate+":00";
                     params.expandType = '2';
                     params.maxPushCount = this.modal.uNum;

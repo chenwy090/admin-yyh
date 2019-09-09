@@ -127,6 +127,7 @@
                 this.couponForm.couponName = row.couponName;
                 this.couponForm.merchantName = row.merchantName;
                 this.addressValue = [];
+                this.selectIndex = '';
                 this.selectRow = coupon;
                 this.loadTableData();
             },
@@ -186,6 +187,7 @@
                     merchantName:this.couponForm.merchantName,
                     provinceCode:this.addressValue[0]||'',
                 }
+                var that = this;
                 //商户券列表
                 postRequest(`/coupon/merchant/list`,params
                 ).then(res => {
@@ -195,7 +197,7 @@
                         this.listData = res.data.records||[];
                         if(this.selectRow.templateId){
                             this.listData.forEach(function(v,i){
-                                if(v.templateId == this.selectRow.templateId){
+                                if(v.templateId == that.selectRow.templateId){
                                     that.selectIndex = i;
                                 }
                             })
