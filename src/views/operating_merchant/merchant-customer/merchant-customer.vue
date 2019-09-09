@@ -37,7 +37,7 @@
                             </FormItem>
 
                             <FormItem label="行业">
-                                <component ref="industryViewChild" :showSecond="false" v-bind:is='industryView' v-on:sendMainIndustryId="mainIndustryId"  v-on:sendSecondIndustryId="secondIndustryId"></component>
+                                <component ref="industryViewChild" :showSecond="false" placeholder="请选择" v-bind:is='industryView' v-on:sendMainIndustryId="mainIndustryId"  v-on:sendSecondIndustryId="secondIndustryId"></component>
                                 <Input type="text" style="display:none"  v-model="searchItem.mainIndustryId"/>
                                 <Input type="text" style="display:none" v-model="searchItem.industryId" />
                             </FormItem>

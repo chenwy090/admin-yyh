@@ -3,7 +3,7 @@
     <Col span="12">
       <Select
         v-model="mainIndustryId"
-        placeholder="请选择主行业"      
+        :placeholder="placeholder"
         style="width:120px"
         @on-change="changeMainIndustry()"
       >
@@ -41,7 +41,11 @@ export default {
     showSecond: {
       type: Boolean,
       default: true
-    }
+    },
+    placeholder: {
+      type: String,
+      default: "请选择主行业"
+    },
   },
   mounted: function() {
     this.getMainIndustryList();
