@@ -161,7 +161,8 @@
                 this.selectBusinessObj = e;
                 this.businessVolumeModal = false;
                 if(e&&e.merchantId){
-                    this.getPackageData(e.merchantId,1);
+                    // this
+                    // this.getPackageData(e.merchantId,1);
                 }
             },
             openBrand(e){
@@ -201,12 +202,13 @@
                 params.merchantIds = [];
                 if(this.modal.expandType =='1'){
                     params.merchantName = this.selectBusinessObj.name
+                    params.merchantIds.push(this.selectBusinessObj.merchantId);
                 }else if(this.modal.expandType =='2'){
-                    params.merchantName = this.selectBrandObj.name
+                    params.merchantName = this.selectBrandObj.name;
+                    this.brandList.forEach(function(v,i){
+                        params.merchantIds.push(v.merchantId);
+                    })
                 }
-                this.brandList.forEach(function(v,i){
-                    params.merchantIds.push(v.merchantId);
-                })
                 downloadSteam(`/merchant/platform/expand/download`,params).then(res => {
                     const content = res.data;
                     let fileName = res.headers["filename"];
