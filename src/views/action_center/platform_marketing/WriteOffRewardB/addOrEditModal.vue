@@ -358,10 +358,9 @@
                     "wardType": this.modal.wardType,
                     type:2
                 }
-                let that = this;
                 let couponIds = [];
                 if(!this.couponObj||!this.couponObj.length){
-                    that.$Message.error('请选择优惠卷');
+                    this.$Message.error('请选择优惠卷');
                     return;
                 }else{
                     this.couponObj.forEach(function(v,i){
@@ -387,22 +386,25 @@
                 }else if(this.modal.wardType=='2'){
                     params.awardRuleDtos = this.UawardRuleDtos;
                 }
+                let errorMsg = '';
                 if(this.modal.wardType=='1'){
                     params.awardRuleDtos = this.JawardRuleDtos;
                     params.awardRuleDtos.forEach(function(v,i){
                         if(!v.awardAmount){
-                            that.$Message.error('请选择优惠卷');
-                            return;
+                            errorMsg = '请选择优惠卷'
                         }
                     })
                 }else if(this.modal.wardType=='2'){
                     params.awardRuleDtos = this.UawardRuleDtos;
                     params.awardRuleDtos.forEach(function(v,i){
                         if(!v.awardAmount||v.awardAmount==0){
-                            that.$Message.error('请填写大于0的U贝数量');
-                            return;
+                            errorMsg = '请填写大于0的U贝数量'
                         }
                     })
+                }
+                if(errorMsg){
+                    this.$Message.error(errorMsg);
+                    return;
                 }
                 if(this.numArrayValidator( params.awardRuleDtos)){
                     if(this.titleName=='新增'){
