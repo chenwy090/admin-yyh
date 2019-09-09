@@ -2,193 +2,48 @@
 <template>
   <!-- 收费条目 FeeEntry -->
   <div>
-    <BusinessList
-      v-if="showBusinessList"
-      :showBusinessList.sync="showBusinessList"
-      @seclectedTr-event="selectedTrCallBack"
-    ></BusinessList>
-    <BrandList
-      v-if="showBrandList"
-      :showBrandList.sync="showBrandList"
-      @seclectedTr-event="selectedTrCallBack"
-    ></BrandList>
-    <CouponList
-      v-if="showCouponList"
-      :showCouponList.sync="showCouponList"
-      @seclectedTr-event="selectedCouponItem"
-    ></CouponList>
-
-    <!-- :label="'Item ' + index" -->
     <Alert>
-      <FormItem label="商户类型：" :prop="`ruleInfoList.${index}.merchantType`">
-        <Row type="flex" justify="space-between" class="code-row-bg">
-          <Col span="4">
-            <RadioGroup v-model="item.merchantType">
-              <Radio v-for="item in businessTypeList" :label="item.value" :key="item.value">
-                <span>{{item.label}}</span>
-              </Radio>
-            </RadioGroup>
-          </Col>
-          <Col span="2">
-            <Button
-              type="error"
-              icon="md-trash"
-              size="small"
-              @click="compatible_delInfo(index,item)"
-            >删除</Button>
-          </Col>
-        </Row>
-      </FormItem>
-      <!-- :rules="{ required: true, message: '请选择${businessTypeLabel}' }" -->
-      <!-- prop="businessName" -->
-      <FormItem
-        :label="`商户名称：`"
-        :prop="`ruleInfoList.${index}.${item.merchantType?'brandName':'merhcantName'}`"
-        :rules="{ required: true, validator: validateBusinessName }"
-      >
-        <Row>
-          <Col span="10">
-            <Input
-              style="width:230px"
-              v-model="item[`${item.merchantType?'brandName':'merhcantName'}`]"
-              :placeholder="`点击按钮选择${businessTypeLabel}`"
-              disabled
-            >
-              <Button @click="handleChoose" slot="append">选择</Button>
-            </Input>
-          </Col>
-        </Row>
-      </FormItem>
-      <Row class="box" style="margin-bottom:20px;">
-        <Table size="small" border width="600px" :columns="dynamicColumns" :data="tableData">
-          <template slot-scope="{ row }" slot="operate">
-            <Button
-              size="small"
-              style="color:#2db7f5"
-              @click="remove(row)"
-              icon="ios-trash-outline"
-            >移除</Button>
-          </template>
-        </Table>
-      </Row>
-      <!-- :rules="{required: true,  validator: validateEmpty('请填写流水号'), trigger: 'blur'}" -->
-      <FormItem
-        label="消耗U贝："
-        :prop="`ruleInfoList.${index}.anticipatedUbay`"
-        :rules="{ required: true, validator: validateUbay }"
-      >
-        <Row>
-          <Col span="10">
-            <Input
-              style="width:230px"
-              v-model="item.anticipatedUbay"
-              placeholder="请输入需要消耗U贝的数量"
-              clearable
-            />
-          </Col>
-        </Row>
-      </FormItem>
-
-      <!-- templateId  券模板id  templateName 券模板名称 -->
-      <!-- :rules="{ required: true, validator: validateBusinessName }" -->
-      <FormItem
-        :label="`优惠券：`"
-        :prop="`ruleInfoList.${index}.templateName}`"
-        :rules="{ required: true, validator: validateEmpty('请选择优惠券') }"
-      >
-        <Row>
-          <Col span="10">
-            <Input
-              style="width:230px"
-              v-model="item.templateName"
-              :placeholder="`点击按钮选择优惠券`"
-              disabled
-            >
-              <Button @click="handleChooseCoupon" slot="append">选择</Button>
-            </Input>
-          </Col>
-        </Row>
-      </FormItem>
-
-      <FormItem
-        label="截止时间："
-        :prop="`ruleInfoList.${index}.endTime`"
-        :rules="{required: true, validator: validateEmpty('请选择时间'), trigger: 'blur'}"
-      >
-        <Row>
-          <Col span="6">
-            <DatePicker
-              style="width:230px"
-              type="date"
-              placeholder="请选择时间"
-              :value="item.endTime"
-              @on-change="changeEndTime"
-            ></DatePicker>
-          </Col>
-          <Col span="18">
-            领取量低于
-            <Input style="width:100px" v-model="item.receivedNum" placeholder="请填写数量" clearable />任务自动终止
-          </Col>
-        </Row>
-      </FormItem>
+      <div class="item">
+        <span class="fl label">商户类型：</span>
+        <span class="fl">{{item.merchantTypeName}}</span>
+      </div>
+      <div class="item">
+        <span class="fl label">商户名称：</span>
+        <span class="fl">{{item.name}}</span>
+      </div>
+      <div class="item">
+        <span class="fl label">消耗U贝：</span>
+        <span class="fl">{{item.anticipatedUbay}}</span>
+      </div>
+      <div class="item">
+        <span class="fl label">优惠券：</span>
+        <span class="fl">{{item.templateName}}</span>
+      </div>
+      <div class="item">
+        <span class="fl label">截止时间：</span>
+        <span class="fl">{{item.endTime}} 领取量低于{{item.receivedNum}}任务自动终止</span>
+      </div>
       <!-- ----------------------------------------------------- -->
       <Divider />
-      <FormItem
-        :label-width="0"
-        :prop="`ruleInfoList.${index}.receiveAwardUbay`"
-        :rules="{ required: true, validator: validateUbay }"
-      >
+      <div>
         每领取一张券，奖励领取者
-        <Input
-          style="display:inline-block;width:100px"
-          v-model="item.receiveAwardUbay"
-          placeholder="请输入数字"
-          clearable
-        />&nbsp;U贝 &nbsp;通过分享领取不享受该奖励
-      </FormItem>
-      <FormItem
-        :label-width="0"
-        :prop="`ruleInfoList.${index}.useAwardUbay`"
-        :rules="{ required: true, validator: validateUbay }"
-      >
-        每核销一张券，奖励领取者
-        <Input
-          style="display:inline-block;width:100px"
-          v-model="item.useAwardUbay"
-          placeholder="请输入数字"
-          clearable
-        />&nbsp;U贝 &nbsp; 通过分享领取核销，不享受该奖励
-      </FormItem>
+        {{item.receiveAwardUbay}}&nbsp;U贝 &nbsp;通过分享领取不享受该奖励
+      </div>
+      <div>
+        每核销一张券，奖励领取者 {{item.useAwardUbay}}
+        &nbsp;U贝 &nbsp; 通过分享领取核销，不享受该奖励
+      </div>
 
       <Divider />
       <!-- ----------------------------------------------------- -->
-
-      <FormItem
-        :label-width="0"
-        :prop="`ruleInfoList.${index}.shareReceiveAwardUbay`"
-        :rules="{ required: true, validator: validateUbay }"
-      >
-        分享券被领取，奖励分享者
-        <Input
-          style="display:inline-block;width:100px"
-          v-model="item.shareReceiveAwardUbay"
-          placeholder="请输入数字"
-          clearable
-        />&nbsp;U贝
-      </FormItem>
-      <FormItem
-        :label-width="0"
-        :prop="`ruleInfoList.${index}.shareUseAwardUbay`"
-        :rules="{ required: true, validator: validateUbay }"
-      >
-        分享券被核销，奖励分享者
-        <Input
-          style="display:inline-block;width:100px"
-          v-model="item.shareUseAwardUbay"
-          placeholder="请输入数字"
-          clearable
-        />&nbsp;U贝
-      </FormItem>
+      <div>
+        分享券被领取，奖励分享者 {{item.shareReceiveAwardUbay}}
+        &nbsp;U贝
+      </div>
+      <div>
+        分享券被核销，奖励分享者 {{item.shareUseAwardUbay}}
+        &nbsp;U贝
+      </div>
     </Alert>
   </div>
 </template>
@@ -434,3 +289,16 @@ export default {
   }
 };
 </script>
+<style lang="less" scoped>
+.fl {
+  float: left;
+}
+.item {
+  height: 30px;
+  line-height: 30px;
+  .label {
+    width: 88px;
+    text-align: right;
+  }
+}
+</style>

@@ -29,7 +29,7 @@ export default [{
         title: "有效期",
         key: "startTimeAndEndTime",
         align: "center",
-        minWidth: 160,
+        minWidth: 170,
     },
     {
         title: "审核",
@@ -47,7 +47,7 @@ export default [{
         title: "创建时间",
         key: "gmtCreate",
         align: "center",
-        minWidth: 140
+        minWidth: 150
     },
     {
         title: "操作人",

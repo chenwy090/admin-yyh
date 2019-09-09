@@ -1,7 +1,7 @@
 <template>
   <!-- U贝明细 -->
   <div>
-    <h2 class="header">财务中心 > 商户账务 > 商户预充值 > U贝消耗明细 -- {{merchantId}}-- {{merchantName}}</h2>
+    <h2 class="header">财务中心 > 商户账务 > 商户预充值 > U贝消耗明细</h2>
     <h3 class="title">一兆韦德【浙江/杭州】</h3>
     <div class="query-row">
       <Card :bordered="false" style="margin-bottom:2px">

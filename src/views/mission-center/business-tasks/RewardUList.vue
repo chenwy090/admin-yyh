@@ -81,7 +81,21 @@
       </Row>
     </Card>
 
-    <Modal v-model="examineModal" :closable="true" :mask-closable="false" width="400">
+    <Drawer
+      v-model="showDetail"
+      :closable="true"
+      :mask-closable="false"
+      width="820"
+      :styles="styles"
+    >
+      <p slot="header" style="color:#f60;text-align:center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>任务详情</span>
+      </p>
+      <RewardUDetail v-if="showDetail" :showDetail.sync="showDetail" :detailData="detailData"></RewardUDetail>
+    </Drawer>
+
+    <Modal v-model="examineModal" :closable="true" width="300">
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="ios-information-circle"></Icon>
         <span>审核</span>
@@ -125,8 +139,12 @@ import {
 } from "@/api/sys";
 import columns from "./columns";
 
+import RewardUDetail from "./RewardUDetail";
 export default {
   name: "reward-u",
+  components: {
+    RewardUDetail
+  },
   watch: {
     ["formValidate.status"]() {
       const status = this.formValidate.status;
@@ -148,6 +166,13 @@ export default {
       }
     };
     return {
+      showDetail: false,
+      styles: {
+        height: "calc(100% - 55px)",
+        overflow: "auto",
+        paddingBottom: "53px",
+        position: "static"
+      },
       id: "",
       //审核
       examineModal: false,
@@ -185,6 +210,7 @@ export default {
         "2": "已结束",
         "3": "已终止"
       },
+      merchantTypeOption: { 0: "本地商户（单店）", 1: "本地商户（多店）" },
       // 查询参数
       searchData: {
         name: "", //任务名称
@@ -198,7 +224,8 @@ export default {
         total: 0 //数据总数
       },
       columns,
-      tableData: []
+      tableData: [],
+      detailData: {} //查看详情
     };
   },
   created() {
@@ -208,11 +235,19 @@ export default {
     async queryRowById(id) {
       const { code, data } = await queryDetailById(id);
       if (code == 200) {
-        data.daterange = [data.startTime, data.endTime];
-        data.ruleInfoList = data.ruleInfoList.map(item => {
+        // 审核 status 状态  isStop 是否终止 1-中止，0-正常
+
+        // statusOption/isStopOption
+        const { isStop, status, startTime, endTime, ruleInfoList } = data;
+
+        data.statusName = this.statusOption[status]; //审核
+        data.isStopName = this.isStopOption[isStop]; //状态
+        data.daterange = [startTime, endTime];
+        data.ruleInfoList = (ruleInfoList || []).map(item => {
           const { merchantType, id, name } = item;
           let row = null;
           // 商户类型 0-本地商户（单店），1-本地商户（多店）
+          item.merchantTypeName = this.merchantTypeOption[merchantType];
           if (merchantType == 0) {
             item.merchantId = id;
             item.merhcantName = name;
@@ -236,9 +271,12 @@ export default {
       }
     },
     async toDetail(row) {
+      //查看详情
       const data = await this.queryRowById(row.id);
 
       if (data) {
+        this.showDetail = true;
+        this.detailData = data;
         // this.linkTo("reward-u-detail", data);
       }
     },
@@ -355,7 +393,8 @@ export default {
 
       this.page = {
         pageNum: 1, //页码
-        pageSize: 10 //每页数量
+        pageSize: 10, //每页数量
+        total: 0 //数据总数
       };
 
       //重新查询一遍
