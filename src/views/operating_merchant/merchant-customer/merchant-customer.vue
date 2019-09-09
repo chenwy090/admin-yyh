@@ -157,7 +157,7 @@
     </div>
 </template>
 
-<<script>
+<script>
     import {
         getRequest,
         postRequest,
@@ -170,6 +170,7 @@
     import { uploadOperationImage2AliOssURl, baseUrl } from "@/api/index";
 
 import industryView from "./industry";
+import common from "@/mixins/common";
 
     export default {
         name: "merchant-customer",
@@ -309,7 +310,7 @@ import industryView from "./industry";
             },
             }
         },
-
+        mixins: [common],
         created: function() {
             this.userToken = {
                 jwttoken: localStorage.getItem("jwttoken")
@@ -488,6 +489,8 @@ import industryView from "./industry";
                 if (this.search.merchantType === '') {
                   delete params.name
                 }
+                // m_开头的来自mixins 过滤空参数
+                params = this.m_filterParams(params);
                 postRequest('/merchant/merchantPackageInfo/list?isAsc=DESC&orderByColumn=1&pageNum='+ this.current +'&pageSize=10', params).then(res => {
                     if(res.code == 200){
                         // console.log(res);
