@@ -407,6 +407,8 @@ import {
 } from "@/libs/axios";
 import { baseUrl, uploadOperationImage2AliOssURl } from "@/api/index";
 import { formatDate, checkImageWH, checkImage, uniqueArray } from "@/libs/date";
+import common from "@/mixins/common";
+
 
 export default {
   name: "merchant-customer-add",
@@ -608,6 +610,7 @@ export default {
       deleteChargesList: []
     };
   },
+  mixins: [common],
   computed: {
     currentTitle() {
       let _title = "商户";
@@ -807,7 +810,7 @@ export default {
       // }
       postJson(
         host + urls[Number(this.add_info.merchantType)] + `?isAsc=DESC&orderByColumn=1&pageSize=10&pageNum=${this.pageNum}`,
-        reqParams
+        this.m_filterParams(reqParams)
       ).then(res => {
         if (res.code == 200) {
           this.totalSize = res.data.total;
