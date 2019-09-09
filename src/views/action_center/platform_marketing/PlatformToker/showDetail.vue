@@ -22,7 +22,7 @@
                 </Row>
                 <Row class="padding-left-12">
                     <Col span="18">
-                    <FormItem label="优惠卷：" span="24">
+                    <FormItem label="优惠券：" span="24">
                         <span>{{data.couponName}}</span>
                     </FormItem>
                     </Col>
