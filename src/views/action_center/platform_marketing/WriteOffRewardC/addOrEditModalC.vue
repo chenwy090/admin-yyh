@@ -334,8 +334,16 @@
                 }
                 if(this.modal.wardType=='1'){
                     params.awardRuleDtos = this.JawardRuleDtos;
+                    if(!params.awardRuleDtos[0].awardAmount){
+                        this.$Message.error('请选择优惠卷');
+                        return;
+                    }
                 }else if(this.modal.wardType=='2'){
                     params.awardRuleDtos = this.UawardRuleDtos;
+                    if(!params.awardRuleDtos[0].awardAmount||params.awardRuleDtos[0].awardAmount==0){
+                        this.$Message.error('请填写大于0的U贝数量');
+                        return;
+                    }
                 }
                 if(this.titleName=='新增'){
                     postRequest(`/customer/activity/award/add/activity`,params).then(res => {

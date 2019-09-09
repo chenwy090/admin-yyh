@@ -372,6 +372,23 @@
                 }else if(this.modal.wardType=='2'){
                     params.awardRuleDtos = this.UawardRuleDtos;
                 }
+                if(this.modal.wardType=='1'){
+                    params.awardRuleDtos = this.JawardRuleDtos;
+                    params.awardRuleDtos.forEach(function(v,i){
+                        if(!v.awardAmount){
+                            this.$Message.error('请选择优惠卷');
+                            return;
+                        }
+                    })
+                }else if(this.modal.wardType=='2'){
+                    params.awardRuleDtos = this.UawardRuleDtos;
+                    params.awardRuleDtos.forEach(function(v,i){
+                        if(!v.awardAmount||v.awardAmount==0){
+                            this.$Message.error('请填写大于0的U贝数量');
+                            return;
+                        }
+                    })
+                }
                 if(this.numArrayValidator( params.awardRuleDtos)){
                     if(this.titleName=='新增'){
                         postRequest(`/merchant/activity/award/add/activity`,params).then(res => {
