@@ -50,7 +50,7 @@
                                             <div>{{row.province+'/'+row.city}}</div>
                                         </template>
                                         <template slot-scope="{ row,index }" slot="timer">
-                                            <div>{{row.startDate+'/'+row.endDate}}</div>
+                                            <div>{{row.startDate+'——'+row.endDate}}</div>
                                         </template>
                                     </Table>
                                 </RadioGroup>
@@ -112,7 +112,7 @@
                                             <div>{{row.province+'/'+row.city}}</div>
                                         </template>
                                         <template slot-scope="{ row,index }" slot="timer">
-                                            <div>{{row.useStartTime+'/'+row.useEndTime}}</div>
+                                            <div>{{row.useStartTime+'——'+row.useEndTime}}</div>
                                         </template>
                                     </Table>
                                 </RadioGroup>

@@ -105,7 +105,7 @@
                     },
                     {
                         title: "有效期",
-                        slot: "time",
+                        slot: "timer",
                         align: 'center',
                     }
                 ],
