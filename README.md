@@ -3,8 +3,13 @@
 #分支说明：#
 
 `master`（发线上）和生产环境保持一致
+[http://crm.52iuh.com](http://crm.52iuh.com/)
 
 `dev`（发测试）
+[http://crm.52iuh.cn](http://crm.52iuh.cn/)
+
+`crmdev`（发开发环境dev）
+[http://crmdev.52iuh.cn](http://crmdev.52iuh.cn/)
 
 ### 项目简介
 - 项目基于 Vue-Cli 3.0正式版创建
