@@ -2,7 +2,7 @@
   <!-- U贝明细 -->
   <div>
     <h2 class="header">财务中心 > 商户账务 > 商户预充值 > U贝消耗明细</h2>
-    <h3 class="title">一兆韦德【浙江/杭州】</h3>
+    <h3 class="title">{{merchantName}}</h3>
     <div class="query-row">
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
@@ -55,7 +55,7 @@ import { ubayColumns } from "./columns";
 export default {
   name: "ubay-details",
   computed: {
-    ...mapState(["merchantId", "merchantName"])
+    ...mapState(["acountId", "merchantId", "merchantName"])
   },
   data() {
     return {
@@ -108,7 +108,7 @@ export default {
         code,
         data: { records, current, total, size }
       } = await queryUbayList({
-        merchantAccountId: 5, //this.merchantId,
+        merchantAccountId: this.acountId,
         ...this.searchData,
         ...this.page
       });
