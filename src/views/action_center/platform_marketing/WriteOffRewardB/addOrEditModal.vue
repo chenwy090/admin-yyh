@@ -276,6 +276,11 @@
                             this.modal.type = '2';
                             this.couponObj = data.coupons;
                             this.modal.status = data.status;
+                            if(data.awardRuleVos&&data.awardRuleVos.length){
+                                data.awardRuleVos.forEach(function(v,i){
+                                    v.awardAmount = v.award;
+                                });
+                            }
                             if(data.awardType=='1'){
                                 this.JawardRuleDtos = data.awardRuleVos;
                                 this.UawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'1',couponType:'',awardName:''}];

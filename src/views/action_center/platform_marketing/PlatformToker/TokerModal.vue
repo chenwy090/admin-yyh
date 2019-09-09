@@ -33,6 +33,7 @@
                                 type="text"
                                 :precision="0"
                                 v-model="modal.uNum"
+                                :max="1000000000"
                                 placeholder="请填写推送人数"
                                 style="width: 150px"
                         ></InputNumber>
@@ -53,6 +54,7 @@
                                 :step="1"
                                 type="text"
                                 :precision="0"
+                                :max="1000000000"
                                 v-model="item.maxPushCount"
                                 placeholder="请填写推送人数"
                                 style="width: 150px"
