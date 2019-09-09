@@ -154,13 +154,13 @@
                     },
                     {
                         title: "操作人",
-                        width: 100,
+                        minWidth: 100,
                         align: "center",
                         key: "createBy"
                     },
                     {
                         title: "操作时间",
-                        width: 200,
+                        minWidth: 200,
                         align: "center",
                         key: "createTime"
                     }
