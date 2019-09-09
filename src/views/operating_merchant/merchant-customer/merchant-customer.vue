@@ -193,7 +193,8 @@ import common from "@/mixins/common";
             return {
                 mctTypes: [
                   {name: '单店', code: '1'},
-                  {name: '品牌', code: '2'}
+                  // 多店即品牌
+                  {name: '多店', code: '2'}
                 ],
                 packageId: "",
                 merchantCustomerAddPage: false,
@@ -558,5 +559,6 @@ import common from "@/mixins/common";
 <style lang="less" scoped>
     .operation {
         margin-bottom: 2vh;
+        margin-top: 10px;
     }
 </style>

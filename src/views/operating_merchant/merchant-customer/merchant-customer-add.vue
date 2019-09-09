@@ -202,6 +202,7 @@
                 v-model="add_info.remark"
                 placeholder="500个字符以内"
                 clearable
+                :disabled="disabled2"
                 :rows="3"
               />
             </Tooltip>
@@ -222,7 +223,7 @@
             <!-- <Col span="2" class="left-text"></Col> -->
 
             <Col span="24" class="flex alert-content">
-              <Select v-model="item.paymentMode" style="width:100px" placeholder="支付方式">
+              <Select v-model="item.paymentMode" style="width:100px" placeholder="支付方式" :disabled="disabled2">
                 <Option v-for="item in payTypeList" :value="item.id" :key="item.id" :disabled="disabled2">{{ item.name }}</Option>
               </Select>
               <InputNumber
@@ -1021,8 +1022,8 @@ export default {
           if (res.code == 200) {
             this.add_info = {
               merchantType: res.data.merchantType,
-              serviceCode: "merchant_customer",
-              serviceName: "精准拓客",
+              serviceCode: res.data.serviceCode,
+              // serviceName: "精准拓客",
               pushCustomerNum: parseInt(res.data.pushCustomerNum),
               startDate: res.data.startDate,
               endDate: res.data.endDate,
