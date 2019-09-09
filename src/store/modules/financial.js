@@ -4,6 +4,7 @@ export default {
     namespaced: true,
     state: {
         compName: "business-recharge",
+        acountId: "", //账号id
         merchantType: "", //商户类型
         merchantId: "", //商户id
         merchantName: "", //商户名称
@@ -19,6 +20,8 @@ export default {
         },
         showRechargeDetail(state, payload) {
             state.compName = payload.compName;
+
+            state.acountId = payload.acountId;
             state.merchantType = payload.merchantType;
             state.merchantId = payload.merchantId;
             state.merchantName = payload.merchantName;

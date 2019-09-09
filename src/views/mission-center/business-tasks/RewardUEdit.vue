@@ -5,6 +5,7 @@
     <Row type="flex" justify="start">
       <Button type="dashed" icon="md-arrow-round-back" @click="goback">返回列表</Button>
     </Row>
+    <br />
     <div>
       <Form
         label-position="right"
@@ -88,7 +89,7 @@
     </div>
 
     <div class="demo-drawer-footer">
-      <Button type="primary" @click="handleSubmit('form')">保存</Button>
+      <Button type="primary" style="margin-right: 8px" @click="handleSubmit('form')">保存</Button>
       <Button style="margin-right: 8px" @click="closeDialog">取消</Button>
     </div>
   </div>
@@ -137,11 +138,11 @@ export default {
       formData: {
         // 任务信息
         id: "", //主键
-        name: "任务名称", // 任务名称
-        startTime: "2019-10-21", // 任务开始时间
-        endTime: "2019-10-22", // 任务结束时间
+        name: "", // 任务名称
+        startTime: "", // 任务开始时间
+        endTime: "", // 任务结束时间
         daterange: [], // 任务时间数组
-        ruleDescribe: "规则描述", //规则描述
+        ruleDescribe: "", //规则描述
 
         // 奖励规则
         ruleInfoList: [
@@ -152,15 +153,15 @@ export default {
             merhcantName: "", // 商户名称
             brandId: "", // 品牌id
             brandName: "", // 品牌名称
-            anticipatedUbay: "1", // 预计消耗u贝数量
-            templateId: "232323", //券模板id
-            templateName: "券模板名称", //券模板名称
-            endTime: "2019-10-26", // 任务中止时间
-            receivedNum: "12", // 领取数量
-            receiveAwardUbay: "12", // 领取奖励，u贝数
-            useAwardUbay: "123", // 核销奖励，u贝数
-            shareReceiveAwardUbay: "121", // 分享后被领取奖励u贝数
-            shareUseAwardUbay: "121" // 分享后被核销奖励u贝数
+            anticipatedUbay: "", // 预计消耗u贝数量
+            templateId: "", //券模板id
+            templateName: "", //券模板名称
+            endTime: "", // 任务中止时间
+            receivedNum: "", // 领取数量
+            receiveAwardUbay: "", // 领取奖励，u贝数
+            useAwardUbay: "", // 核销奖励，u贝数
+            shareReceiveAwardUbay: "", // 分享后被领取奖励u贝数
+            shareUseAwardUbay: "" // 分享后被核销奖励u贝数
           }
         ]
       },
@@ -171,9 +172,12 @@ export default {
     let { type, data } = this.$store.state.missionCenter;
     //修改
     if (type == "edit") {
-      this.formData = data;
+      this.formData = data; //任务数据
       console.log("this.formData", data);
     }
+  },
+  beforeDestroy() {
+    this.$store.state.missionCenter.data = {};
   },
   methods: {
     goback() {
@@ -208,6 +212,8 @@ export default {
         brandId: "", // 品牌id
         brandName: "", // 品牌名称
         anticipatedUbay: "", // 预计消耗u贝数量
+        templateId: "", //券模板id
+        templateName: "", //券模板名称
         endTime: "", // 任务中止时间
         receivedNum: "", // 领取数量
         receiveAwardUbay: "", // 领取奖励，u贝数
@@ -256,7 +262,8 @@ export default {
       //关闭对话框清除表单数据
       // this.$refs.formValidate.resetFields();
       console.log("closeDialog");
-      this.$emit(`update:showDeduction`, false);
+      // this.$emit(`update:showDeduction`, false);
+      this.goback();
     },
     handleSubmit(name) {
       this.$refs[name].validate(async valid => {
@@ -275,9 +282,6 @@ export default {
             url = "/merchant/assignment/add";
           }
 
-          oForm.ruleInfoList[0].templateId = "2019072277211";
-          oForm.ruleInfoList[0].merchantId = "20190726012428";
-
           let res = await addOrEdit(url, oForm);
 
           if (res.code == 200) {
@@ -285,7 +289,8 @@ export default {
             // this.closeDialog();
             //刷新列表数据
             // this.$emit("refresh");
-            this.msgErr("保存成功");
+            this.msgOk("保存成功");
+            this.goback();
           } else {
             this.msgErr(res.msg);
           }

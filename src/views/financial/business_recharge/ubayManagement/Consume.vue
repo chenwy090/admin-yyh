@@ -216,7 +216,7 @@ export default {
         brandName: "", //
         anticipatedDeduction: "", // 应扣款
         actualDeduction: "", //实扣款
-        remark: "remarks" //备注 必填
+        remark: "" //备注 必填
       },
       ruleValidate: {
         remark: [{ validator: validateRemarks, trigger: "blur" }]

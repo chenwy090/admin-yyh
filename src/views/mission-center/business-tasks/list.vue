@@ -36,7 +36,7 @@ export default {
   .header {
     height: 24px;
     line-height: 24px;
-    background-color: #929292;
+    background-color: #DBDBDB;
     font-family: "微软雅黑";
     font-size: 12px;
     font-weight: 400;

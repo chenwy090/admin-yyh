@@ -113,7 +113,7 @@ export default {
     },
     linkTo(compName, data) {
       let { merchantType } = this.searchData;
-      let { merchantId, merchantName } = data;
+      let { id: acountId, merchantId, merchantName } = data;
       this.$store.dispatch("financial/showRechargeDetail", {
         compName,
         merchantId,

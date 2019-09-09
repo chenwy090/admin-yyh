@@ -11,26 +11,31 @@
         :key="index"
       >
         <Col span="4">
+          <!-- 支付方式: -->
           <FormItem :label-width="0">
-            <Input v-model="item.paymentMode" disabled/>
+            <Input :value="payTypeList[item.paymentMode]" disabled />
           </FormItem>
         </Col>
         <Col span="5">
+          <!-- 实际收款金额 -->
           <FormItem :label-width="0">
             <Input v-model="item.actualAmount" disabled />
           </FormItem>
         </Col>
         <Col span="4">
+          <!-- 收款人 -->
           <FormItem :label-width="0">
             <Input v-model="item.payee" disabled />
           </FormItem>
         </Col>
         <Col span="4">
+          <!-- 收款日期 -->
           <FormItem :label-width="0">
-            <Input v-model="item.receivedDateStr" disabled />
+            <Input v-model="item.receivedDate" disabled />
           </FormItem>
         </Col>
         <Col span="5">
+          <!-- 流水号 -->
           <FormItem :label-width="0">
             <Input v-model="item.serialNumber" disabled />
           </FormItem>
@@ -59,24 +64,12 @@ export default {
   },
   data() {
     return {
-      payTypeList: [
-        {
-          id: "1",
-          name: "现金"
-        },
-        {
-          id: "2",
-          name: "微信"
-        },
-        {
-          id: "3",
-          name: "支付宝"
-        },
-        {
-          id: "4",
-          name: "银行卡"
-        }
-      ]
+      payTypeList: {
+        "1": "现金",
+        "2": "微信",
+        "3": "支付宝",
+        "4": "银行卡"
+      }
     };
   },
 

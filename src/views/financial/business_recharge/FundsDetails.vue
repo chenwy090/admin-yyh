@@ -2,8 +2,8 @@
 <template>
   <!-- 资金明细 -->
   <div>
-    <h2 class="header">财务中心 > 商户账务 > 商户预充值 > 资金明细 -- {{merchantId}}-- {{merchantName}}</h2>
-    <h3 class="title">一兆韦德【浙江/杭州】</h3>
+    <h2 class="header">财务中心 > 商户账务 > 商户预充值 > 资金明细</h2>
+    <h3 class="title">{{merchantName}}</h3>
     <div class="query-row">
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
@@ -66,10 +66,11 @@ import { fundsColumns } from "./columns";
 export default {
   name: "funds-details",
   computed: {
+    // acountId: "", //账号id
     // merchantType: "", //商户类型
     // merchantId: "", //商户id
     // merchantName: "", //商户名称
-    ...mapState(["merchantType", "merchantId", "merchantName"])
+    ...mapState(["acountId","merchantType", "merchantId", "merchantName"])
     // ...mapState(["businessId", "businessName"])
   },
   data() {
@@ -139,7 +140,7 @@ export default {
         code,
         data: { records, current, total, size }
       } = await queryFundsList({
-        merchantAccountId: this.merchantId,
+        merchantAccountId: this.acountId,
         changeType: this.merchantType,
         ...this.searchData,
         ...this.page

@@ -2,7 +2,7 @@
 export default [{
         title: "操作",
         align: "center",
-        width: 200,
+        width: 180,
         fixed: "left",
         slot: "action"
     },
@@ -16,7 +16,7 @@ export default [{
         title: "商户类型",
         key: "merchantTypeName",
         align: "center",
-        width: 120
+        width: 140
     },
     {
         title: "商户名称",
@@ -109,11 +109,13 @@ export const ubayMColumns = [{
         width: 80,
         align: 'center'
     },
+
+    // status
     {
-        title: "状态",
-        key: "status",
+        title: "审核状态",
+        key: "statusName",
         align: "center",
-        minWidth: 80
+        minWidth: 100
     },
     /**
      * merchantType:
@@ -126,10 +128,14 @@ export const ubayMColumns = [{
         align: "center",
         minWidth: 80
     },
-    // changeType
+    /**
+     * changeType
+        充值里面：changeType 0充值 1扣款    
+        ubay里面：changeType 0兑换 1消耗 
+    */
     {
         title: "类型",
-        key: "changeType",
+        key: "changeTypeName",
         align: "center",
         minWidth: 80
     },
@@ -196,11 +202,12 @@ export const rechargeMColumns = [{
         title: "合同号",
         key: "contractNumber",
         align: "center",
-        minWidth: 80
+        minWidth: 120
     },
+    // status
     {
-        title: "状态",
-        key: "status",
+        title: "审核状态",
+        key: "statusName",
         align: "center",
         minWidth: 80
     },
@@ -215,12 +222,20 @@ export const rechargeMColumns = [{
         align: "center",
         minWidth: 80
     },
+    // changeType 0 充值 1 扣款
+    /**
+     * changeType
+        充值里面：changeType 0充值 1扣款    
+        ubay里面：changeType 0兑换 1消耗 
+    */
     {
         title: "类型",
-        key: "changeType",
+        key: "changeTypeName",
         align: "center",
         minWidth: 80
     },
+
+
     {
         title: "变更前账户余额",
         key: "beforeAmount",
@@ -248,7 +263,7 @@ export const rechargeMColumns = [{
         title: "操作时间",
         key: "gmtCreate",
         align: "center",
-        minWidth: 140
+        minWidth: 160
     },
     {
         title: "操作人",

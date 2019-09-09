@@ -231,7 +231,7 @@ export default {
         brandName: "", //
         deductMoney: "", // 金额：
         addUbay: 0, //U贝
-        remark: "remarks" //备注 必填
+        remark: "" //备注 必填
       },
       ruleValidate: {
         remark: [{ validator: validateRemarks, trigger: "blur" }]
