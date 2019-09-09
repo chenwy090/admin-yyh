@@ -40,7 +40,7 @@
                             </FormItem>
 
                             <FormItem label="状态">
-                                <Select v-model="searchItem.isStop" style="width:150px" clearable>
+                                <Select v-model="searchItem.status" style="width:150px" clearable>
                                     <Option v-for="(item,index) in statusList" :key="index" :value="item.val">{{item.name}}</Option>
                                 </Select>
                             </FormItem>
@@ -508,7 +508,7 @@ import industryView from "./industry";
                 this.searchItem.city= null;
                 this.searchItem.mainIndustry=null;
                 this.searchItem.secondIndustry= null;
-                this.searchItem.isStop=null;
+                this.searchItem.status=null;
                 if(this.$refs.industryViewChild){
                     this.$refs.industryViewChild.reset();
                 }
