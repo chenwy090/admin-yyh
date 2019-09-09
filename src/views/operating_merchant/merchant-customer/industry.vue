@@ -14,7 +14,7 @@
         >{{ item.name }}</Option>
       </Select>
     </Col>
-    <Col span="12">
+    <Col span="12" v-show="showSecond">
       <Select v-model="secondIndustryId" style="width:120px" placeholder="请选择二级行业"
       @on-change="changeSecondIndustry()"
       >
@@ -36,6 +36,12 @@ export default {
       secondInudstryList: [],
       initData: { mainIndustryList: [] }
     };
+  },
+  props: {
+    showSecond: {
+      type: Boolean,
+      default: true
+    }
   },
   mounted: function() {
     this.getMainIndustryList();

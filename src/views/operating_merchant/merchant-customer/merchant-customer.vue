@@ -15,6 +15,9 @@
                                 />
                             </FormItem>
                             <FormItem label="商户名称">
+                                <Select v-model="searchItem.merchantType" style="width:135px" placeholder="选择商户类型" clearable>
+                                  <Option v-for="el in mctTypes" :key="'L19' + el.code" :value="el.code">{{el.name}}</Option>
+                                </Select>
                                 <Input
                                         type="text"
                                         v-model="searchItem.name"
@@ -34,14 +37,19 @@
                             </FormItem>
 
                             <FormItem label="行业">
-                                <component ref="industryViewChild" v-bind:is='industryView' v-on:sendMainIndustryId="mainIndustryId"  v-on:sendSecondIndustryId="secondIndustryId"></component>
+                                <component ref="industryViewChild" :showSecond="false" v-bind:is='industryView' v-on:sendMainIndustryId="mainIndustryId"  v-on:sendSecondIndustryId="secondIndustryId"></component>
                                 <Input type="text" style="display:none"  v-model="searchItem.mainIndustryId"/>
                                 <Input type="text" style="display:none" v-model="searchItem.industryId" />
                             </FormItem>
 
                             <FormItem label="状态">
-                                <Select v-model="searchItem.status" style="width:150px" clearable>
+                                <Select v-model="searchItem.status" style="width:120px" clearable>
                                     <Option v-for="(item,index) in statusList" :key="index" :value="item.val">{{item.name}}</Option>
+                                </Select>
+                            </FormItem>
+                            <FormItem label="套餐">
+                                <Select v-model="searchItem.serviceCode" style="width:120px" clearable>
+                                    <Option v-for="item in servicelist" :key="item.serviceCode" :value="item.serviceCode">{{item.serviceName}}</Option>
                                 </Select>
                             </FormItem>
 
@@ -182,13 +190,22 @@ import industryView from "./industry";
                 callback();
                 };
             return {
+                mctTypes: [
+                  {name: '单店', code: '1'},
+                  {name: '品牌', code: '2'}
+                ],
                 packageId: "",
                 merchantCustomerAddPage: false,
                 drop: false,
                 dropDownContent: "展开",
                 dropDownIcon: "ios-arrow-down",
                 searchItem: {
+                    // 套餐类型
+                    serviceCode: '',
                     contractNumber: null,
+                    // 商户类型
+                    merchantType: '',
+                    // 商户名称
                     name: null,
                     province: null,
                     city: null,
@@ -196,6 +213,16 @@ import industryView from "./industry";
                     secondIndustry: null ,
                     status: null 
                 },
+                servicelist: [
+                  {
+                    serviceCode: "merchant_customer",
+                    serviceName: "精准拓客"
+                  },
+                  {
+                    serviceCode: "merchant_platform",
+                    serviceName: "平台拓客"
+                  }
+                ],
                 statusList: [
                     {name: '已终止',val:"4"},
                     {name: '生效中',val:"2"},
@@ -456,7 +483,12 @@ import industryView from "./industry";
             //查询列表
             getPackageList() {
                 this.TableLoading = true;
-                postRequest('/merchant/merchantPackageInfo/list?isAsc=DESC&orderByColumn=1&pageNum='+ this.current +'&pageSize=10', this.searchItem).then(res => {
+                let params = JSON.parse(JSON.stringify(this.searchItem));
+                // 商户名称筛选 必须选择商户类型
+                if (this.search.merchantType === '') {
+                  delete params.name
+                }
+                postRequest('/merchant/merchantPackageInfo/list?isAsc=DESC&orderByColumn=1&pageNum='+ this.current +'&pageSize=10', params).then(res => {
                     if(res.code == 200){
                         // console.log(res);
                         this.packageList = res.data.records
