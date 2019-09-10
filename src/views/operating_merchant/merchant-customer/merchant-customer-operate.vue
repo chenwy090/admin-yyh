@@ -1102,10 +1102,6 @@ export default {
         this.msgErr("签单销售不能为空");
         return;
       }
-      if (this.compatibleList.length < 1) {
-        this.msgErr("请至少添加一个收费条目");
-        return;
-      }
       return true;
     },
     //过滤小数点
