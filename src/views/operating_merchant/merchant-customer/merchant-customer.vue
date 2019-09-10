@@ -166,7 +166,7 @@
         deleteRequest,
         uploadFileRequest
     } from "@/libs/axios";
-    import merchantCustomerAdd from "./merchant-customer-add";
+    import merchantCustomerAdd from "./merchant-customer-operate";
     import { uploadOperationImage2AliOssURl, baseUrl } from "@/api/index";
 
 import industryView from "./industry";
