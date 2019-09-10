@@ -18,7 +18,7 @@
             <span style="color:red">*</span>商户类型
           </Col>
           <Col span="15">
-            <RadioGroup v-model="add_info.merchantType">
+            <RadioGroup v-model="add_info.merchantType" @on-change="changeMerchantType">
               <Radio :label="1" :disabled="pageStatus === 'read'">本地商户（单店）</Radio>
               <Radio :label="2" :disabled="pageStatus === 'read'">本地商户（多店）</Radio>
             </RadioGroup>
@@ -477,6 +477,7 @@ export default {
       checkResult: 0,
       checkMsg: "",
       chooseMerchant: {
+        id: "", // 同下 for兼容
         merchantId: "",
         name: ""
       },
@@ -577,12 +578,12 @@ export default {
             ]);
           }
         },
-        // {
-        //   title: "编号",
-        //   align: "center",
-        //   minWidth: 160,
-        //   key: "id"
-        // },
+        {
+          title: "编号",
+          align: "center",
+          width: 160,
+          key: "id"
+        },
         {
           title: "品牌名称",
           align: "center",
@@ -633,6 +634,11 @@ export default {
     };
   },
   methods: {
+    changeMerchantType() {
+      this.chooseMerchant.merchantId = '';
+      this.chooseMerchant.name = '';
+      this.chooseMerchant.id = '';
+    },
     addOne(i) {
       this.listByBrand.push(...this.listByBrandTrash.splice(i, 1));
     },
@@ -849,14 +855,13 @@ export default {
     getMerchantByBrand() {
       // /merchant/merchantBrand/list/merchant 查询品牌下的商户
       let host = baseUrl;
-      if (process.env.NODE_ENV !== 'development') {
-        this.listByBrand = [];
-      }
       let params = {brandId: this.chooseMerchant.merchantId, brandLevel: this.chooseMerchant.brandLevel};
       postJson(host + "/merchant/merchantBrand/list/merchant", params).then(res => {
         console.log(res);
         if (res.code == 200) {
-          this.listByBrand = res.data;
+          this.listByBrand = res.data.map(el=>{
+            return {id: el.merchantId, name: el.name}
+          });
           if (res.data.length < 1) {
             this.msgErr("未获取到该品牌下门店，（您可以去添加或与我们联系）");
           }
@@ -1001,7 +1006,7 @@ export default {
       if (this.add_info.merchantType === 2) {
         reqParam.brandId = reqParam.merchantId;
         reqParam.merchantIdList = this.listByBrand.map(el=>{
-          return {id: el.merchantId};
+          return {id: el.id, name: el.name};
         })
       } else {
         reqParam.merchantIdList = [{id: reqParam.merchantId}];
@@ -1027,7 +1032,7 @@ export default {
     },
 
     getPackageInfo() {
-      if (this.pageStatus != "add" && this.packageId) {
+      if (this.pageStatus != "add" && this.pageStatus !== 'read' && this.packageId) {
         postRequest(
           "/merchant/merchantPackageInfo/selectById?id=" + this.packageId
         ).then(res => {
@@ -1045,17 +1050,18 @@ export default {
               id: res.data.id,
               remark: res.data.remark
             };
-            this.chooseMerchant = {
-              merchantId: res.data.merchantId,
-              name: res.data.merchantName
-            };
+            
             this.compatibleList = res.data.serviceChargesList;
-            this.listByBrand = res.data.merchantIdList;
+            this.chooseMerchant.name = res.data.merchantName;
             if (this.add_info.merchantType === 2) {
+              this.chooseMerchant.id = this.chooseMerchant.merchantId = res.data.brandId;
+              // 品牌下面选择的商户 {id, name}
+              this.listByBrand = res.data.merchantIdList;
               // brandId merchantName
-              this.chooseMerchant.name = res.data.merchantName;
-              this.chooseMerchant.merchantId = res.data.brandId;
+            } else {
+              this.chooseMerchant.id = this.chooseMerchant.merchantId = res.data.merchantIdList[0]['id'];
             }
+            this.selectIsConfirm = true;
             console.info(JSON.stringify(Object.assign({}, this.chooseMerchant), null, 2), 1059);
           } else {
             this.$Message.error(res.msg);
