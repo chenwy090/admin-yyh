@@ -947,6 +947,8 @@ export default {
       var msg = "新增";
       if (this.pageStatus == "edit") {
         msg = "编辑";
+      } else if (this.pageStatus == "read") {
+        msg = "查看"
       }
       this.edit_loading = true;
       this.isCheckDisabled = true;
