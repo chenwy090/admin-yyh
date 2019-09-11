@@ -1,383 +1,448 @@
 <template>
-    <div>
-      <i-form :label-width="180">
+  <div>
+    <i-form :label-width="180">
+      <!-- 名称输入 -->
+      <Form-item label="标题：" required>
+        <Input
+          type="text"
+          placeholder="请输入"
+          v-model="submitData.name"
+          style="width:400px"
+          v-if="addEdit == 1"
+        />
+        <Input
+          type="text"
+          placeholder="请输入"
+          v-model="editData.name"
+          style="width:400px"
+          v-else
+          :disabled="thematicStatus == 3?true:false"
+        />
+      </Form-item>
+      <!-- 名称输入 -->
 
-        <!-- 名称输入 -->
-        <Form-item label="标题：" required>
-          <Input
-            type="text"
-            placeholder="请输入"
-            v-model="submitData.name"
-            style="width:400px"
-            v-if="addEdit == 1"
-          />
-          <Input
-            type="text"
-            placeholder="请输入"
-            v-model="editData.name"
-            style="width:400px"
-            v-else
-            :disabled="thematicStatus == 3?true:false"
-          />
-        </Form-item>
-        <!-- 名称输入 -->
-
-        <!-- <Form-item label="弹窗类型：" required>
+      <!-- <Form-item label="弹窗类型：" required>
           <Select v-model="submitData.showType" style="width:200px">
             <Option value="2">跳转内部页</Option>
           </Select>
-        </Form-item> -->
+      </Form-item>-->
 
-        <Form-item label="素材类型：" required>
-          <Select v-model="submitData.showType" style="width:200px" @on-change="optionChangeResource" v-if="addEdit == 1">
-            <Option
-                    v-for="item in showTypeList"
-                    :key="item.value"
-                    :value="item.value"
-            >{{ item.label }}</Option>
-          </Select>
-          <Select v-model="editData.showType" style="width:200px" @on-change="optionChangeResource" v-else
-                  :disabled="thematicStatus == 3?true:false">
-            <Option
-                    v-for="item in showTypeList"
-                    :key="item.value"
-                    :value="item.value"
-            >{{ item.label }}</Option>
-          </Select>
-        </Form-item>
+      <Form-item label="素材类型：" required>
+        <Select
+          v-model="submitData.showType"
+          style="width:200px"
+          @on-change="optionChangeResource"
+          v-if="addEdit == 1"
+        >
+          <Option
+            v-for="item in showTypeList"
+            :key="item.value"
+            :value="item.value"
+          >{{ item.label }}</Option>
+        </Select>
+        <Select
+          v-model="editData.showType"
+          style="width:200px"
+          @on-change="optionChangeResource"
+          v-else
+          :disabled="thematicStatus == 3?true:false"
+        >
+          <Option
+            v-for="item in showTypeList"
+            :key="item.value"
+            :value="item.value"
+          >{{ item.label }}</Option>
+        </Select>
+      </Form-item>
+      <!-- 选择专题 -->
+      <Form-item label="专题活动选择：" required v-if="showType == 2 ? true:false">
+        <Button
+          @click="getSpecialTopic()"
+          :disabled="thematicStatus == 3?true:false"
+        >{{specialTopic}}</Button>
+      </Form-item>
+      <!-- 选择专题 -->
 
-        <!-- 选择专题 -->
-        <Form-item label="专题活动选择：" required v-if="showType == 2 ? true:false">
-          <Button @click="getSpecialTopic()" :disabled="thematicStatus == 3?true:false">{{specialTopic}}</Button>
-        </Form-item>
-        <!-- 选择专题 -->
-
-        <!-- 大c任务h5链接选择 -->
-        <Form-item label="大c任务h5链接填写：" required v-if="showType == 4">
-          <Input v-model="pagePath" style="width: 400px">
+      <!-- 大c任务h5链接选择 -->
+      <Form-item label="大c任务h5链接填写：" required v-if="showType == 4">
+        <Input v-model="pagePath" style="width: 400px">
           <span slot="prepend">http://</span>
-          </Input>
-        </Form-item>
-        <Form-item label="任务id：" required v-if="showType == 4">
-          <Input v-model="submitData.assignmentId" style="width: 400px" />
-        </Form-item>
-        <!-- 大c任务h5链接选择 -->
+        </Input>
+      </Form-item>
+      <Form-item label="任务id：" required v-if="showType == 4">
+        <!-- 编辑 和 查看 -->
+        <Input v-if="addEdit !=1" v-model="editData.assignmentId" style="width: 400px" />
+        <!--新增 -->
+        <Input v-if="addEdit ==1" v-model="submitData.assignmentId" style="width: 400px" />
+      </Form-item>
+      <!-- 大c任务h5链接选择 -->
 
-        <!-- 推荐位设置 -->
-        <span style="margin-left:96px;font-size:12px;color:#515a6e;">推荐位设置：</span>
-        <Form-item  style="margin-top:10px" :label-width="95" v-if="addEdit == 1">
-          <Timeline pending>
-            <TimelineItem
-              v-for="(item, index) in submitData.operationTopicVOList"
-              :key="index"
-              style="padding:0;"
-            >
-              <Row>
-                <Col span="1" style="width:40px;">
-                  <p class="time">设置{{index+1}}</p>
-                </Col>
-                <Col span="15" style="width:900px;">
-                  <Card style="height:220px">
-                    <FormItem
-                      label="运营位置选择:"
-                      required
-                      class="item"
-                      :label-width="100"
-                      style="width:470px"
-                    >
-                      <Select v-model="item.source" size="small" style="width:100px" placeholder="请选择终端" @on-change="optionChange(index)">
-                        <Option value="1">小程序</Option>
-                        <Option value="3">IOS</Option>
-                        <Option value="2">安卓</Option>
-                      </Select>
-                      <Select v-model="item.appid" size="small" style="width:115px;margin-left:10px" placeholder="请选择appid" :disabled="item.source == 1?false:true">
-                        <Option
-                          :value="item1.appid"
-                          v-for="(item1, index1) in appIdData"
-                          :key="index1"
-                        >{{item1.appName}}</Option>
-                      </Select>
-                      <Select v-model="item.sort" size="small" style="width:130px;margin-left:10px" placeholder="请选择运营位">
-                        <Option
-                          :value="item2.dictValue"
-                          v-for="(item2, index2) in dictList"
-                          :key="index2"
-                        >{{item2.dictLabel}}</Option>
-                      </Select>
-                        <Select
-                                v-model="item.shopCode"
-                                placeholder="选择门店"
-                                style="width:130px;margin-left:10px"
-                        >
-                            <Option
-                                    v-for="(item,index) in shopList"
-                                    :key="index"
-                                    :value="item.shopId"
-                            >{{item.shopName}}</Option>
-                        </Select>
-                    </FormItem>
-                    <!-- 时间选择 -->
-                    <Form-item label="选择时间:" required class="item" :label-width="85" style="width:345px">
-                      <DatePicker
-                        type="date"
-                        placeholder="选择开始日期"
-                        @on-change="time1"
-                        @on-open-change="indexTime(index)"
-                        format="yyyy-MM-dd"
-                        :value="item.startDate"
-                        :editable="false"
-                        :clearable="false"
-                        size="small"
-                        style="width:120px"
-                      ></DatePicker>
-                      <DatePicker
-                        type="date"
-                        placeholder="选择结束日期"
-                        @on-change="time2"
-                        @on-open-change="indexTime(index)"
-                        format="yyyy-MM-dd"
-                        :value="item.endDate"
-                        :editable="false"
-                        :clearable="false"
-                        size="small"
-                        style="width:120px;margin-left:10px"
-                      ></DatePicker>
-                    </Form-item>
-                    <!-- 时间选择 -->
-
-                    <Button
-                      type="error"
-                      size="small"
-                      style=" margin-left:1%;"
-                      v-if="submitData.operationTopicVOList.length>1"
-                      @click="handleRemove(index,item)"
-                    >删除</Button>
-
-                    <!-- 图片上传 -->
-                    <!-- banner图片 -->
-                    <Form-item
-                      label="专题运营位图片:"
-                      required
-                      :label-width="110"
-                      style="width:520px;margin-top:20px"
-                    >
-                      <div
-                        style="float:left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
-                        v-if="item.imgUrl != ''"
-                      >
-                        <img :src="item.imgUrl" style="width:100%">
-                      </div>
-                      <div style="display: inline-block;">
-                        <Upload
-                          ref="upload"
-                          type="drag"
-                          :format="['jpg','jpeg','png','bmp']"
-                          :on-success="handleSuccess1"
-                          :action="url"
-                          accept="image"
-                          :max-size="1024"
-                          :on-exceeded-size="handleMaxSize"
-                          :on-format-error="formatError"
-                          :defaultList="uploadList"
-                          :headers="userToken"
-                          :show-upload-list="false"
-                          style="display: inline-block;width:90px;"
-                        >
-                          <div style="width: 90px;height:90px;line-height: 90px;" @click="indexRecord(index)">
-                            <Icon type="ios-camera" size="20"/>
-                          </div>
-                        </Upload>
-                        <p>选择专题运营位图片 (不大于1M, JPG/PNG/JPEG/BMP）</p>
-                      </div>
-                    </Form-item>
-                    <!-- banner图片 -->
-                    <!-- 图片上传 -->
-                    
-                  </Card>
-                </Col>
-              </Row>
-            </TimelineItem>
-          </Timeline>
-        </Form-item>
-        <!-- 编辑 -->
-        <Form-item  style="margin-top:10px" :label-width="95" v-else>
-          <Timeline pending>
-            <TimelineItem
-              style="padding:0;"
-            >
-              <Row>
-                <Col span="1" style="width:40px">
-                  <p class="time">设置 </p>
-                </Col>
-                <Col span="15" style="width:900px;">
-                  <Card style="height:220px">
-                    <FormItem
-                      label="运营位置选择:"
-                      required
-                      class="item"
-                      :label-width="100"
-                      style="width:460px"
-                    >
-                      <Select v-model="editData.sourceName" size="small" style="width:100px" placeholder="请选择终端" disabled>
-                        <Option value="小程序">小程序</Option>
-                        <Option value="IOS">IOS</Option>
-                        <Option value="安卓">安卓</Option>
-                      </Select>
-                      <!-- <span>终端:{{editData.sourceName}}</span>
-                      <span style="margin-left:10px">运营位置:{{editData.sortName}}</span> -->
-                      <Select v-model="editData.appid" size="small" style="width:115px;margin-left:10px" placeholder="请选择appid" disabled>
-                        <Option
-                          :value="item1.appid"
-                          v-for="(item1, index1) in appIdData"
-                          :key="index1"
-                        >{{item1.appName}}</Option>
-                      </Select>
-                      <Select v-model="editData.sortName" size="small" style="width:125px;margin-left:10px" placeholder="请选择运营位" disabled>
-                        <Option
-                          :value="item2.dictLabel"
-                          v-for="(item2, index2) in dictList"
-                          :key="index2"
-                        >{{item2.dictLabel}}</Option>
-                      </Select>
-                      <Select
-                              v-model="editData.shopCode"
-                              placeholder="选择门店"
-                              style="width:130px;margin-left:10px"
-                      >
-                        <Option
-                                v-for="(item,index) in shopList"
-                                :key="index"
-                                :value="item.shopId"
-                        >{{item.shopName}}</Option>
-                      </Select>
-                    </FormItem>
-                    <!-- 时间选择 -->
-                    <Form-item label="选择时间:" required class="item" :label-width="85" style="width:345px">
-                      <DatePicker
-                        type="date"
-                        placeholder="选择开始日期"
-                        @on-change="time3"
-                        format="yyyy-MM-dd"
-                        :value="editData.startDate"
-                        :editable="false"
-                        :clearable="false"
-                        size="small"
-                        style="width:120px"
-                        :disabled="thematicStatus == 3?true:false"
-                      ></DatePicker>
-                      <DatePicker
-                        type="date"
-                        placeholder="选择结束日期"
-                        @on-change="time4"
-                        format="yyyy-MM-dd"
-                        :value="editData.endDate"
-                        :editable="false"
-                        :clearable="false"
-                        size="small"
-                        style="width:120px;margin-left:10px"
-                        :disabled="thematicStatus == 3?true:false"
-                      ></DatePicker>
-                    </Form-item>
-                    <!-- 时间选择 -->
-                    <!-- v-if="submitData.arr.length>1" -->
-
-                    <!-- 图片上传 -->
-                    <!-- banner图片 -->
-                    <Form-item
-                      label="专题运营位图片:"
-                      required
-                      :label-width="110"
-                      style="width:520px;margin-top:20px"
-                    >
-                      <div
-                        style="float:left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
-                      >
-                        <img :src="editData.imgUrl" style="width:100%">
-                      </div>
-                      <div style="display: inline-block;" v-if="thematicStatus != 3">
-                        <Upload
-                          ref="upload"
-                          type="drag"
-                          :format="['jpg','jpeg','png','bmp']"
-                          :on-success="handleSuccess2"
-                          :action="url"
-                          accept="image"
-                          :max-size="1024"
-                          :on-exceeded-size="handleMaxSize"
-                          :on-format-error="formatError"
-                          :defaultList="uploadList"
-                          :headers="userToken"
-                          :show-upload-list="false"
-                          style="display: inline-block;width:90px;"
-                        >
-                          <div style="width: 90px;height:90px;line-height: 90px;">
-                            <Icon type="ios-camera" size="20"/>
-                          </div>
-                        </Upload>
-                        <p>选择专题运营位图片 (不大于1M, JPG/PNG/JPEG/BMP）</p>
-                      </div>
-                    </Form-item>
-                    <!-- banner图片 -->
-                    <!-- 图片上传 -->
-                    
-                  </Card>
-                </Col>
-              </Row>
-            </TimelineItem>
-          </Timeline>
-        </Form-item>
-        <!-- 编辑 -->
-        <!-- 推荐位设置 -->
-        <Button type="success" @click="handleAdd" icon="md-add" style="margin-left:159px;width:900px" v-if="addEdit == 1">新增</Button>
-        <Form-item :style="{'margin-top':'40px'}">
-          <i-button
-            type="primary"
-            @click="submit"
-            :disabled="thematicStatus == 3?true:false"
-            size="large"
-            :style="{'width':'150px','margin-right':'20px'}"
-          >确定</i-button>
-          <i-button size="large" icon="arrow-left-c" @click="backMsg">返回列表</i-button>
-        </Form-item>
-      </i-form>
-      <!-- 选择专题活动对话框 -->
-      <Modal
-        v-model="specialTopicDisplay"
-        title="选择专题活动"
-        width="885"
-        footer-hide
-        :closable="false"
-        :mask-closable="false"
-      >
-        <Form :label-width="70">
-          <Table
-            border
-            highlight-row
-            ref="selection"
-            :columns="columns1"
-            :data="specialTopicList"
-            @on-current-change="selectionCampagin"
+      <!-- 推荐位设置 -->
+      <span style="margin-left:96px;font-size:12px;color:#515a6e;">推荐位设置：</span>
+      <Form-item style="margin-top:10px" :label-width="95" v-if="addEdit == 1">
+        <Timeline pending>
+          <TimelineItem
+            v-for="(item, index) in submitData.operationTopicVOList"
+            :key="index"
+            style="padding:0;"
           >
-          </Table>
-          <!-- 分页器 -->
-            <Row type="flex" justify="end" class="page">
-              <Page
-                :total="totalSize"
-                show-total
-                show-elevator
-                :current="current"
-                @on-change="changeCurrent"
-              ></Page>
+            <Row>
+              <Col span="1" style="width:40px;">
+                <p class="time">设置{{index+1}}</p>
+              </Col>
+              <Col span="15" style="width:900px;">
+                <Card style="height:220px">
+                  <FormItem
+                    label="运营位置选择:"
+                    required
+                    class="item"
+                    :label-width="100"
+                    style="width:470px"
+                  >
+                    <Select
+                      v-model="item.source"
+                      size="small"
+                      style="width:100px"
+                      placeholder="请选择终端"
+                      @on-change="optionChange(index)"
+                    >
+                      <Option value="1">小程序</Option>
+                      <Option value="3">IOS</Option>
+                      <Option value="2">安卓</Option>
+                    </Select>
+                    <Select
+                      v-model="item.appid"
+                      size="small"
+                      style="width:115px;margin-left:10px"
+                      placeholder="请选择appid"
+                      :disabled="item.source == 1?false:true"
+                    >
+                      <Option
+                        :value="item1.appid"
+                        v-for="(item1, index1) in appIdData"
+                        :key="index1"
+                      >{{item1.appName}}</Option>
+                    </Select>
+                    <Select
+                      v-model="item.sort"
+                      size="small"
+                      style="width:130px;margin-left:10px"
+                      placeholder="请选择运营位"
+                    >
+                      <Option
+                        :value="item2.dictValue"
+                        v-for="(item2, index2) in dictList"
+                        :key="index2"
+                      >{{item2.dictLabel}}</Option>
+                    </Select>
+                    <Select
+                      v-model="item.shopCode"
+                      placeholder="选择门店"
+                      style="width:130px;margin-left:10px"
+                    >
+                      <Option
+                        v-for="(item,index) in shopList"
+                        :key="index"
+                        :value="item.shopId"
+                      >{{item.shopName}}</Option>
+                    </Select>
+                  </FormItem>
+                  <!-- 时间选择 -->
+                  <Form-item
+                    label="选择时间:"
+                    required
+                    class="item"
+                    :label-width="85"
+                    style="width:345px"
+                  >
+                    <DatePicker
+                      type="date"
+                      placeholder="选择开始日期"
+                      @on-change="time1"
+                      @on-open-change="indexTime(index)"
+                      format="yyyy-MM-dd"
+                      :value="item.startDate"
+                      :editable="false"
+                      :clearable="false"
+                      size="small"
+                      style="width:120px"
+                    ></DatePicker>
+                    <DatePicker
+                      type="date"
+                      placeholder="选择结束日期"
+                      @on-change="time2"
+                      @on-open-change="indexTime(index)"
+                      format="yyyy-MM-dd"
+                      :value="item.endDate"
+                      :editable="false"
+                      :clearable="false"
+                      size="small"
+                      style="width:120px;margin-left:10px"
+                    ></DatePicker>
+                  </Form-item>
+                  <!-- 时间选择 -->
+
+                  <Button
+                    type="error"
+                    size="small"
+                    style=" margin-left:1%;"
+                    v-if="submitData.operationTopicVOList.length>1"
+                    @click="handleRemove(index,item)"
+                  >删除</Button>
+
+                  <!-- 图片上传 -->
+                  <!-- banner图片 -->
+                  <Form-item
+                    label="专题运营位图片:"
+                    required
+                    :label-width="110"
+                    style="width:520px;margin-top:20px"
+                  >
+                    <div
+                      style="float:left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
+                      v-if="item.imgUrl != ''"
+                    >
+                      <img :src="item.imgUrl" style="width:100%" />
+                    </div>
+                    <div style="display: inline-block;">
+                      <Upload
+                        ref="upload"
+                        type="drag"
+                        :format="['jpg','jpeg','png','bmp']"
+                        :on-success="handleSuccess1"
+                        :action="url"
+                        accept="image"
+                        :max-size="1024"
+                        :on-exceeded-size="handleMaxSize"
+                        :on-format-error="formatError"
+                        :defaultList="uploadList"
+                        :headers="userToken"
+                        :show-upload-list="false"
+                        style="display: inline-block;width:90px;"
+                      >
+                        <div
+                          style="width: 90px;height:90px;line-height: 90px;"
+                          @click="indexRecord(index)"
+                        >
+                          <Icon type="ios-camera" size="20" />
+                        </div>
+                      </Upload>
+                      <p>选择专题运营位图片 (不大于1M, JPG/PNG/JPEG/BMP）</p>
+                    </div>
+                  </Form-item>
+                  <!-- banner图片 -->
+                  <!-- 图片上传 -->
+                </Card>
+              </Col>
             </Row>
-            <!-- 分页器 -->
-          <Row style="margin:10px 0 0 797px">
-            <Button @click="close()">关闭</Button>
-            <!-- <Button type="primary" @click="addLuckyDrawFn()" :disabled="formValidate.templateId == ''? true : false">保存</Button> -->
-          </Row>
-        </Form>
-      </Modal>
-      <!-- 选择专题活动对话框 -->
-    </div>
+          </TimelineItem>
+        </Timeline>
+      </Form-item>
+      <!-- 编辑 -->
+      <Form-item style="margin-top:10px" :label-width="95" v-else>
+        <Timeline pending>
+          <TimelineItem style="padding:0;">
+            <Row>
+              <Col span="1" style="width:40px">
+                <p class="time">设置</p>
+              </Col>
+              <Col span="15" style="width:900px;">
+                <Card style="height:220px">
+                  <FormItem
+                    label="运营位置选择:"
+                    required
+                    class="item"
+                    :label-width="100"
+                    style="width:460px"
+                  >
+                    <Select
+                      v-model="editData.sourceName"
+                      size="small"
+                      style="width:100px"
+                      placeholder="请选择终端"
+                      disabled
+                    >
+                      <Option value="小程序">小程序</Option>
+                      <Option value="IOS">IOS</Option>
+                      <Option value="安卓">安卓</Option>
+                    </Select>
+                    <!-- <span>终端:{{editData.sourceName}}</span>
+                    <span style="margin-left:10px">运营位置:{{editData.sortName}}</span>-->
+                    <Select
+                      v-model="editData.appid"
+                      size="small"
+                      style="width:115px;margin-left:10px"
+                      placeholder="请选择appid"
+                      disabled
+                    >
+                      <Option
+                        :value="item1.appid"
+                        v-for="(item1, index1) in appIdData"
+                        :key="index1"
+                      >{{item1.appName}}</Option>
+                    </Select>
+                    <Select
+                      v-model="editData.sortName"
+                      size="small"
+                      style="width:125px;margin-left:10px"
+                      placeholder="请选择运营位"
+                      disabled
+                    >
+                      <Option
+                        :value="item2.dictLabel"
+                        v-for="(item2, index2) in dictList"
+                        :key="index2"
+                      >{{item2.dictLabel}}</Option>
+                    </Select>
+                    <Select
+                      v-model="editData.shopCode"
+                      placeholder="选择门店"
+                      style="width:130px;margin-left:10px"
+                    >
+                      <Option
+                        v-for="(item,index) in shopList"
+                        :key="index"
+                        :value="item.shopId"
+                      >{{item.shopName}}</Option>
+                    </Select>
+                  </FormItem>
+                  <!-- 时间选择 -->
+                  <Form-item
+                    label="选择时间:"
+                    required
+                    class="item"
+                    :label-width="85"
+                    style="width:345px"
+                  >
+                    <DatePicker
+                      type="date"
+                      placeholder="选择开始日期"
+                      @on-change="time3"
+                      format="yyyy-MM-dd"
+                      :value="editData.startDate"
+                      :editable="false"
+                      :clearable="false"
+                      size="small"
+                      style="width:120px"
+                      :disabled="thematicStatus == 3?true:false"
+                    ></DatePicker>
+                    <DatePicker
+                      type="date"
+                      placeholder="选择结束日期"
+                      @on-change="time4"
+                      format="yyyy-MM-dd"
+                      :value="editData.endDate"
+                      :editable="false"
+                      :clearable="false"
+                      size="small"
+                      style="width:120px;margin-left:10px"
+                      :disabled="thematicStatus == 3?true:false"
+                    ></DatePicker>
+                  </Form-item>
+                  <!-- 时间选择 -->
+                  <!-- v-if="submitData.arr.length>1" -->
+
+                  <!-- 图片上传 -->
+                  <!-- banner图片 -->
+                  <Form-item
+                    label="专题运营位图片:"
+                    required
+                    :label-width="110"
+                    style="width:520px;margin-top:20px"
+                  >
+                    <div
+                      style="float:left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
+                    >
+                      <img :src="editData.imgUrl" style="width:100%" />
+                    </div>
+                    <div style="display: inline-block;" v-if="thematicStatus != 3">
+                      <Upload
+                        ref="upload"
+                        type="drag"
+                        :format="['jpg','jpeg','png','bmp']"
+                        :on-success="handleSuccess2"
+                        :action="url"
+                        accept="image"
+                        :max-size="1024"
+                        :on-exceeded-size="handleMaxSize"
+                        :on-format-error="formatError"
+                        :defaultList="uploadList"
+                        :headers="userToken"
+                        :show-upload-list="false"
+                        style="display: inline-block;width:90px;"
+                      >
+                        <div style="width: 90px;height:90px;line-height: 90px;">
+                          <Icon type="ios-camera" size="20" />
+                        </div>
+                      </Upload>
+                      <p>选择专题运营位图片 (不大于1M, JPG/PNG/JPEG/BMP）</p>
+                    </div>
+                  </Form-item>
+                  <!-- banner图片 -->
+                  <!-- 图片上传 -->
+                </Card>
+              </Col>
+            </Row>
+          </TimelineItem>
+        </Timeline>
+      </Form-item>
+      <!-- 编辑 -->
+      <!-- 推荐位设置 -->
+      <Button
+        type="success"
+        @click="handleAdd"
+        icon="md-add"
+        style="margin-left:159px;width:900px"
+        v-if="addEdit == 1"
+      >新增</Button>
+      <Form-item :style="{'margin-top':'40px'}">
+        <i-button
+          type="primary"
+          @click="submit"
+          :disabled="thematicStatus == 3?true:false"
+          size="large"
+          :style="{'width':'150px','margin-right':'20px'}"
+        >确定</i-button>
+        <i-button size="large" icon="arrow-left-c" @click="backMsg">返回列表</i-button>
+      </Form-item>
+    </i-form>
+    <!-- 选择专题活动对话框 -->
+    <Modal
+      v-model="specialTopicDisplay"
+      title="选择专题活动"
+      width="885"
+      footer-hide
+      :closable="false"
+      :mask-closable="false"
+    >
+      <Form :label-width="70">
+        <Table
+          border
+          highlight-row
+          ref="selection"
+          :columns="columns1"
+          :data="specialTopicList"
+          @on-current-change="selectionCampagin"
+        ></Table>
+        <!-- 分页器 -->
+        <Row type="flex" justify="end" class="page">
+          <Page
+            :total="totalSize"
+            show-total
+            show-elevator
+            :current="current"
+            @on-change="changeCurrent"
+          ></Page>
+        </Row>
+        <!-- 分页器 -->
+        <Row style="margin:10px 0 0 797px">
+          <Button @click="close()">关闭</Button>
+          <!-- <Button type="primary" @click="addLuckyDrawFn()" :disabled="formValidate.templateId == ''? true : false">保存</Button> -->
+        </Row>
+      </Form>
+    </Modal>
+    <!-- 选择专题活动对话框 -->
+  </div>
 </template>
 
 <<script>
@@ -486,9 +551,23 @@ export default {
 // 编辑传值
     editToData() {
       // console.log(this.thematicItem);
+      // 1 新增 2编辑 3 查看详情
       this.addEdit = this.thematicStatus
+      // 非新增情况 赋值给editData
       if(this.thematicStatus != 1) {
         this.editData = this.thematicItem
+
+        const {showType,pagePath} = this.editData;
+        this.showType = showType;
+
+        //"http://apph5.52iuh.cn/big/activity.html?id=12"
+        const oUrl = new URL(pagePath);
+        const {hostname,pathname} = oUrl;
+        const id = oUrl.searchParams.get("id");
+       
+        this.pagePath = `${hostname}${pathname}`;
+        this.editData.assignmentId = id;
+
         // this.editData.sort = this.editData.sort + ''
         this.specialTopic = this.thematicItem.topicName
       }
@@ -552,7 +631,7 @@ export default {
           }
       }
 
-        if (this.submitData.showType == 4){
+        if (this.submitData.showType == 4 || this.editData.showType == 4){
             this.submitData.pagePath = "http://" + this.pagePath + "?id=" + this.submitData.assignmentId;
             this.editData.pagePath = "http://" + this.pagePath + "?id=" + this.editData.assignmentId;
         }
@@ -798,15 +877,15 @@ export default {
         this.msgErr('请输入专题运营位名称')
         return
       }
-        if (this.submitData.showType == 2 && !this.submitData.pagePath){
+        if (this.editData.showType == 2 && !this.editData.pagePath){
             this.msgErr('请选择专题活动')
             return
         }
-        if (this.submitData.showType == 4 && !this.pagePath){
+        if (this.editData.showType == 4 && !this.pagePath){
             this.msgErr('请填写大c任务h5链接')
             return
         }
-        if (this.submitData.showType == 4 && !this.submitData.assignmentId){
+        if (this.editData.showType == 4 && !this.editData.assignmentId){
             this.msgErr('请填写大c任务id')
             return
         }
@@ -869,14 +948,14 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-  .time {
-    width: 55px;
-    font-size: 14px;
-    font-weight: 700;
-  }
-  .item{
-    width: 200px;
-    display: inline-block;
-    margin-bottom: 5px;
-  }
+.time {
+  width: 55px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.item {
+  width: 200px;
+  display: inline-block;
+  margin-bottom: 5px;
+}
 </style>
