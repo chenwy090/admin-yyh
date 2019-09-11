@@ -1,7 +1,7 @@
 <template>
   <!-- U贝管理 -->
   <div class="xxx">
-    <h2 class="header">财务中心 > 商户账务 > 商户预充值 > U贝消耗明细</h2>
+    <!-- <h2 class="header">财务中心 > 商户账务 > 商户预充值 > U贝消耗明细</h2> -->
     <div class="query-row">
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>

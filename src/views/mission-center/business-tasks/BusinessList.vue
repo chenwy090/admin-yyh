@@ -127,12 +127,12 @@ export default {
       isCheckDisabled: false,
       checkResult: 0,
       tableColumns: [
-        {
-          title: "序号",
-          type: "index",
-          width: 80,
-          align: "center"
-        },
+        // {
+        //   title: "序号",
+        //   type: "index",
+        //   width: 80,
+        //   align: "center"
+        // },
         {
           title: "选择",
           key: "merchantId",
