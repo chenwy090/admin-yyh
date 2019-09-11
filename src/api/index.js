@@ -39,14 +39,14 @@ import {
 
 // 正式环境 http://crm.52iuh.com:8088/zex-mgr
 
-// export const baseUrl = "http://crm.52iuh.com:8088/zex-mgr";
-// export const downloadUrl = "http://crm.52iuh.com:8088/zex-mgr";
+export const baseUrl = "http://crm.52iuh.com:8088/zex-mgr";
+export const downloadUrl = "http://crm.52iuh.com:8088/zex-mgr";
 
 
 // dev环境 http://crm.52iuh.com:8088/zex-mgr
 // http://crmdev.52iuh.cn/
-export const baseUrl = "http://crmdev.52iuh.cn:8088/zex-mgr";
-export const downloadUrl = "http://crmdev.52iuh.cn:8088/zex-mgr";
+// export const baseUrl = "http://crmdev.52iuh.cn:8088/zex-mgr";
+// export const downloadUrl = "http://crmdev.52iuh.cn:8088/zex-mgr";
 
 
 
