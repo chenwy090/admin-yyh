@@ -12,11 +12,11 @@
                         <FormItem label="商家名称" span="24" style="width:45%">
                             <Input v-model="couponForm.merchantName" placeholder=" 请填写商家名称" :maxlength=20 />
                         </FormItem>
-                        <FormItem label="省/市" span="24"  style="width:50%">
-                            <Cascader :data="addressData" :load-data="addressLoad" v-model="addressValue"></Cascader>
-                        </FormItem>
-                        <FormItem label="优惠券名称" span="24" style="width:25%">
-                            <Input v-model="couponForm.couponName" placeholder=" 请填写优惠券名称" :maxlength=20 />
+                        <!--<FormItem label="省/市" span="24"  style="width:50%">-->
+                            <!--<Cascader :data="addressData" :load-data="addressLoad" v-model="addressValue"></Cascader>-->
+                        <!--</FormItem>-->
+                        <FormItem label="优惠卷名称" span="24" style="width:25%">
+                            <Input v-model="couponForm.couponName" placeholder=" 请填写优惠卷名称" :maxlength=20 />
                         </FormItem>
                         <FormItem span="24" :label-width="1" style="float: right;">
                             <Button type="primary" class="submit" icon="ios-search" @click="search('searchForm')" style="margin-right: 5px">搜索</Button>
@@ -101,81 +101,102 @@
                         minWidth:150,
                         key: "merchantName",
                         align: 'center',
+                        render: (h, params) => {
+                            return h('div', [
+                                h('Tooltip', {
+                                    props: { placement: 'top' }
+                                }, [
+                                    h('span', {
+                                        style: {
+                                            display: 'inline-block',
+                                            width: params.column._width*0.85+'px',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                        },
+                                    }, params.row.merchantName),
+                                    h('span', {
+                                        slot: 'content',
+                                        style: { whiteSpace: 'normal', wordBreak: 'break-all' }
+                                    },params.row.merchantName)
+                                ])
+                            ])
+                        }
                     },
+                    // {
+                    //     title: "省/市",
+                    //     minWidth:200,
+                    //     slot: "address",
+                    //     align: 'center',
+                    // },
                     {
-                        title: "省/市",
-                        minWidth:200,
-                        slot: "address",
-                        align: 'center',
-                    },
-                    {
-                        title: "优惠券名称",
+                        title: "优惠卷名称",
                         minWidth:150,
                         key: "title",
                         align: 'center',
                     },
                     {
                         title: "有效期",
-                        minWidth:200,
+                        minWidth:300,
                         slot: "timer",
                         align: 'center',
                     }
                 ],
                 listData: [],
                 selectDataList: [],
-                addressValue:[]
+                // addressValue:[]
             }
         },
         methods:{
             resetRow(row,coupon){
                 this.couponForm.couponName = row.couponName;
                 this.couponForm.merchantName = row.merchantName;
-                this.addressValue = [];
+                // this.addressValue = [];
                 this.selectIndex = '';
                 this.selectRow = coupon;
                 this.loadTableData();
             },
-            addressLoad(item,callback){
-                item.loading = true;
-                setTimeout(() => {
-                    if (item.value === 'beijing') {
-                        item.children = [
-                            {
-                                value: 'talkingdata',
-                                label: 'TalkingData'
-                            },
-                            {
-                                value: 'baidu',
-                                label: '百度'
-                            },
-                            {
-                                value: 'sina',
-                                label: '新浪'
-                            }
-                        ];
-                    } else if (item.value === 'hangzhou') {
-                        item.children = [
-                            {
-                                value: 'ali',
-                                label: '阿里巴巴'
-                            },
-                            {
-                                value: '163',
-                                label: '网易'
-                            }
-                        ];
-                    }
-                    item.loading = false;
-                    callback();
-                }, 1000);
-            },
+            // addressLoad(item,callback){
+            //     item.loading = true;
+            //     setTimeout(() => {
+            //         if (item.value === 'beijing') {
+            //             item.children = [
+            //                 {
+            //                     value: 'talkingdata',
+            //                     label: 'TalkingData'
+            //                 },
+            //                 {
+            //                     value: 'baidu',
+            //                     label: '百度'
+            //                 },
+            //                 {
+            //                     value: 'sina',
+            //                     label: '新浪'
+            //                 }
+            //             ];
+            //         } else if (item.value === 'hangzhou') {
+            //             item.children = [
+            //                 {
+            //                     value: 'ali',
+            //                     label: '阿里巴巴'
+            //                 },
+            //                 {
+            //                     value: '163',
+            //                     label: '网易'
+            //                 }
+            //             ];
+            //         }
+            //         item.loading = false;
+            //         callback();
+            //     }, 1000);
+            // },
             search(){
                 this.loadTableData();
             },
             reset(){
                 this.couponForm.couponName = row.couponName;
                 this.couponForm.merchantName = row.merchantName;
-                this.addressValue = [];
+                // this.addressValue = [];
             },
             loadTableData(row){
                 var that = this;
@@ -186,10 +207,10 @@
                 let params = {
                     page:this.couponForm.current,
                     size:10,
-                    cityCode:this.addressValue[1]||'',
+                    // cityCode:this.addressValue[1]||'',
                     couponName:this.couponForm.couponName,
                     merchantName:this.couponForm.merchantName,
-                    provinceCode:this.addressValue[0]||'',
+                    // provinceCode:this.addressValue[0]||'',
                 }
                 var that = this;
                 //商户券列表
@@ -228,19 +249,19 @@
             },
             couponSave(){
                 if(!this.selectIndex&&this.selectIndex!==0){
-                    this.$Message.error('请选择优惠券');
+                    this.$Message.error('请选择优惠卷');
                     return;
                 }
                 this.$emit('setViewDialogVisible', this.selectRow)
             }
         },
         created(){
-            this.TableLoading=false,
-                console.log(2);
         }
     }
 </script>
 
 <style scoped>
-
+    .ivu-table-wrapper{
+        overflow: visible;
+    }
 </style>

@@ -96,7 +96,7 @@
                 statusList:[{value:'1',label:'未生效'},{value:2,label:'已生效'},{value:3,label:'已完成'}],
                 packageList:[{value:'',label:'全部'},{value:1,label:'精准拓客'},{value:2,label:'平台拓客'}],
                 modal:{
-                    expandType:'1',
+                    expandType:'',
                     expandTimeStart:'',
                     expandTimeEnd:'',
                     static:'',
@@ -133,7 +133,7 @@
                 }
             },
             resetRow(){
-                this.expandType='1';
+                this.expandType='';
                 this.expandTimeStart='';
                 this.expandTimeEnd='';
                 this.static='';

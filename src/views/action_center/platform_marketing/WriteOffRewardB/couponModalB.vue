@@ -12,11 +12,11 @@
                         <FormItem label="商家名称" span="24" style="width:45%">
                             <Input v-model="copponForm.merchantName" placeholder=" 请填写商家名称" :maxlength=20 />
                         </FormItem>
-                        <FormItem label="省/市" span="24"  style="width:50%">
-                            <Cascader :data="addressData" :load-data="addressLoad" v-model="addressValue"></Cascader>
-                        </FormItem>
-                        <FormItem label="优惠券名称" span="24" style="width:25%">
-                            <Input v-model="copponForm.couponName" placeholder=" 请填写优惠券名称" :maxlength=20 />
+                        <!--<FormItem label="省/市" span="24"  style="width:50%">-->
+                            <!--<Cascader :data="addressData" :load-data="addressLoad" v-model="addressValue"></Cascader>-->
+                        <!--</FormItem>-->
+                        <FormItem label="优惠卷名称" span="24" style="width:25%">
+                            <Input v-model="copponForm.couponName" placeholder=" 请填写优惠卷名称" :maxlength=20 />
                         </FormItem>
                         <FormItem span="24" :label-width="1" style="float: right;">
                             <Button type="primary" class="submit" icon="ios-search" @click="search('searchForm')" style="margin-right: 5px">搜索</Button>
@@ -82,8 +82,8 @@
                 current: 1,
                 selectIndex:'',
                 selectRow:{},
-                addressData:[],
-                addressValue:[],
+                // addressData:[],
+                // addressValue:[],
                 tableColumns: [
                     {
                         type: 'selection', width: 60, align: 'center'
@@ -93,22 +93,43 @@
                         minWidth:200,
                         key: "merchantName",
                         align: 'center',
+                        render: (h, params) => {
+                            return h('div', [
+                                h('Tooltip', {
+                                    props: { placement: 'top' }
+                                }, [
+                                    h('span', {
+                                        style: {
+                                            display: 'inline-block',
+                                            width: params.column._width*0.85+'px',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                        },
+                                    }, params.row.merchantName),
+                                    h('span', {
+                                        slot: 'content',
+                                        style: { whiteSpace: 'normal', wordBreak: 'break-all' }
+                                    },params.row.merchantName)
+                                ])
+                            ])
+                        }
                     },
+                    // {
+                    //     title: "省/市",
+                    //     minWidth:200,
+                    //     slot: "address",
+                    //     align: 'center',
+                    // },
                     {
-                        title: "省/市",
-                        minWidth:200,
-                        slot: "address",
-                        align: 'center',
-                    },
-                    {
-                        title: "优惠券名称",
+                        title: "优惠卷名称",
                         minWidth:200,
                         key: "title",
                         align: 'center',
                     },
                     {
                         title: "有效期",
-                        minWidth:200,
+                        minWidth:300,
                         slot: "timer",
                         align: 'center',
                     }
@@ -123,49 +144,49 @@
                 this.copponForm.couponName = '';
                 this.copponForm.current = 1;
                 this.copponForm.merchantName = '';
-                this.addressValue = [];
+                // this.addressValue = [];
                 // this.copponForm.name = row.name;
                 this.loadTableData(row);
                 this.selectDataList = [];
             },
-            getProvinceList(formData) {
-                postRequest(`/system/area/province/list`,{}).then(res => {
-                    if (res.code === "200") {
-                        console.log(res);
-                        this.addressData = res.data||[];
-                        if(this.addressData.length){
-                            this.addressData.forEach(function(v){
-                                v.value = v.provinceCode
-                                v.label = v.shortName;
-                                v.children= [];
-                                v.loading = false
-                            })
-                        }
-                    } else {
-                        this.$Message.error("获取数据失败");
-                    }
-                });
-            },
-            addressLoad(item,callback){
-                item.loading = true;
-                getSyncRequest("/system/area/city/" + item.provinceCode).then(res =>{
-                    if (res.code === "200") {
-                        item.children = res.data||[];
-                        item.loading = false;
-                        if(item.children.length){
-                            item.children.forEach(function(v){
-                                v.label = v.shortName;
-                                v.value = v.cityCode
-                            })
-                        }
-                        callback();
-                    } else {
-                        this.$Message.error("获取数据失败");
-                        item.loading = false;
-                        callback();
-                    }
-                });
-            },
+            // getProvinceList(formData) {
+            //     postRequest(`/system/area/province/list`,{}).then(res => {
+            //         if (res.code === "200") {
+            //             console.log(res);
+            //             this.addressData = res.data||[];
+            //             if(this.addressData.length){
+            //                 this.addressData.forEach(function(v){
+            //                     v.value = v.provinceCode
+            //                     v.label = v.shortName;
+            //                     v.children= [];
+            //                     v.loading = false
+            //                 })
+            //             }
+            //         } else {
+            //             this.$Message.error("获取数据失败");
+            //         }
+            //     });
+            // },
+            // addressLoad(item,callback){
+            //     item.loading = true;
+            //     getSyncRequest("/system/area/city/" + item.provinceCode).then(res =>{
+            //         if (res.code === "200") {
+            //             item.children = res.data||[];
+            //             item.loading = false;
+            //             if(item.children.length){
+            //                 item.children.forEach(function(v){
+            //                     v.label = v.shortName;
+            //                     v.value = v.cityCode
+            //                 })
+            //             }
+            //             callback();
+            //         } else {
+            //             this.$Message.error("获取数据失败");
+            //             item.loading = false;
+            //             callback();
+            //         }
+            //     });
+            // },
             search(){
                 this.loadTableData();
             },
@@ -173,7 +194,7 @@
                 this.copponForm.couponName = '';
                 this.copponForm.current = 1;
                 this.copponForm.merchantName = '';
-                this.addressValue = [];
+                // this.addressValue = [];
             },
             loadTableData(row){
                 var that = this;
@@ -184,10 +205,10 @@
                 let params = {
                     page:this.copponForm.current,
                     size:10,
-                    cityCode:this.addressValue[1]||'',
+                    // cityCode:this.addressValue[1]||'',
                     couponName:this.copponForm.couponName,
                     merchantName:this.copponForm.merchantName,
-                    provinceCode:this.addressValue[0]||'',
+                    // provinceCode:this.addressValue[0]||'',
                 }
                 //商户券列表
                 postRequest(`/coupon/merchant/list`,params
@@ -222,11 +243,13 @@
             }
         },
         created(){
-            this.getProvinceList();
+            // this.getProvinceList();
         }
     }
 </script>
 
 <style scoped>
-
+    .ivu-table-wrapper{
+        overflow: visible;
+    }
 </style>

@@ -207,17 +207,17 @@
             numArrayValidator(list){
                 var flag = true;
                 var arr = list.sort(function(a,b){
-                    return a.min - b.min
+                    return (a.verifyCountMin||0) - (b.verifyCountMin||0)
                 })
                 for(let i=0;i<arr.length-1;i++){
-                    if(arr[i].verifyCountMax<=arr[i].verifyCountMin){
+                    if((arr[i].verifyCountMax||Infinity)<=(arr[i].verifyCountMin||0)){
                         this.$Message.error({
                             content: "最小值不能大于等于最大值",
                             duration: 3
                         });
                         flag = false;
                         break;
-                    }else if(arr[i].verifyCountMax>=arr[i+1].verifyCountMin){
+                    }else if((arr[i].verifyCountMax||Infinity)>=(arr[i+1].verifyCountMin||0)){
                         this.$Message.error({
                             content: "请输入正确区间数值",
                             duration: 3
