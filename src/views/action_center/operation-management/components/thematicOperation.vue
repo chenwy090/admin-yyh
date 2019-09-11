@@ -29,7 +29,15 @@
         </Form-item> -->
 
         <Form-item label="素材类型：" required>
-          <Select v-model="submitData.showType" style="width:200px" @on-change="optionChangeResource">
+          <Select v-model="submitData.showType" style="width:200px" @on-change="optionChangeResource" v-if="addEdit == 1">
+            <Option
+                    v-for="item in showTypeList"
+                    :key="item.value"
+                    :value="item.value"
+            >{{ item.label }}</Option>
+          </Select>
+          <Select v-model="editData.showType" style="width:200px" @on-change="optionChangeResource" v-else
+                  :disabled="thematicStatus == 3?true:false">
             <Option
                     v-for="item in showTypeList"
                     :key="item.value"
@@ -546,6 +554,7 @@ export default {
 
         if (this.submitData.showType == 4){
             this.submitData.pagePath = "http://" + this.pagePath + "?id=" + this.submitData.assignmentId;
+            this.editData.pagePath = "http://" + this.pagePath + "?id=" + this.editData.assignmentId;
         }
       
       if (this.thematicStatus == 1) {
