@@ -296,7 +296,7 @@
       <div>
         <row>
           <Form ref="searchItem" :model="searchItem" inline :label-width="70" class="search-form">
-            <FormItem :label="currentTitle + '编号'">
+            <!-- <FormItem :label="currentTitle + '编号'">
               <Input
                 type="text"
                 v-model="searchItem.merchantId"
@@ -304,7 +304,7 @@
                 :placeholder="`请输入${currentTitle}编号`"
                 style="width: 150px"
               />
-            </FormItem>
+            </FormItem> -->
             <FormItem :label="currentTitle+'名称'">
               <Input
                 type="text"
@@ -835,7 +835,7 @@ export default {
       });
     },
 
-    //确定选择商户
+    //确定选择商户 or 品牌
     selectMerchant() {
       this.selectIsConfirm = true;
       // return;
@@ -859,6 +859,7 @@ export default {
       postJson(host + "/merchant/merchantBrand/list/merchant", params).then(res => {
         console.log(res);
         if (res.code == 200) {
+          this.listByBrandTrash = [];
           this.listByBrand = res.data.map(el=>{
             return {id: el.merchantId, name: el.name}
           });
