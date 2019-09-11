@@ -192,11 +192,11 @@
                                             textOverflow: 'ellipsis',
                                             whiteSpace: 'nowrap',
                                         },
-                                    }, params.row.merchantName),
+                                    }, params.row.merchantName||params.row.shopName),
                                     h('span', {
                                         slot: 'content',
                                         style: { whiteSpace: 'normal', wordBreak: 'break-all' }
-                                    },params.row.merchantName)
+                                    },params.row.merchantName||params.row.shopName)
                                 ])
                             ])
                         }

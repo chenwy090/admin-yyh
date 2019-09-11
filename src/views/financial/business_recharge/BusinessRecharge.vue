@@ -113,7 +113,7 @@ export default {
     },
     linkTo(compName, data) {
       let { merchantType } = this.searchData;
-      let { id: acountId, merchantId, merchantName } = data;
+      let { id: acountId, merchantId, name: merchantName } = data;
       this.$store.dispatch("financial/showRechargeDetail", {
         compName,
         merchantId,
@@ -150,6 +150,16 @@ export default {
         // merchantTypeName
         this.tableData = records.map(item => {
           let merchantType = item.merchantType;
+          /**
+              merchantType:
+                0 merchantName
+                1 brandName
+            */
+          if (item.merchantType == 0) {
+            item.name = item.merchantName;
+          } else {
+            item.name = item.brandName;
+          }
 
           this.merchantTypeOption.some(({ value, label }) => {
             let r = merchantType === value;
