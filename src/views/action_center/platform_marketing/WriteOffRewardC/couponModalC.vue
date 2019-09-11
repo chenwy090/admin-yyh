@@ -15,8 +15,8 @@
                         <!--<FormItem label="省/市" span="24"  style="width:50%">-->
                             <!--<Cascader :data="addressData" :load-data="addressLoad" v-model="addressValue"></Cascader>-->
                         <!--</FormItem>-->
-                        <FormItem label="优惠卷名称" span="24" style="width:25%">
-                            <Input v-model="copponForm.couponName" placeholder=" 请填写优惠卷名称" :maxlength=20 />
+                        <FormItem label="优惠券名称" span="24" style="width:25%">
+                            <Input v-model="copponForm.couponName" placeholder=" 请填写优惠券名称" :maxlength=20 />
                         </FormItem>
                         <FormItem span="24" :label-width="1" style="float: right;">
                             <Button type="primary" class="submit" icon="ios-search" @click="search('searchForm')" style="margin-right: 5px">搜索</Button>
@@ -122,7 +122,7 @@
                     //     align: 'center',
                     // },
                     {
-                        title: "优惠卷名称",
+                        title: "优惠券名称",
                         minWidth:200,
                         key: "title",
                         align: 'center',

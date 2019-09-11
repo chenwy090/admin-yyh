@@ -340,7 +340,7 @@
                 }
                 let couponIds = [];
                 if(!this.couponObj||!this.couponObj.length){
-                    this.$Message.error('请选择优惠卷');
+                    this.$Message.error('请选择优惠券');
                     return;
                 }else{
                     this.couponObj.forEach(function(v,i){
@@ -364,7 +364,7 @@
                 if(this.modal.wardType=='1'){
                     params.awardRuleDtos = this.JawardRuleDtos;
                     if(!params.awardRuleDtos[0].awardAmount){
-                        this.$Message.error('请选择优惠卷');
+                        this.$Message.error('请选择优惠券');
                         return;
                     }
                 }else if(this.modal.wardType=='2'){

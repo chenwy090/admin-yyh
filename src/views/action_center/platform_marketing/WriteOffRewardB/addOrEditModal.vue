@@ -376,7 +376,7 @@
                 }
                 let couponIds = [];
                 if(!this.couponObj||!this.couponObj.length){
-                    this.$Message.error('请选择优惠卷');
+                    this.$Message.error('请选择优惠券');
                     return;
                 }else{
                     this.couponObj.forEach(function(v,i){
@@ -407,7 +407,7 @@
                     params.awardRuleDtos = this.JawardRuleDtos;
                     params.awardRuleDtos.forEach(function(v,i){
                         if(!v.awardAmount){
-                            errorMsg = '请选择优惠卷'
+                            errorMsg = '请选择优惠券'
                         }
                     })
                 }else if(this.modal.wardType=='2'){
