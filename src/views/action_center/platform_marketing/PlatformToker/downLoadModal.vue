@@ -9,22 +9,22 @@
                 <Row class="padding-left-12">
                     <Col span="24">
                     <FormItem label="商户名称：">
-                        <Select v-model="modal.expandType" style="width:150px" placeholder="请选择商户类型">
+                        <Select v-model="modal.merchantType" style="width:150px" placeholder="请选择商户类型">
                             <Option v-for="item in typeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
                         </Select>
                         <div style="width: 2%;display: inline-block"></div>
-                        <Button v-if="modal.expandType==1" type="dashed" :disabled="!modal.expandType"  style="min-width: 150px" @click="openBusiness">
+                        <Button v-if="modal.merchantType==1" type="dashed" :disabled="!modal.merchantType"  style="min-width: 150px" @click="openBusiness">
                             <span v-if="!selectBusinessObj.name">请选择商户名称</span>
                             <span v-if="selectBusinessObj.name">{{selectBusinessObj.name}}</span>
                         </Button>
-                        <Button v-if="modal.expandType==2" type="dashed" :disabled="!modal.expandType"  style="min-width: 150px" @click="openBrand">
+                        <Button v-if="modal.merchantType==2" type="dashed" :disabled="!modal.merchantType"  style="min-width: 150px" @click="openBrand">
                             <span v-if="!selectBrandObj.name">请选择品牌名称</span>
                             <span v-if="selectBrandObj.name">{{selectBrandObj.name}}</span>
                         </Button>
                     </FormItem>
                     </Col>
                 </Row>
-                <Row v-if="modal.expandType==2&&brandList.length">
+                <Row v-if="modal.merchantType==2&&brandList.length">
                     <Col span="24">
                     <FormItem label="">
                         <div v-for="item in brandList">{{item.name}}</div>
@@ -96,8 +96,8 @@
                 statusList:[{value:'1',label:'未生效'},{value:2,label:'已生效'},{value:3,label:'已完成'}],
                 packageList:[{value:'',label:'全部'},{value:1,label:'精准拓客'},{value:2,label:'平台拓客'}],
                 modal:{
-                    expandType:'1',
-                    merchantType:'',
+                    expandType:'',
+                    merchantType:'1',
                     expandTimeStart:'',
                     expandTimeEnd:'',
                     static:'',
@@ -134,10 +134,10 @@
                 }
             },
             resetRow(){
-                this.expandType='1';
+                this.expandType='';
                 this.expandTimeStart='';
                 this.expandTimeEnd='';
-                this.merchantType='';
+                this.merchantType='1';
                 this.static='';
                 this.brandList=[];
                 this.selectBusinessObj = {};
@@ -181,15 +181,15 @@
                 }
             },
             downLoad(){
-                if(!this.modal.expandType){
+                if(!this.modal.merchantType){
                     this.$Message.error("请选择商户类型");
                     return
                 }
-                if(this.modal.expandType=='1'&&!this.selectBusinessObj.name){
+                if(this.modal.merchantType=='1'&&!this.selectBusinessObj.name){
                     this.$Message.error("请选择商户名称");
                     return
                 }
-                if(this.modal.expandType=='2'&&!this.selectBrandObj.name){
+                if(this.modal.merchantType=='2'&&!this.selectBrandObj.name){
                     this.$Message.error("请选择品牌名称");
                     return
                 }
@@ -202,10 +202,10 @@
                     status :this.modal.status,
                 }
                 params.merchantIds = [];
-                if(this.modal.expandType =='1'){
+                if(this.modal.merchantType =='1'){
                     params.merchantName = this.selectBusinessObj.name
                     params.merchantIds.push(this.selectBusinessObj.merchantId);
-                }else if(this.modal.expandType =='2'){
+                }else if(this.modal.merchantType =='2'){
                     params.merchantName = this.selectBrandObj.name;
                     this.brandList.forEach(function(v,i){
                         params.merchantIds.push(v.merchantId);
