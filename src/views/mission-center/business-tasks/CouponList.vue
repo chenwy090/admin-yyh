@@ -32,7 +32,7 @@
                 style="width: 150px"
               />
             </FormItem>
-            <FormItem style label="所在地区">
+            <!-- <FormItem style label="所在地区">
               <Select
                 v-model="searchItem.provinceId"
                 style="width:150px"
@@ -52,7 +52,7 @@
                   :value="item.cityCode"
                 >{{item.cityName}}</Option>
               </Select>
-            </FormItem>
+            </FormItem>-->
             <FormItem style="margin-left:-35px;" class="br">
               <Button @click="search" type="primary" icon="ios-search">搜索</Button>
               <Button @click="reset">重置</Button>
@@ -70,17 +70,6 @@
           :loading="tableLoading"
           class="bussiness-list"
         ></Table>
-        <!-- <Row type="flex" justify="end" class="page">
-          <Page
-            :total="totalSize"
-            show-total
-            show-elevator
-            @on-change="changeCurrent"
-            style="float: right"
-            :current.sync="current"
-          ></Page>
-        </Row>-->
-
         <Row type="flex" justify="end" class="page">
           <!-- show-total 显示总数 共{{ total }}条 -->
           <!-- show-elevator 显示电梯，可以快速切换到某一页  跳至 xx 页-->
@@ -111,7 +100,7 @@ export default {
     return {
       isShow: true,
       choice: {
-        _id:"",
+        _id: "",
         id: "",
         name: ""
       },
@@ -119,12 +108,6 @@ export default {
       isCheckDisabled: false,
       checkResult: 0,
       tableColumns: [
-        {
-          title: "序号",
-          type: "index",
-          width: 70,
-          align: "center"
-        },
         {
           title: "选择",
           key: "_id",
@@ -164,17 +147,17 @@ export default {
           minWidth: 130,
           key: "merchantName"
         },
-        {
-          title: "省/市",
-          align: "center",
-          width: 150,
-          key: "address",
-          render: (h, params) => {
-            let { province, city } = params.row;
-            let str = `${province}/${city}`;
-            return h("span", str);
-          }
-        },
+        // {
+        //   title: "省/市",
+        //   align: "center",
+        //   width: 150,
+        //   key: "address",
+        //   render: (h, params) => {
+        //     let { province, city } = params.row;
+        //     let str = `${province}/${city}`;
+        //     return h("span", str);
+        //   }
+        // },
         {
           title: "优惠券名称",
           align: "center",

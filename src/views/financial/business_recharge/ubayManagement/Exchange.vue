@@ -85,7 +85,11 @@
           </FormItem>
           <FormItem label="U贝：">{{formData.addUbay}}（根据兑换金额和汇率实时计算）</FormItem>
           <!-- 必填项 -->
-          <FormItem label="备注：" prop="remark">
+          <FormItem
+            label="备注："
+            prop="remark"
+            :rules="{ required: true, validator: validateRemarks }"
+          >
             <Row>
               <Col span="10">
                 <Tooltip trigger="focus" title="提醒" content="最多200个汉字" placement="right">
@@ -184,23 +188,14 @@ export default {
           this.formData.addUbay = 0;
         } else {
           //  没错误
-          this.formData.addUbay = this.formData.deductMoney * this.rate;
+          this.formData.addUbay = parseInt(
+            this.formData.deductMoney * this.rate
+          );
         }
       });
     }
   },
   data() {
-    const validateRemarks = (rule, value, callback) => {
-      value += "";
-      value = value.trim();
-      if (value == "") {
-        callback(new Error("备注不能为空"));
-      } else if (value.length < 6) {
-        callback(new Error("备注不得少于6个字"));
-      } else {
-        callback();
-      }
-    };
     return {
       // 新增、修改 任务抽奖banner
       isShow: true,
@@ -233,9 +228,7 @@ export default {
         addUbay: 0, //U贝
         remark: "" //备注 必填
       },
-      ruleValidate: {
-        remark: [{ validator: validateRemarks, trigger: "blur" }]
-      },
+      ruleValidate: {},
       showBusinessList: false,
       showBrandList: false,
       tableData1: [],
@@ -365,6 +358,17 @@ export default {
       }
 
       callback();
+    },
+    validateRemarks(rule, value, callback) {
+      value += "";
+      value = value.trim();
+      if (value == "") {
+        callback(new Error("备注不能为空"));
+      } else if (value.length < 6) {
+        callback(new Error("备注不得少于6个字"));
+      } else {
+        callback();
+      }
     },
     remove() {
       const type = this.formData.merchantType;
