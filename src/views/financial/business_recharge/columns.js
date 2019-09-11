@@ -6,12 +6,12 @@ export default [{
         fixed: "left",
         slot: "action"
     },
-    {
-        title: "序号",
-        type: 'index',
-        width: 80,
-        align: 'center'
-    },
+    // {
+    //     title: "序号",
+    //     type: 'index',
+    //     width: 80,
+    //     align: 'center'
+    // },
     {
         title: "商户类型",
         key: "merchantTypeName",
@@ -44,12 +44,13 @@ export default [{
     },
 ]
 // 资金明细列表
-export const fundsColumns = [{
-        title: "序号",
-        type: 'index',
-        width: 80,
-        align: 'center'
-    },
+export const fundsColumns = [
+    // {
+    //     title: "序号",
+    //     type: 'index',
+    //     width: 80,
+    //     align: 'center'
+    // },
     {
         title: "变更前账户余额",
         key: "beforeAmount",
@@ -103,13 +104,13 @@ export const fundsColumns = [{
 
 
 //  6.2.1 U贝管理列表
-export const ubayMColumns = [{
-        title: "序号",
-        type: 'index',
-        width: 80,
-        align: 'center'
-    },
-
+export const ubayMColumns = [
+    // {
+    //     title: "序号",
+    //     type: 'index',
+    //     width: 80,
+    //     align: 'center'
+    // },
     // status
     {
         title: "审核状态",
@@ -192,12 +193,13 @@ export const rechargeMColumns = [{
         width: 100,
         fixed: "left",
         slot: "action"
-    }, {
-        title: "序号",
-        type: 'index',
-        width: 80,
-        align: 'center'
     },
+    //  {
+    //     title: "序号",
+    //     type: 'index',
+    //     width: 80,
+    //     align: 'center'
+    // },
     {
         title: "合同号",
         key: "contractNumber",
@@ -276,12 +278,13 @@ export const rechargeMColumns = [{
 
 
 // U贝消耗明细表 
-export const ubayColumns = [{
-        title: "序号",
-        type: 'index',
-        width: 80,
-        align: 'center'
-    },
+export const ubayColumns = [
+    // {
+    //     title: "序号",
+    //     type: 'index',
+    //     width: 80,
+    //     align: 'center'
+    // },
     {
         title: "变更前账户U贝",
         key: "beforeUbay",

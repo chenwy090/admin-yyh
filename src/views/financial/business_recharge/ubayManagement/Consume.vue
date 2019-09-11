@@ -64,15 +64,28 @@
               </template>
             </Table>
           </Row>
-          <FormItem label="消耗U贝：" prop="reduceUbay" :rules="{ required: true, validator: validateUbay }">
+          <FormItem
+            label="消耗U贝："
+            prop="reduceUbay"
+            :rules="{ required: true, validator: validateUbay }"
+          >
             <Row>
               <Col span="16">
-                <Input style="width:80%" v-model="formData.reduceUbay" placeholder="请输入需要消耗U贝的数量" clearable />
+                <Input
+                  style="width:80%"
+                  v-model="formData.reduceUbay"
+                  placeholder="请输入需要消耗U贝的数量"
+                  clearable
+                />
               </Col>
             </Row>
           </FormItem>
           <!-- 必填项 -->
-          <FormItem label="备注：" prop="remark">
+          <FormItem
+            label="备注："
+            prop="remark"
+            :rules="{ required: true, validator: validateRemarks }"
+          >
             <Row>
               <Col span="10">
                 <Tooltip trigger="focus" title="提醒" content="最多200个汉字" placement="right">
@@ -177,17 +190,6 @@ export default {
     }
   },
   data() {
-    const validateRemarks = (rule, value, callback) => {
-      value += "";
-      value = value.trim();
-      if (value == "") {
-        callback(new Error("备注不能为空"));
-      } else if (value.length < 6) {
-        callback(new Error("备注不得少于6个字"));
-      } else {
-        callback();
-      }
-    };
     return {
       // 新增、修改 任务抽奖banner
       isShow: true,
@@ -218,9 +220,7 @@ export default {
         actualDeduction: "", //实扣款
         remark: "" //备注 必填
       },
-      ruleValidate: {
-        remark: [{ validator: validateRemarks, trigger: "blur" }]
-      },
+      ruleValidate: {},
       showBusinessList: false,
       showBrandList: false,
       tableData1: [],
@@ -307,6 +307,17 @@ export default {
         callback();
       } else {
         callback(new Error("请输入大于0的正整数"));
+      }
+    },
+    validateRemarks(rule, value, callback) {
+      value += "";
+      value = value.trim();
+      if (value == "") {
+        callback(new Error("备注不能为空"));
+      } else if (value.length < 6) {
+        callback(new Error("备注不得少于6个字"));
+      } else {
+        callback();
       }
     },
     remove() {

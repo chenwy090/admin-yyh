@@ -24,7 +24,7 @@
           :rules="{ required: true, validator: validateBusinessName }"
         >
           <Row>
-            <Col span="16">
+            <Col span="12">
               <Input
                 v-model="formData.businessName"
                 :placeholder="`点击按钮选择${businessTypeLabel}`"
@@ -36,13 +36,7 @@
           </Row>
         </FormItem>
         <Row class="box" style="margin-bottom:20px;">
-          <Table
-            size="small"
-            border
-            width="600px"
-            :columns="dynamicColumns"
-            :data="dynamicTableData"
-          >
+          <Table size="small" border width="540" :columns="dynamicColumns" :data="dynamicTableData">
             <template slot-scope="{ row }" slot="operate">
               <Button
                 size="small"
@@ -251,7 +245,6 @@ export default {
         {
           title: "操作",
           align: "center",
-          width: 140,
           key: "action",
           slot: "operate"
         }
@@ -272,7 +265,6 @@ export default {
         {
           title: "操作",
           align: "center",
-          width: 140,
           key: "action",
           slot: "operate"
         }

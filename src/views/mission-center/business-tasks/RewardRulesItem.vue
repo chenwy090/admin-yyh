@@ -144,7 +144,8 @@
           v-model="item.receiveAwardUbay"
           placeholder="请输入数字"
           clearable
-        />&nbsp;U贝 &nbsp;通过分享领取不享受该奖励
+        />&nbsp;U贝
+        <!-- 通过分享领取不享受该奖励 -->
       </FormItem>
       <FormItem
         :label-width="0"
@@ -157,7 +158,8 @@
           v-model="item.useAwardUbay"
           placeholder="请输入数字"
           clearable
-        />&nbsp;U贝 &nbsp; 通过分享领取核销，不享受该奖励
+        />&nbsp;U贝
+        <!-- 通过分享领取核销，不享受该奖励 -->
       </FormItem>
 
       <Divider />

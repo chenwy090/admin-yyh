@@ -6,12 +6,12 @@ export default [{
         fixed: "left",
         slot: "action"
     },
-    {
-        title: "序号",
-        type: 'index',
-        width: 80,
-        align: 'center'
-    },
+    // {
+    //     title: "序号",
+    //     type: 'index',
+    //     width: 80,
+    //     align: 'center'
+    // },
     {
         title: "任务名称",
         key: "name",
@@ -57,12 +57,13 @@ export default [{
     },
 ]
 // 资金明细列表
-export const udataColumns = [{
-        title: "序号",
-        type: 'index',
-        width: 60,
-        align: 'center'
-    },
+export const udataColumns = [
+    // {
+    //     title: "序号",
+    //     type: 'index',
+    //     width: 60,
+    //     align: 'center'
+    // },
     {
         title: "用户ID",
         key: "userId",
