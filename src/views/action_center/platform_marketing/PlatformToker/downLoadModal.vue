@@ -96,7 +96,8 @@
                 statusList:[{value:'1',label:'未生效'},{value:2,label:'已生效'},{value:3,label:'已完成'}],
                 packageList:[{value:'',label:'全部'},{value:1,label:'精准拓客'},{value:2,label:'平台拓客'}],
                 modal:{
-                    expandType:'',
+                    expandType:'1',
+                    merchantType:'',
                     expandTimeStart:'',
                     expandTimeEnd:'',
                     static:'',
@@ -133,9 +134,10 @@
                 }
             },
             resetRow(){
-                this.expandType='';
+                this.expandType='1';
                 this.expandTimeStart='';
                 this.expandTimeEnd='';
+                this.merchantType='';
                 this.static='';
                 this.brandList=[];
                 this.selectBusinessObj = {};
