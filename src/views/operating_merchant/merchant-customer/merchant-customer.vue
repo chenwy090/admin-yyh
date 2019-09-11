@@ -105,7 +105,7 @@
                                     size="small"
                                     style="color:#2db7f5"
                                     @click="editInfo({id: row.id, status: row.status})"
-                                    v-if="row.status == '1' || row.status == '2'"
+                                    v-if="row.status == '1'"
                             >编辑</Button>
                             <Button type="text"
                                     size="small"
@@ -234,7 +234,7 @@ import common from "@/mixins/common";
                 columns: [
                     {
                         title: '操作',
-                        align: 'center',
+                        align: 'left',
                         fixed: 'left',
                         slot: "action",
                         minWidth: 200,
