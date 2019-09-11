@@ -149,7 +149,7 @@
         dropDownIcon: "ios-arrow-down",
 
         searchItem: {
-          phoneNumber:"",
+          phoneNumber:null,
           source:""
         },
 
@@ -163,7 +163,7 @@
         tableColumns: [
           {
             title: "会员Id",
-            key: "memberId",
+            key: "userVerifyCode",
             width: 200,
             align: "center"
           },
@@ -175,8 +175,8 @@
             sortable: true
           },
           {
-            title: "openId",
-            key: "openid",
+            title: "userId",
+            key: "userId",
             width: 150,
             align: "center"
           },
@@ -340,7 +340,7 @@
         formCustom: {
           type: "", // USER_MANAGE会员管理
           id: "",
-          memberId: "",
+            userId: "",
           status: "",
           operation: "", // 操作
           remark: "" // 备注
@@ -483,7 +483,7 @@
 
       // 传值到审核对话框
       inputUpdateAccountStatus(row) {
-        this.formCustom.memberId = row.memberId;
+        this.formCustom.userId = row.userId;
         this.formCustom.type = "会员管理";
         this.formCustom.status = (row.status==1?2:1) ;
         this.updateAccountDisplay = true;
@@ -496,7 +496,7 @@
           return;
         }
         const reqParams = {
-          memberId: this.formCustom.memberId,
+            userId: this.formCustom.userId,
           status: this.formCustom.status,
           remark: this.formCustom.remark,
           type: this.formCustom.type
@@ -510,7 +510,7 @@
             this.updateAccountDisplay = false;
             //this.getList({});
             // 清空输入框
-            this.formCustom.memberId = '';
+            this.formCustom.userId = '';
             this.formCustom.type='';
             this.formCustom.status='';
             this.formCustom.remark='';

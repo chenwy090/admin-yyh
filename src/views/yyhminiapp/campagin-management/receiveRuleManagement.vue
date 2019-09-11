@@ -473,7 +473,11 @@ export default {
             this.campId = res.data.campId;
             this.edit_info.isLimitGrap = res.data.isLimitGrap.toString(); // = 0 ? "0" : "1";
             this.edit_info.sendChannel = res.data.sendChannel.toString();
-            this.edit_info.isBlack = res.data.isBlack.toString();
+            if(this.edit_info.isBlack||this.edit_info.isBlack===0){
+                this.edit_info.isBlack = res.data.isBlack.toString();
+            }else{
+                this.edit_info.isBlack = '';
+            }
             this.status = "edit";
             this.currentid = res.data.label;
             this.edit_info.displayStatus = res.data.displayStatus.toString();

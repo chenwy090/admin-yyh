@@ -8,14 +8,14 @@
             type="text"
             placeholder="请输入"
             v-model="submitData.name"
-            style="width:200px"
+            style="width:400px"
             v-if="addEdit == 1"
           />
           <Input
             type="text"
             placeholder="请输入"
             v-model="editData.name"
-            style="width:200px"
+            style="width:400px"
             v-else
             :disabled="thematicStatus == 3?true:false"
           />
@@ -28,11 +28,32 @@
           </Select>
         </Form-item> -->
 
+        <Form-item label="素材类型：" required>
+          <Select v-model="submitData.showType" style="width:200px" @on-change="optionChangeResource">
+            <Option
+                    v-for="item in showTypeList"
+                    :key="item.value"
+                    :value="item.value"
+            >{{ item.label }}</Option>
+          </Select>
+        </Form-item>
+
         <!-- 选择专题 -->
-        <Form-item label="专题活动选择：" required>
+        <Form-item label="专题活动选择：" required v-if="showType == 2 ? true:false">
           <Button @click="getSpecialTopic()" :disabled="thematicStatus == 3?true:false">{{specialTopic}}</Button>
         </Form-item>
         <!-- 选择专题 -->
+
+        <!-- 大c任务h5链接选择 -->
+        <Form-item label="大c任务h5链接填写：" required v-if="showType == 4">
+          <Input v-model="pagePath" style="width: 400px">
+          <span slot="prepend">http://</span>
+          </Input>
+        </Form-item>
+        <Form-item label="任务id：" required v-if="showType == 4">
+          <Input v-model="submitData.assignmentId" style="width: 400px" />
+        </Form-item>
+        <!-- 大c任务h5链接选择 -->
 
         <!-- 推荐位设置 -->
         <span style="margin-left:96px;font-size:12px;color:#515a6e;">推荐位设置：</span>
@@ -364,6 +385,16 @@ export default {
     },
   data() {
     return {
+        showTypeList: [
+            {
+                value: 2,
+                label: "专题活动"
+            },
+            {
+                value: 4,
+                label: "大C任务h5链接"
+            }
+        ],
         index: 0,
       appIdData:[],
       dictList:[],
@@ -382,7 +413,12 @@ export default {
         ],
         operationType: "yf_zt",
         pagePath: "",
+          showType: 2,
+          url: "",
+          assignmentId: ""
       },
+        showType: 2,
+        pagePath: "",
       specialTopic:'请选择',
       specialTopicDisplay: false,
       totalSize: 0,
@@ -427,6 +463,9 @@ export default {
   },
 
   methods: {
+      optionChangeResource(){
+          this.showType = this.submitData.showType;
+      },
       loadShops: function() {
           postRequest("/system/sys-shop-info/list?pageNum=1&pageSize=2000", {}).then(res => {
               if (res.code == 200) {
@@ -504,9 +543,12 @@ export default {
             return;
           }
       }
+
+        if (this.submitData.showType == 4){
+            this.submitData.pagePath = "http://" + this.pagePath + "?id=" + this.submitData.assignmentId;
+        }
       
       if (this.thematicStatus == 1) {
-        
         addOperationTopic(this.submitData).then(res => {
           // console.log(res);
           if (res.code == 200) {
@@ -682,10 +724,20 @@ export default {
         this.msgErr('标题不能为空')
         return
       }
-      if(!this.submitData.pagePath) {
-        this.msgErr('请选择专题活动')
-        return
-      }
+        // showType
+        //1.运营大图-可配置bigImgUrl；2.跳转内部页-需配置pagePath；3.跳转外部小程序-需配置miniAppInfo；4.H5外链-需配置pagePath；5.新人礼包；',
+        if (this.submitData.showType == 2 && !this.submitData.pagePath){
+            this.msgErr('请选择专题活动')
+            return
+        }
+        if (this.submitData.showType == 4 && !this.submitData.pagePath){
+            this.msgErr('请填写大c任务h5链接')
+            return
+        }
+        if (this.submitData.showType == 4 && !this.submitData.assignmentId){
+            this.msgErr('请填写大c任务id')
+            return
+        }
 
       for (let i = 0; i < this.submitData.operationTopicVOList.length; i++) {
         let index = i+1
@@ -737,10 +789,18 @@ export default {
         this.msgErr('请输入专题运营位名称')
         return
       }
-      if(!this.editData.pagePath) {
-        this.msgErr('请选择专题活动')
-        return
-      }
+        if (this.submitData.showType == 2 && !this.submitData.pagePath){
+            this.msgErr('请选择专题活动')
+            return
+        }
+        if (this.submitData.showType == 4 && !this.submitData.pagePath){
+            this.msgErr('请填写大c任务h5链接')
+            return
+        }
+        if (this.submitData.showType == 4 && !this.submitData.assignmentId){
+            this.msgErr('请填写大c任务id')
+            return
+        }
 
         if(!this.editData.shopCode) {
             this.msgErr('投放门店未选择')

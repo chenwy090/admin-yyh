@@ -158,6 +158,7 @@
                             <CheckboxGroup v-model="checkAllGroupCustomer" @on-change="checkAllGroupChangeCustomer" style="float: left">
                                 <Checkbox label="3001">浏览</Checkbox>
                                 <Checkbox label="3002">拓客</Checkbox>
+                                <Checkbox label="3003">拓客数据</Checkbox>
                             </CheckboxGroup>
                         </div>
                         <Divider />
@@ -171,6 +172,18 @@
                             <CheckboxGroup v-model="checkAllGroupIm" @on-change="checkAllGroupChangeIm" style="float: left">
                                 <Checkbox label="4001">私信</Checkbox>
                                 <Checkbox label="4002">发券</Checkbox>
+                            </CheckboxGroup>
+                        </div>
+                        <Divider />
+                        <div style="width: 400px; float: left; margin-bottom: 10px;">
+                            <Checkbox
+                                    :indeterminate="indeterminateAssignment"
+                                    :value="checkAllAssignment"
+                                    @click.prevent.native="handleCheckAllAssignment"
+                                    style="float: left; margin-top: 2px; margin-right: 50px"
+                            >商户任务</Checkbox>
+                            <CheckboxGroup v-model="checkAllGroupAssignment" @on-change="checkAllGroupChangeAssignment" style="float: left">
+                                <Checkbox label="5001">任务管理</Checkbox>
                             </CheckboxGroup>
                         </div>
                         <Divider />
@@ -215,6 +228,9 @@
                 indeterminateIm: false,
                 checkAllIm: false,
                 checkAllGroupIm: [],
+                indeterminateAssignment: false,
+                checkAllAssignment: false,
+                checkAllGroupAssignment: [],
                 stopRemark: {
                     roleId: '',
                     remark: '',
@@ -323,7 +339,7 @@
                     this.msgErr('名称不能为空')
                     return
                 }
-                if (this.checkAllGroupCoupon.length == 0 && this.checkAllGroupUse.length == 0 && this.checkAllGroupCustomer.length == 0 && this.checkAllGroupIm.length == 0){
+                if (this.checkAllGroupCoupon.length == 0 && this.checkAllGroupUse.length == 0 && this.checkAllGroupCustomer.length == 0 && this.checkAllGroupIm.length == 0 && this.checkAllGroupAssignment.length == 0){
                     this.msgErr('至少选择一个权限')
                     return
                 }
@@ -334,6 +350,7 @@
                     checkAllGroupUse: this.checkAllGroupUse,
                     checkAllGroupCustomer: this.checkAllGroupCustomer,
                     checkAllGroupIm: this.checkAllGroupIm,
+                    checkAllGroupAssignment: this.checkAllGroupAssignment,
                 };
                 console.info(JSON.stringify(reqParam))
                 postRequest('/merchant/MerchantRoleInfo/add', reqParam).then(res => {
@@ -408,13 +425,13 @@
                 this.indeterminateCustomer = false;
 
                 if (this.checkAllCustomer) {
-                    this.checkAllGroupCustomer = ['3001', '3002'];
+                    this.checkAllGroupCustomer = ['3001', '3002', '3003'];
                 } else {
                     this.checkAllGroupCustomer = [];
                 }
             },
             checkAllGroupChangeCustomer (data) {
-                if (data.length === 2) {
+                if (data.length === 3) {
                     this.indeterminateCustomer = false;
                     this.checkAllCustomer = true;
                 } else if (data.length > 0) {
@@ -449,6 +466,32 @@
                 } else {
                     this.indeterminateIm = false;
                     this.checkAllIm = false;
+                }
+            },
+            handleCheckAllAssignment () {
+                if (this.indeterminateAssignment) {
+                    this.checkAllAssignment = false;
+                } else {
+                    this.checkAllAssignment = !this.checkAllAssignment;
+                }
+                this.indeterminateAssignment = false;
+
+                if (this.checkAllAssignment) {
+                    this.checkAllGroupAssignment = ['5001'];
+                } else {
+                    this.checkAllGroupAssignment = [];
+                }
+            },
+            checkAllGroupChangeAssignment (data) {
+                if (data.length === 1) {
+                    this.indeterminateAssignment = false;
+                    this.checkAllAssignment = true;
+                } else if (data.length > 0) {
+                    this.indeterminateAssignment = true;
+                    this.checkAllAssignment = false;
+                } else {
+                    this.indeterminateAssignment = false;
+                    this.checkAllAssignment = false;
                 }
             },
             checkName() {

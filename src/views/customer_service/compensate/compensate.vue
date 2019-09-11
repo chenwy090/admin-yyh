@@ -4,7 +4,7 @@
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
           <FormItem label="用户id" :label-width="120">
-            <Input style="width:100%" v-model="searchData.memberId" placeholder="请输入" clearable />
+            <Input style="width:100%" v-model="searchData.userId" placeholder="请输入" clearable />
           </FormItem>
           <FormItem label="状态" :label-width="120">
             <Input style="width:100%" v-model="searchData.status" placeholder="请输入" clearable />
@@ -61,6 +61,7 @@
       v-model="addStaffDisplay"
       :title="modalTitle"
       width="885"
+      :style="{top: '8px'}"
       footer-hide
       :closable="false"
       :mask-closable="false"
@@ -140,16 +141,16 @@
         </FormItem>
         <FormItem
           label="用户id"
-          prop="memberId"
-          :rules="{ required: true, message: '必须按行输入memberId集' }"
+          prop="userId"
+          :rules="{ required: true, message: '必须按行输入userId集' }"
         >
           <Row>
             <Col span="8">
               <Input
-                v-model="formValidate.memberId"
+                v-model="formValidate.userId"
                 type="textarea"
                 :rows="10"
-                placeholder="memberId集"
+                placeholder="userId集"
               />
             </Col>
           </Row>
@@ -301,7 +302,7 @@ export default {
           title: "用户id",
           align: "center",
           minWidth: 160,
-          key: "memberId"
+          key: "userId"
         },
         {
           title: "券id",
@@ -427,7 +428,7 @@ export default {
           title: "用户id",
           align: "center",
           minWidth: 140,
-          key: "memberId"
+          key: "userId"
         },
         {
           title: "券id",
@@ -446,7 +447,7 @@ export default {
       searchData: {
         // 查询参数
         // campId: null,
-        memberId: "",
+          userId: "",
         status: "",
         pushType: ""
       },
@@ -543,7 +544,7 @@ export default {
 
     // 重置
     reset() {
-      this.searchData.memberId = "";
+      this.searchData.userId = "";
       this.searchData.status = "";
       this.searchData.pushType = "";
       this.pagingType = "1";
@@ -837,8 +838,8 @@ export default {
       }
       if (this.add_edit == 1) {
         console.log(this.formValidate.specialTopicCouponList);
-        this.formValidate.memberId = this.getSplitString(
-          this.formValidate.memberId
+        this.formValidate.userId = this.getSplitString(
+          this.formValidate.userId
         );
         /* for (
                   let j = 0;
@@ -849,8 +850,8 @@ export default {
                 }*/
         //this.formValidate.templateIdList=this.formValidate.specialTopicCouponList
 
-  
-        
+
+
         addCompensate(this.formValidate).then(res => {
           if (res.code == 200) {
             this.msgOk("操作成功");
@@ -877,7 +878,7 @@ export default {
       this.formValidate.templateId = "";
       this.formValidate.welfareType = "";
       this.formValidate.amount = "";
-      this.formValidate.memberId = "";
+      this.formValidate.userId = "";
       this.formValidate.title = "";
       this.formValidate.reason = "";
       this.formValidate.remark = "";

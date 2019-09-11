@@ -15,6 +15,9 @@
                                 />
                             </FormItem>
                             <FormItem label="商户名称">
+                                <Select v-model="searchItem.merchantType" style="width:135px" placeholder="选择商户类型" clearable>
+                                  <Option v-for="el in mctTypes" :key="'L19' + el.code" :value="el.code">{{el.name}}</Option>
+                                </Select>
                                 <Input
                                         type="text"
                                         v-model="searchItem.name"
@@ -34,14 +37,19 @@
                             </FormItem>
 
                             <FormItem label="行业">
-                                <component ref="industryViewChild" v-bind:is='industryView' v-on:sendMainIndustryId="mainIndustryId"  v-on:sendSecondIndustryId="secondIndustryId"></component>
+                                <component ref="industryViewChild" :showSecond="false" placeholder="请选择" v-bind:is='industryView' v-on:sendMainIndustryId="mainIndustryId"  v-on:sendSecondIndustryId="secondIndustryId"></component>
                                 <Input type="text" style="display:none"  v-model="searchItem.mainIndustryId"/>
                                 <Input type="text" style="display:none" v-model="searchItem.industryId" />
                             </FormItem>
 
                             <FormItem label="状态">
-                                <Select v-model="searchItem.isStop" style="width:150px" clearable>
+                                <Select v-model="searchItem.status" style="width:120px" clearable>
                                     <Option v-for="(item,index) in statusList" :key="index" :value="item.val">{{item.name}}</Option>
+                                </Select>
+                            </FormItem>
+                            <FormItem label="套餐">
+                                <Select v-model="searchItem.serviceCode" style="width:120px" clearable>
+                                    <Option v-for="item in servicelist" :key="item.serviceCode" :value="item.serviceCode">{{item.serviceName}}</Option>
                                 </Select>
                             </FormItem>
 
@@ -66,12 +74,13 @@
                     <!-- 列表 -->
                     <Table border width="100%" :columns="columns" :data="packageList" :loading="TableLoading">
                         <template slot-scope="{ row }" slot="action">
-                            <!--<Button
+                            <Button
                                     type="text"
                                     size="small"
                                     style="color: #f39913"
+                                    @click="lookDetail(row.id)"
                             >查看</Button>
-                            <Button
+                            <!--<Button
                                     type="text"
                                     size="small"
                                     style="color: #368029"
@@ -89,20 +98,20 @@
                                     size="small"
                                     style="color: red"
                                     @click="stop(row)"
-                                    v-if="row.status == '生效中' "
+                                    v-if="row.status == '2' "
                             >终止</Button>
                             <Button
                                     type="text"
                                     size="small"
                                     style="color:#2db7f5"
-                                    @click="editInfo(row)"
-                                    v-if="row.status == '未开始' || row.status == '生效中'"
+                                    @click="editInfo({id: row.id, status: row.status})"
+                                    v-if="row.status == '1' || row.status == '2'"
                             >编辑</Button>
                             <Button type="text"
                                     size="small"
                                     style="color:#ed4014"
                                     @click="del(row)"
-                                    v-if="row.status == '未开始'"
+                                    v-if="row.status == '1'"
                             >删除</Button>
                         </template>
                     </Table>
@@ -148,18 +157,20 @@
     </div>
 </template>
 
-<<script>
+<script>
     import {
         getRequest,
         postRequest,
+        postJson,
         putRequest,
         deleteRequest,
         uploadFileRequest
     } from "@/libs/axios";
-    import merchantCustomerAdd from "./merchant-customer-add";
-    import { uploadOperationImage2AliOssURl } from "@/api/index";
+    import merchantCustomerAdd from "./merchant-customer-operate";
+    import { uploadOperationImage2AliOssURl, baseUrl } from "@/api/index";
 
 import industryView from "./industry";
+import common from "@/mixins/common";
 
     export default {
         name: "merchant-customer",
@@ -180,13 +191,23 @@ import industryView from "./industry";
                 callback();
                 };
             return {
+                mctTypes: [
+                  {name: '单店', code: '1'},
+                  // 多店即品牌
+                  {name: '多店', code: '2'}
+                ],
                 packageId: "",
                 merchantCustomerAddPage: false,
                 drop: false,
                 dropDownContent: "展开",
                 dropDownIcon: "ios-arrow-down",
                 searchItem: {
+                    // 套餐类型
+                    serviceCode: '',
                     contractNumber: null,
+                    // 商户类型
+                    merchantType: '',
+                    // 商户名称
                     name: null,
                     province: null,
                     city: null,
@@ -194,11 +215,21 @@ import industryView from "./industry";
                     secondIndustry: null ,
                     status: null 
                 },
+                servicelist: [
+                  {
+                    serviceCode: "merchant_customer",
+                    serviceName: "精准拓客"
+                  },
+                  {
+                    serviceCode: "merchant_platform",
+                    serviceName: "平台拓客"
+                  }
+                ],
                 statusList: [
-                    {name: '已终止',val:"1"},
-                    {name: '生效中',val:"0"},
-                    {name: '未开始',val:"10"},
-                    {name: '已结束',val:"20"}
+                    {name: '已终止',val:"4"},
+                    {name: '生效中',val:"2"},
+                    {name: '未开始',val:"1"},
+                    {name: '已结束',val:"3"}
                 ],
                 columns: [
                     {
@@ -231,7 +262,7 @@ import industryView from "./industry";
                     },
                     {
                         title: '状态',
-                        key: 'status',
+                        key: 'statusDesc',
                         minWidth: 100,
                     },
                     {
@@ -280,13 +311,23 @@ import industryView from "./industry";
             },
             }
         },
-
+        mixins: [common],
         created: function() {
             this.userToken = {
                 jwttoken: localStorage.getItem("jwttoken")
             };
         },
         methods: {
+            // 查看 详情
+            lookDetail(id) {
+              // /merchant/merchantPackageInfo/selectById 查询
+              // 参数接收一个id
+              // 在组件中
+              this.pageStatus = 'read';
+              this.setStore("pageStatus", 'read');
+              this.packageId = '' + id;
+              this.merchantCustomerAddPage = true;
+            },
             showMerchantStaffAddStatus(e) {
                 this.merchantCustomerAddPage = e;
                 this.search();
@@ -300,9 +341,9 @@ import industryView from "./industry";
             editInfo(item) {
                 console.info(JSON.stringify(item))
                 var pageStatus = '';
-                if (item.status == '未开始'){
+                if (item.status == '1'){
                     pageStatus = 'edit1';
-                }else if (item.status == '生效中'){
+                }else if (item.status == '2'){
                     pageStatus = 'edit2';
                 }
                 this.setStore("pageStatus", pageStatus);
@@ -415,7 +456,7 @@ import industryView from "./industry";
                 this.stopModalShow = true;
                 this.selectRow = row;
             },
-
+            // 开票
             invoice(row) {
                 console.info(JSON.stringify(row))
                 var contractNumber = row.contractNumber ? row.contractNumber : '';
@@ -444,7 +485,14 @@ import industryView from "./industry";
             //查询列表
             getPackageList() {
                 this.TableLoading = true;
-                postRequest('/merchant/merchantPackageInfo/list?isAsc=DESC&orderByColumn=1&pageNum='+ this.current +'&pageSize=10', this.searchItem).then(res => {
+                let params = JSON.parse(JSON.stringify(this.searchItem));
+                // 商户名称筛选 必须选择商户类型
+                if (this.search.merchantType === '') {
+                  delete params.name
+                }
+                // m_开头的来自mixins 过滤空参数
+                params = this.m_filterParams(params);
+                postRequest('/merchant/merchantPackageInfo/list?isAsc=DESC&orderByColumn=1&pageNum='+ this.current +'&pageSize=10', params).then(res => {
                     if(res.code == 200){
                         // console.log(res);
                         this.packageList = res.data.records
@@ -496,7 +544,7 @@ import industryView from "./industry";
                 this.searchItem.city= null;
                 this.searchItem.mainIndustry=null;
                 this.searchItem.secondIndustry= null;
-                this.searchItem.isStop=null;
+                this.searchItem.status=null;
                 if(this.$refs.industryViewChild){
                     this.$refs.industryViewChild.reset();
                 }
@@ -511,5 +559,6 @@ import industryView from "./industry";
 <style lang="less" scoped>
     .operation {
         margin-bottom: 2vh;
+        margin-top: 10px;
     }
 </style>

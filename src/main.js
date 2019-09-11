@@ -10,6 +10,8 @@ import 'iview/dist/styles/iview.css'//
 import VueI18n from 'vue-i18n';
 import Icon from 'vue-awesome/components/Icon'
 
+import '@/styles/index.less'
+
 import hasRole from '@/libs/hasRole'
 import { getRequest, postRequest, putRequest, deleteRequest, uploadFileRequest } from '@/libs/axios'
 import { setStore, getStore, removeStore } from '@/libs/storage'
