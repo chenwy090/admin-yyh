@@ -87,8 +87,9 @@ export default {
     },
     changeStartDate(arr) {
       // yyyy-MM-dd
-      this.searchData.gmtCreateStart = arr[0];
-      this.searchData.gmtCreateEnd = arr[1];
+      this.searchData.gmtCreateStart = `${arr[0]} 00:00:00`;
+      this.searchData.gmtCreateEnd = `${arr[1]} 23:59:59`;
+      
     },
 
     // 刷新搜索

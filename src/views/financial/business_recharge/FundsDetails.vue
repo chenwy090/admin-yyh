@@ -70,7 +70,7 @@ export default {
     // merchantType: "", //商户类型
     // merchantId: "", //商户id
     // merchantName: "", //商户名称
-    ...mapState(["acountId","merchantType", "merchantId", "merchantName"])
+    ...mapState(["acountId", "merchantType", "merchantId", "merchantName"])
     // ...mapState(["businessId", "businessName"])
   },
   data() {
@@ -119,8 +119,8 @@ export default {
     },
     changeStartDate(arr) {
       // yyyy-MM-dd
-      this.searchData.gmtCreateStart = arr[0];
-      this.searchData.gmtCreateEnd = arr[1];
+      this.searchData.gmtCreateStart = `${arr[0]} 00:00:00`;
+      this.searchData.gmtCreateEnd = `${arr[1]} 23:59:59`;
     },
 
     // 刷新搜索
