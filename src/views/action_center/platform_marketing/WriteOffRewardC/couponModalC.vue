@@ -129,7 +129,7 @@
                     },
                     {
                         title: "有效期",
-                        minWidth:200,
+                        minWidth:300,
                         slot: "timer",
                         align: 'center',
                     }
