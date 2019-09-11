@@ -12,7 +12,7 @@ import {
 //export const baseUrl = "http://127.0.0.1:8088/zex-mgr";
 //测试环境
 // export const baseUrl = "http://47.103.117.70:8088/zex-mgr";//测试
-export const baseUrl = "http://192.168.31.173:8088/zex-mgr"; // jianbin
+// export const baseUrl = "http://192.168.31.173:8088/zex-mgr"; // jianbin
 // export const baseUrl = "http://192.168.31.34:8088/zex-mgr"; //mingyuan
 // export const baseUrl = "http://192.168.31.175:8088/zex-mgr";
 // export const baseUrl = "http://192.168.31.169:8088/zex-mgr"; ///张磊
@@ -20,7 +20,7 @@ export const baseUrl = "http://192.168.31.173:8088/zex-mgr"; // jianbin
 export const downloadUrl = "http://47.103.117.70:8088/zex-mgr";
 
 //  开发测试环境
-// export const baseUrl = "http://crmdev.52iuh.cn:8088/zex-mgr";
+export const baseUrl = "http://crmdev.52iuh.cn:8088/zex-mgr";
 
 // export const baseUrl = "http://pre-release.sweetmartmarketing.com:8088/zex-mgr";
 
