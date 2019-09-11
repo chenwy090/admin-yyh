@@ -18,9 +18,14 @@ export default [{
         align: "center",
         width: 140
     },
+    /**
+     * merchantType:
+     * 0 merchantName
+     * 1 brandName
+     */
     {
         title: "商户名称",
-        key: "merchantName",
+        key: "name",
         align: "center",
         width: 120
     },
