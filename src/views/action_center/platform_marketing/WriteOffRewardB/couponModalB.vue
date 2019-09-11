@@ -35,9 +35,9 @@
                             ref="table"
                             @on-selection-change="handleSelect"
                     >
-                        <template slot-scope="{ row,index }" slot="address">
-                            <div>{{row.province+'/'+row.city}}</div>
-                        </template>
+                        <!--<template slot-scope="{ row,index }" slot="address">-->
+                            <!--<div>{{row.province+'/'+row.city}}</div>-->
+                        <!--</template>-->
                         <template slot-scope="{ row,index }" slot="timer">
                             <div>{{row.useStartTime+' -- '+row.useEndTime}}</div>
                         </template>

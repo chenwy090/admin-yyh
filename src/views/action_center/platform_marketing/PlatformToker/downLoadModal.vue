@@ -14,12 +14,12 @@
                         </Select>
                         <div style="width: 2%;display: inline-block"></div>
                         <Button v-if="modal.merchantType==1" type="dashed" :disabled="!modal.merchantType"  style="min-width: 150px" @click="openBusiness">
-                            <span v-if="!selectBusinessObj.name">请选择商户名称</span>
-                            <span v-if="selectBusinessObj.name">{{selectBusinessObj.name}}</span>
+                            <span v-if="!selectBusinessObj.realName">请选择商户名称</span>
+                            <span v-if="selectBusinessObj.realName">{{selectBusinessObj.realName}}</span>
                         </Button>
                         <Button v-if="modal.merchantType==2" type="dashed" :disabled="!modal.merchantType"  style="min-width: 150px" @click="openBrand">
-                            <span v-if="!selectBrandObj.name">请选择品牌名称</span>
-                            <span v-if="selectBrandObj.name">{{selectBrandObj.name}}</span>
+                            <span v-if="!selectBrandObj.realName">请选择品牌名称</span>
+                            <span v-if="selectBrandObj.realName">{{selectBrandObj.realName}}</span>
                         </Button>
                     </FormItem>
                     </Col>
@@ -156,7 +156,7 @@
             openBusiness(e){
                 this.businessVolumeModal = true;
                 this.$nextTick(() => {
-                    this.$refs['businessModal'].resetRow(this.selectBusinessObj);
+                    this.$refs['businessModal'].resetRow(this.selectBusinessObj,true);
                 })
             },
             selectBusiness(e){
@@ -170,7 +170,7 @@
             openBrand(e){
                 this.brandVolumeModal = true;
                 this.$nextTick(() => {
-                    this.$refs['brandModal'].resetRow(this.selectBrandObj);
+                    this.$refs['brandModal'].resetRow(this.selectBrandObj,true);
                 })
             },
             selectBrand(e){
@@ -185,11 +185,11 @@
                     this.$Message.error("请选择商户类型");
                     return
                 }
-                if(this.modal.merchantType=='1'&&!this.selectBusinessObj.name){
+                if(this.modal.merchantType=='1'&&!this.selectBusinessObj.realName){
                     this.$Message.error("请选择商户名称");
                     return
                 }
-                if(this.modal.merchantType=='2'&&!this.selectBrandObj.name){
+                if(this.modal.merchantType=='2'&&!this.selectBrandObj.realName){
                     this.$Message.error("请选择品牌名称");
                     return
                 }
@@ -203,10 +203,10 @@
                 }
                 params.merchantIds = [];
                 if(this.modal.merchantType =='1'){
-                    params.merchantName = this.selectBusinessObj.name
+                    params.merchantName = this.selectBusinessObj.realName
                     params.merchantIds.push(this.selectBusinessObj.merchantId);
                 }else if(this.modal.merchantType =='2'){
-                    params.merchantName = this.selectBrandObj.name;
+                    params.merchantName = this.selectBrandObj.realName;
                     this.brandList.forEach(function(v,i){
                         params.merchantIds.push(v.merchantId);
                     })

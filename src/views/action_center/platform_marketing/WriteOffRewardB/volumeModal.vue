@@ -46,9 +46,9 @@
                                             <template slot-scope="{ row,index }" slot="action">
                                                 <Radio :label="index"><span></span></Radio>
                                             </template>
-                                            <template slot-scope="{ row,index }" slot="address">
-                                                <div>{{row.province+'/'+row.city}}</div>
-                                            </template>
+                                            <!--<template slot-scope="{ row,index }" slot="address">-->
+                                                <!--<div>{{row.province+'/'+row.city}}</div>-->
+                                            <!--</template>-->
                                             <template slot-scope="{ row,index }" slot="timer">
                                                 <div v-if="row.dateType===1">{{row.startDate+'——'+row.endDate}}</div>
                                                 <div v-if="row.dateType===2">永久有效</div>

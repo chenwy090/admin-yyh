@@ -17,6 +17,7 @@ import {
 // export const baseUrl = "http://47.103.117.70:8088/zex-mgr";
 // export const baseUrl = "http://192.168.31.170:8088/zex-mgr";
 // export const baseUrl = "http://192.168.31.175:8088/zex-mgr";
+// export const baseUrl = "http://192.168.31.179:8088/zex-mgr";
 // export const downloadUrl = "http://47.103.117.70:8088/zex-mgr";
 
 // export const downloadUrl = "http://47.103.117.70:8088/zex-mgr";

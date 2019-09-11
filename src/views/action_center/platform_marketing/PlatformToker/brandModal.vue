@@ -77,6 +77,7 @@
                 current: 1,
                 selectIndex:'',
                 selectRow:{},
+                isDown:false,
                 tableColumns: [
                     {
                         title: "操作",
@@ -87,7 +88,7 @@
                     },
                     {
                         title: "品牌名称",
-                        key: "name",
+                        key: "realName",
                         align: 'center',
                     }
                 ],
@@ -96,7 +97,10 @@
             }
         },
         methods:{
-            resetRow(row){
+            resetRow(row,status){
+                if(status){
+                    this.isDown = true;
+                }
                 this.selectRow = row;
                 this.loadTableData()
             },
@@ -134,10 +138,11 @@
                 let that = this;
                 this.TableLoading=true;
                 this.selectIndex = '';
-                postRequest(`/merchant/brandMain/list?pageNum=${this.brandForm.current}&pageSize=10`,{
+                postRequest(`/merchant/platform/expand/listBrand?pageNum=${this.brandForm.current}&pageSize=10`,{
                         name:this.brandForm.name,
                         pageNum: this.current,
-                        pageSize: 10
+                        pageSize: 10,
+                        status:this.isDown?null:2,
                     }
                 ).then(res => {
                     this.TableLoading=false;

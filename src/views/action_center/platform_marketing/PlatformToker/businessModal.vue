@@ -37,7 +37,7 @@
                                     <Radio :label="index"><span></span></Radio>
                                 </template>
                                 <template slot-scope="{ row }" slot="address">
-                                    <div>{{row.province+'/'+row.city}}</div>
+                                    <div>{{row.address}}</div>
                                 </template>
                             </Table>
                         </RadioGroup>
@@ -82,6 +82,7 @@
                 addressData:[],
                 totalSize: 0,
                 current: 1,
+                isDown:false,
                 tableColumns: [
                     {
                         title: "操作",
@@ -93,7 +94,7 @@
                     {
                         title: "商户名称",
                         minWidth:200,
-                        key: "name",
+                        key: "realName",
                         align: 'center',
                     },
                     {
@@ -108,7 +109,10 @@
             }
         },
         methods:{
-            resetRow(row){
+            resetRow(row,status){
+                if(status){
+                    this.isDown = true;
+                }
                 this.selectRow = row;
                 this.businessModal.name = '';
                 this.addressData = [];
@@ -165,10 +169,11 @@
                 this.listData = [];
                 this.TableLoading = true;
                 this.selectIndex = '';
-                postRequest(`/merchant/merchantInfo/list?pageNum=${this.businessModal.current}&pageSize=10`,{
+                postRequest(`/merchant/platform/expand/listMerchant?pageNum=${this.businessModal.current}&pageSize=10`,{
                         "cityCode": this.addressValue[1]||'',
                         "provinceCode": this.addressValue[0]||'',
-                        "name":this.businessModal.name||''
+                        "name":this.businessModal.name||'',
+                        "status":this.isDown?null:2,
                     }
                 ).then(res => {
                     this.TableLoading = false;

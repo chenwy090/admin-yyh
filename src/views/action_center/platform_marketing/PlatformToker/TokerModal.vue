@@ -14,8 +14,8 @@
                             <Option v-for="item in typeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
                         </Select>
                         <div style="width: 2%;display: inline-block"></div>
-                        <Button v-if="modal.type==1" type="dashed" :disabled="!modal.type"  style="min-width: 150px" @click="openBusinessModal">{{selectBusinessObj&&selectBusinessObj.name?selectBusinessObj.name:'请选择商户名称'}}</Button>
-                        <Button v-if="modal.type==2" type="dashed" :disabled="!modal.type"  style="min-width: 150px" @click="openBrandModal">{{selectBrandObj&&selectBrandObj.name?selectBrandObj.name:'请选择品牌名称'}}</Button>
+                        <Button v-if="modal.type==1" type="dashed" :disabled="!modal.type"  style="min-width: 150px" @click="openBusinessModal">{{selectBusinessObj&&selectBusinessObj.realName?selectBusinessObj.realName:'请选择商户名称'}}</Button>
+                        <Button v-if="modal.type==2" type="dashed" :disabled="!modal.type"  style="min-width: 150px" @click="openBrandModal">{{selectBrandObj&&selectBrandObj.realName?selectBrandObj.realName:'请选择品牌名称'}}</Button>
                         <div style="width: 2%;display: inline-block"></div>
                         <Button v-if="modal.type==2"  @click="brandList=[].concat(oldBrandList)">刷新</Button>
                         <div style="width: 2%;display: inline-block"></div>
@@ -253,7 +253,7 @@
                         return
                     }
                     params.cityCode = this.selectBusinessObj.cityCode;
-                    params.cityName = this.selectBusinessObj.city;
+                    params.cityName = this.selectBusinessObj.cityName;
                     params.couponId = this.selectCouponObj.templateId;
                     params.couponType = this.selectCouponObj.couponType;
                     params.couponName = this.selectCouponObj.title;
@@ -261,10 +261,10 @@
                     params.expandType = '2';
                     params.maxPushCount = this.modal.uNum;
                     params.merchantId =this.selectBusinessObj.merchantId;
-                    params.merchantName =this.selectBusinessObj.name;
+                    params.merchantName =this.selectBusinessObj.realName;
                     params.merchantType ='1';
                     params.provinceCode = this.selectBusinessObj.provinceCode;
-                    params.provinceName = this.selectBusinessObj.province;
+                    params.provinceName = this.selectBusinessObj.provinceName;
                     params.packageId = this.upData.id;
                 }else if(this.modal.type==2){
                     if(!this.selectBrandObj.name){
@@ -301,7 +301,7 @@
                     params.maxPushCount = this.modal.uNum;
                     params.merchantReqs = this.brandList;
                     params.merchantId =this.selectBrandObj.id;
-                    params.merchantName =this.selectBrandObj.name;
+                    params.merchantName =this.selectBrandObj.realName;
                     params.packageId =this.upData.id;
                     params.merchantType ='2';
                     // params.provinceCode = this.selectBrandObj.provinceCode;
