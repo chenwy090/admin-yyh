@@ -242,14 +242,22 @@
               <Col span="2" class="left-text">
                 <span style="color:red">*</span> 周边商超
               </Col>
-              <CheckboxGroup v-model="edit_info.shopIdList" span="3" @on-change="statusCheckChange">
-                <Checkbox
-                  style="width:130px"
-                  v-for="(item, index) in shopList"
-                  :key="item.shopId"
-                  :label="item.shopId"
-                >{{item.shopName}}</Checkbox>
-              </CheckboxGroup>
+              <!--<CheckboxGroup v-model="edit_info.shopIdList" span="3" @on-change="statusCheckChange">-->
+                <!--<Checkbox-->
+                  <!--style="width:130px"-->
+                  <!--v-for="(item, index) in shopList"-->
+                  <!--:key="item.shopId"-->
+                  <!--:label="item.shopId"-->
+                <!--&gt;{{item.shopName}}</Checkbox>-->
+              <!--</CheckboxGroup>-->
+              <!--<Select v-model="edit_info.shopIdList" multiple style="width:260px">-->
+                <!--<Option v-for="(item, index) in shopList" :value="item.shopId" :key="item.shopId">{{ item.shopName }}</Option>-->
+              <!--</Select>-->
+              <Col span="16">
+              <Select v-model="edit_info.shopIdList" multiple style="width:260px"  @on-change="statusCheckChange">
+                <Option v-for="(item, index) in shopList" :value="item.shopId" :key="item.shopId">{{ item.shopName }}</Option>
+              </Select>
+              </Col>
             </Row>
             <Row class="box">
               <Col span="2" class="left-text">联系电话</Col>
