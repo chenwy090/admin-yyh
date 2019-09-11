@@ -254,7 +254,7 @@
                 <!--<Option v-for="(item, index) in shopList" :value="item.shopId" :key="item.shopId">{{ item.shopName }}</Option>-->
               <!--</Select>-->
               <Col span="16">
-              <Select v-model="edit_info.shopIdList" multiple style="width:260px"  @on-change="statusCheckChange">
+              <Select v-model="edit_info.shopIdList" multiple style="width:260px"  @on-change="statusCheckChange" filterable>
                 <Option v-for="(item, index) in shopList" :value="item.shopId" :key="item.shopId">{{ item.shopName }}</Option>
               </Select>
               </Col>
