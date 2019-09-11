@@ -133,7 +133,7 @@
 
 
         <div v-if="merchantCustomerAddPage == true">
-            <merchantCustomerAdd @changeStatus="showMerchantStaffAddStatus" :packageId="packageId"></merchantCustomerAdd>
+            <merchantCustomerOperate @changeStatus="showMerchantStaffAddStatus" :packageId="packageId"></merchantCustomerOperate>
         </div>
 
       <Modal
@@ -166,7 +166,7 @@
         deleteRequest,
         uploadFileRequest
     } from "@/libs/axios";
-    import merchantCustomerAdd from "./merchant-customer-operate";
+    import merchantCustomerOperate from "./merchant-customer-operate";
     import { uploadOperationImage2AliOssURl, baseUrl } from "@/api/index";
 
 import industryView from "./industry";
@@ -175,7 +175,7 @@ import common from "@/mixins/common";
     export default {
         name: "merchant-customer",
         components: {
-            merchantCustomerAdd,
+            merchantCustomerOperate,
                 industryView
         },
         data() {
