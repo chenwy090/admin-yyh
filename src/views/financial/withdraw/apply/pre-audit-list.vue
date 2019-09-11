@@ -176,8 +176,8 @@ export default {
           key: "realName"
         },
         {
-          title: "OpenId",
-          key: "openId"
+          title: "userId",
+          key: "userId"
         },
         {
           title: "手机号码",
@@ -349,9 +349,9 @@ export default {
               for (var i in this.selectDataList) {
                 this.auditForm.applyIds.push(this.selectDataList[i].id);
               }
-              break;  
+              break;
           }
-          
+
           if(this.auditing != 0){
             his.msgErr("请勿重复提交审核");
             return;
