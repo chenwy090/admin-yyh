@@ -12,7 +12,7 @@
                             <Card :bordered="false" style="margin-bottom:2px">
                                 <Form ref="volumeForm" label-position="right" :label-width="80" :model="volumeForm" inline>
                                     <FormItem label="商户名称" span="24" style="width:25%">
-                                        <Input v-model="volumeForm.name" placeholder=" 请填写商户名称" :maxlength=20 />
+                                        <Input v-model="volumeForm.merchantName" placeholder=" 请填写商户名称" :maxlength=20 />
                                     </FormItem>
                                     <!--<FormItem label="省/市" span="24"  style="width:23%">-->
                                         <!--<Cascader :data="addressData" :load-data="addressLoad" v-model="addressValue"></Cascader>-->
@@ -21,7 +21,7 @@
                                         <!--<Select v-model="searchForm.status" style="width:100%">-->
                                             <!--<Option v-for="item in statusList" :value="item.value" :key="item.value">{{ item.label }}</Option>-->
                                         <!--</Select>-->
-                                        <Input v-model="volumeForm.name" placeholder="请填写优惠券名称" :maxlength=20 />
+                                        <Input v-model="volumeForm.couponName" placeholder="请填写优惠券名称" :maxlength=20 />
                                     </FormItem>
                                     <FormItem span="24" :label-width="1" style="width:23%">
                                         <Button type="primary" class="submit" icon="ios-search" @click="search(1)" style="margin-right: 5px">搜索</Button>
