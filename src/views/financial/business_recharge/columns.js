@@ -180,7 +180,7 @@ export const ubayMColumns = [
         title: "操作时间",
         key: "gmtCreate",
         align: "center",
-        minWidth: 140
+        minWidth: 160
     },
     {
         title: "操作人",
