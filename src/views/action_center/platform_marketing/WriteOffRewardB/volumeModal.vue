@@ -14,9 +14,9 @@
                                     <FormItem label="商户名称" span="24" style="width:25%">
                                         <Input v-model="volumeForm.name" placeholder=" 请填写商户名称" :maxlength=20 />
                                     </FormItem>
-                                    <FormItem label="省/市" span="24"  style="width:23%">
-                                        <Cascader :data="addressData" :load-data="addressLoad" v-model="addressValue"></Cascader>
-                                    </FormItem>
+                                    <!--<FormItem label="省/市" span="24"  style="width:23%">-->
+                                        <!--<Cascader :data="addressData" :load-data="addressLoad" v-model="addressValue"></Cascader>-->
+                                    <!--</FormItem>-->
                                     <FormItem label="优惠卷名称" span="24"  style="width:23%">
                                         <!--<Select v-model="searchForm.status" style="width:100%">-->
                                             <!--<Option v-for="item in statusList" :value="item.value" :key="item.value">{{ item.label }}</Option>-->
@@ -50,7 +50,8 @@
                                                 <div>{{row.province+'/'+row.city}}</div>
                                             </template>
                                             <template slot-scope="{ row,index }" slot="timer">
-                                                <div>{{row.startDate+'/'+row.endDate}}</div>
+                                                <div v-if="row.dateType===1">{{row.startDate+'——'+row.endDate}}</div>
+                                                <div v-if="row.dateType===2">永久有效</div>
                                             </template>
                                         </Table>
                                     </RadioGroup>
@@ -76,9 +77,9 @@
                                 <FormItem label="商户名称" span="24" style="width:25%">
                                     <Input v-model="volumeForm.name" placeholder=" 请填写商户名称" :maxlength=20 />
                                 </FormItem>
-                                <FormItem label="省/市" span="24"  style="width:23%">
-                                    <Cascader :data="addressData" :load-data="addressLoad" v-model="addressValue"></Cascader>
-                                </FormItem>
+                                <!--<FormItem label="省/市" span="24"  style="width:23%">-->
+                                    <!--<Cascader :data="addressData" :load-data="addressLoad" v-model="addressValue"></Cascader>-->
+                                <!--</FormItem>-->
                                 <FormItem label="优惠卷名称" span="24"  style="width:23%">
                                     <!--<Select v-model="searchForm.status" style="width:100%">-->
                                     <!--<Option v-for="item in statusList" :value="item.value" :key="item.value">{{ item.label }}</Option>-->
@@ -108,11 +109,11 @@
                                         <template slot-scope="{ row,index }" slot="action">
                                             <Radio :label="index"><span></span></Radio>
                                         </template>
-                                        <template slot-scope="{ row,index }" slot="address">
-                                            <div>{{row.province+'/'+row.city}}</div>
-                                        </template>
+                                        <!--<template slot-scope="{ row,index }" slot="address">-->
+                                            <!--<div>{{row.province+'/'+row.city}}</div>-->
+                                        <!--</template>-->
                                         <template slot-scope="{ row,index }" slot="timer">
-                                            <div>{{row.useStartTime+'/'+row.useEndTime}}</div>
+                                            <div>{{row.useStartTime+'——'+row.useEndTime}}</div>
                                         </template>
                                     </Table>
                                 </RadioGroup>
@@ -157,12 +158,12 @@
                   current1:1,
               },
               volumeObj:{},
-              addressData:[],
+              // addressData:[],
               totalSize1: 0,
               totalSize2: 0,
               current1: 1,
               current2: 1,
-              addressValue:[],
+              // addressValue:[],
               selectIndex1:'',
               selectIndex2:'',
               tableColumns: [
@@ -176,13 +177,34 @@
                   {
                       title: "商户名称",
                       width: 220,
-                      key: "merchantName"
+                      key: "merchantName",
+                      render: (h, params) => {
+                          return h('div', [
+                              h('Tooltip', {
+                                  props: { placement: 'top' }
+                              }, [
+                                  h('span', {
+                                      style: {
+                                          display: 'inline-block',
+                                          width: params.column._width*0.85+'px',
+                                          overflow: 'hidden',
+                                          textOverflow: 'ellipsis',
+                                          whiteSpace: 'nowrap',
+                                      },
+                                  }, params.row.merchantName),
+                                  h('span', {
+                                      slot: 'content',
+                                      style: { whiteSpace: 'normal', wordBreak: 'break-all' }
+                                  },params.row.merchantName)
+                              ])
+                          ])
+                      }
                   },
-                  {
-                      title: "省/市",
-                      minWidth:200,
-                      slot: "address"
-                  },
+                  // {
+                  //     title: "省/市",
+                  //     minWidth:200,
+                  //     slot: "address"
+                  // },
                   {
                       title: "优惠卷名称",
                       width: 200,
@@ -191,7 +213,8 @@
                   },
                   {
                       title: "有效期",
-                      minWidth:200,
+                      align: "center",
+                      minWidth:300,
                       slot: "timer"
                   }
               ],
@@ -214,53 +237,54 @@
             resetRow(item){
                 this.volumeForm.merchantName = '';
                 this.volumeForm.couponName = '';
-                this.addressValue = [];
+                // this.addressValue = [];
                 this.volumeObj = item;
                 this.TableLoading = false;
                 this.loadTableData1(item);
                 this.loadTableData2(item);
             },
             reset(){
-
+                this.volumeForm.merchantName = '';
+                this.volumeForm.couponName = '';
             },
-            getProvinceList(formData) {
-                postRequest(`/system/area/province/list`,{}).then(res => {
-                    if (res.code === "200") {
-                        console.log(res);
-                        this.addressData = res.data||[];
-                        if(this.addressData.length){
-                            this.addressData.forEach(function(v){
-                                v.value = v.provinceCode
-                                v.label = v.shortName;
-                                v.children= [];
-                                v.loading = false
-                            })
-                        }
-                    } else {
-                        this.$Message.error("获取数据失败");
-                    }
-                });
-            },
-            addressLoad(item,callback){
-                item.loading = true;
-                getSyncRequest("/system/area/city/" + item.provinceCode).then(res =>{
-                    if (res.code === "200") {
-                        item.children = res.data||[];
-                        item.loading = false;
-                        if(item.children.length){
-                            item.children.forEach(function(v){
-                                v.label = v.shortName;
-                                v.value = v.cityCode
-                            })
-                        }
-                        callback();
-                    } else {
-                        this.$Message.error("获取数据失败");
-                        item.loading = false;
-                        callback();
-                    }
-                });
-            },
+            // getProvinceList(formData) {
+            //     postRequest(`/system/area/province/list`,{}).then(res => {
+            //         if (res.code === "200") {
+            //             console.log(res);
+            //             this.addressData = res.data||[];
+            //             if(this.addressData.length){
+            //                 this.addressData.forEach(function(v){
+            //                     v.value = v.provinceCode
+            //                     v.label = v.shortName;
+            //                     v.children= [];
+            //                     v.loading = false
+            //                 })
+            //             }
+            //         } else {
+            //             this.$Message.error("获取数据失败");
+            //         }
+            //     });
+            // },
+            // addressLoad(item,callback){
+            //     item.loading = true;
+            //     getSyncRequest("/system/area/city/" + item.provinceCode).then(res =>{
+            //         if (res.code === "200") {
+            //             item.children = res.data||[];
+            //             item.loading = false;
+            //             if(item.children.length){
+            //                 item.children.forEach(function(v){
+            //                     v.label = v.shortName;
+            //                     v.value = v.cityCode
+            //                 })
+            //             }
+            //             callback();
+            //         } else {
+            //             this.$Message.error("获取数据失败");
+            //             item.loading = false;
+            //             callback();
+            //         }
+            //     });
+            // },
             loadTableData1(){
                 var that = this;
                 var item = this.volumeObj
@@ -271,10 +295,10 @@
                 let params = {
                     page:this.volumeForm.current1,
                     size:10,
-                    cityCode:this.addressValue[1]||'',
+                    // cityCode:this.addressValue[1]||'',
                     couponName:this.volumeForm.couponName,
                     merchantName:this.volumeForm.merchantName,
-                    provinceCode:this.addressValue[0]||'',
+                    // provinceCode:this.addressValue[0]||'',
                 }
                 //商户券列表
                 postRequest(`/coupon/superMarket/list?pageNum=${this.current1}&pageSize=10`,params
@@ -305,10 +329,10 @@
                 let params = {
                     page:this.volumeForm.current2,
                     size:10,
-                    cityCode:this.addressValue[1]||'',
+                    // cityCode:this.addressValue[1]||'',
                     couponName:this.volumeForm.couponName,
                     merchantName:this.volumeForm.merchantName,
-                    provinceCode:this.addressValue[0]||'',
+                    // provinceCode:this.addressValue[0]||'',
                 }
                 //商超券列表
                 postRequest(`/coupon/merchant/list?pageNum=${this.current2}&pageSize=10`,params
@@ -376,11 +400,13 @@
             }
         },
         created(){
-            this.getProvinceList();
+            // this.getProvinceList();
         }
     }
 </script>
 
 <style scoped>
-
+.ivu-table-wrapper{
+    overflow: visible;
+}
 </style>
