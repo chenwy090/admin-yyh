@@ -58,9 +58,9 @@
           </Col> -->
           <Col span="6">
             <div>
-              已选：{{listByBrand.length}} / {{listByBrand.length + listByBrandTrash.length}}
+              已选：<span v-show="pageStatus !== 'read'">{{listByBrand.length}} / {{listByBrand.length + listByBrandTrash.length}}</span>
             </div>
-            <div class="merchant-list">
+            <div :class="{'merchant-list': true, 'disabled': pageStatus === 'read'}">
               <div class="merchant-list-item" v-for="(item,i) in listByBrand" :key="'merchantaddL59' + i">
                 {{item.name}}
                 <Button class="select-btn" @click="delOne(i)" :disabled="pageStatus === 'read'">移出</Button>
@@ -71,7 +71,7 @@
             </div>
           </Col>
           <Col span="6" class="mgl-2">
-            <div>已移出{{listByBrandTrash.length}}</div>
+            <div v-show="pageStatus !== 'read'">已移出<span>{{listByBrandTrash.length}}</span></div>
             <div class="merchant-list" v-show="listByBrandTrash.length > 0">
               <div class="merchant-list-item" v-for="(item,i) in listByBrandTrash" :key="'merchantaddL59' + i">
                 {{item.name}}
@@ -463,7 +463,7 @@ export default {
         biller: "",
         contractNumber: "",
         // 商户类型 1单店 2品牌（多店
-        merchantType: "",
+        merchantType: "1",
         id: ""
       },
       edit_loading: false,
@@ -1033,7 +1033,7 @@ export default {
     },
 
     getPackageInfo() {
-      if (this.pageStatus != "add" && this.pageStatus !== 'read' && this.packageId) {
+      if (this.pageStatus != "add" && this.packageId) {
         postRequest(
           "/merchant/merchantPackageInfo/selectById?id=" + this.packageId
         ).then(res => {
@@ -1181,5 +1181,9 @@ export default {
 }
 .merchant-list .select-btn{
   padding: .2em .5em;
+}
+.disabled{
+  background: #fefefe;
+  color: #bbb;
 }
 </style>
