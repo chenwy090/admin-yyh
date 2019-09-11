@@ -730,7 +730,7 @@ export default {
             this.msgErr('请选择专题活动')
             return
         }
-        if (this.submitData.showType == 4 && !this.submitData.pagePath){
+        if (this.submitData.showType == 4 && !this.pagePath){
             this.msgErr('请填写大c任务h5链接')
             return
         }
@@ -793,7 +793,7 @@ export default {
             this.msgErr('请选择专题活动')
             return
         }
-        if (this.submitData.showType == 4 && !this.submitData.pagePath){
+        if (this.submitData.showType == 4 && !this.pagePath){
             this.msgErr('请填写大c任务h5链接')
             return
         }
