@@ -45,7 +45,7 @@
                                    @on-selection-change="handleSelect"
                            >
                                <template slot-scope="{ row }" slot="action">
-                                   <Button v-if="row.status!=2||row.status!=4"
+                                   <Button v-if="!(row.status==2||row.status==4)"
                                            type="success"
                                            style="margin-right: 5px"
                                            size="small"
