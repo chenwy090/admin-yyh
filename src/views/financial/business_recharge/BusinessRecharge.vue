@@ -66,7 +66,7 @@
 <script>
 import { postRequest } from "@/libs/axios";
 import { queryBusinessRechargeList } from "@/api/sys";
-import columns from "./columns";
+import columns, { division100 } from "./columns";
 
 export default {
   name: "business-recharge",
@@ -168,6 +168,12 @@ export default {
               item.merchantTypeName = label;
             }
             return r;
+          });
+
+          // /100
+          const arr = ["money"];
+          arr.forEach(name => {
+            item[name] = division100(item[name]);
           });
 
           return item;

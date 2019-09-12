@@ -6,7 +6,7 @@ import App from './App'
 import { router } from './router/index'
 import store from './store'
 import '@/locale'
-import 'iview/dist/styles/iview.css'//
+import 'iview/dist/styles/iview.css' //
 import VueI18n from 'vue-i18n';
 import Icon from 'vue-awesome/components/Icon'
 
@@ -21,6 +21,7 @@ import TreeTable from 'tree-table-vue'
 import '@babel/polyfill'
 
 import './directive/num-formatter'
+import "@/libs/mathUtil"; //添加数学方法扩充函数
 
 
 Vue.config.productionTip = false

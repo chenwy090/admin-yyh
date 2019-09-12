@@ -114,7 +114,7 @@
 </template>
 <script>
 import { queryRechargeMList, queyMoneyDetailById } from "@/api/sys";
-import { rechargeMColumns as columns } from "../columns";
+import { division100, rechargeMColumns as columns } from "../columns";
 
 import Recharge from "./Recharge";
 import Deduction from "./Deduction";
@@ -176,8 +176,32 @@ export default {
       // id = 14;
       const { code, data, msg } = await queyMoneyDetailById(id);
       if (code == 200) {
-        const { changeType } = data;
+        const {
+          changeType,
+          // 充值
+          receivables,
+          merchantMoneyChargesRecords: arr,
+          // 扣款
+          anticipatedDeduction,
+          actualDeduction
+        } = data;
         this.detailTitle = changeType == 0 ? "充值信息" : "扣款信息";
+
+        if (changeType == 0) {
+          // 应收款:回显的时候除以100
+          data.receivables = division100(receivables);
+
+          data.merchantMoneyChargesRecords = arr.map(it => {
+            // 实际收款金额
+            it.actualAmount = division100(it.actualAmount);
+            return it;
+          });
+        } else {
+          // 应扣款 anticipatedDeduction  实扣款 actualDeduction
+          data.anticipatedDeduction = division100(anticipatedDeduction);
+          data.actualDeduction = division100(actualDeduction);
+        }
+
         this.detailData = data;
         this.showDetail = true;
       } else {
@@ -220,6 +244,11 @@ export default {
       });
       if (code == 200) {
         this.tableData = records.map(item => {
+          const arr = ["beforeAmount", "changeAmount", "afterAmount"];
+          arr.forEach(name => {
+            item[name] = division100(item[name]);
+          });
+
           item.statusName = this.statusOption[item.status];
           item.changeTypeName = item.changeType == 0 ? "充值" : "扣款";
           /**
