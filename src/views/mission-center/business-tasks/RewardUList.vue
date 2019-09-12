@@ -104,7 +104,6 @@
     <Drawer
       v-model="showDetail"
       :closable="true"
-      :mask-closable="false"
       width="820"
       :styles="styles"
     >

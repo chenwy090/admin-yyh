@@ -277,7 +277,28 @@ export default {
       this.$refs[name].validate(async valid => {
         // console.log(JSON.stringify(this.formValidate));
         if (valid) {
-          this.$Message.success("数据验证成功!");
+          const validateZero = [
+            "receiveAwardUbay",
+            "useAwardUbay",
+            "shareReceiveAwardUbay",
+            "shareUseAwardUbay"
+          ];
+
+          let flag = this.formData.ruleInfoList.some(item => {
+            let len = 0;
+            validateZero.forEach(name => {
+              if (item[name] == 0) {
+                len++;
+              }
+            });
+
+            return len == 4;
+          });
+
+          if (flag) {
+            return this.msgErr("U贝不能全为0！");
+          }
+          this.msgOk("数据验证成功!");
           let oForm = JSON.parse(JSON.stringify(this.formData));
 
           console.log("add save:", oForm);
