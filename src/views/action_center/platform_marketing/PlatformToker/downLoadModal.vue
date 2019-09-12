@@ -24,11 +24,15 @@
                     </FormItem>
                     </Col>
                 </Row>
-                <Row v-if="modal.merchantType==2&&brandList.length">
-                    <Col span="24">
-                    <FormItem label="">
-                        <div v-for="item in brandList">{{item.name}}</div>
+                <Row class="padding-left-12" v-if="modal.merchantType==2&&brandList.length">
+                    <Col span="18">
+                    <FormItem label="选择商户：" span="24">
+                        <Select v-model="merchantList" filterable multiple>
+                            <Option v-for="item in brandList" :value="item.merchantId" :key="item.merchantId">{{ item.name }}</Option>
+                        </Select>
+                        <!--<div v-for="item in brandList">{{item.name}}</div>-->
                     </FormItem>
+
                     </Col>
                 </Row>
                 <Row class="padding-left-12">
@@ -105,6 +109,7 @@
                 brandList:[],
                 options1:{},
                 options2:{},
+                merchantList:[],
                 selectBusinessObj:{},
                 selectBrandObj:{},
                 ruleValidate:{
@@ -147,6 +152,10 @@
                 postRequest(`/merchant/merchantBrand/list/merchant`,{brandId:id,brandLevel: 1}).then(res => {
                     if (res.code === "200") {
                         this.brandList = res.data||[];
+                        let that = this;
+                        this.brandList.forEach(function(v){
+                            that.merchantList.push(v.merchantId);
+                        })
                     } else {
                         this.$Message.error(res.msg);
                         this.brandList = [];
@@ -177,7 +186,8 @@
                 this.selectBrandObj = e;
                 this.brandVolumeModal = false;
                 if(e&&e.id){
-                    this.getPackageData(e.id,2);
+                    this.merchantList = [];
+                    this.getPackageData(e.brandId,2);
                 }
             },
             downLoad(){
@@ -207,9 +217,14 @@
                     params.merchantIds.push(this.selectBusinessObj.merchantId);
                 }else if(this.modal.merchantType =='2'){
                     params.merchantName = this.selectBrandObj.realName;
-                    this.brandList.forEach(function(v,i){
-                        params.merchantIds.push(v.merchantId);
-                    })
+                    params.merchantIds = this.merchantList
+                    // this.brandList.forEach(function(v,i){
+                    //     params.merchantIds.push(v.merchantId);
+                    // })
+                    if(!this.merchantList.length){
+                        this.$Message.error("请选择商户");
+                        return
+                    }
                 }
                 downloadSteam(`/merchant/platform/expand/download`,params).then(res => {
                     const content = res.data;
