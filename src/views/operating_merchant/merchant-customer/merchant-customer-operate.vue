@@ -63,7 +63,7 @@
             <div :class="{'merchant-list': true, 'disabled': pageStatus === 'read'}">
               <div class="merchant-list-item" v-for="(item,i) in listByBrand" :key="'merchantaddL59' + i">
                 {{item.name}}
-                <Button class="select-btn" @click="delOne(i)" :disabled="pageStatus === 'read'">移出</Button>
+                <Button class="select-btn" @click="delOne(i)" v-if="pageStatus === 'read'">移出</Button>
               </div>
               <div class="yyh-nodata pdt-5">
                 暂未选择任何商户
@@ -355,7 +355,7 @@
             </FormItem>
           </Form>
         </row>
-        
+
         <!-- 品牌列表 -->
         <Table
           v-if="add_info.merchantType === 2"
@@ -806,7 +806,7 @@ export default {
     // 获取商户列表
     getMerchantListFn() {
       this.TableLoading = false;
-      
+
       let reqParams = {
         merchantId: this.searchItem.merchantId,
         name: this.searchItem.name,
@@ -973,7 +973,7 @@ export default {
       //   "biller": "qiandan222",
       //   // 品牌ID 选择的是单店则不需要此字段
       //   brandId: '',
-      //   // 
+      //   //
       //   // "merchantId": "2019082253207", 去掉了？ ！！！！！！！！！！！！
       //   // 商户id集合
       //   merchantIdList: [],
@@ -1059,7 +1059,7 @@ export default {
               id: res.data.id,
               remark: res.data.remark
             };
-            
+
             this.compatibleList = res.data.serviceChargesList;
             this.chooseMerchant.name = res.data.merchantName;
             if (this.add_info.merchantType === 2) {
