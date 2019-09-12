@@ -424,10 +424,11 @@ export default {
           console.log("o1Form", oForm);
 
           // 应收款:给后端*100 转分
-          oForm.receivables = oForm.receivables * 100;
+          oForm.receivables *= 100;
 
           oForm.merchantMoneyChargesRecords = oForm.merchantMoneyChargesRecords.map(
             item => {
+              item.actualAmount *= 100;
               item.receivedDateStr = formatDate(
                 new Date(item.receivedDate),
                 "yyyy-MM-dd hh:mm:ss"
