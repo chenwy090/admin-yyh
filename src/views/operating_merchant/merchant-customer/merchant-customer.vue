@@ -10,6 +10,8 @@
                                         type="text"
                                         v-model="searchItem.contractNumber"
                                         clearable
+                                        @on-clear="willMerchantSearch.call(null, arguments[0], 'contractNumber')"
+                                        @on-keyup="willMerchantSearch.call(null, arguments[0], 'contractNumber')"
                                         placeholder="请输入合同号"
                                         style="width: 200px"
                                 />
@@ -204,11 +206,11 @@ import common from "@/mixins/common";
                 searchItem: {
                     // 套餐类型
                     serviceCode: '',
-                    contractNumber: null,
+                    contractNumber: '',
                     // 商户类型
                     merchantType: '',
                     // 商户名称
-                    name: null,
+                    name: '',
                     province: null,
                     city: null,
                     mainIndustry: null,
@@ -318,6 +320,11 @@ import common from "@/mixins/common";
             };
         },
         methods: {
+            willMerchantSearch(e, key) {
+              if (this.searchItem[key] === '' || e.key === "Enter") {
+                this.search();
+              }
+            },
             // 查看 详情
             lookDetail(id) {
               // /merchant/merchantPackageInfo/selectById 查询
@@ -339,7 +346,6 @@ import common from "@/mixins/common";
             },
             //编辑
             editInfo(item) {
-                console.info(JSON.stringify(item))
                 var pageStatus = '';
                 if (item.status == '1'){
                     pageStatus = 'edit1';
@@ -388,6 +394,10 @@ import common from "@/mixins/common";
             search(){
                 this.current = 1;
                 this.totalSize = 0;
+                if (this.searchItem.name !== '' && this.searchItem.merchantType === '') {
+                  this.msgErr("请选择商户类型");
+                  return;
+                };
                 this.getPackageList();
             },
 
@@ -401,7 +411,6 @@ import common from "@/mixins/common";
             },
 
             del(row) {
-                console.info(JSON.stringify(row))
                 var name = row.name ? row.name : '';
                 var id = row.id;
                 this.$Modal.confirm({
@@ -458,7 +467,6 @@ import common from "@/mixins/common";
             },
             // 开票
             invoice(row) {
-                console.info(JSON.stringify(row))
                 var contractNumber = row.contractNumber ? row.contractNumber : '';
                 var id = row.id;
                 this.$Modal.confirm({
@@ -485,9 +493,9 @@ import common from "@/mixins/common";
             //查询列表
             getPackageList() {
                 this.TableLoading = true;
-                let params = JSON.parse(JSON.stringify(this.searchItem));
+                let params = this.m_cloneObj(this.searchItem);
                 // 商户名称筛选 必须选择商户类型
-                if (this.search.merchantType === '') {
+                if (this.searchItem.name !== '' && this.searchItem.merchantType === '') {
                   delete params.name
                 }
                 // m_开头的来自mixins 过滤空参数
