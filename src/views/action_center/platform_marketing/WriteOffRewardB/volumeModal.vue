@@ -26,7 +26,7 @@
                                     <FormItem span="24" :label-width="1" style="width:23%">
                                         <Button type="primary" class="submit" icon="ios-search" @click="search(1)" style="margin-right: 5px">搜索</Button>
                                         <!--<Button type="primary" icon="ios-search" @click="search">搜索</Button>-->
-                                        <Button icon="md-refresh" @click="reset">重置</Button>
+                                        <Button icon="md-refresh" @click="reset(1)">重置</Button>
                                     </FormItem>
 
                                 </Form>
@@ -89,7 +89,7 @@
                                 <FormItem span="24" :label-width="1" style="width:23%">
                                     <Button type="primary" class="submit" icon="ios-search" @click="search(2)" style="margin-right: 5px">搜索</Button>
                                     <!--<Button type="primary" icon="ios-search" @click="search">搜索</Button>-->
-                                    <Button icon="md-refresh" @click="reset">重置</Button>
+                                    <Button icon="md-refresh" @click="reset(2)">重置</Button>
                                 </FormItem>
 
                             </Form>
@@ -225,12 +225,16 @@
         },
         methods:{
             search(type){
+                this.volumeForm.current1= 1;
+                this.volumeForm.current2= 1;
+                this.current1 = 1;
+                this.current2 = 1;
                 switch (type) {
                 case 1:
-                    this.loadTableData1();
+                    this.loadTableData1(this.volumeObj);
                     break;
                 case 2:
-                    this.loadTableData2();
+                    this.loadTableData2(this.volumeObj);
                     break;
                 }
             },
@@ -240,12 +244,29 @@
                 // this.addressValue = [];
                 this.volumeObj = item;
                 this.TableLoading = false;
+                this.volumeForm.current1= 1;
+                this.volumeForm.current2=1;
+                this.current1 = 1;
+                this.current2 = 1;
                 this.loadTableData1(item);
                 this.loadTableData2(item);
             },
-            reset(){
+            reset(type){
+                this.volumeForm.current1= 1;
+                this.volumeForm.current2= 1;
+                this.current1 = 1;
+                this.current2 = 1;
                 this.volumeForm.merchantName = '';
                 this.volumeForm.couponName = '';
+                switch (type) {
+                case 1:
+                    this.loadTableData1(this.volumeObj);
+                    break;
+                case 2:
+                    this.loadTableData2(this.volumeObj);
+                    break;
+                }
+
             },
             // getProvinceList(formData) {
             //     postRequest(`/system/area/province/list`,{}).then(res => {
@@ -285,7 +306,8 @@
             //         }
             //     });
             // },
-            loadTableData1(){
+            loadTableData1(item,page){
+                this.volumeForm.current1 = page||1;
                 var that = this;
                 var item = this.volumeObj
                 this.totalSize1 = 0;
@@ -293,7 +315,7 @@
                 this.TableLoading1 = true;
                 this.selectIndex1 = '';
                 let params = {
-                    page:this.volumeForm.current1,
+                    page:page||1,
                     size:10,
                     // cityCode:this.addressValue[1]||'',
                     couponName:this.volumeForm.couponName,
@@ -301,13 +323,13 @@
                     // provinceCode:this.addressValue[0]||'',
                 }
                 //商户券列表
-                postRequest(`/coupon/superMarket/list?pageNum=${this.current1}&pageSize=10`,params
+                postRequest(`/coupon/superMarket/list`,params
                 ).then(res => {
                     this.TableLoading1 = false;
                     if (res.code === "200") {
                         this.totalSize1 = res.data.total;
                         this.listData1 = res.data.records;
-                        if(item&&item.awardAmount){
+                        if(item&&(item.awardAmount||item.JObj)){
                             res.data.records.forEach(function(v,i){
                                 if(v.templateId ===(item.awardAmount||item.award)){
                                     that.selectIndex1 = i;
@@ -319,7 +341,8 @@
                     }
                 });
             },
-            loadTableData2(){
+            loadTableData2(item,page){
+                this.volumeForm.current2 = page||1;
                 var that = this;
                 var item = this.volumeObj
                 this.totalSize2 = 0;
@@ -327,7 +350,7 @@
                 this.TableLoading2 = true;
                 this.selectIndex2 = '';
                 let params = {
-                    page:this.volumeForm.current2,
+                    page:page||1,
                     size:10,
                     // cityCode:this.addressValue[1]||'',
                     couponName:this.volumeForm.couponName,
@@ -335,13 +358,13 @@
                     // provinceCode:this.addressValue[0]||'',
                 }
                 //商超券列表
-                postRequest(`/coupon/merchant/list?pageNum=${this.current2}&pageSize=10`,params
+                postRequest(`/coupon/merchant/list`,params
                 ).then(res => {
                     this.TableLoading2 = false;
                     if (res.code === "200") {
                         this.totalSize2 = res.data.total;
                         this.listData2 = res.data.records;
-                        if(item&&item.awardAmount){
+                        if(item&&(item.awardAmount||item.JObj)){
                             res.data.records.forEach(function(v,i){
                                 if(v.templateId === (item.awardAmount||item.award)){
                                     that.selectIndex2 = i;
@@ -355,17 +378,20 @@
             },
             handleSelect(selection, index) {
                 this.selectDataList = selection;
+
             },
             changeCurrent1(current) {
                 if (this.volumeForm.current1 != current) {
                     this.volumeForm.current1 = current;
-                    this.loadTableData1();
+                    this.current1 = current;
+                    this.loadTableData1(this.volumeObj,current);
                 }
             },
             changeCurrent2(current) {
                 if (this.volumeForm.current2 != current) {
                     this.volumeForm.current2 = current;
-                    this.loadTableData2();
+                    this.current2 = current;
+                    this.loadTableData2(this.volumeObj,current);
                 }
             },
             selectBusiness(index){

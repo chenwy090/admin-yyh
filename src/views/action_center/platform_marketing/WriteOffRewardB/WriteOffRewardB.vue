@@ -185,20 +185,24 @@
         },
         methods:{
             search() {
-                this.current = 1;
+                this.searchForm.page = 1;
+                this.current= 1;
                 this.loadTableData(this.searchForm);
             },
             reset(){
                 this.searchForm.name = '';
                 this.searchForm.page = 1;
+                this.current= 1;
                 this.searchForm.awardType = '';
                 this.searchForm.status = '';
+                this.loadTableData();
             },
-            loadTableData(formData) {
+            loadTableData(page) {
+                this.searchForm.page = page||1;
                 this.totalSize = 0;
                 this.listData = [];
                 this.TableLoading = true;
-                postRequest(`/merchant/activity/award/activity/list?pageNum=${this.current}&pageSize=10`,this.searchForm
+                postRequest(`/merchant/activity/award/activity/list?pageNum=${this.searchForm.page}&pageSize=10`,this.searchForm
                 ).then(res => {
                     this.TableLoading = false;
                     if (res.code === "200") {
@@ -278,7 +282,7 @@
             changeCurrent(current) {
                 if (this.searchForm.page != current) {
                     this.searchForm.page = current;
-                    this.loadTableData(this.searchForm);
+                    this.loadTableData(current);
                 }
             },
             closeTab(e){

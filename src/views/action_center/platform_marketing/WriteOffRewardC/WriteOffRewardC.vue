@@ -185,16 +185,20 @@
         },
         methods:{
             search() {
-                this.current = 1;
-                this.loadTableData(this.searchForm);
+                this.searchForm.page = 1;
+                this.current= 1;
+                this.loadTableData();
             },
             reset(){
                 this.searchForm.name = '';
                 this.searchForm.page = 1;
+                this.current= 1;
                 this.searchForm.awardType = '';
                 this.searchForm.status = '';
+                this.loadTableData();
             },
-            loadTableData(formData) {
+            loadTableData(page) {
+                this.searchForm.page = page||1;
                 this.totalSize = 0;
                 this.listData = [];
                 this.TableLoading = true;
@@ -278,7 +282,7 @@
             changeCurrent(current) {
                 if (this.searchForm.page != current) {
                     this.searchForm.page = current;
-                    this.loadTableData(this.searchForm);
+                    this.loadTableData(current);
                 }
             },
             closeTab(e){

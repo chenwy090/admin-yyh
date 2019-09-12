@@ -116,6 +116,7 @@
                 this.selectRow = row;
                 this.businessModal.name = '';
                 this.businessModal.current = 1;
+                this.current= 1;
                 this.addressData = [];
                 this.getProvinceList();
                 this.loadTableData();
@@ -158,17 +159,22 @@
                 });
             },
             search(){
+                this.businessModal.current= 1;
+                this.current= 1;
                 this.TableLoading = false;
                 this.loadTableData();
             },
             reset(){
-                this.businessModal.current = 1;
+                this.businessModal.current= 1;
+                this.current= 1;
                 this.businessModal.name = [];
                 this.addressValue = [];
+                this.loadTableData();
             },
-            loadTableData(){
+            loadTableData(page){
                 let that = this;
                 this.totalSize = 0;
+                this.businessModal.current = page||1;
                 this.listData = [];
                 this.TableLoading = true;
                 this.selectIndex = '';
@@ -201,7 +207,7 @@
             changeCurrent(current) {
                 if (this.businessModal.current != current) {
                     this.businessModal.current = current;
-                    this.loadTableData();
+                    this.loadTableData(current);
                 }
             },
             selectBusiness(){

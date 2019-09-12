@@ -242,6 +242,7 @@
             },
             search() {
                 this.searchForm.current = 1;
+                this.current= 1;
                 this.loadTableData(this.searchForm);
             },
             reset(){
@@ -254,13 +255,16 @@
                 this.searchForm.merchantName= '';
                 this.searchForm.status= '';
                 this.searchForm.current = 1;
+                this.current= 1;
                 this.addressValue = [];
+                this.loadTableData();
             },
-            loadTableData(formData) {
+            loadTableData(page) {
+                this.searchForm.current = page||1;
                 this.totalSize = 0;
                 this.listData = [];
                 this.TableLoading = true;
-                postRequest(`/merchant/platform/expand/list?pageNum=${this.searchForm.current}&pageSize=10`,{
+                postRequest(`/merchant/platform/expand/list?pageNum=${page||1}&pageSize=10`,{
                         "cityCode": this.addressValue[1]||'',
                         "provinceCode": this.addressValue[0]||'',
                         "expandTimeEnd": this.searchForm.expandTimeEnd,
@@ -346,7 +350,7 @@
             changeCurrent(current) {
                 if (this.searchForm.current != current) {
                     this.searchForm.current = current;
-                    this.loadTableData(this.searchForm);
+                    this.loadTableData(current);
                 }
             },
             closeTab(e){

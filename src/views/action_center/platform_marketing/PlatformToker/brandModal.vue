@@ -101,25 +101,30 @@
                 if(status){
                     this.isDown = true;
                 }
+                this.current= 1;
                 this.brandForm.name = '';
                 this.brandForm.current = 1;
                 this.selectRow = row;
                 this.loadTableData()
             },
             search(){
+                this.current= 1;
+                this.brandForm.current = 1;
                 this.loadTableData();
             },
             reset(){
+                this.current= 1;
                 this.brandForm.current = 1;
                 this.brandForm.name = '';
+                this.loadTableData();
             },
             handleSelect(selection, index) {
                 this.selectDataList = selection;
             },
             changeCurrent(current) {
-                if (this.brandForm.current != current) {
-                    this.brandForm.current = current;
-                    this.loadTableData();
+                if (this.current != current) {
+                    this.current = current;
+                    this.loadTableData(current);
                 }
             },
             selectBusiness(){
@@ -136,10 +141,11 @@
                 }
                 this.$emit('setViewDialogVisible', this.selectRow)
             },
-            loadTableData(){
+            loadTableData(page){
                 let that = this;
                 this.TableLoading=true;
                 this.selectIndex = '';
+                this.brandForm.current = page||1;
                 postRequest(`/merchant/platform/expand/listBrand?pageNum=${this.brandForm.current}&pageSize=10`,{
                         name:this.brandForm.name,
                         pageNum: this.current,

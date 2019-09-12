@@ -141,6 +141,8 @@
         },
         methods:{
             resetRow(){
+                this.copponForm.current= 1;
+                this.current= 1;
                 this.copponForm.couponName = '';
                 this.copponForm.merchantName = '';
                 this.addressValue = [];
@@ -187,21 +189,27 @@
             //     });
             // },
             search(){
+                this.copponForm.current= 1;
+                this.current= 1;
                 this.loadTableData();
             },
             reset(){
+                this.copponForm.current= 1;
+                this.current= 1;
                 this.copponForm.couponName = '';
                 this.copponForm.merchantName = '';
+                this.loadTableData();
                 // this.addressValue = [];
             },
-            loadTableData(row){
+            loadTableData(page){
+                this.copponForm.current = page||1;
                 var that = this;
                 this.selectDataList = [];
                 this.totalSize = 0;
                 this.listData = [];
                 this.TableLoading = true;
                 let params = {
-                    page:this.copponForm.current,
+                    page:page||1,
                     size:10,
                     // cityCode:this.addressValue[1]||'',
                     couponName:this.copponForm.couponName,
@@ -226,7 +234,7 @@
             changeCurrent(current) {
                 if (this.copponForm.current != current) {
                     this.copponForm.current = current;
-                    this.loadTableData();
+                    this.loadTableData(current);
                 }
             },
             couponClose(){
