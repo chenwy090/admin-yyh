@@ -129,8 +129,6 @@ export default {
     },
     validateEmpty(msg) {
       return function(rule, value, callback) {
-        console.log(1111111, rule, value);
-
         value += "";
         value = value.trim();
         if (value == "") {

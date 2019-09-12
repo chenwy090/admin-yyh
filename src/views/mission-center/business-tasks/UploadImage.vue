@@ -67,7 +67,6 @@ export default {
   watch: {
     defaultList: {
       handler: function() {
-        // console.log("watch", JSON.stringify(this.defaultList));
         this.uploadList = [];
         for (let i = 0; i < this.defaultList.length; i++) {
           let item = this.defaultList[i];

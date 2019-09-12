@@ -283,7 +283,6 @@ export default {
         return r;
       });
       // this.businessTypeLabel = this.businessTypeList[type];
-      console.log("watch-----------,", type, this.$parent);
       // this.$refs.form.validateField("businessName");
     }
   },
@@ -385,7 +384,9 @@ export default {
       ]
     };
   },
-
+  updated() {
+    console.log("updated,", this.item);
+  },
   methods: {
     bannerUploadSuccess(data) {
       this.item.imgUrl = data.imgUrl;
@@ -419,11 +420,11 @@ export default {
       this.item[id] = data.id;
       this.item[name] = data.name;
       this.tableData = [data.row];
-      console.log(id, name);
+      // console.log(id, name);
     },
 
     selectedCouponItem(data) {
-      console.log("selectedCouponItem----", data);
+      // console.log("selectedCouponItem----", data);
       let { id, name } = data;
       // templateId 券模板id templateName 券模板名称
       this.item.templateId = id;
@@ -461,7 +462,6 @@ export default {
     },
     validateEmpty(msg) {
       return function(rule, value, callback) {
-        console.log(1111111, rule, value);
         value += "";
         value = value.trim();
         if (value == "") {
