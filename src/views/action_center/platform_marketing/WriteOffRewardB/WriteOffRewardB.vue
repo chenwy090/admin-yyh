@@ -58,7 +58,7 @@
                                            @click="showDetail(row)"
                                    >查看</Button>
                                    <Button
-                                           v-if="row.status!=2"
+                                           v-if="!(row.status==2||row.status==4)"
                                            type="error"
                                            style="margin-right: 5px"
                                            size="small"
