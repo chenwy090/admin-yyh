@@ -34,7 +34,7 @@
                 <Row class="padding-left-12">
                     <Col span="18">
                     <FormItem label="套餐：" span="24">
-                        <Select v-model="modal.merchantType" style="width:150px">
+                        <Select v-model="modal.expandType" style="width:150px">
                             <Option v-for="item in packageList" :value="item.value" :key="item.value">{{ item.label }}</Option>
                         </Select>
                     </FormItem>

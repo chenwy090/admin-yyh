@@ -205,7 +205,6 @@
         },
         methods:{
             numArrayValidator(list){
-                debugger
                 var flag = true;
                 var arr = list.sort(function(a,b){
                     return (a.verifyCountMin||0) - (b.verifyCountMin||0)
