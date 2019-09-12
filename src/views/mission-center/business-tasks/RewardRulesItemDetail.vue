@@ -47,7 +47,11 @@
       <Divider />
 
       <Row type="flex" justify="start">
-        <Col span="8"></Col>
+        <Col span="8">
+          <FormItem label="背景图：">
+            <img :src="item.imgUrl" style="width:70px;" />
+          </FormItem>
+        </Col>
         <Col span="8">
           <FormItem label="Logo：">
             <img :src="item.logoUrl" style="width:70px;" />
@@ -119,7 +123,6 @@ export default {
         return r;
       });
       // this.businessTypeLabel = this.businessTypeList[type];
-      console.log("watch-----------,", type, this.$parent);
       // this.$refs.form.validateField("businessName");
     }
   },

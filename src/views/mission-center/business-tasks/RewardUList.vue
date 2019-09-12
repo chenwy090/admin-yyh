@@ -101,12 +101,7 @@
       </Row>
     </Card>
 
-    <Drawer
-      v-model="showDetail"
-      :closable="true"
-      width="820"
-      :styles="styles"
-    >
+    <Drawer v-model="showDetail" :closable="true" width="820" :styles="styles">
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="ios-information-circle"></Icon>
         <span>任务详情</span>
@@ -264,8 +259,8 @@ export default {
         data.isStopName = this.isStopOption[isStop]; //状态
         data.daterange = [startTime, endTime];
         data.ruleInfoList = (ruleInfoList || []).map(item => {
-          item.imgUrl = "https://image.52iuh.cn/wx_mini/LGHFWoUdOt.jpg";
-          item.logoUrl = "https://image.52iuh.cn/wx_mini/vENhDz3BZg.png";
+          // item.imgUrl = "https://image.52iuh.cn/wx_mini/LGHFWoUdOt.jpg";
+          // item.logoUrl = "https://image.52iuh.cn/wx_mini/vENhDz3BZg.png";
           const {
             merchantType,
             merchantId,
@@ -293,11 +288,11 @@ export default {
 
           item.defaultBannerList = [];
           if (imgUrl) {
-            item.defaultBannerList.push(imgUrl);
+            item.defaultBannerList = [{ imgUrl }];
           }
           item.defaultLogoList = [];
           if (logoUrl) {
-            item.defaultLogoList.push(logoUrl);
+            item.defaultLogoList = [{ imgUrl: logoUrl }];
           }
 
           item.tableData = [row];
