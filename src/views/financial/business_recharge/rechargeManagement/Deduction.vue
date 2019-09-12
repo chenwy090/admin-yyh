@@ -374,6 +374,10 @@ export default {
 
           const type = oForm.merchantType;
 
+          // 应扣款 anticipatedDeduction  实扣款 actualDeduction 给后端*100 转分
+          oForm.anticipatedDeduction = oForm.anticipatedDeduction * 100;
+          oForm.actualDeduction = oForm.actualDeduction * 100;
+
           if (type == 0) {
             oForm.merchantId = oForm.businessId;
             oForm.merchantName = oForm.businessName;

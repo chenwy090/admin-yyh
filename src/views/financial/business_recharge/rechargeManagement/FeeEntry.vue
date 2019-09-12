@@ -64,7 +64,7 @@
             :prop="`merchantMoneyChargesRecords.${index}.serialNumber`"
             :rules="{required: true,  validator: validateEmpty('请填写流水号'), trigger: 'blur'}"
           >
-            <Input v-model="item.serialNumber" :maxlength="20" placeholder="请填写流水号" clearable />
+            <Input v-model="item.serialNumber" :maxlength="40" placeholder="请填写流水号" clearable />
           </FormItem>
         </Col>
         <Col span="2">

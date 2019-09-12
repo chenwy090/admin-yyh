@@ -75,13 +75,13 @@
               confirm
               placement="bottom-end"
               title="确认删除此任务吗?"
-              @on-ok="ok"
+              @on-ok="ok(row)"
               @on-cancel="cancel"
               ok-text="确认"
               cancel-text="取消"
               word-wrap
             >
-              <Button type="error" size="small" style="margin-left: 5px" @click="del(row)">删除</Button>
+              <Button type="error" size="small" style="margin-left: 5px">删除</Button>
             </Poptip>
           </template>
         </template>
@@ -344,12 +344,17 @@ export default {
       downMerchant(id);
       this.refresh();
     },
-    del({ id }) {
-      console.log("del");
-      delMerchant(id);
-    },
-    ok() {
+    async ok({ id }) {
       this.$Message.info("正在删除");
+      console.log("del", id);
+      const { code, msg } = await delMerchant(id);
+      if (code == 200) {
+        this.msgOk("删除成功");
+        //查询table
+        this.queryTableData();
+      } else {
+        this.msgErr(msg);
+      }
     },
     cancel() {
       this.$Message.info("已取消删除");

@@ -349,3 +349,8 @@ export const ubayColumns = [
         minWidth: 120
     }
 ]
+
+
+export function division100(n) {
+    return Math.floor10(n / 100, -2);
+}
