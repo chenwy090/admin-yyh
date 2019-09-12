@@ -288,11 +288,11 @@
                     }
                     var flag = true;
                     for(var i = 0;i<this.brandList.length;i++){
-                        if(this.brandList[1].maxPushCount-0<=0&&flag){
+                        if(this.brandList[i].maxPushCount-0<=0&&flag){
                             flag = false;
                             this.$Message.error('请填写推送人数');
                             break;
-                        }else if(this.brandList[1].maxPushCount-0>=Number(this.upData.remainderPushNum)&&flag){
+                        }else if(this.brandList[i].maxPushCount-0>Number(this.upData.remainderPushNum)&&flag){
                             flag = false;
                             this.$Message.error('推送人数不能大于套餐剩余人数');
                             break;
