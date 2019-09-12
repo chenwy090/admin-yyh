@@ -64,10 +64,12 @@
           <Button type="success" style="margin-right: 5px" size="small" @click="openModal3(row)">修改</Button>
         </template>
         <template slot-scope="{ row }" slot="context">
-          <div class="over-hidden-box">
-            <div class="over-hidden" v-html="row.context"></div>
-            <!--<div class="over-hidden-hover" v-html="row.context"></div>-->
-          </div>
+          <Tooltip max-width="500" placement="top">
+            <span id="content-box" v-html="row.context"></span>
+            <div slot="content" id="reward_deploy">
+              <p v-html="row.context"></p>
+            </div>
+          </Tooltip>
         </template>
       </Table>
     </div>
@@ -883,4 +885,30 @@ h3 {
   height: 43px;
   padding: 5px;
 }
+  #content-box{
+    height: 18px;
+    line-height: 18px;
+    display:inline-block;
+    width: 130px;
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+.ivu-table-wrapper{
+  overflow: visible;
+}
+
 </style>
+<style>
+  #reward_deploy{
+    max-height: 300px;
+    overflow: scroll;
+  }
+  #content-box *{
+    width: 130px;
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+</style>
+
