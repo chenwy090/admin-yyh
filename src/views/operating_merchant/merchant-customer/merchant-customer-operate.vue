@@ -63,7 +63,7 @@
             <div :class="{'merchant-list': true, 'disabled': pageStatus === 'read'}">
               <div class="merchant-list-item" v-for="(item,i) in listByBrand" :key="'merchantaddL59' + i">
                 {{item.name}}
-                <Button class="select-btn" @click="delOne(i)" v-if="pageStatus === 'read'">移出</Button>
+                <Button class="select-btn" @click="delOne(i)" v-if="pageStatus !== 'read'">移出</Button>
               </div>
               <div class="yyh-nodata pdt-5">
                 暂未选择任何商户
