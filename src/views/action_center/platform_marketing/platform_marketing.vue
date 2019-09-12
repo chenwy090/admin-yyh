@@ -11,7 +11,9 @@
         <div v-if="!isCloseTab" class="table-box">
             <div class="table-item" @click="changeTab('WriteOffRewardC')">
                 <div class="table-item-left">
-                    <div class="img-box" style="text-align:center;line-height: 60px;">图片</div>
+                    <div class="img-box" style="text-align:center;line-height: 60px;">
+                        <img src="../../../assets/WriteOffRewardC.png" alt="">
+                    </div>
                 </div>
                 <div class="table-item-right">
                     <h3>核销返奖励（用户）</h3>
@@ -20,7 +22,9 @@
             </div>
             <div class="table-item" @click="changeTab('WriteOffRewardB')">
                 <div class="table-item-left">
-                    <div class="img-box" style="text-align:center;line-height: 60px;">图片</div>
+                    <div class="img-box" style="text-align:center;line-height: 60px;">
+                        <img src="../../../assets/WriteOffRewardB.png" alt="">
+                    </div>
                 </div>
                 <div class="table-item-right">
                     <h3>核销返奖励（商家）</h3>
@@ -29,7 +33,9 @@
             </div>
             <div class="table-item" @click="changeTab('PlatformToker')">
                 <div class="table-item-left">
-                    <div class="img-box" style="text-align:center;line-height: 60px;">图片</div>
+                    <div class="img-box" style="text-align:center;line-height: 60px;">
+                        <img src="../../../assets/PlatformToker.png" alt="">
+                    </div>
                 </div>
                 <div class="table-item-right">
                     <h3>平台拓客</h3>
@@ -107,6 +113,9 @@
         height: 60px;
         background-color: #fff;
         border-radius: 30px;
+    }
+    .img-box img{
+        width: 100%;
     }
     .table-item-right{
         flex: 1;
