@@ -70,7 +70,7 @@ export default {
     // merchantType: "", //商户类型
     // merchantId: "", //商户id
     // merchantName: "", //商户名称
-    ...mapState(["acountId","merchantType", "merchantId", "merchantName"])
+    ...mapState(["acountId", "merchantType", "merchantId", "merchantName"])
     // ...mapState(["businessId", "businessName"])
   },
   data() {
@@ -119,8 +119,8 @@ export default {
     },
     changeStartDate(arr) {
       // yyyy-MM-dd
-      this.searchData.gmtCreateStart = arr[0];
-      this.searchData.gmtCreateEnd = arr[1];
+      this.searchData.gmtCreateStart = `${arr[0]} 00:00:00`;
+      this.searchData.gmtCreateEnd = `${arr[1]} 23:59:59`;
     },
 
     // 刷新搜索
@@ -148,6 +148,7 @@ export default {
       // console.log(res);
       if (code == 200) {
         this.tableData = records.map(item => {
+          item.changeTypeName = item.changeType == 0 ? "充值" : "扣款";
           // beforeAmount > afterAmount  => -changeAmount
           if (item.beforeAmount > item.afterAmount) {
             item.changeAmount = -item.changeAmount;

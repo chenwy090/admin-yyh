@@ -403,6 +403,8 @@ export default {
 
           let oForm = JSON.parse(JSON.stringify(this.formData));
 
+          oForm.deductMoney = oForm.deductMoney*100;
+
           const type = oForm.merchantType;
 
           if (type == 0) {

@@ -99,7 +99,7 @@
               <div style="width: 2%;display: inline-block"></div>
               <span class="colof-a2">(在核销主商户券码时，赠送平台费U贝)</span>
               <div></div>
-              <div v-if="modal.wardType==1">
+              <div v-if="modal.wardType==2">
                 <div v-for="(item,index) in UawardRuleDtos" class="radio-item">
                   <div style="margin: 10px 0;">
                     <InputNumber
