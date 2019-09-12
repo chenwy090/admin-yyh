@@ -187,7 +187,7 @@
             search() {
                 this.searchForm.page = 1;
                 this.current= 1;
-                this.loadTableData(this.searchForm);
+                this.loadTableData();
             },
             reset(){
                 this.searchForm.name = '';

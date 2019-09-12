@@ -243,7 +243,7 @@
             search() {
                 this.searchForm.current = 1;
                 this.current= 1;
-                this.loadTableData(this.searchForm);
+                this.loadTableData();
             },
             reset(){
                 this.searchForm.merchantType= '';
@@ -325,7 +325,7 @@
                             if (res.code === "200") {
                                 this.$Message.success("删除成功");
                                 this.searchForm.current = 1;
-                                this.loadTableData(this.searchForm);
+                                this.loadTableData();
                             } else {
                                 this.$Message.error(res.msg);
                             }
