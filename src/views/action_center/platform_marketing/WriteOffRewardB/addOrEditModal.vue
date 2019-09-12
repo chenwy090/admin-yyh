@@ -67,14 +67,16 @@
                 <h3>赠送规则</h3>
                 <Row class="padding-left-12">
                     <Col span="24">
-                    <RadioGroup v-model="modal.wardType" vertical style="width: 100%" :on-change="changeRadio">
+                    <RadioGroup v-model="modal.wardType" vertical style="width: 100%" @on-change="changeRadio">
                         <Radio label="1" style="display: inline-block">
                             <span>核销赠券</span>
                         </Radio>
                             <div style="width: 2%;display: inline-block"></div>
                             <span class="colof-a2">(在核销商户券码时，赠送优惠券至店员卡包，前提店员是要优惠C端用户)</span>
                             <div style="width: 2%;display: inline-block"></div>
-                            <Button style="float: right;" type="primary" icon="md-add" @click="addJList">新增</Button>
+                            <Button  v-if="modal.wardType==1" style="float: right;" type="primary" icon="md-add" @click="addJList">新增</Button>
+                            <div></div>
+                            <div v-if="modal.wardType==1">
                                 <div :key="index"  v-for="(item,index) in JawardRuleDtos" class="radio-item">
                                     <div>
                                         <span>每日核销范围在&nbsp;</span>
@@ -106,13 +108,16 @@
                                         <Button type="error" v-if="JawardRuleDtos.length>1" shape="circle" icon="ios-trash" @click="reduce(JawardRuleDtos,index)"></Button>
                                     </div>
                                 </div>
+                            </div>
                         <Radio label="2" style="display: inline-block">
                             <span>核销赠U贝</span>
                         </Radio>
                             <div style="width: 2%;display: inline-block"></div>
                             <span class="colof-a2">(在核销主商户券码时，赠送平台U贝，前提店员是要优惠C端用户)</span>
                             <div style="width: 2%;display: inline-block"></div>
-                            <Button  style="float: right;" type="primary" icon="md-add" @click="addUList">新增</Button>
+                            <Button v-if="modal.wardType==2"  style="float: right;" type="primary" icon="md-add" @click="addUList">新增</Button>
+                            <div></div>
+                            <div  v-if="modal.wardType==2" >
                                 <div :key="index" v-for="(item,index) in UawardRuleDtos" class="radio-item">
                                     <span>每日核销范围在&nbsp;</span>
                                     <InputNumber
@@ -143,12 +148,13 @@
                                                 v-model="item.awardAmount"
                                                 placeholder="请输入U贝数量"
                                                 style="width: 150px"
-                                        ></InputNumber>
+                                        ></InputNumber> U贝
                                     </div>
                                     <div class="reduce-btn">
                                         <Button type="error" v-if="UawardRuleDtos.length>1" shape="circle" icon="ios-trash" @click="reduce(UawardRuleDtos,index)"></Button>
                                     </div>
                                 </div>
+                            </div>
                     </RadioGroup>
                     </Col>
                 </Row>
@@ -249,6 +255,13 @@
                 }
             },
             changeRadio(){
+                if(this.modal.wardType == '1'){
+                    this.JawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'2',couponType:'',awardName:''}];
+                    this.UawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'1',couponType:'',awardName:''}];
+                }else{
+                    this.UawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'1',couponType:'',awardName:''}];
+                    this.JawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'1',couponType:'',awardName:''}];
+                }
                 // this.awardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'',couponType:'',awardName:''}];
             },
             resetRow(row){
@@ -291,7 +304,7 @@
                                         v.verifyCountMin = null;
                                     }
                                 })
-                                this.UawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'1',couponType:'',awardName:''}];
+                                this.UawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'2',couponType:'',awardName:''}];
                             }else if(data.awardType=='2'){
                                 this.UawardRuleDtos = data.awardRuleVos;
                                 this.UawardRuleDtos.forEach(function(v,i){
@@ -302,7 +315,7 @@
                                         v.verifyCountMin = null;
                                     }
                                 })
-                                this.JawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'2',couponType:'',awardName:''}];
+                                this.JawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'1',couponType:'',awardName:''}];
                             }
                         } else {
                             this.$Message.error(res.msg);

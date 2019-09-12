@@ -115,6 +115,7 @@
                 }
                 this.selectRow = row;
                 this.businessModal.name = '';
+                this.businessModal.current = 1;
                 this.addressData = [];
                 this.getProvinceList();
                 this.loadTableData();
@@ -161,7 +162,9 @@
                 this.loadTableData();
             },
             reset(){
-
+                this.businessModal.current = 1;
+                this.businessModal.name = [];
+                this.addressValue = [];
             },
             loadTableData(){
                 let that = this;

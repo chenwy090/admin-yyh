@@ -75,92 +75,46 @@
               v-model="modal.wardType"
               vertical
               style="width: 100%"
-              :on-change="changeRadio"
+              @on-change="changeRadio"
             >
               <Radio label="1" style="display: inline-block">
                 <span>核销赠券</span>
               </Radio>
               <div style="width: 2%;display: inline-block"></div>
               <span class="colof-a2">(在核销主商户券码时，赠送合作方发放的优惠券)</span>
-              <div style="width: 2%;display: inline-block"></div>
-              <div v-for="(item,index) in JawardRuleDtos" class="radio-item">
-                <!--<div>-->
-                <!--<span>每日核销范围在&nbsp;</span>-->
-                <!--<InputNumber-->
-                <!--:min="1"-->
-                <!--:step="1"-->
-                <!--type="text"-->
-                <!--:precision="0"-->
-                <!--v-model="item.verifyCountMin"-->
-                <!--placeholder="请输入数值"-->
-                <!--&gt;</InputNumber>-->
-                <!--<div style="width: 2%;display: inline-block"></div>-->
-                <!--<InputNumber-->
-                <!--:min="1"-->
-                <!--:step="1"-->
-                <!--type="text"-->
-                <!--:precision="0"-->
-                <!--v-model="item.verifyCountMax"-->
-                <!--placeholder="请输入数值"-->
-                <!--&gt;</InputNumber>-->
-                <!--<span>&nbsp;张时，赠送以下优惠券</span>-->
-                <!--<div style="width: 2%;display: inline-block"></div>-->
-                <!--<span class="colof-a2">(后面文本框的数值不填写，表示无限大)</span>-->
-                <!--</div>-->
-                <div style="margin: 10px 0;">
-                  <Button
-                    type="dashed"
-                    @click="openVolume(item)"
-                  >{{item.awardName||item.title?item.awardName||item.title:'请选择优惠券'}}</Button>
+              <div></div>
+              <div v-if="modal.wardType==1">
+                <div v-for="(item,index) in JawardRuleDtos" class="radio-item">
+                  <div style="margin: 10px 0;">
+                    <Button
+                            type="dashed"
+                            @click="openVolume(item)"
+                    >{{item.awardName||item.title?item.awardName||item.title:'请选择优惠券'}}</Button>
+                  </div>
                 </div>
-                <!--<div class="reduce-btn">-->
-                <!--<Button type="error" v-if="JawardRuleDtos.length>1" shape="circle" icon="ios-trash" @click="reduce(JawardRuleDtos,index)"></Button>-->
-                <!--</div>-->
               </div>
               <Radio label="2" style="display: inline-block">
                 <span>核销赠U贝</span>
               </Radio>
               <div style="width: 2%;display: inline-block"></div>
               <span class="colof-a2">(在核销主商户券码时，赠送平台费U贝)</span>
-              <div style="width: 2%;display: inline-block"></div>
-              <!--<Button  style="float: right;" type="primary" icon="md-add" @click="addUList">新增</Button>-->
-              <div v-for="(item,index) in UawardRuleDtos" class="radio-item">
-                <!--<span>每日核销范围在&nbsp;</span>-->
-                <!--<InputNumber-->
-                <!--:min="0"-->
-                <!--:step="1"-->
-                <!--type="text"-->
-                <!--:precision="0"-->
-                <!--v-model="item.verifyCountMin"-->
-                <!--placeholder="请输入数值"-->
-                <!--&gt;</InputNumber>-->
-                <!--<div style="width: 2%;display: inline-block"></div>-->
-                <!--<InputNumber-->
-                <!--:min="1"-->
-                <!--:step="1"-->
-                <!--type="text"-->
-                <!--:precision="0"-->
-                <!--v-model="item.verifyCountMax"-->
-                <!--placeholder="请输入数值"-->
-                <!--&gt;</InputNumber>-->
-                <!--<span>&nbsp;张时，赠送以下U贝</span>-->
-                <!--<span class="colof-a2">(后面文本框的数值不填写，表示无限大)</span>-->
-                <div style="margin: 10px 0;">
-                  <InputNumber
-                    :min="0"
-                    :step="1"
-                    type="text"
-                    :precision="0"
-                    v-model="item.awardAmount"
-                    placeholder="请输入U贝数量"
-                    style="width: 150px"
-                  ></InputNumber>
-                  <div style="width: 2%;display: inline-block"></div>
-                  <span class="colof-a2">(只能输入整数)</span>
+              <div></div>
+              <div v-if="modal.wardType==1">
+                <div v-for="(item,index) in UawardRuleDtos" class="radio-item">
+                  <div style="margin: 10px 0;">
+                    <InputNumber
+                            :min="0"
+                            :step="1"
+                            type="text"
+                            :precision="0"
+                            v-model="item.awardAmount"
+                            placeholder="请输入U贝数量"
+                            style="width: 150px"
+                    ></InputNumber>  U贝
+                    <div style="width: 2%;display: inline-block"></div>
+                    <span class="colof-a2">(只能输入整数)</span>
+                  </div>
                 </div>
-                <!--<div class="reduce-btn">-->
-                <!--<Button type="error" v-if="UawardRuleDtos.length>1" shape="circle" icon="ios-trash" @click="reduce(UawardRuleDtos,index)"></Button>-->
-                <!--</div>-->
               </div>
             </RadioGroup>
           </Col>
@@ -403,7 +357,15 @@ export default {
     reMoveCoupon(index) {
       this.couponObj.splice(index, 1);
     },
-    changeRadio() {},
+    changeRadio() {
+        if(this.modal.wardType == '1'){
+            this.JawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'2',couponType:'',awardName:''}];
+            this.UawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'1',couponType:'',awardName:''}];
+        }else{
+            this.UawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'1',couponType:'',awardName:''}];
+            this.JawardRuleDtos = [{verifyCountMin:null,verifyCountMax:null,awardAmount:null,awardType:'1',couponType:'',awardName:''}];
+        }
+    },
     ok() {
       // /merchant/activity/award/add/activity
       // /merchant/activity/award/update/activity

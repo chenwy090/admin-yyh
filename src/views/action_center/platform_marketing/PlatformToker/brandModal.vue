@@ -101,6 +101,8 @@
                 if(status){
                     this.isDown = true;
                 }
+                this.brandForm.name = '';
+                this.brandForm.current = 1;
                 this.selectRow = row;
                 this.loadTableData()
             },
