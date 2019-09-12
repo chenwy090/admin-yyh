@@ -133,6 +133,8 @@
       </FormItem>
       <!-- ----------------------------------------------------- -->
       <Divider />
+
+      <Alert type="warning">下面四项为必填项，至少一项不能为0</Alert>
       <FormItem
         :label-width="0"
         :prop="`ruleInfoList.${index}.receiveAwardUbay`"
@@ -193,6 +195,7 @@
       </FormItem>
 
       <!-- ------------------------------ -->
+      <Divider />
       <Alert type="warning">选择图片（不大于5M,JPG/JPEG/PNG）</Alert>
       <Row type="flex" justify="start">
         <Col span="8">
@@ -370,7 +373,7 @@ export default {
           title: "关联店铺数",
           align: "center",
           minWidth: 300,
-          key: "address"
+          key: "relationMerchantCount"
         },
         {
           title: "操作",

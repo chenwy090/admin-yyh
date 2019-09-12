@@ -220,12 +220,6 @@ export default {
       };
       this.queryTableData();
     },
-
-    //分页
-    changeCurrent(current) {
-      this.pageNum = current;
-      this.queryTableData();
-    },
     // 全局提示
     msgOk(txt) {
       this.$Message.info({

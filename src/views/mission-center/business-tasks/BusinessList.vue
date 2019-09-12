@@ -101,21 +101,10 @@
   </div>
 </template>
 <script>
-import { getMerchantList, addStaff, editStaff } from "@/api/sys";
-import {
-  getRequest,
-  postRequest,
-  putRequest,
-  deleteRequest,
-  uploadFileRequest
-} from "@/libs/axios";
-import { uniqueArray } from "@/libs/date";
+import { getRequest, postRequest } from "@/libs/axios";
 
 export default {
   name: "business-list",
-  props: {
-    employeeId: String
-  },
   data() {
     return {
       isShow: true,

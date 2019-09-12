@@ -68,7 +68,7 @@
 <script>
 import { postRequest } from "@/libs/axios";
 import { queryUbayMList } from "@/api/sys";
-import { ubayMColumns as columns } from "../columns";
+import { division100, ubayMColumns as columns } from "../columns";
 
 import Exchange from "./Exchange";
 import Consume from "./Consume";
