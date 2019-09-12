@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="margin-bottom: 20px;">
     <h3>奖励配置</h3>
     <div>
       <Table border width="100%" :columns="columns1" :data="list1" :loading="TableLoading1">
@@ -889,7 +889,7 @@ h3 {
     height: 18px;
     line-height: 18px;
     display:inline-block;
-    width: 130px;
+    width: 100%;
     overflow: hidden;
     text-overflow:ellipsis;
     white-space:nowrap;
@@ -897,6 +897,9 @@ h3 {
 .ivu-table-wrapper{
   overflow: visible;
 }
+  .ivu-tooltip{
+    width: 100%;
+  }
 
 </style>
 <style>
@@ -905,7 +908,7 @@ h3 {
     overflow: scroll;
   }
   #content-box *{
-    width: 130px;
+    width: 100%;
     overflow: hidden;
     text-overflow:ellipsis;
     white-space:nowrap;
