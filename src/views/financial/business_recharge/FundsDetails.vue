@@ -61,7 +61,7 @@ import { createNamespacedHelpers } from "vuex";
 const { mapState, mapActions } = createNamespacedHelpers("financial");
 
 import { queryFundsList } from "@/api/sys";
-import { fundsColumns } from "./columns";
+import { division100, fundsColumns } from "./columns";
 
 export default {
   name: "funds-details",
@@ -148,6 +148,11 @@ export default {
       // console.log(res);
       if (code == 200) {
         this.tableData = records.map(item => {
+          const arr = ["beforeAmount", "changeAmount", "afterAmount"];
+          arr.forEach(name => {
+            item[name] = division100(item[name]);
+          });
+
           item.changeTypeName = item.changeType == 0 ? "充值" : "扣款";
           // beforeAmount > afterAmount  => -changeAmount
           if (item.beforeAmount > item.afterAmount) {

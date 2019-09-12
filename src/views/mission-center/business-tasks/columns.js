@@ -13,6 +13,12 @@ export default [{
     //     align: 'center'
     // },
     {
+        title: "任务ID",
+        key: "id",
+        align: "center",
+        width: 120
+    },
+    {
         title: "任务名称",
         key: "name",
         align: "center",

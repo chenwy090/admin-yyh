@@ -423,6 +423,9 @@ export default {
           let oForm = JSON.parse(JSON.stringify(this.formData));
           console.log("o1Form", oForm);
 
+          // 应收款:给后端*100 转分
+          oForm.receivables = oForm.receivables * 100;
+
           oForm.merchantMoneyChargesRecords = oForm.merchantMoneyChargesRecords.map(
             item => {
               item.receivedDateStr = formatDate(
