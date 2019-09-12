@@ -443,7 +443,11 @@ export default {
       if(this.thematicStatus != 1) {
         this.editData = this.thematicItem
         // this.editData.sort = this.editData.sort + ''
-        this.specialTopic = this.thematicItem.topicName
+        if (!this.thematicItem.topicName) {
+          this.specialTopic = "暂无";
+        } else {
+          this.specialTopic = this.thematicItem.topicName
+        }
       }
     },
 
