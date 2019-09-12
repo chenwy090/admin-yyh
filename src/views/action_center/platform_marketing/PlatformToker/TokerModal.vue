@@ -45,7 +45,7 @@
                 <Row class="padding-left-12" v-if="modal.type==2">
                     <Col span="18">
                     <FormItem label="推送人数：">
-                        <Col  v-for="(item,index) in brandList" style="margin:10px 0">
+                        <Col :key="index"  v-for="(item,index) in brandList" style="margin:10px 0">
                         <Input style="width:48%" v-model="item.merchantName" disabled/>
                         <div style="width: 2%;display: inline-block"></div>
                         <InputNumber
@@ -192,8 +192,8 @@
             selectBusiness(e){
                 this.selectBusinessObj = e;
                 this.businessVolumeModal = false;
-                if(e&&e.merchantId){
-                    this.getPackageData(e.merchantId,1);
+                if(e&&e.id){
+                    this.getPackageData(e.id,1);
                 }
             },
             selectBrand(e){
@@ -217,8 +217,8 @@
                                res.data.merchantReqList.forEach(function(v,i){
                                    v.maxPushCount = 0;
                                });
-                               this.oldBrandList = res.data.merchantReqList;
-                               this.brandList = res.data.merchantReqList;
+                               this.oldBrandList = [].concat(res.data.merchantReqList);
+                               this.brandList = [].concat(res.data.merchantReqList);
                            }
 
 
@@ -234,15 +234,17 @@
                 let params = {}
                 if(!this.modal.type){
                     this.$Message.error('请选择商户类型');
+                    return
                 }
                 if(!this.upData||!this.upData.id){
                     this.$Message.error('请选择有效套餐');
+                    return
                 }
                 if(this.modal.type==1){
                     if(!this.selectBusinessObj.name){
                         this.$Message.error('请选择商户名称');
                         return
-                    }else if(!this.modal.uNum&&Number(this.modal.uNum)>Number(this.upData.remainderPushNum)){
+                    }else if(!this.modal.uNum||Number(this.modal.uNum)>Number(this.upData.remainderPushNum)){
                         this.$Message.error('请填写合适推送人数');
                         return
                     }else if(!this.selectCouponObj&&!this.selectCouponObj.merchantName){
@@ -281,16 +283,21 @@
                         this.$Message.error('请重新选择品牌');
                         return
                     }
-                    var that = this;
-                    this.brandList.forEach(function(v,i){
-                        if(v.maxPushCount-0<=0){
-                            that.$Message.error('请填写推送人数');
-                            return
-                        }else if(v.maxPushCount-0>=Number(that.upData.remainderPushNum)){
-                            that.$Message.error('推送人数不能大于套餐剩余人数');
-                            return
+                    var flag = true;
+                    for(var i = 0;i<this.brandList.length;i++){
+                        if(this.brandList[1].maxPushCount-0<=0&&flag){
+                            flag = false;
+                            this.$Message.error('请填写推送人数');
+                            break;
+                        }else if(this.brandList[1].maxPushCount-0>=Number(this.upData.remainderPushNum)&&flag){
+                            flag = false;
+                            this.$Message.error('推送人数不能大于套餐剩余人数');
+                            break;
                         }
-                    });
+                    }
+                    if( !flag ){
+                        return;
+                    }
                     // params.cityCode = this.selectBrandObj.cityCode;
                     // params.cityName = this.selectBrandObj.cityName;
                     params.couponId = this.selectCouponObj.templateId;

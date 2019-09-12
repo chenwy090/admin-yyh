@@ -56,7 +56,7 @@
                     <FormItem label="参与活动券:">
                         <Button type="dashed" @click="openCoupon">
                             <span v-if="couponObj.length===0">参与活动券</span>
-                            <Button v-for="(item,index) in couponObj" class="coupon-item">
+                            <Button :key="index" v-for="(item,index) in couponObj" class="coupon-item">
                                 {{item.title +'&nbsp&nbsp'}}
                                 <Icon @click="reMoveCoupon(index)" type="ios-close"/>
                             </Button>
@@ -75,7 +75,7 @@
                             <span class="colof-a2">(在核销商户券码时，赠送优惠券至店员卡包，前提店员是要优惠C端用户)</span>
                             <div style="width: 2%;display: inline-block"></div>
                             <Button style="float: right;" type="primary" icon="md-add" @click="addJList">新增</Button>
-                                <div  v-for="(item,index) in JawardRuleDtos" class="radio-item">
+                                <div :key="index"  v-for="(item,index) in JawardRuleDtos" class="radio-item">
                                     <div>
                                         <span>每日核销范围在&nbsp;</span>
                                         <InputNumber
@@ -113,7 +113,7 @@
                             <span class="colof-a2">(在核销主商户券码时，赠送平台U贝，前提店员是要优惠C端用户)</span>
                             <div style="width: 2%;display: inline-block"></div>
                             <Button  style="float: right;" type="primary" icon="md-add" @click="addUList">新增</Button>
-                                <div  v-for="(item,index) in UawardRuleDtos" class="radio-item">
+                                <div :key="index" v-for="(item,index) in UawardRuleDtos" class="radio-item">
                                     <span>每日核销范围在&nbsp;</span>
                                     <InputNumber
                                             :min="0"
@@ -205,7 +205,6 @@
         },
         methods:{
             numArrayValidator(list){
-                debugger
                 var flag = true;
                 var arr = list.sort(function(a,b){
                     return (a.verifyCountMin||0) - (b.verifyCountMin||0)
