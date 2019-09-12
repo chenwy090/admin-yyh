@@ -110,7 +110,7 @@
               :min="1"
               @keyup.native="changeNumber"
               :disabled="disabled2 == true"
-            />人/天
+            />人<span v-show="add_info.serviceCode !== 'merchant_platform'">/天</span>
           </Col>
         </Row>
 
@@ -310,6 +310,8 @@
                 type="text"
                 v-model="searchItem.name"
                 clearable
+                @on-clear="willMerchantSearch.call(null, 'name')"
+                @on-keyup="willMerchantSearch.call(null, 'name')"
                 :placeholder="`请输入${currentTitle}名称`"
                 style="width: 150px"
               />
@@ -462,8 +464,8 @@ export default {
         receivables: null,
         biller: "",
         contractNumber: "",
-        // 商户类型 1单店 2品牌（多店
-        merchantType: "1",
+        // 商户类型 int 1单店 2品牌（多店
+        merchantType: 1,
         id: ""
       },
       edit_loading: false,
@@ -626,14 +628,20 @@ export default {
       const originData = this.m_cloneObj(this.searchItem);
       return () => {
         this.searchItem = this.m_cloneObj(originData);
-        this.updateTableList();
+        // this.getMerchantListFn();
       }
-    })()
+    })();
     this.userToken = {
       jwttoken: localStorage.getItem("jwttoken")
     };
   },
   methods: {
+    // 删除为空时自动搜索
+    willMerchantSearch(key) {
+      if (this.searchItem[key] === '') {
+        this.search();
+      }
+    },
     changeMerchantType() {
       this.chooseMerchant.merchantId = '';
       this.chooseMerchant.name = '';
@@ -764,7 +772,6 @@ export default {
       this.getprovincelist();
       this.getPackageInfo();
 
-      console.info(this.pageStatus);
       if (this.pageStatus == "edit1") {
       } else if (this.pageStatus == "edit2" || this.pageStatus === 'read') {
         this.disabled2 = true;
@@ -784,6 +791,7 @@ export default {
 
     //弹出商户选择框
     addMerchantList() {
+      this.resetData();
       this.merchantTabDisplay = true;
       (this.selectedMerchantList = []), this.getMerchantListFn();
     },
@@ -857,7 +865,7 @@ export default {
       let host = baseUrl;
       let params = {brandId: this.chooseMerchant.merchantId, brandLevel: this.chooseMerchant.brandLevel};
       postJson(host + "/merchant/merchantBrand/list/merchant", params).then(res => {
-        console.log(res);
+        // console.log(res);
         if (res.code == 200) {
           this.listByBrandTrash = [];
           this.listByBrand = res.data.map(el=>{
@@ -870,18 +878,18 @@ export default {
           this.msgErr(res.msg);
         }
       }).catch(err=>{
-        console.log(err, 'operating_merchant/merchant-customer/merchant-customer-add, Line929')
+        // console.log(err, 'operating_merchant/merchant-customer/merchant-customer-add, Line929')
       });
     },
     //重置商户搜索条件
     resetData() {
-      // this.updateTableList(this.params);
+      // this.getMerchantListFn(this.params);
       this.searchItem.merchantId = "";
       this.searchItem.name = "";
       this.searchItem.provinceId = "";
       this.searchItem.cityId = "";
       this.searchItem.areaId = "";
-      this.updateTableList();
+      // this.getMerchantListFn();
     },
 
     //分页
@@ -958,7 +966,7 @@ export default {
       }
       this.edit_loading = true;
       this.isCheckDisabled = true;
-      console.info(JSON.stringify(reqParam));
+      // console.info(JSON.stringify(reqParam));
       // 参数结构
       // let params = {
       //   // 签单销售
@@ -1021,7 +1029,7 @@ export default {
       }
       postJson(host + "/merchant/merchantPackageInfo/add", reqParam).then(res => {
         if (res.code == 200) {
-          console.log(msg);
+          // console.log(msg);
           this.msgOk(msg + "成功");
           this.goback();
         } else {
@@ -1063,7 +1071,6 @@ export default {
               this.chooseMerchant.id = this.chooseMerchant.merchantId = res.data.merchantIdList[0]['id'];
             }
             this.selectIsConfirm = true;
-            console.info(JSON.stringify(Object.assign({}, this.chooseMerchant), null, 2), 1059);
           } else {
             this.$Message.error(res.msg);
           }
@@ -1080,7 +1087,7 @@ export default {
     // 验证
     ruleValidate() {
       if (this.add_info.merchantType === "") {
-        this.msgErr("请选择商户类型");
+        this.msgErr("请选择商户类型!");
         return;
       }
       if (this.chooseMerchant.merchantId == "") {
