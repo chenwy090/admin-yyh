@@ -148,6 +148,7 @@ export default {
       // console.log(res);
       if (code == 200) {
         this.tableData = records.map(item => {
+          item.changeTypeName = item.changeType == 0 ? "充值" : "扣款";
           // beforeAmount > afterAmount  => -changeAmount
           if (item.beforeAmount > item.afterAmount) {
             item.changeAmount = -item.changeAmount;

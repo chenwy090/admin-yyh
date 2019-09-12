@@ -89,7 +89,6 @@ export default {
       // yyyy-MM-dd
       this.searchData.gmtCreateStart = `${arr[0]} 00:00:00`;
       this.searchData.gmtCreateEnd = `${arr[1]} 23:59:59`;
-      
     },
 
     // 刷新搜索
@@ -116,6 +115,12 @@ export default {
 
       if (code == 200) {
         this.tableData = records.map(item => {
+          /**
+              changeType
+              充值里面：changeType 0充值 1扣款    
+              ubay里面：changeType 0兑换 1消耗 
+          */
+          item.changeTypeName = item.changeType == 0 ? "兑换" : "消耗";
           if (item.changeType == 0) {
             item.addOrReduceUbay = item.addUbay;
           } else {

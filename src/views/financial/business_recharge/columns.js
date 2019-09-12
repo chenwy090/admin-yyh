@@ -79,9 +79,14 @@ export const fundsColumns = [
         align: "center",
         width: 150
     },
+    /**
+     * changeType
+        充值里面：changeType 0充值 1扣款    
+        ubay里面：changeType 0兑换 1消耗 
+    */
     {
         title: "类型",
-        key: "changeType",
+        key: "changeTypeName",
         align: "center",
         minWidth: 80
     },
@@ -313,9 +318,14 @@ export const ubayColumns = [
         align: "center",
         width: 150
     },
+    /**
+     * changeType
+        充值里面：changeType 0充值 1扣款    
+        ubay里面：changeType 0兑换 1消耗 
+    */
     {
         title: "类型",
-        key: "changeType",
+        key: "changeTypeName",
         align: "center",
         minWidth: 80
     },
