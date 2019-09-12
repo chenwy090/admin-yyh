@@ -233,6 +233,11 @@ export default {
             item.name = item.brandName;
           }
 
+          // beforeAmount > afterAmount  => -changeAmount
+          if (item.beforeAmount > item.afterAmount) {
+            item.changeAmount = -item.changeAmount;
+          }
+
           return item;
         });
 

@@ -97,7 +97,11 @@ export default {
             receiveAwardUbay: "", // 领取奖励，u贝数
             useAwardUbay: "", // 核销奖励，u贝数
             shareReceiveAwardUbay: "", // 分享后被领取奖励u贝数
-            shareUseAwardUbay: "" // 分享后被核销奖励u贝数
+            shareUseAwardUbay: "", // 分享后被核销奖励u贝数
+            defaultBannerList: [],
+            imgUrl: "",
+            defaultLogoList: [],
+            logoUrl: ""
           }
         ]
       }
@@ -105,6 +109,7 @@ export default {
   },
   mounted() {
     let data = JSON.parse(JSON.stringify(this.detailData));
+    
     // 审核 status 状态  isStop 是否终止 1-中止，0-正常
 
     // // statusOption/isStopOption

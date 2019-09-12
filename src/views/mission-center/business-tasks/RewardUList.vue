@@ -36,34 +36,54 @@
     <Card :bordered="false">
       <Table border :show-index="true" :loading="loading" :columns="columns" :data="tableData">
         <template slot-scope="{ row }" slot="action">
+          <!-- 
+          按钮显示的逻辑如下：
+          审核状态 status 0-待审核 1-审核通过 2-审核失败
+          状态： isStop "0": "未开始", "1": "进行中", "2": "已结束", "3": "已终止"
+          1.查看：只要有记录，即可显示
+          2.数据：只要有记录，即可显示
+          3.编辑：只有在“待审核、审核未通过”状态下，才可显示    status：0/2
+          4.审核：只有在“待审核”状态下，才可显示 status：0
+          5.下架：只有在“审核通过且状态未开始、审核通过且状态进行中”  status：1 isStop 0/1
+          6.删除：只有在“待审核、审核未通过”状态下，才可显示 status：0/2
+          -->
           <!-- 点击“查看”按钮时，跳转到查看赏U页面 -->
           <Button type="success" size="small" style="margin-right: 5px" @click="toDetail(row)">查看</Button>
           <Button type="success" size="small" style="margin-right: 5px" @click="toData(row)">数据</Button>
-          <!-- 只有“待审核、审核通过未开始、”状态，才会显示“编辑” -->
-          <Button
-            type="primary"
-            size="small"
-            style="margin-right: 5px"
-            @click="addOrEdit('edit',row)"
-          >编辑</Button>
+          <!-- 只有“待审核、审核通过未开始”状态，才会显示“编辑” -->
+
+          <template v-if="row.status==0||row.status==2">
+            <Button
+              type="primary"
+              size="small"
+              style="margin-right: 5px"
+              @click="addOrEdit('edit',row)"
+            >编辑</Button>
+          </template>
           <!-- 只有“待审核”状态，才会显示审核按钮。 -->
-          <Button type="success" size="small" @click="examine(row)">审核</Button>
-          <!-- 只有“审核通过进行中、审核通过未开始”的活动，才显示“下架”按钮。 -->
-          <Button type="warning" size="small" @click="dowm(row)">下架</Button>
+          <template v-if="row.status==0">
+            <Button type="success" size="small" @click="examine(row)">审核</Button>
+          </template>
+          <!-- 下架：只有在“审核通过且状态未开始、审核通过且状态进行中”  status：1 isStop 0/1 -->
+          <template v-if="row.status==1 && (row.isStop==0||row.isStop==1)">
+            <Button type="warning" size="small" @click="dowm(row)">下架</Button>
+          </template>
           <!-- 只有“待审核、未通过”状态，才会显示“删除”按钮 -->
-          <Poptip
-            :transfer="true"
-            confirm
-            placement="bottom-end"
-            title="确认删除此任务吗?"
-            @on-ok="ok"
-            @on-cancel="cancel"
-            ok-text="确认"
-            cancel-text="取消"
-            word-wrap
-          >
-            <Button type="error" size="small" style="margin-left: 5px" @click="del(row)">删除</Button>
-          </Poptip>
+          <template v-if="row.status==0||row.status==2">
+            <Poptip
+              :transfer="true"
+              confirm
+              placement="bottom-end"
+              title="确认删除此任务吗?"
+              @on-ok="ok"
+              @on-cancel="cancel"
+              ok-text="确认"
+              cancel-text="取消"
+              word-wrap
+            >
+              <Button type="error" size="small" style="margin-left: 5px" @click="del(row)">删除</Button>
+            </Poptip>
+          </template>
         </template>
       </Table>
       <!-- 分页器 -->
@@ -196,14 +216,15 @@ export default {
           }
         ]
       },
-      //审核 status examineType ： “待审核、已通过、未通过” 默认显示“请选择”。  审核状态 0-待审核 1-审核通过 2-审核失败
+      //审核 status examineType ： “待审核、已通过、未通过” 默认显示“请选择”。  审核状态status 0-待审核 1-审核通过 2-审核失败
       statusOption: {
         "0": "待审核",
         "1": "已通过",
         "2": "未通过"
       },
       // 状态 status 显示“未开始、进行中、已结束、已终止”选项。	默认显示“请选择”。
-      //  isStop 是否终止 1-中止，0-正常
+      // isStop 是否终止 1-中止，0-正常
+      // isStop "0": "未开始", "1": "进行中", "2": "已结束", "3": "已终止"
       isStopOption: {
         "0": "未开始",
         "1": "进行中",
@@ -244,7 +265,9 @@ export default {
         data.isStopName = this.isStopOption[isStop]; //状态
         data.daterange = [startTime, endTime];
         data.ruleInfoList = (ruleInfoList || []).map(item => {
-          const { merchantType, id, name } = item;
+          item.imgUrl = "https://image.52iuh.cn/wx_mini/LGHFWoUdOt.jpg";
+          item.logoUrl = "https://image.52iuh.cn/wx_mini/vENhDz3BZg.png";
+          const { merchantType, id, name, imgUrl, logoUrl } = item;
           let row = null;
           // 商户类型 0-本地商户（单店），1-本地商户（多店）
           item.merchantTypeName = this.merchantTypeOption[merchantType];
@@ -261,6 +284,16 @@ export default {
             item.merhcantName = "";
             row = { id: item.id, name: item.name };
           }
+
+          item.defaultBannerList = [];
+          if (imgUrl) {
+            item.defaultBannerList.push(imgUrl);
+          }
+          item.defaultLogoList = [];
+          if (logoUrl) {
+            item.defaultLogoList.push(logoUrl);
+          }
+
           item.tableData = [row];
           return item;
         });

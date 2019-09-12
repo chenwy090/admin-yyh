@@ -44,6 +44,16 @@
         分享券被核销，奖励分享者 {{item.shareUseAwardUbay}}
         &nbsp;U贝
       </div>
+      <Divider />
+
+      <Row type="flex" justify="start">
+        <Col span="8"></Col>
+        <Col span="8">
+          <FormItem label="Logo：">
+            <img :src="item.logoUrl" style="width:70px;" />
+          </FormItem>
+        </Col>
+      </Row>
     </Alert>
   </div>
 </template>
@@ -83,7 +93,11 @@ export default {
           receiveAwardUbay: "", // 领取奖励，u贝数
           useAwardUbay: "", // 核销奖励，u贝数
           shareReceiveAwardUbay: "", // 分享后被领取奖励u贝数
-          shareUseAwardUbay: "" // 分享后被核销奖励u贝数
+          shareUseAwardUbay: "", // 分享后被核销奖励u贝数
+          defaultBannerList: [],
+          imgUrl: "",
+          defaultLogoList: [],
+          logoUrl: ""
         };
       }
     }
@@ -208,85 +222,8 @@ export default {
     };
   },
 
-  methods: {
-    changeEndTime(time) {
-      this.item.endTime = time;
-    },
-    //验证正整数 	只能输入大于等于0的数值。
-    validateUbay(rule, value, callback) {
-      var reg = /^([0-9][0-9]*)$/;
-      if (reg.test(value)) {
-        callback();
-      } else {
-        callback(new Error("请输入大于等于0的正整数"));
-      }
-    },
-    remove() {
-      let arr = ["brandId", "merchantId", "brandName", "merhcantName"];
-      arr.forEach(name => {
-        this.item[name] = "";
-      });
-      this.tableData = [];
-    },
-    selectedTrCallBack(data) {
-      console.log(this.item.merchantType, "selectedTrCallBack----", data);
-      let id = this.item.merchantType ? "brandId" : "merchantId";
-      let name = this.item.merchantType ? "brandName" : "merhcantName";
-      this.item[id] = data.id;
-      this.item[name] = data.name;
-      this.tableData = [data.row];
-      console.log(id, name);
-    },
-
-    selectedCouponItem(data) {
-      console.log("selectedCouponItem----", data);
-      let { id, name } = data;
-      // templateId 券模板id templateName 券模板名称
-      this.item.templateId = id;
-      this.item.templateName = name;
-      console.log(id, name);
-    },
-
-    handleChoose() {
-      //  商户类型 0-本地商户（单店），1-本地商户（多店）
-      if (this.item.merchantType == 0) {
-        this.showBusinessList = true;
-      } else {
-        // brand品牌
-        this.showBrandList = true;
-      }
-    },
-    handleChooseCoupon() {
-      this.showCouponList = true;
-    },
-
-    validateBusinessName(rule, value, callback) {
-      value += "";
-      value = value.trim();
-      // 允许不填
-      if (value == "") {
-        // ("请选择${businessTypeLabel}");
-        return callback(`请选择${this.businessTypeLabel}`);
-      }
-      callback();
-    },
-    // 删除兼容品牌
-    compatible_delInfo(index, item) {
-      // console.log(this.$parent);
-      this.$emit("del", index);
-    },
-    validateEmpty(msg) {
-      return function(rule, value, callback) {
-        console.log(1111111, rule, value);
-        value += "";
-        value = value.trim();
-        if (value == "") {
-          return callback(msg);
-        }
-        callback();
-      };
-    }
-  }
+  mounted() {},
+  methods: {}
 };
 </script>
 <style lang="less" scoped>

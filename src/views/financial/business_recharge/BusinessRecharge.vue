@@ -116,6 +116,7 @@ export default {
       let { id: acountId, merchantId, name: merchantName } = data;
       this.$store.dispatch("financial/showRechargeDetail", {
         compName,
+        acountId,
         merchantId,
         merchantName
       });

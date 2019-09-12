@@ -191,6 +191,27 @@
           clearable
         />&nbsp;U贝
       </FormItem>
+
+      <!-- ------------------------------ -->
+      <Alert type="warning">选择图片（不大于5M,JPG/JPEG/PNG）</Alert>
+      <Row type="flex" justify="start">
+        <Col span="8">
+          <UploadImage
+            label="背景图："
+            :fileUploadType="'banner'"
+            :defaultList="item.defaultBannerList"
+            @uploadSuccess="bannerUploadSuccess"
+          ></UploadImage>
+        </Col>
+        <Col span="8">
+          <UploadImage
+            label="Logo："
+            :fileUploadType="'logo'"
+            :defaultList="item.defaultLogoList"
+            @uploadSuccess="logoUploadSuccess"
+          ></UploadImage>
+        </Col>
+      </Row>
     </Alert>
   </div>
 </template>
@@ -199,12 +220,15 @@ import BusinessList from "./BusinessList";
 import BrandList from "./BrandList";
 import CouponList from "./CouponList";
 
+import UploadImage from "./UploadImage";
+
 export default {
   name: "rules-item",
   components: {
     BusinessList,
     BrandList,
-    CouponList
+    CouponList,
+    UploadImage
   },
   props: {
     index: {
@@ -230,7 +254,11 @@ export default {
           receiveAwardUbay: "", // 领取奖励，u贝数
           useAwardUbay: "", // 核销奖励，u贝数
           shareReceiveAwardUbay: "", // 分享后被领取奖励u贝数
-          shareUseAwardUbay: "" // 分享后被核销奖励u贝数
+          shareUseAwardUbay: "", // 分享后被核销奖励u贝数
+          defaultBannerList: [],
+          imgUrl: "",
+          defaultLogoList: [],
+          logoUrl: ""
         };
       }
     }
@@ -356,6 +384,12 @@ export default {
   },
 
   methods: {
+    bannerUploadSuccess(data) {
+      this.item.imgUrl = data.imgUrl;
+    },
+    logoUploadSuccess(data) {
+      this.item.logoUrl = data.imgUrl;
+    },
     changeEndTime(time) {
       this.item.endTime = time;
     },
