@@ -10,7 +10,7 @@
                 <Row class="padding-left-12">
                     <Col span="24">
                     <FormItem label="商户名称：">
-                        <Select v-model="modal.type" style="width:150px" placeholder="请选择商户类型">
+                        <Select v-model="modal.type" style="width:150px" placeholder="请选择商户类型" @on-change="changeType">
                             <Option v-for="item in typeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
                         </Select>
                         <div style="width: 2%;display: inline-block"></div>
@@ -148,6 +148,9 @@
             }
         },
         methods:{
+            changeType(){
+                this.upData = {};
+            },
             changeDateTime(datetime, index) {
                 this.modal.tokerDate = datetime;
             },
