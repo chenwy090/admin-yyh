@@ -45,7 +45,7 @@
                 <Row class="padding-left-12" v-if="modal.type==2">
                     <Col span="18">
                     <FormItem label="推送人数：">
-                        <Col  v-for="(item,index) in brandList" style="margin:10px 0">
+                        <Col :key="index"  v-for="(item,index) in brandList" style="margin:10px 0">
                         <Input style="width:48%" v-model="item.merchantName" disabled/>
                         <div style="width: 2%;display: inline-block"></div>
                         <InputNumber
