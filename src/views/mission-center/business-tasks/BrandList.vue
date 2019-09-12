@@ -68,7 +68,6 @@
   </div>
 </template>
 <script>
-import { getMerchantList } from "@/api/sys";
 import { postRequest } from "@/libs/axios";
 
 export default {
@@ -85,12 +84,12 @@ export default {
         name: ""
       },
       tableColumns: [
-        {
-          title: "序号",
-          type: "index",
-          width: 80,
-          align: "center"
-        },
+        // {
+        //   title: "序号",
+        //   type: "index",
+        //   width: 80,
+        //   align: "center"
+        // },
         {
           title: "选择",
           key: "brandId",
@@ -114,6 +113,7 @@ export default {
                 on: {
                   "on-change": () => {
                     console.log("change", params.row);
+                    self.choice.merchantType = 1;
                     self.choice.id = id;
                     self.choice.name = name;
                     self.choice.row = params.row;
@@ -220,6 +220,7 @@ export default {
       };
       this.queryTableData();
     },
+
     // 全局提示
     msgOk(txt) {
       this.$Message.info({
