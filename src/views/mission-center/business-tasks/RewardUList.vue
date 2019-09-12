@@ -267,22 +267,29 @@ export default {
         data.ruleInfoList = (ruleInfoList || []).map(item => {
           item.imgUrl = "https://image.52iuh.cn/wx_mini/LGHFWoUdOt.jpg";
           item.logoUrl = "https://image.52iuh.cn/wx_mini/vENhDz3BZg.png";
-          const { merchantType, id, name, imgUrl, logoUrl } = item;
+          const {
+            merchantType,
+            merchantId,
+            brandId,
+            name,
+            imgUrl,
+            logoUrl
+          } = item;
           let row = null;
           // 商户类型 0-本地商户（单店），1-本地商户（多店）
           item.merchantTypeName = this.merchantTypeOption[merchantType];
           if (merchantType == 0) {
-            item.merchantId = id;
+            item.merchantId = merchantId;
             item.merhcantName = name;
             item.brandId = "";
             item.brandName = "";
-            row = { merchantId: item.id, name: item.name };
+            row = { merchantId: merchantId, name };
           } else {
-            item.brandId = id;
+            item.brandId = brandId;
             item.brandName = name;
             item.merchantId = "";
             item.merhcantName = "";
-            row = { id: item.id, name: item.name };
+            row = { id: brandId, name };
           }
 
           item.defaultBannerList = [];

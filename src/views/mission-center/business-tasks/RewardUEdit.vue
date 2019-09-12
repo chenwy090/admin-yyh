@@ -223,7 +223,11 @@ export default {
         receiveAwardUbay: "", // 领取奖励，u贝数
         useAwardUbay: "", // 核销奖励，u贝数
         shareReceiveAwardUbay: "", // 分享后被领取奖励u贝数
-        shareUseAwardUbay: "" // 分享后被核销奖励u贝数
+        shareUseAwardUbay: "", // 分享后被核销奖励u贝数
+        defaultBannerList: [],
+        imgUrl: "",
+        defaultLogoList: [],
+        logoUrl: ""
       });
     },
 
