@@ -118,7 +118,6 @@
         <Row>
           <Col span="6">
             <DatePicker
-              style="width:230px"
               type="date"
               placeholder="请选择时间"
               :value="item.endTime"
@@ -126,7 +125,7 @@
             ></DatePicker>
           </Col>
           <Col span="18">
-            领取量低于
+            &nbsp;领取量低于
             <Input style="width:100px" v-model="item.receivedNum" placeholder="请填写数量" clearable />任务自动终止
           </Col>
         </Row>

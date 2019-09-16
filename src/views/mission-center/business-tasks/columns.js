@@ -78,7 +78,7 @@ export const udataColumns = [
     },
     {
         title: "用户昵称",
-        key: "nickName",
+        key: "userNickName",
         align: "center",
         width: 120
     },

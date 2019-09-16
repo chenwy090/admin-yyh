@@ -109,7 +109,7 @@ export default {
   },
   mounted() {
     let data = JSON.parse(JSON.stringify(this.detailData));
-    
+
     // 审核 status 状态  isStop 是否终止 1-中止，0-正常
 
     // // statusOption/isStopOption

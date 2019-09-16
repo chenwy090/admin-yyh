@@ -2,7 +2,7 @@
   <div class="xxx">
     <!-- 赏U查看 数据 RewardUData   -->
     <h2 class="header">赏U查看 数据</h2>
-    <div v-show="tableData.length">投放{{xxxxxx}}U贝 &nnsp;&nnsp; 奖励 {{xxxxxx}}U贝</div>
+    <div v-show="tableData.length">投放{{anticipatedUbay}}U贝 &nbsp;&nbsp; 奖励 {{sunAward}}U贝</div>
     <div class="query-row">
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
@@ -83,6 +83,8 @@ export default {
   },
   data() {
     return {
+      anticipatedUbay:"",
+      sunAward:"",
       // id: "",
       /**
         投放：统计整个任务下所有券预计投放的U贝的数量。
@@ -162,13 +164,16 @@ export default {
 
       let {
         code,
+        anticipatedUbay, //投放U贝
+        sunAward, //奖励 U贝
         data: { records, current, total, size }
       } = await queryMerchantDataById({
         id: this.id,
         ...this.searchData,
         ...this.page
       });
-
+      this.anticipatedUbay = anticipatedUbay;
+      this.sunAward = sunAward;
       if (code == 200) {
         this.tableData = records.map(item => {
           // merchantTypeOption awardTypeOption

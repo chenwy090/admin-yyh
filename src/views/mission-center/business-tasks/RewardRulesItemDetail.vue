@@ -27,11 +27,11 @@
       <Divider />
       <div>
         每领取一张券，奖励领取者
-        {{item.receiveAwardUbay}}&nbsp;U贝 &nbsp;通过分享领取不享受该奖励
+        {{item.receiveAwardUbay}}&nbsp;U贝
       </div>
       <div>
         每核销一张券，奖励领取者 {{item.useAwardUbay}}
-        &nbsp;U贝 &nbsp; 通过分享领取核销，不享受该奖励
+        &nbsp;U贝
       </div>
 
       <Divider />

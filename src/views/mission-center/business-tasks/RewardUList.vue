@@ -109,7 +109,7 @@
       <RewardUDetail v-if="showDetail" :showDetail.sync="showDetail" :detailData="detailData"></RewardUDetail>
     </Drawer>
 
-    <Modal v-model="examineModal" :closable="true" width="300">
+    <Modal v-model="examineModal" :closable="true" width="300" @on-visible-change="formModalChange">
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="ios-information-circle"></Icon>
         <span>审核</span>
@@ -121,7 +121,11 @@
               <Radio v-for="(v,k) in examineStatusOption" :key="k" :label="k">{{ v }}</Radio>
             </RadioGroup>
           </FormItem>
-          <FormItem label="填写原因：" prop="reason">
+          <FormItem
+            label="填写原因："
+            prop="reason"
+            :rules="{ required: formValidate.status == 2?true:false,validator:formValidate.status == 2?validateReason:null }"
+          >
             <Row>
               <Col span="16">
                 <Input
@@ -164,21 +168,26 @@ export default {
       const status = this.formValidate.status;
       const arr = ["", "请输入通过原因", "请输入50字以内未通过原因"];
       this.reasonPlaceholder = arr[status];
+      //清空验证
+      if (status == 1) {
+        this.$refs.formValidate.resetFields();
+      }
+
       console.log("reasonPlaceholder", status, this.reasonPlaceholder);
     }
   },
   data() {
-    const validateReason = (rule, value, callback) => {
-      value += "";
-      value = value.trim();
-      if (value == "") {
-        callback(new Error("审核原因不能为空"));
-      } else if (value.length >= 50) {
-        callback(new Error("请输入50字以内的字符"));
-      } else {
-        callback();
-      }
-    };
+    // const validateReason = (rule, value, callback) => {
+    //   value += "";
+    //   value = value.trim();
+    //   if (value == "") {
+    //     callback(new Error("审核原因不能为空"));
+    //   } else if (value.length >= 50) {
+    //     callback(new Error("请输入50字以内的字符"));
+    //   } else {
+    //     callback();
+    //   }
+    // };
     return {
       showDetail: false,
       styles: {
@@ -202,13 +211,13 @@ export default {
         reason: ""
       },
       ruleValidate: {
-        reason: [
-          {
-            required: true,
-            validator: validateReason,
-            trigger: "blur"
-          }
-        ]
+        // reason: [
+        //   {
+        //     required: true,
+        //     validator: validateReason,
+        //     trigger: "blur"
+        //   }
+        // ]
       },
       //审核 status examineType ： “待审核、已通过、未通过” 默认显示“请选择”。  审核状态status 0-待审核 1-审核通过 2-审核失败
       statusOption: {
@@ -247,6 +256,26 @@ export default {
     this.queryTableData();
   },
   methods: {
+    formModalChange(flag) {
+      if (!flag) {
+        //清空form表单数据
+        this.formValidate = {
+          status: "1",
+          reason: ""
+        };
+      }
+    },
+    validateReason(rule, value, callback) {
+      value += "";
+      value = value.trim();
+      if (value == "") {
+        callback(new Error("审核原因不能为空"));
+      } else if (value.length >= 50) {
+        callback(new Error("请输入50字以内的字符"));
+      } else {
+        callback();
+      }
+    },
     async queryRowById(id) {
       const { code, data } = await queryDetailById(id);
       if (code == 200) {
