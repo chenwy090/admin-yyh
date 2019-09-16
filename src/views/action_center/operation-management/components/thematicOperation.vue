@@ -66,7 +66,7 @@
       <!-- 大c任务h5链接选择 -->
       <Form-item label="大c任务h5链接填写：" required v-if="showType == 4">
         <Input v-model="pagePath" style="width: 400px">
-          <span slot="prepend">http://</span>
+          <span slot="prepend">https://</span>
         </Input>
       </Form-item>
       <Form-item label="任务id：" required v-if="showType == 4">
@@ -632,8 +632,8 @@ export default {
       }
 
         if (this.submitData.showType == 4 || this.editData.showType == 4){
-            this.submitData.pagePath = "http://" + this.pagePath + "?id=" + this.submitData.assignmentId;
-            this.editData.pagePath = "http://" + this.pagePath + "?id=" + this.editData.assignmentId;
+            this.submitData.pagePath = "https://" + this.pagePath + "?id=" + this.submitData.assignmentId;
+            this.editData.pagePath = "https://" + this.pagePath + "?id=" + this.editData.assignmentId;
         }
       
       if (this.thematicStatus == 1) {
