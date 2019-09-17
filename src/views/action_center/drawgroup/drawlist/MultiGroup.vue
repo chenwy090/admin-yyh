@@ -525,7 +525,7 @@
 
       <div style="margin-top:20px;">
         <FormItem label>
-          <Button type="primary" @click="handleSubmit('form')">提交</Button>
+          <Button type="primary" :disabled="submitDisabled" @click="handleSubmit('form')">提交</Button>
           <!-- <Button style="margin-left: 8px" @click="handleReset('form')">重置</Button> -->
         </FormItem>
       </div>
@@ -652,7 +652,8 @@ export default {
       couponModalShow: false,
       showStore: true,
       form: JSON.parse(JSON.stringify(multiFormData)),
-      formValite: {}
+      formValite: {},
+      submitDisabled: false
     };
   },
 
@@ -788,38 +789,42 @@ export default {
       });
     },
     handleSubmit(name) {
+      this.submitDisabled = true;
       this.$refs[name].validate(valid => {
-        if (valid) {
-          let { openDrawTimeType, startTime, openDrawTime } = this.form;
-          if (openDrawTimeType == 1) {
-            let d1 = new Date(startTime);
-            let d2 = new Date(openDrawTime);
-
-            if (d1 >= d2) {
-              let msg = "活动开奖时间不能小于等于活动开始时间";
-              return this.msgErr(msg);
-            }
-          }
-          //  /drawDaily/activity/add  新增
-          const url = "/drawDaily/activity/add";
-
-          //清洗数据
-          let formData = JSON.parse(JSON.stringify(this.form));
-          formData.bigPrize = this.formatFormData(formData.bigPrizeTemp);
-          formData.normalPrize = this.formatFormData(formData.normalPrizeTemp);
-          formData.groupType = 2;
-          if (formData.storeType == 0) {
-            //全国
-            formData.drawDailyShopList = [];
-          }
-          postRequest(url, formData).then(res => {
-            if (res.code == 200) {
-              this.$emit("closeFormModal-event");
-            } else {
-              this.$Message.error(res.msg);
-            }
-          });
+        if (!valid) {
+          this.submitDisabled = false;
+          return;
         }
+        let { openDrawTimeType, startTime, openDrawTime } = this.form;
+        if (openDrawTimeType == 1) {
+          let d1 = new Date(startTime);
+          let d2 = new Date(openDrawTime);
+
+          if (d1 >= d2) {
+            let msg = "活动开奖时间不能小于等于活动开始时间";
+            return this.msgErr(msg);
+          }
+        }
+        //  /drawDaily/activity/add  新增
+        const url = "/drawDaily/activity/add";
+
+        //清洗数据
+        let formData = JSON.parse(JSON.stringify(this.form));
+        formData.bigPrize = this.formatFormData(formData.bigPrizeTemp);
+        formData.normalPrize = this.formatFormData(formData.normalPrizeTemp);
+        formData.groupType = 2;
+        if (formData.storeType == 0) {
+          //全国
+          formData.drawDailyShopList = [];
+        }
+        postRequest(url, formData).then(res => {
+          if (res.code == 200) {
+            this.$emit("closeFormModal-event");
+          } else {
+            this.$Message.error(res.msg);
+            this.submitDisabled = false;
+          }
+        });
       });
     },
 

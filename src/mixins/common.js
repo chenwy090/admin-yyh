@@ -11,6 +11,23 @@ export default {
       }
   },
   methods: {
-      
+      m_filterParams(e) {
+        let obj = JSON.parse(JSON.stringify(e));
+        if (Object.prototype.toString.call(e) !== '[object Object]') {
+          return obj;
+        }
+        for(let k in obj) {
+          if (!obj[k] || obj[k] === 'undefined') {
+            delete obj[k];
+          }
+        }
+        return obj
+      },
+      m_cloneObj(e) {
+        if (Object.prototype.toString.call(e) !== '[object Object]') {
+          return e;
+        }
+        return JSON.parse(JSON.stringify(e));
+      }
   }
 }
