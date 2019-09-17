@@ -15,9 +15,9 @@ import {
 
 //获取树形部门
 export const getTreeSection = (params) => {
-    return postRequest('/system/sys-user/select', params)
-}
-// 获取部门用户列表
+        return postRequest('/system/sys-user/select', params)
+    }
+    // 获取部门用户列表
 export const getTreeDeptList = (params, pageNum) => {
     let pNum = pageNum || 1
     return postRequest(`/system/sys-user/list?isAsc=1&orderByColumn=1&pageNum=${pNum}&pageSize=10`, params)
@@ -89,12 +89,12 @@ export const upXls = (data) => {
 // -----------------------抽奖banner位---------------------------
 // 获取bannerway列表
 export const queryBannerWayList = (params) => postRequest("/drawDaily/banner/list", params)
-// bannerway 上架下架 1: 已上架、2：已下架  {id,nextStatus,reason}
+    // bannerway 上架下架 1: 已上架、2：已下架  {id,nextStatus,reason}
 export const updateBannerWayStatus = (params) => postRequest("/drawDaily/banner/updateStatus", params)
 
 // 新增 /drawDaily/banner/add
 export const addBannerWay = (params) => postRequest("/drawDaily/banner/add", params)
-// 修改 /drawDaily/banner/edit
+    // 修改 /drawDaily/banner/edit
 export const editBannerWay = (params) => postRequest("/drawDaily/banner/edit", params)
 
 // -----------------------抽奖团配置---------------------------
@@ -383,10 +383,10 @@ export const editCheckInData = (data) => {
 
 // 获取抽奖活动列表
 export const getLuckyDrawList = (params, pageNum) => {
-    let obj = JSON.stringify(params)
-    return postRequest(`/draw/activity/list?pageNum=${pageNum}&pageSize=10`, obj)
-}
-// 获取优惠活动列表
+        let obj = JSON.stringify(params)
+        return postRequest(`/draw/activity/list?pageNum=${pageNum}&pageSize=10`, obj)
+    }
+    // 获取优惠活动列表
 export const getCampaginList = () => {
     let obj = {
         campType: "57",
@@ -417,7 +417,7 @@ export const delLuckyDraw = (id) => {
 
 // 每日排期
 export const getSchedules = (params) => {
-  return postRequest(`/drawDaily/banner/activitylist`, params)
+    return postRequest(`/drawDaily/banner/activitylist`, params)
 }
 
 // ------------------------------ 配置新人礼包 ------------------------------------------- 
@@ -607,23 +607,23 @@ export const selectByid = (id) => {
 
 // 上下架
 export const upStatus = (id, status) => {
-    return postRequest(`/nameing/updateStatus?id=${id}&status=${status}`)
-}
-// 根据ActivityId获取链路素材数据
+        return postRequest(`/nameing/updateStatus?id=${id}&status=${status}`)
+    }
+    // 根据ActivityId获取链路素材数据
 export const selectmaterialByActivityId = (activityId) => {
     return postRequest(`/material/selectByActivityId?activityId=${activityId}`)
 }
 
 // 新增链路素材
 export const addMateria = (data) => {
-    let obj = JSON.stringify(data)
-    return postRequest(`/material/add`, obj)
-}
-// 根据id获取数据
+        let obj = JSON.stringify(data)
+        return postRequest(`/material/add`, obj)
+    }
+    // 根据id获取数据
 export const selectmateriaById = (id) => {
-    return postRequest(`/material/selectById?id=${id}`)
-}
-// 编辑链路素材
+        return postRequest(`/material/selectById?id=${id}`)
+    }
+    // 编辑链路素材
 export const editMateria = (data) => {
     let obj = JSON.stringify(data)
     return postRequest(`/material/edit`, obj)
@@ -634,10 +634,10 @@ export const editMateria = (data) => {
 
 // 获取列表
 export const getCompensateList = (params, pageNum) => {
-    let obj = JSON.stringify(params)
-    return postRequest(`/compensate/list?isAsc=DESC&orderByColumn=1&pageNum=${pageNum}&pageSize=10`, obj)
-}
-// 新增
+        let obj = JSON.stringify(params)
+        return postRequest(`/compensate/list?isAsc=DESC&orderByColumn=1&pageNum=${pageNum}&pageSize=10`, obj)
+    }
+    // 新增
 export const addCompensate = (data) => {
     let obj = JSON.stringify(data)
     return postRequest(`/compensate/add`, obj)
@@ -672,33 +672,90 @@ export const backCodeDownload = (id) => {
 //--------------------------------------财务中心--------------------------
 //业务审核列表
 export const financialWithdrawApplyPreAuditList = (obj) => {
-    return postRequest(`/withdraw/apply/pre/audit/list-data`, obj)
-}
-//财务审核列表
+        return postRequest(`/withdraw/apply/pre/audit/list-data`, obj)
+    }
+    //财务审核列表
 export const financialWithdrawApplyAuditList = (obj) => {
-    return postRequest(`/withdraw/apply/financial/audit/list-data`, obj)
-}
-//打款成功列表
+        return postRequest(`/withdraw/apply/financial/audit/list-data`, obj)
+    }
+    //打款成功列表
 export const financialWithdrawApplyPaidList = (obj) => {
-    return postRequest(`/withdraw/apply/paid/list-data`, obj)
-}
-//打款失败列表
+        return postRequest(`/withdraw/apply/paid/list-data`, obj)
+    }
+    //打款失败列表
 export const financialWithdrawApplyPayFailureList = (obj) => {
-    return postRequest(`/withdraw/apply/pay/failure/list-data`, obj)
-}
-//提现审核
+        return postRequest(`/withdraw/apply/pay/failure/list-data`, obj)
+    }
+    //提现审核
 export const financialWithdrawApplyAudit = (obj) => {
-    return postRequest(`/withdraw/apply/audit`, obj)
-}
-//审核日志
+        return postRequest(`/withdraw/apply/audit`, obj)
+    }
+    //审核日志
 export const financialWithdrawApplyAuditRecordList = (applyId) => {
-    return postRequest(`/withdraw/apply/audit/record/list-data`, applyId)
-}
-//提现申请记录excel导出
+        return postRequest(`/withdraw/apply/audit/record/list-data`, applyId)
+    }
+    //提现申请记录excel导出
 export const financialWithdrawApplyDownload = (obj) => {
-    return downloadSteam(`/withdraw/apply/excel/download`, obj)
-}
-//奖励金充值excel导出
+        return downloadSteam(`/withdraw/apply/excel/download`, obj)
+    }
+    //奖励金充值excel导出
 export const financialWithdrawApplyAwardRechargeDownload = (obj) => {
     return downloadSteam(`/withdraw/apply/award-recharge/excel/download`, obj)
 }
+
+//--------------------------------------财务中心 --------------------------
+// 商户充值
+export const queryBusinessRechargeList = params => postRequest("/merchant/account/list", params);
+
+
+// 充值管理 
+export const queryRechargeMList = params => postRequest("/merchant/money/record/list", params);
+
+// 充值/扣款明细
+export const queyMoneyDetailById = id => postRequest("/merchant/money/record/selectById", { id });
+
+// 充值管理 -充值0 -扣款1  	"changeType":0-1,
+export const rechargeAndDeduction = params => postRequest("/merchant/money/record/add", params);
+
+
+// U贝管理 
+export const queryUbayMList = params => postRequest("/merchant/ubay/record/list", params);
+// U贝管理 -U贝兑换0 -U贝消耗1  	"changeType":0-1,
+export const exchangeAndConsume = params => postRequest("/merchant/ubay/record/add", params);
+
+// /commonConfig/queryConfigByCode  获得汇率的value就是汇率的值
+export const getUbayRate = () => postRequest("/commonConfig/queryConfigByCode", { code: 30 });
+
+// 资金明细 
+export const queryFundsList = params => postRequest("/merchant/money/record/selectByAccountIdAndType", params);
+
+// U贝明细 
+export const queryUbayList = params => postRequest("/merchant/ubay/record/selectByAccountIdAndType", params);
+
+
+
+//--------------------------------------任务中心 --------------------------
+// 商户任务
+// /merchant/assignment/list 赏U列表 RewardUList 
+export const queryRewardUList = params => postRequest("/merchant/assignment/list", params);
+
+/**
+    新增：/merchant/assignment/add
+    修改:/merchant/assignment/edit
+*/
+export const addOrEdit = (url, params) => postRequest(url, params);
+
+
+// /merchant/assignment/selectById 查看详情
+export const queryDetailById = id => postRequest(`/merchant/assignment/selectById?id=${id}`);
+
+//  /merchant/assignment/check 审核 {id,status,reason}
+export const checkMerchant = params => postRequest(`/merchant/assignment/check`, params);
+
+//   /merchant/assignment/dowm 下架 
+export const downMerchant = id => postRequest(`/merchant/assignment/dowm?id=${id}`);
+//  /merchant/assignment/delete 删除
+export const delMerchant = id => postRequest(`/merchant/assignment/delete?id=${id}`);
+
+//  /merchant/assignment/data 数据
+export const queryMerchantDataById = params => postRequest(`/merchant/assignment/data`, params);

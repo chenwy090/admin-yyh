@@ -198,8 +198,31 @@ export default {
         {
           title: '关联商户',
           align: 'center',
-          minWidth: 120,
+          minWidth: 200,
+          ellipsis: true,
+            align: 'left',
           key: 'merchantNames',
+            render: (h, params) => {
+                return h('div', [
+                    h('Tooltip', {
+                        props: { placement: 'top' }
+                    }, [
+                        h('span', {
+                            style: {
+                                display: 'inline-block',
+                                width: params.column._width*0.85+'px',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                            },
+                        }, params.row.merchantNames),
+                        h('span', {
+                            slot: 'content',
+                            style: { whiteSpace: 'normal', wordBreak: 'break-all' }
+                        },params.row.merchantNames)
+                    ])
+                ])
+            }
           // render: (h, params) => {
           //   for (let i = 0; i < this.merchantList.length; i++) {
           //     if(params.row.merchantId == this.merchantList[i].merchantId) {
@@ -224,9 +247,31 @@ export default {
         },
           {
               title: '角色类型',
-              align: 'center',
-              minWidth: 120,
+              ellipsis: true,
+              align: 'left',
+              minWidth: 200,
               key: 'roles',
+              render: (h, params) => {
+                  return h('div', [
+                      h('Tooltip', {
+                          props: { placement: 'top' }
+                      }, [
+                          h('span', {
+                              style: {
+                                  display: 'inline-block',
+                                  width: params.column._width*0.85+'px',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                              },
+                          }, params.row.roles),
+                          h('span', {
+                              slot: 'content',
+                              style: { whiteSpace: 'normal', wordBreak: 'break-all' }
+                          },params.row.roles)
+                      ])
+                  ])
+              }
           },
           {
               title: '状态',
@@ -531,7 +576,7 @@ export default {
               // this.$Message.info('Clicked cancel');
           }
       });
-      
+
     },
 
 // 分页（点击第几页）
@@ -685,4 +730,7 @@ export default {
   //   font-size: 13px;
   //   margin-left: 5px;
   // }
+  .ivu-table-wrapper{
+    overflow: visible;
+  }
 </style>

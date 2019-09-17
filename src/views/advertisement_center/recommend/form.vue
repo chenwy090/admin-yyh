@@ -275,8 +275,8 @@ export default {
           });
         getRequest("/couponrecommend/barcodeRelation/list/"+id).then(res => {
                     if (res.code == 200) {
-                        var backcode = [];  
-                        res.data.forEach(v=>{  
+                        var backcode = [];
+                        res.data.forEach(v=>{
                             backcode.push(v.barcode) ;
                         });
                           this.form.backCode = backcode.toString().replace(/[,]/g,"\r\n");
@@ -287,13 +287,13 @@ export default {
            var param = {}
            param.id = id;
         postRequest("/couponrecommend/shopRelation/listCodeShop",param).then(res => {
-          if (res.code == 200) { 
-              var shops = []; 
+          if (res.code == 200) {
+              var shops = [];
               var inx = 0;
                 this.form.shops = []
                res.data.forEach(v=>{
-                   
-                   var shop = {}; 
+
+                   var shop = {};
                     shop.provinceId = v.province;
                     shop.cityId = v.city;
                     shop.areaId = v.district;
@@ -308,7 +308,7 @@ export default {
               this.$Message.error(res.msg);
             }
           });
-          
+
     },
     handleSubmit: function(name) {
       this.$refs[name].validate(valid => {
@@ -319,8 +319,8 @@ export default {
           param.barcodeString = this.getSplitString(this.form.backCode);
           param.distributeChannel = this.form.firstSite;
           param.distributeLocation = this.form.secondSite;
-          param.exposureCount = this.form.num;
-          param.distributeCount = this.form.showNum;
+          param.distributeCount = this.form.num;
+          param.exposureCount = this.form.showNum;
           param.promotion = this.form.discounts;
           param.distributeStartDate = this.form.startDate;
           param.distributeEndDate = this.form.endDate;
@@ -336,7 +336,7 @@ export default {
             shop.shopName = s.shopName;
             return shop;
           });
-        
+
           if(this.form.id !== null && this.form.id!== undefined && this.form.id!==""){
             console.log("-------------edit------------")
              postRequest("/couponrecommend/edit", param).then(res => {
@@ -358,7 +358,7 @@ export default {
             }
           });
 
-         
+
         } else {
           //this.$Message.error("Fail!");
         }
