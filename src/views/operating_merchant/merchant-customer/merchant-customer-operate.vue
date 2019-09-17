@@ -252,7 +252,7 @@
               <Input
                 v-model="item.serialNumber"
                 :disabled="disabled2"
-                :maxlength="20"
+                :maxlength="60"
                 style="width:150px"
                 placeholder="请填写流水号"
                 clearable
