@@ -5,7 +5,7 @@
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
           <FormItem label="商户类型：" :label-width="80">
-            <Select v-model="searchData.merchantType" style="width:100px">
+            <Select v-model="searchData.merchantType" style="width:150px" clearable>
               <Option
                 v-for="item in merchantTypeOption"
                 :value="item.value"
@@ -14,7 +14,10 @@
             </Select>
           </FormItem>
 
-          <FormItem label="商户名称：" :label-width="85">
+          <!-- <FormItem label="商户名称：" :label-width="85"> -->
+          <!-- 商户/品牌/商超名称 -->
+
+          <FormItem label="商户/品牌/商超/零售商名称 ：" :label-width="170">
             <Input
               style="width:200px"
               type="text"
@@ -70,25 +73,10 @@ import columns, { division100 } from "./columns";
 
 export default {
   name: "business-recharge",
+  inject: ["merchantTypeOption", "getMoneyAndUbay", "msgOk", "msgErr"],
   data() {
     return {
       id: "",
-      // 商户类型：下拉选择框“全部、本地商户（多店）、本地商户（单店）”，默认“全部”。
-      //  '商户类型 0-本地商户（单店），1-本地商户（多店）'
-      merchantTypeOption: [
-        {
-          value: "",
-          label: "全部"
-        },
-        {
-          value: 0,
-          label: "本地商户（单店）"
-        },
-        {
-          value: 1,
-          label: "本地商户（多店）"
-        }
-      ],
       // 查询参数
       searchData: {
         merchantType: "", //商户类型
@@ -105,6 +93,9 @@ export default {
     };
   },
   created() {
+    // console.log("getMoneyAndUbay", this.getMoneyAndUbay);
+    // console.log("okkk", this.msgOk);
+
     this.queryTableData();
   },
   methods: {
@@ -202,19 +193,6 @@ export default {
 
       //重新查询一遍
       this.queryTableData();
-    },
-    // 全局提示
-    msgOk(txt) {
-      this.$Message.info({
-        content: txt,
-        duration: 3
-      });
-    },
-    msgErr(txt) {
-      this.$Message.error({
-        content: txt,
-        duration: 3
-      });
     }
   }
 };
