@@ -22,6 +22,11 @@
                   style="width: 200px"
                 />
               </FormItem>
+              <FormItem label="标签：">
+                <Select v-model="searchItem.tag" style="width:120px" clearable>
+                  <Option v-for="(v,k) in tagOptions" :value="k" :key="k">{{ v }}</Option>
+                </Select>
+              </FormItem>
               <span v-if="drop">
                 <FormItem label="适用商户">
                   <Input
@@ -95,7 +100,10 @@
             <Button type="dashed" icon="md-arrow-round-back" @click="goback()">返回</Button>
             <Button type="primary" icon="md-add" @click="addInfo()">新增</Button>
 
-            <Button @click="updateTableList" icon="md-refresh">刷新</Button>
+            <Button @click="queryTableData" icon="md-refresh">刷新</Button>
+            <!-- 排序导入  排序导出 -->
+            <Button type="success" class="marginLeft20" @click="upload">排序导入</Button>
+            <Button type="success" class="marginLeft20" @click="download">排序导出</Button>
           </Row>
 
           <Row>
@@ -158,6 +166,7 @@
                 <!--<Button type="text" size="small" style="color:green" @click="" >复制</Button>-->
                 <!--changeStatus(row)-->
                 <Button type="text" size="small" style="color:red" @click="share(row)">分享奖励</Button>
+                <Button type="text" size="small" style="color:#2db7f5" @click="setTag(row)">打标签</Button>
               </template>
             </Table>
           </Row>
@@ -263,6 +272,8 @@
         </FormItem>
       </Form>
     </Modal>
+
+    <SetTag v-if="showTag" :id="id" :showTag.sync="showTag" @refresh="queryTableData"></SetTag>
   </div>
 </template>
 
@@ -277,16 +288,26 @@ import {
 
 import { formatDate } from "@/libs/date";
 import couponEdit from "./couponEdit";
+import SetTag from "./SetTag";
+
 export default {
   name: "merchant-information",
   components: {
-    couponEdit
+    couponEdit,
+    SetTag
   },
   props: {
     merchantId: String
   },
   data() {
     return {
+      id: "", // templateId
+      //打标签 已打标签、未打标签
+      showTag: false,
+      tagOptions: {
+        0: "已打标签",
+        1: "未打标签"
+      },
       formShareModal: {
         shareData: []
       },
@@ -299,6 +320,7 @@ export default {
       dropDownIcon: "ios-arrow-down",
       searchItem: {
         title: "",
+        tag: "",
         merchantNames: "",
         couponType: "",
         templateStatus: "",
@@ -444,9 +466,21 @@ export default {
   created: function() {},
   methods: {
     init() {
-      this.updateTableList();
+      this.queryTableData();
     },
 
+    upload() {
+      const url = "xxxx";
+      let fd = new FormData();
+
+      uploadFileRequest(url, fd);
+    },
+    download() {},
+    setTag(row) {
+      // merchantId
+      this.id = row.templateId;
+      this.showTag = true;
+    },
     dropDown() {
       if (this.drop) {
         this.dropDownContent = "展开";
@@ -474,17 +508,17 @@ export default {
     queryTableList() {
       this.pageNum = 1;
       this.totalSize = 0;
-      this.updateTableList();
+      this.queryTableData();
     },
 
     //分页
 
     changeCurrent(current) {
       this.pageNum = current;
-      this.updateTableList();
+      this.queryTableData();
     },
 
-    updateTableList() {
+    queryTableData() {
       this.TableLoading = true;
 
       const reqParams = {
@@ -591,7 +625,7 @@ export default {
           this.formCustom.type = "";
           this.formCustom.appendCount = 0;
           //this.formCustom.remark='';
-          this.updateTableList();
+          this.queryTableData();
         } else {
           this.msgErr(res.msg);
         }
@@ -629,7 +663,7 @@ export default {
           this.formCustom.type = "";
           this.formCustom.status = "";
           this.formCustom.remark = "";
-          this.updateTableList();
+          this.queryTableData();
         } else {
           this.msgErr(res.msg);
         }
@@ -653,7 +687,7 @@ export default {
 
     showbasicSetStatus(e) {
       this.couponEditPage = e;
-      this.updateTableList();
+      this.queryTableData();
     },
 
     // 显示大图
@@ -694,7 +728,7 @@ export default {
               self.$Message.info("更改状态成功！");
 
               setTimeout(() => {
-                self.updateTableList();
+                self.queryTableData();
               }, 1200);
             } else {
               self.$Message.error(res.msg);
@@ -742,7 +776,7 @@ export default {
 
                 setTimeout(() => {
                   self.pageNum = 1;
-                  self.updateTableList();
+                  self.queryTableData();
                 }, 1200);
               } else {
                 self.$Message.error(res.msg);

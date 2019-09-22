@@ -1,8 +1,8 @@
 <template>
-  <div class="bussiness-list-box">
+  <div class="supermarket-list-box">
     <Modal
       v-model="isShow"
-      title="商户列表"
+      title="商超列表"
       width="900"
       footer-hide
       :closable="true"
@@ -13,21 +13,22 @@
       <div>
         <row>
           <Form ref="searchItem" :model="searchItem" inline :label-width="70" class="search-form">
-            <FormItem label="商户编号">
+            <!-- 商超名称 shopName   零售商名称 venderName    -->
+            <FormItem label="商超名称">
               <Input
                 type="text"
-                v-model="searchItem.merchantId"
+                v-model="searchItem.shopName"
                 clearable
-                placeholder="请输入商户编号"
+                placeholder="请输入商超名称"
                 style="width: 150px"
               />
             </FormItem>
-            <FormItem label="商户名称">
+            <FormItem label="零售商名称" :label-width="80">
               <Input
                 type="text"
-                v-model="searchItem.name"
+                v-model="searchItem.venderName"
                 clearable
-                placeholder="请输入商户名称"
+                placeholder="请输入零售商名称"
                 style="width: 150px"
               />
             </FormItem>
@@ -64,6 +65,7 @@
                 >{{item.areaName}}</Option>
               </Select>
             </FormItem>
+
             <FormItem style="margin-left:-35px;" class="br">
               <Button @click="search" type="primary" icon="ios-search">搜索</Button>
               <Button @click="refresh">重置</Button>
@@ -83,7 +85,7 @@
         ></Table>
         <Row type="flex" justify="end" class="page">
           <Page
-            :total="totalSize"
+            :total="total"
             show-total
             show-elevator
             @on-change="changeCurrent"
@@ -101,35 +103,35 @@
   </div>
 </template>
 <script>
-import { getRequest, postRequest } from "@/libs/axios";
-
+import { getShopList } from "@/api/sys";
+import { postRequest } from "@/libs/axios";
 export default {
-  name: "business-list",
+  name: "super-market-list",
   data() {
     return {
       isShow: true,
+      searchItem: {
+        enabled: 1, //门店状态 正常
+        shopName: "", //门店名称
+        venderName: "" //零售商名称
+      },
       choice: {
-        id: "",
-        name: ""
+        id: "", //知而行店号 shopId
+        shopName: "", //门店名称
+        venderName: "" //零售商名称
       },
       edit_loading: false,
       isCheckDisabled: false,
       checkResult: 0,
       tableColumns: [
-        // {
-        //   title: "序号",
-        //   type: "index",
-        //   width: 80,
-        //   align: "center"
-        // },
         {
           title: "选择",
-          key: "merchantId",
+          key: "shopId",
           width: 70,
           align: "center",
           render: (h, params) => {
-            let id = params.row.merchantId;
-            let name = params.row.name;
+            //知而行店号 shopId 门店名称 shopName 零售商名称 venderName
+            const { shopId: id, shopName: name, venderName } = params.row;
             let flag = false;
             if (this.choice.id == id) {
               flag = true;
@@ -145,7 +147,8 @@ export default {
                 on: {
                   "on-change": () => {
                     console.log("change", params.row);
-                    self.choice.merchantType = 0;
+                    // '商户类型 0-本地商户（单店），1-本地商户（多店）' 2 商超门店、3 零售商
+                    self.choice.merchantType = 2;
                     self.choice.id = id;
                     self.choice.name = name;
                     self.choice.row = params.row;
@@ -156,49 +159,42 @@ export default {
           }
         },
         {
-          title: "商户编号",
-          align: "center",
+          title: "知而行编号",
+          key: "shopId",
+          minWidth: 80,
+          align: "center"
+        },
+        {
+          title: "门店名称",
+          key: "shopName",
+          minWidth: 145,
+          align: "center"
+        },
+        {
+          title: "零售商名称",
+          key: "venderName",
           minWidth: 130,
-          key: "merchantId"
+          align: "center"
         },
         {
-          title: "商户名称",
-          align: "center",
-          width: 230,
-          key: "name"
-        },
-        {
-          title: "所属地区",
+          title: "详细地址",
           align: "center",
           width: 340,
           key: "address",
           render: (h, params) => {
-            let address =
-              params.row.province +
-              params.row.city +
-              params.row.district +
-              params.row.address;
-            return h("span", address);
+            const { province, city, district, address } = params.row;
+            let str = `${province}${city}${district}${address}`;
+            return h("span", str);
           }
         }
       ],
       tableData: [],
-      current: 1,
-      totalSize: 0, //总条数
-      pageNum: 1, //开始条数
+      current: 1, //开始条数 pageNum
+      total: 0, //总条数
       tableLoading: false,
-      searchItem: {
-        merchantId: "",
-        name: "",
-        provinceId: "",
-        cityId: "",
-        areaId: ""
-      },
       provincelist: [],
       citylist: [],
-      arealist: [],
-      selectedMerchantList: [], //选中的商户列表
-      removeAlert: false
+      arealist: []
     };
   },
 
@@ -243,42 +239,37 @@ export default {
       this.closeDialog();
     },
     search() {
-      this.current = 1;
-      this.totalSize = 0; //总条数
-      this.pageNum = 1; //开始条数
+      this.current = 1; //开始条数
+      this.total = 0; //总条数
       this.queryTableData();
     },
     // 获取商户列表
-    queryTableData() {
+    async queryTableData() {
+      // 加载动画
+      this.tableLoading = true;
+
+      const {
+        code,
+        msg,
+        data: { records, current, total }
+      } = await getShopList(this.searchItem, this.current);
+      if (code == 200) {
+        this.tableData = records;
+        // 分页
+        this.current = current;
+        this.total = total;
+      } else {
+        this.msgErr(msg);
+      }
+      // 结束加载动画
       this.tableLoading = false;
-      const reqParams = {
-        merchantId: this.searchItem.merchantId,
-        name: this.searchItem.name,
-        provinceCode: this.searchItem.provinceId,
-        cityCode: this.searchItem.cityId,
-        areaCode: this.searchItem.areaId
-      };
-      postRequest(
-        "/merchant/merchantInfo/list?isAsc=DESC&orderByColumn=1&pageNum=" +
-          this.pageNum +
-          "&pageSize=10",
-        reqParams
-      ).then(res => {
-        if (res.code == 200) {
-          this.totalSize = res.data.total;
-          this.tableData = res.data.records;
-        } else {
-          this.msgErr(res.msg);
-        }
-        this.tableLoading = false;
-      });
     },
 
     closeDialog() {
-      //关闭对话框清除表单数据
+      //关闭对话框清除表单数据 SuperMarket
       // this.$refs.formValidate.resetFields();
-      console.log("closeDialog showBusinessList");
-      this.$emit(`update:showBusinessList`, false);
+      console.log("closeDialog showSuperMarketList");
+      this.$emit(`update:showSuperMarketList`, false);
     },
     //确定选择商户
     selectMerchant() {
@@ -286,23 +277,23 @@ export default {
         this.$emit("seclectedTr-event", this.choice);
         this.closeDialog();
       } else {
-        this.msgErr("至少选一个商户");
+        this.msgErr("至少选一个");
       }
     },
     //重置商户搜索条件
     refresh() {
       // this.updateTableList(this.params);
-      this.searchItem.merchantId = "";
-      this.searchItem.name = "";
-      this.searchItem.provinceId = "";
-      this.searchItem.cityId = "";
-      this.searchItem.areaId = "";
+      this.searchItem = {
+        enabled: 1, //门店状态 正常
+        shopName: "", //门店名称
+        venderName: "" //零售商名称
+      };
       this.queryTableData();
     },
 
     //分页
     changeCurrent(current) {
-      this.pageNum = current;
+      this.current = current;
       this.queryTableData();
     },
     // 全局提示
@@ -321,7 +312,6 @@ export default {
   },
   mounted() {
     this.queryTableData();
-    this.getprovincelist();
   }
 };
 </script>
@@ -333,7 +323,7 @@ export default {
 </style>
 
 <style lang="less">
-.bussiness-list-box {
+.supermarket-list-box {
   /*调整table cell间隔和行高*/
   .ivu-table-cell {
     padding-left: 1px;
