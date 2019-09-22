@@ -272,6 +272,11 @@
         </FormItem>
       </Form>
     </Modal>
+    <FileImport
+      v-if="showFileImport"
+      :showFileImport.sync="showFileImport"
+      @refresh="queryTableData"
+    ></FileImport>
 
     <SetTag v-if="showTag" :id="id" :showTag.sync="showTag" @refresh="queryTableData"></SetTag>
   </div>
@@ -288,12 +293,14 @@ import {
 
 import { formatDate } from "@/libs/date";
 import couponEdit from "./couponEdit";
+import FileImport from "./FileImport";
 import SetTag from "./SetTag";
 
 export default {
   name: "merchant-information",
   components: {
     couponEdit,
+    FileImport,
     SetTag
   },
   props: {
@@ -302,6 +309,7 @@ export default {
   data() {
     return {
       id: "", // templateId
+      showFileImport: false,
       //打标签 已打标签、未打标签
       showTag: false,
       tagOptions: {
@@ -470,14 +478,11 @@ export default {
     },
 
     upload() {
-      const url = "xxxx";
-      let fd = new FormData();
-
-      uploadFileRequest(url, fd);
+      this.showFileImport = true;
     },
     download() {},
     setTag(row) {
-      // merchantId
+      // templateId
       this.id = row.templateId;
       this.showTag = true;
     },

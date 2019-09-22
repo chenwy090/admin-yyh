@@ -130,6 +130,12 @@
       <img style="width: 100%" :src="big_Image_url" />
     </Modal>
 
+    <FileImport
+      v-if="showFileImport"
+      :showFileImport.sync="showFileImport"
+      @refresh="queryTableData"
+    ></FileImport>
+
     <SetTag v-if="showTag" :id="id" :showTag.sync="showTag" @refresh="queryTableData"></SetTag>
   </div>
 </template>
@@ -147,6 +153,7 @@ import { formatDate } from "@/libs/date";
 import merchantEdit from "./merchantEdit";
 import merchantCoupon from "../merchant-coupon/merchantCoupon";
 import merchantStaff from "../merchant-staff/merchant-staff";
+import FileImport from "./FileImport";
 import SetTag from "./SetTag";
 
 export default {
@@ -155,10 +162,12 @@ export default {
     merchantEdit,
     merchantCoupon,
     merchantStaff,
+    FileImport,
     SetTag
   },
   data() {
     return {
+      showFileImport: false,
       //打标签 已打标签、未打标签
       showTag: false,
       tagOptions: {
@@ -284,10 +293,7 @@ export default {
   },
   methods: {
     upload() {
-      const url = "xxxx";
-      let fd = new FormData();
-
-      uploadFileRequest(url, fd);
+      this.showFileImport = true;
     },
     download() {},
     setTag(row) {
