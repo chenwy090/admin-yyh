@@ -17,7 +17,7 @@
               </FormItem>
 
               <FormItem label="标签：">
-                <Select v-model="searchItem.tag" style="width:120px" clearable>
+                <Select v-model="searchItem.isTag" style="width:120px" clearable>
                   <Option v-for="(v,k) in tagOptions" :value="k" :key="k">{{ v }}</Option>
                 </Select>
               </FormItem>
@@ -84,6 +84,13 @@
               sortable="custom"
               ref="table"
             >
+              <!--     商户名称 name 新店 isNew -->
+
+              <template slot-scope="{ row }" slot="name">
+                <!-- style="width:74px;height:43px;" -->
+                <img v-if="!row.isNew" style="width:20px;" src="/images/new.png" />
+                {{row.name}}
+              </template>
               <template
                 slot-scope="{ row }"
                 slot="address"
@@ -136,7 +143,7 @@
       @refresh="queryTableData"
     ></FileImport>
 
-    <SetTag v-if="showTag" :id="id" :showTag.sync="showTag" @refresh="queryTableData"></SetTag>
+    <SetTag v-if="showTag" :id="id" :showTag.sync="showTag" @refresh="updateTableList"></SetTag>
   </div>
 </template>
 
@@ -146,7 +153,8 @@ import {
   postRequest,
   putRequest,
   deleteRequest,
-  uploadFileRequest
+  uploadFileRequest,
+  downloadSteam
 } from "@/libs/axios";
 
 import { formatDate } from "@/libs/date";
@@ -184,7 +192,8 @@ export default {
       dropDownIcon: "ios-arrow-down",
       searchItem: {
         name: "",
-        tag: "",
+        // 是否有标签 0-未打标签 1-已打标签
+        isTag: "",
         provinceId: "",
         cityId: "",
         areaId: ""
@@ -210,7 +219,8 @@ export default {
           title: "商户名称",
           key: "name",
           align: "center",
-          minWidth: 120
+          minWidth: 120,
+          slot: "name" //新店
         },
         //        {
         //          title: "商户行业",
@@ -295,7 +305,33 @@ export default {
     upload() {
       this.showFileImport = true;
     },
-    download() {},
+    async download() {
+      const url = "/merchant/sort/excel/download";
+
+      const res = await downloadSteam(url);
+
+      console.log(111111111111111111, res);
+
+      const content = res.data;
+      const { filename } = res.headers;
+
+      console.log(111111111111111111, res);
+      const blob = new Blob([content], { type: "application/vnd.ms-excel" });
+      const oA = document.createElement("a");
+      if ("download" in oA) {
+        // 非IE下载
+        oA.download = decodeURI(filename);
+        oA.style.display = "none";
+        oA.href = URL.createObjectURL(blob);
+        document.body.appendChild(oA);
+        oA.click();
+        URL.revokeObjectURL(oA.href); // 释放URL 对象
+        document.body.removeChild(oA);
+      } else {
+        // IE10+下载
+        navigator.msSaveBlob(blob, filename);
+      }
+    },
     setTag(row) {
       // merchantId
       this.id = row.merchantId;
@@ -373,10 +409,14 @@ export default {
     //	刷新页面
     refresh() {
       // this.updateTableList(this.params);
-      this.searchItem.name = "";
-      this.searchItem.provinceId = "";
-      this.searchItem.cityId = "";
-      this.searchItem.areaId = "";
+      this.searchItem = {
+        name: "",
+        // 是否有标签 0-未打标签 1-已打标签
+        isTag: "",
+        provinceId: "",
+        cityId: "",
+        areaId: ""
+      };
       this.updateTableList();
     },
 

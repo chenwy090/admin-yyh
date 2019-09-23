@@ -117,7 +117,7 @@ export default {
       // this.$emit("changeComp", "business-recharge");
       this.$store.dispatch("financial/changeCompName", "business-recharge");
     },
-    changeStartDate(arr) {
+    changeSsartDate(arr) {
       // yyyy-MM-dd
       this.searchData.gmtCreateStart = `${arr[0]} 00:00:00`;
       this.searchData.gmtCreateEnd = `${arr[1]} 23:59:59`;
