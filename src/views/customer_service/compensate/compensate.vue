@@ -150,7 +150,6 @@
           <Button type="primary" style="margin-left: 20px" @click="checkUserId">搜索</Button>
           <Upload :disabled = "upLoading"
                   ref="upload"
-                  :defaultList="defaultList"
                   :format="['xlsx']"
                   :on-success="handleSuccess"
                   :on-progress="handleProgress"
@@ -165,10 +164,10 @@
             <Button icon="ios-cloud-upload-outline">导入</Button>
           </Upload>
         </FormItem>
-        <div>
-          <p v-for="(item,index) in defaultList">
+        <div style="margin-left:120px;">
+          <p v-for="(item,index) in fileList">
             <span>{{item.name}}</span>
-            <Button type="error" shape="circle" icon="ios-trash" @click="reduce"></Button>
+            <Button style="margin:0 10px" type="error" icon="ios-trash" @click="reduce"></Button>
             <span>成功导入{{formValidate.userId.length}}条，失败{{formValidate.failUserIdlist.length}}条</span>
           </p>
         </div>
@@ -334,7 +333,7 @@ export default {
     return {
       userId:'',
       upLoadUrl:'',
-        defaultList:[],
+        fileList:[],
         upLoading:false,
       curItem: "",
       drop: false,
@@ -624,6 +623,8 @@ export default {
       this.add_edit = 1;
       this.modalTitle = "新增维权补偿";
       this.addStaffDisplay = true;
+      this.fileList = [] ;
+      this.formValidate.reveiveType = '';
       //this.formValidate=null;
     },
     //选择优惠券
@@ -674,12 +675,11 @@ export default {
       handleSuccess(res, file) {
         this.upLoading = false;
           if (res.code == 200) {
-              this.modal1.value = res.image_url;
               this.msgOk("上传成功");
               this.fileList = [{name:file.name}];
               this.formValidate.userId = res.successUserIdlist;
               if(res.failUserIdlist.length){
-                  this.downLoad()
+                  this.downLoad(res.failUserIdlist);
               }
           } else {
               this.msgErr(res.msg);
@@ -709,9 +709,9 @@ export default {
       reduce(){
         this.fileList = [];
       },
-      downLoad(){
+      downLoad(list){
           // /compensate/demo/download
-          downloadSteam('/compensate/demo/download',null).then(res => {
+          downloadSteam('/compensate/fail/download',{failUserIdlist:list}).then(res => {
               const content = res.data;
               let fileName = res.headers["filename"];
               const blob = new Blob([content], { type: "application/vnd.ms-excel" });

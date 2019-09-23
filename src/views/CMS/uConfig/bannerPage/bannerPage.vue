@@ -9,16 +9,41 @@
                 <div>
                     <Card :bordered="false" style="margin-bottom:2px">
                         <Form ref="searchForm" label-position="right" :label-width="80" :model="searchForm" inline>
-                            <FormItem label="活动名称" span="24" style="width:25%">
-                                <Input v-model="searchForm.name" placeholder="活动名称" />
+                            <FormItem label="门店" span="24" style="width:25%">
+                                <Input v-model="searchForm.shopName" placeholder="活动名称" />
                             </FormItem>
-                            <FormItem label="赠送方式" span="24"  style="width:23%">
-                                <Select v-model="searchForm.awardType" style="width:100%">
+                            <FormItem label="标题" span="24" style="width:25%">
+                                <Input v-model="searchForm.title" placeholder="标题" />
+                            </FormItem>
+                            <FormItem label="开始时间" span="24"  style="width:25%">
+                                <DatePicker
+                                        :value="searchForm.startTime"
+                                        type="date"
+                                        placeholder
+                                        style="width: 100%"
+                                        :options="options1"
+                                        @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
+                                ></DatePicker>
+                            </FormItem>
+                             <FormItem label="开始时间" span="24"  style="width:25%">
+                                <DatePicker
+                                        :value="searchForm.endTime"
+                                        type="date"
+                                        placeholder
+                                        style="width: 100%"
+                                        :options="options2"
+                                        @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
+                                ></DatePicker>
+                            </FormItem>
+                            <FormItem label="终端" span="24"  style="width:23%">
+                                <Select v-model="searchForm.type" style="width:100%">
+                                    <Option value="">全部</Option>
                                     <Option v-for="item in typeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
                                 </Select>
                             </FormItem>
-                            <FormItem label="状态" span="24"  style="width:23%">
+                            <FormItem label="运营状态" span="24"  style="width:23%">
                                 <Select v-model="searchForm.status" style="width:100%">
+                                    <Option value="">全部</Option>
                                     <Option v-for="item in statusList" :value="item.value" :key="item.value">{{ item.label }}</Option>
                                 </Select>
                             </FormItem>
@@ -112,8 +137,8 @@
         components:{AddOrEdit,showDetail},
         data(){
             return{
-                typeList:[{value:1,label:'核销赠券'},{value:2,label:'核销赠U贝'}],
-                statusList:[{value:1,label:'未开始'},{value:2,label:'进行中'},{value:3,label:'已结束'},{value:4,label:'已终止'}],
+                typeList:[{value:1,label:'ios'},{value:2,label:'android'},{value:2,label:'小程序'}],
+                statusList:[{value:0,label:'下架'},{value:1,label:'上架'}],
                 TableLoading: false,
                 auditing:0,
                 totalSize: 0,
@@ -132,25 +157,25 @@
                         title: "门店",
                         width: 200,
                         align: "center",
-                        key: "name"
+                        key: "shopName"
                     },
                     {
                         title: "标题",
                         width: 150,
                         align: "center",
-                        slot: "awardType"
+                        slot: "title"
                     },
                     {
                         title: "内容Id",
                         width: 200,
                         align: "center",
-                        slot: "activeTime",
+                        slot: "id",
                     },
                     {
                         title: "终端",
                         width: 100,
                         align: "center",
-                        slot: "status"
+                        slot: "type"
                     },
                     {
                         title: "运营位类型",
@@ -182,50 +207,81 @@
                         title: "开始时间",
                         minWidth: 200,
                         align: "center",
-                        key: "createTime"
+                        key: "startTime"
                     },{
                         title: "结束时间",
                         minWidth: 200,
                         align: "center",
-                        key: "createTime"
+                        key: "endTime"
                     },{
                         title: "创建人",
                         minWidth: 200,
                         align: "center",
-                        key: "createTime"
+                        key: "operator"
                     }
 
                 ],
                 searchForm: {
-                    awardType: "",
-                    name: "",
+                    shopName: "",
+                    title: "",
+                    startTime: "",
+                    endTime: "",
                     page: 1,
                     size: 10,
                     status:"",
-                    type:1,
+                    type:'',
                 },
                 AddViewDialogVisible:false,
                 ShowViewDialogVisible:false,
+                options1: {},
+                options2: {},
             }
         },
         created(){
-            // this.loadTableData();
+            console.log(2);
+            this.loadTableData();
         },
         activated(){
+            console.log(1);
             this.loadTableData();
         },
         methods:{
+            changeDateTime(datetime, index) {
+                switch (index) {
+                case 1:
+                    this.modal.startTime = datetime;
+                    this.options2 = {
+                        disabledDate(date) {
+                            return date.valueOf() < new Date(datetime) - 1000 * 60 * 60 * 24;
+                        }
+                    };
+                    break;
+                case 2:
+                    this.modal.endTime = datetime;
+                    this.options1 = {
+                        disabledDate(date) {
+                            return (
+                                date.valueOf() < Date.now() - 1000 * 60 * 60 * 24 ||
+                                date.valueOf() > new Date(datetime)
+                            );
+                        }
+                    };
+                    break;
+                }
+            },
             search() {
                 this.searchForm.page = 1;
                 this.current= 1;
                 this.loadTableData();
             },
             reset(){
-                this.searchForm.name = '';
+                this.searchForm.shopName = '';
+                this.searchForm.startTime = '';
+                this.searchForm.endTime = '';
+                this.searchForm.status = '';
+                this.searchForm.type = '';
                 this.searchForm.page = 1;
                 this.current= 1;
-                this.searchForm.awardType = '';
-                this.searchForm.status = '';
                 this.loadTableData();
             },
             loadTableData(page) {
@@ -233,7 +289,9 @@
                 this.totalSize = 0;
                 this.listData = [];
                 this.TableLoading = true;
-                postRequest(`/customer/activity/award/activity/list?pageNum=${this.searchForm.page}&pageSize=10`,this.searchForm
+                postRequest(`/banner/setting/getPlantFromSetting?pageNum=${this.searchForm.page}&pageSize=10`,{  "pageNum": 10,
+                        "pegeSize": 1
+                    }
                 ).then(res => {
                     this.TableLoading = false;
                     if (res.code === "200") {
