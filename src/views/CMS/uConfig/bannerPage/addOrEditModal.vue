@@ -19,10 +19,9 @@
         :label-width="80"
         label-position="left"
       >
-        <h3>活动信息</h3>
         <Row class="padding-left-12">
           <Col span="18">
-            <FormItem label="活动名称">
+            <FormItem label="标题">
               <Input
                 type="text"
                 v-model="modal.name"
@@ -34,32 +33,9 @@
         </Row>
         <Row class="padding-left-12">
           <Col span="18">
-            <FormItem label="活动时间">
-              <DatePicker
-                :value="modal.startTime"
-                type="date"
-                placeholder
-                style="width: 160px"
-                :options="options1"
-                @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
-              ></DatePicker>--
-              <DatePicker
-                :value="modal.endTime"
-                type="date"
-                placeholder
-                style="width: 160px"
-                :options="options2"
-                @on-change="(datetime) =>{ changeDateTime(datetime, 2)}"
-              ></DatePicker>
-            </FormItem>
-          </Col>
-        </Row>
-        <h3>请选择参与活动券</h3>
-        <Row class="padding-left-12">
-          <Col span="18">
-            <FormItem label="参与活动券">
+            <FormItem label="内容选择">
               <Button type="dashed" @click="openCoupon">
-                <span v-if="couponObj.length===0">参与活动券</span>
+                <span v-if="couponObj.length===0">请选择</span>
                 <Button :key="index" v-for="(item,index) in couponObj" class="coupon-item">
                   {{item.title +'&nbsp&nbsp'}}
                   <Icon @click.stop="reMoveCoupon(index)" type="ios-close" />
@@ -68,57 +44,97 @@
             </FormItem>
           </Col>
         </Row>
-        <h3>赠送规则</h3>
-        <Row class="padding-left-12">
-          <Col span="18">
-            <RadioGroup
-              v-model="modal.wardType"
-              vertical
-              style="width: 100%"
-              @on-change="changeRadio"
-            >
-              <Radio label="1" style="display: inline-block">
-                <span>核销赠券</span>
-              </Radio>
+        <h3>banner位设置</h3>
+        <div style="padding: 20px;border: 1px solid #999;">
+          <Row class="padding-left-12">
+            <Col span="18">
+            <FormItem label="门店选择">
+              <Button type="dashed" @click="openCoupon">
+                <span v-if="couponObj.length===0">请选择</span>
+                <Button :key="index" v-for="(item,index) in couponObj" class="coupon-item">
+                  {{item.title +'&nbsp&nbsp'}}
+                  <Icon @click.stop="reMoveCoupon(index)" type="ios-close" />
+                </Button>
+              </Button>
+            </FormItem>
+            </Col>
+          </Row>
+          <Row class="padding-left-12">
+            <Col span="18">
+            <FormItem label="终端选择">
+              <Select v-model="modal.awardType" style="width:30%">
+                <Option v-for="item in typeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+              </Select>
+              <span style="margin: 0 10px 0 30px;">运营位选择</span>
+              <Select v-model="modal.awardType" style="width:30%">
+                <Option v-for="item in typeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+              </Select>
+            </FormItem>
+            </Col>
+          </Row>
+          <Row class="padding-left-12">
+            <Col span="18">
+            <FormItem label="选择时间">
+              <DatePicker
+                      :value="modal.expandTimeStart"
+                      type="date"
+                      placeholder
+                      style="width: 48%"
+                      :options="options1"
+                      @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
+              ></DatePicker>
               <div style="width: 2%;display: inline-block"></div>
-              <span class="colof-a2">(在核销主商户券码时，赠送合作方发放的优惠券)</span>
-              <div></div>
-              <div v-if="modal.wardType==1">
-                <div v-for="(item,index) in JawardRuleDtos" class="radio-item">
-                  <div style="margin: 10px 0;">
-                    <Button
-                            type="dashed"
-                            @click="openVolume(item)"
-                    >{{item.awardName||item.title?item.awardName||item.title:'请选择优惠券'}}</Button>
+              <DatePicker
+                      :value="modal.expandTimeEnd"
+                      type="date"
+                      placeholder
+                      style="width: 48%"
+                      :options="options2"
+                      @on-change="(datetime) =>{ changeDateTime(datetime, 2)}"
+              ></DatePicker>
+            </FormItem>
+            </Col>
+          </Row>
+          <Row class="padding-left-12">
+            <Col span="18">
+            <FormItem label="banner图片">
+              <div class="demo-upload-list" v-for="item in uploadList">
+                <template v-if="item.status === 'finished'">
+                  <img :src="item.url">
+                  <div class="demo-upload-list-cover">
+                    <Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>
+                    <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
                   </div>
-                </div>
+                </template>
+                <template v-else>
+                  <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
+                </template>
               </div>
-              <Radio label="2" style="display: inline-block">
-                <span>核销赠U贝</span>
-              </Radio>
-              <div style="width: 2%;display: inline-block"></div>
-              <span class="colof-a2">(在核销主商户券码时，赠送平台费U贝)</span>
-              <div></div>
-              <div v-if="modal.wardType==2">
-                <div v-for="(item,index) in UawardRuleDtos" class="radio-item">
-                  <div style="margin: 10px 0;">
-                    <InputNumber
-                            :min="0"
-                            :step="1"
-                            type="text"
-                            :precision="0"
-                            v-model="item.awardAmount"
-                            placeholder="请输入U贝数量"
-                            style="width: 150px"
-                    ></InputNumber>  U贝
-                    <div style="width: 2%;display: inline-block"></div>
-                    <span class="colof-a2">(只能输入整数)</span>
-                  </div>
+              <Upload
+                      ref="upload"
+                      :show-upload-list="false"
+                      :default-file-list="defaultList"
+                      :on-success="handleSuccess"
+                      :format="['jpg','jpeg','png']"
+                      :max-size="2048"
+                      :on-format-error="handleFormatError"
+                      :on-exceeded-size="handleMaxSize"
+                      :before-upload="handleBeforeUpload"
+                      multiple
+                      type="drag"
+                      action="//jsonplaceholder.typicode.com/posts/"
+                      style="display: inline-block;width:58px;">
+                <div style="width: 58px;height:58px;line-height: 58px;">
+                  <Icon type="ios-camera" size="20"></Icon>
                 </div>
-              </div>
-            </RadioGroup>
-          </Col>
-        </Row>
+              </Upload>
+              <Modal title="View Image" v-model="visible">
+                <img :src="'https://o5wwk8baw.qnssl.com/' + imgName + '/large'" v-if="visible" style="width: 100%">
+              </Modal>
+            </FormItem>
+            </Col>
+          </Row>
+        </div>
         <FormItem>
           <Button style="margin:20px" type="primary" size="large" @click="ok()">保存</Button>
           <Button style="margin:20px" @click="close">返回</Button>
@@ -151,8 +167,11 @@ export default {
   },
   data() {
     return {
+      uploadList:[{}],
+        defaultList:[],
+        visible:false,
+        typeList:[{value:1,label:'核销赠券'},{value:2,label:'核销赠U贝'}],
       titleName: "",
-      couponType:'',
       selectActiveVolumeModal: false,
       selectActiveVolumeObj: {},
       couponViewDialogModal: false,
@@ -164,16 +183,16 @@ export default {
         wardType: "1",
         type: "1"
       },
-      options2: {
-        disabledDate(date) {
-          return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24;
-        }
-      },
       options1: {
         disabledDate(date) {
           return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24;
         }
       },
+        options2: {
+            disabledDate(date) {
+                return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24;
+            }
+        },
       JawardRuleDtos: [
         {
           verifyCountMin: null,
@@ -198,6 +217,50 @@ export default {
     };
   },
   methods: {
+
+
+      handleView (name) {
+          this.imgName = name;
+          this.visible = true;
+      },
+      handleRemove (file) {
+          const fileList = this.$refs.upload.fileList;
+          this.$refs.upload.fileList.splice(fileList.indexOf(file), 1);
+      },
+      handleSuccess (res, file) {
+          file.url = 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar';
+          file.name = '7eb99afb9d5f317c912f08b5212fd69a';
+      },
+      handleFormatError (file) {
+          this.$Notice.warning({
+              title: 'The file format is incorrect',
+              desc: 'File format of ' + file.name + ' is incorrect, please select jpg or png.'
+          });
+      },
+      handleMaxSize (file) {
+          this.$Notice.warning({
+              title: 'Exceeding file size limit',
+              desc: 'File  ' + file.name + ' is too large, no more than 2M.'
+          });
+      },
+      handleBeforeUpload () {
+          const check = this.uploadList.length < 5;
+          if (!check) {
+              this.$Notice.warning({
+                  title: 'Up to five pictures can be uploaded.'
+              });
+          }
+          return check;
+      },
+
+
+
+
+
+
+
+
+
     changeDateTime(datetime, index) {
       switch (index) {
         case 1:
@@ -239,7 +302,6 @@ export default {
         getRequest(`/customer/activity/award/activity/${row.id}`).then(res => {
           if (res.code === "200") {
             var data = res.data;
-            this.couponType = data.couponType;
             this.modal.name = data.name;
             this.modal.startTime = data.startTime;
             this.modal.wardType = data.awardType.toString();
@@ -339,23 +401,25 @@ export default {
         this.$refs["couponModal"].resetRow(this.couponObj);
       });
     },
-    selectCoupon(e,type) {
+    selectCoupon(e) {
       this.couponViewDialogModal = false;
       if (e) {
-          if(this.couponType === type){
-              e.forEach(function(v, i) {
-                  that.couponObj.forEach(function(value, index) {
-                      debugger
-                      if (v.templateId === (value.templateId || value.id)) {
-                          that.couponObj.splice(index, 1);
-                      }
-                  });
-              });
-              this.couponObj = this.couponObj.concat(e);
-          }else{
-              this.couponObj = e;
-          }
-          this.couponType = type;
+        var that = this;
+        if(this.couponObj.length==0){
+            this.couponObj = e;
+        }else if((e[0].shopName&&!this.couponObj[0].shopName)||e[0].merchantName&&!this.couponObj[0].merchantName){
+            this.couponObj = e;
+        }else{
+            e.forEach(function(v, i) {
+                that.couponObj.forEach(function(value, index) {
+                    debugger
+                    if (v.templateId === (value.templateId || value.id)) {
+                        that.couponObj.splice(index, 1);
+                    }
+                });
+            });
+            this.couponObj = this.couponObj.concat(e);
+        }
       }
     },
     selectVolume(e) {
@@ -377,13 +441,12 @@ export default {
       // /merchant/activity/award/add/activity
       // /merchant/activity/award/update/activity
       let params = {
-        couponType:this.couponType,
         endTime: this.modal.endTime,
         id: this.modal.id,
         name: this.modal.name,
         startTime: this.modal.startTime,
         wardType: this.modal.wardType,
-        type: 1,
+        type: 1
       };
       let couponIds = [];
       if (!this.couponObj || !this.couponObj.length) {

@@ -445,7 +445,7 @@
                     this.$Message.error('请选择');
                     return;
                 }
-                this.$emit('setViewDialogVisible', this.selectDataList,this.currentTab-0+1)
+                this.$emit('setViewDialogVisible', this.selectDataList)
             }
         },
         created(){

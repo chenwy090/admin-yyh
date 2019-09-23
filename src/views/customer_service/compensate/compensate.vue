@@ -139,22 +139,55 @@
             type="number"
           />
         </FormItem>
-        <FormItem
-          label="用户id"
-          prop="userId"
-          :rules="{ required: true, message: '必须按行输入userId集' }"
-        >
-          <Row>
-            <Col span="8">
-              <Input
-                v-model="formValidate.userId"
-                type="textarea"
-                :rows="10"
-                placeholder="userId集"
-              />
-            </Col>
-          </Row>
+        <FormItem label="请输入用户ID:">
+          <Input
+                  style="width:250px"
+                  v-model="userId"
+                  placeholder="请输入用户ID"
+                  clearable
+                  type="number"
+          />
+          <Button type="primary" style="margin-left: 20px" @click="checkUserId">搜索</Button>
+          <Upload :disabled = "upLoading"
+                  ref="upload"
+                  :defaultList="defaultList"
+                  :format="['xlsx']"
+                  :on-success="handleSuccess"
+                  :on-progress="handleProgress"
+                  :action="upLoadUrl"
+                  accept="file"
+                  :on-exceeded-size="handleMaxSize"
+                  :on-format-error="formatError"
+                  :headers="userToken"
+                  :show-upload-list="false"
+                  style="display: inline-block;margin-left: 20px"
+          >
+            <Button icon="ios-cloud-upload-outline">导入</Button>
+          </Upload>
         </FormItem>
+        <div>
+          <p v-for="(item,index) in defaultList">
+            <span>{{item.name}}</span>
+            <Button type="error" shape="circle" icon="ios-trash" @click="reduce"></Button>
+            <span>成功导入{{formValidate.userId.length}}条，失败{{formValidate.failUserIdlist.length}}条</span>
+          </p>
+        </div>
+        <!--<FormItem-->
+          <!--label="用户id"-->
+          <!--prop="userId"-->
+          <!--:rules="{ required: true, message: '必须按行输入userId集' }"-->
+        <!--&gt;-->
+          <!--<Row>-->
+            <!--<Col span="8">-->
+              <!--<Input-->
+                <!--v-model="formValidate.userId"-->
+                <!--type="textarea"-->
+                <!--:rows="10"-->
+                <!--placeholder="userId集"-->
+              <!--/>-->
+            <!--</Col>-->
+          <!--</Row>-->
+        <!--</FormItem>-->
         <FormItem label="发放原因:" required>
           <RadioGroup v-model="formValidate.reason" vertical>
             <Radio label="客诉补偿" value="1">
@@ -176,6 +209,16 @@
         </FormItem>
         <FormItem label="备注:">
           <Input style="width:250px" v-model="formValidate.remark" placeholder="请输入" clearable />
+        </FormItem>
+        <FormItem label="用户领取方式:" required>
+          <RadioGroup v-model="formValidate.reveiveType" vertical>
+            <Radio label="1" value="1" style="display: inline-block">
+              <span>手动领取</span>
+            </Radio>
+            <Radio label="0" value="0" style="display: inline-block">
+              <span>到“我的券”</span>
+            </Radio>
+          </RadioGroup>
         </FormItem>
         <Row style="margin:10px 0 0 739px">
           <Button type="text" @click="cancel">取消</Button>
@@ -275,9 +318,12 @@ import {
   selectmaterialByActivityId,
   addMateria,
   editMateria,
-  selectmateriaById
+  selectmateriaById,
+    userFailDownload
 } from "@/api/sys";
-import { uploadOperationImage2AliOssURl } from "@/api/index";
+import { uploadOperationImage2AliOssURl,baseUrl } from "@/api/index";
+import { postRequest, getRequest,downloadSteam } from "@/libs/axios";
+
 //import chooseCouponListView from "./chooseCouponList";
 export default {
   /*components: {
@@ -286,6 +332,10 @@ export default {
   name: "compensate",
   data() {
     return {
+      userId:'',
+      upLoadUrl:'',
+        defaultList:[],
+        upLoading:false,
       curItem: "",
       drop: false,
       dropDownContent: "展开",
@@ -479,7 +529,10 @@ export default {
         title: "",
         reason: "",
         specialTopicCouponList: [],
-        remark: "" // 备注
+        remark: "", // 备注
+           userId:[],
+        failUserIdlist:[],
+        reveiveType:'',
       },
       // 新增链路素材表单
       materiaformValidate: {
@@ -591,7 +644,94 @@ export default {
       this.couponSearchData.name = "";
       this.current1 = 1;
     },
+      //校验userId
+      checkUserId(){
+        if(!this.userId){
+            this.msgErr("请输入用户Id");
+            return;
+        }
+        let params = {
+            userId:Number(this.userId)
+        }
+        postRequest(`/compensate/user?userId=${this.userId}`, params).then(res => {
+              if (res.code == 200) {
+                  // this.list2.forEach(function(v){
+                  //     if(v.level == that.modal2.level){
+                  //         v.verifyQuantityMin = that.modal2.verifyQuantityMin;
+                  //     }
+                  // })
+                  // this.getData1();
+                  // setTimeout(() => {
+                  //     that.modal1.isopen = false;
+                  // }, 500);
+                  this.$Message.info('用户存在');
+              } else {
+                  this.$Message.error(res.msg);
+              }
+          });
 
+      },
+      handleSuccess(res, file) {
+        this.upLoading = false;
+          if (res.code == 200) {
+              this.modal1.value = res.image_url;
+              this.msgOk("上传成功");
+              this.fileList = [{name:file.name}];
+              this.formValidate.userId = res.successUserIdlist;
+              if(res.failUserIdlist.length){
+                  this.downLoad()
+              }
+          } else {
+              this.msgErr(res.msg);
+          }
+      },
+      formatError() {
+          this.msgErr("只能上传xlsx格式,请重新上传");
+      },
+      handleMaxSize(file) {
+          // this.$Notice.warning({
+          //     title: "超出文件大小限制",
+          //     desc: "文件 " + file.name + " 太大，不能超过 2M。"
+          // });
+      },
+      handleProgress(){
+        this.upLoading = true;
+      },
+      handleBeforeUpload() {
+          // const check = this.uploadList.length < 5;
+          // if (!check) {
+          //     this.$Notice.warning({
+          //         title: '最多只能上传 1 张图片。'
+          //     });
+          // }
+          // return check;
+      },
+      reduce(){
+        this.fileList = [];
+      },
+      downLoad(){
+          // /compensate/demo/download
+          downloadSteam('/compensate/demo/download',null).then(res => {
+              const content = res.data;
+              let fileName = res.headers["filename"];
+              const blob = new Blob([content], { type: "application/vnd.ms-excel" });
+              if ("download" in document.createElement("a")) {
+                  // 非IE下载
+                  const elink = document.createElement("a");
+                  elink.download = decodeURI(fileName);
+                  elink.style.display = "none";
+                  elink.href = URL.createObjectURL(blob);
+                  document.body.appendChild(elink);
+                  elink.click();
+                  URL.revokeObjectURL(elink.href); // 释放URL 对象
+                  document.body.removeChild(elink);
+              } else {
+                  // IE10+下载
+                  navigator.msSaveBlob(blob, fileName);
+              }
+          });
+
+      },
     // 优惠券搜索
     search1() {
       if (this.couponSearchData.couponType == "") {
@@ -836,11 +976,20 @@ export default {
       if (!this.ruleValidate()) {
         return;
       }
+      if(!this.formValidate.userId.length){
+          this.msgErr('请上传用户Id');
+          return
+      }
+      if(!this.formValidate.reveiveType){
+          this.msgErr('请选择用户领取方式');
+          return
+      }
+      // if(this.addLuckyDrawFn)
       if (this.add_edit == 1) {
-        console.log(this.formValidate.specialTopicCouponList);
-        this.formValidate.userId = this.getSplitString(
-          this.formValidate.userId
-        );
+        // console.log(this.formValidate.specialTopicCouponList);
+        // this.formValidate.userId = this.getSplitString(
+        //   this.formValidate.userId
+        // );
         /* for (
                   let j = 0;
                   j < this.formValidate.specialTopicCouponList.length;
@@ -878,7 +1027,8 @@ export default {
       this.formValidate.templateId = "";
       this.formValidate.welfareType = "";
       this.formValidate.amount = "";
-      this.formValidate.userId = "";
+      this.formValidate.userId = [];
+      this.formValidate.failUserIdlist = [];
       this.formValidate.title = "";
       this.formValidate.reason = "";
       this.formValidate.remark = "";
@@ -1010,6 +1160,7 @@ export default {
   },
   mounted() {
     this.init();
+    this.upLoadUrl = baseUrl+'/compensate/importUserId';
   }
 };
 </script>
