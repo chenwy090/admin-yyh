@@ -1,59 +1,69 @@
 <template>
-  <!-- 优惠券 -->
+  <!-- 优惠券 商户 /zex-mgr/coupon/merchant/list -->
   <div class="coupon-list-box">
-    <Modal
-      v-model="isShow"
-      title="优惠券列表"
-      width="900"
-      footer-hide
-      :closable="true"
-      :mask-closable="false"
-      @on-cancel="closeDialog"
-      :styles="{top: '20px'}"
-    >
-      <div>
-        <Tabs type="card">
-          <TabPane v-for="tab in tabs" :key="tab.id" :label="tab.label" @click.native="tabClick"></TabPane>
-        </Tabs>
-      </div>
-    </Modal>
+    <row>
+      <Form ref="searchItem" :model="searchItem" inline :label-width="100" class="search-form">
+        <FormItem label="商户名称：">
+          <Input
+            type="text"
+            v-model="searchItem.merchantName"
+            clearable
+            placeholder="请输入商户名称："
+            style="width: 150px"
+          />
+        </FormItem>
+        <FormItem label="优惠券名称：">
+          <Input
+            type="text"
+            v-model="searchItem.couponName"
+            clearable
+            placeholder="请输入优惠券名称"
+            style="width: 150px"
+          />
+        </FormItem>
+        <FormItem style="margin-left:-35px;" class="br">
+          <Button @click="search" type="primary" icon="ios-search">搜索</Button>
+          <Button @click="reset">重置</Button>
+        </FormItem>
+      </Form>
+    </row>
+
+    <!-- 商户列表 -->
+    <Table
+      border
+      ref="selection"
+      size="small"
+      :columns="tableColumns"
+      :data="tableData"
+      :loading="tableLoading"
+      class="bussiness-list"
+    ></Table>
+    <Row type="flex" justify="end" class="page">
+      <!-- show-total 显示总数 共{{ total }}条 -->
+      <!-- show-elevator 显示电梯，可以快速切换到某一页  跳至 xx 页-->
+      <Page
+        show-total
+        show-elevator
+        :current="page.page"
+        :page-size="page.size"
+        :total="page.total"
+        @on-change="changeCurrent"
+      ></Page>
+    </Row>
+
+    <Row style="margin-left:350px; margin-top: 30px">
+      <Button style="margin-right: 20px" @click="cancel">取消</Button>
+      <Button type="primary" @click="selectMerchant">确定</Button>
+    </Row>
   </div>
 </template>
 <script>
 import { postRequest } from "@/libs/axios";
 
-import CompMerchantLlist from "./CompMerchantLlist";
-import CompSuperMarketList from "./CompSuperMarketList";
-
 export default {
   name: "coupon-list",
-  components: {
-    CompMerchantLlist,
-    CompSuperMarketList
-  },
   data() {
     return {
-      //  couponType 优惠券类型 0-商超券 1-商户/周边券
-      // 商超 /zex-mgr/coupon/superMarket/list
-      // 商户 /zex-mgr/coupon/merchant/list
-      tabs: [
-        {
-          id:Math.random(),
-          name: "xxx",
-          couponType: 0,
-          label: "商超",
-          compName: "CompSuperMarketList",
-          url: "/coupon/superMarket/list"
-        },
-        {
-          id:Math.random(),
-          name: "xxx",
-          couponType: 1,
-          label: "商户",
-          compName: "CompMerchantLlist",
-          url: "/coupon/merchant/list"
-        }
-      ],
       isShow: true,
       choice: {
         _id: "",
@@ -151,10 +161,6 @@ export default {
   },
 
   methods: {
-    tabClick(...args) {
-      console.log("111:",Math.random());
-      console.log("tabClick:", ...args);
-    },
     // 关闭商户选择框
     cancel() {
       this.closeDialog();
