@@ -160,6 +160,7 @@ import columns from "./columns";
 import RewardUDetail from "./RewardUDetail";
 export default {
   name: "reward-u",
+  inject: ["merchantTypeOption", "msgOk", "msgErr"],
   components: {
     RewardUDetail
   },
@@ -234,7 +235,7 @@ export default {
         "2": "已结束",
         "3": "已终止"
       },
-      merchantTypeOption: { 0: "本地商户（单店）", 1: "本地商户（多店）" },
+      // merchantTypeOption: { 0: "本地商户（单店）", 1: "本地商户（多店）" },
       // 查询参数
       searchData: {
         name: "", //任务名称
@@ -253,6 +254,7 @@ export default {
     };
   },
   created() {
+    // console.log("okkk", this.msgOk);
     this.queryTableData();
   },
   methods: {
@@ -296,7 +298,8 @@ export default {
             brandId,
             name,
             imgUrl,
-            logoUrl
+            logoUrl,
+            shareLogo
           } = item;
           let row = null;
           // 商户类型 0-本地商户（单店），1-本地商户（多店）
@@ -306,12 +309,18 @@ export default {
             item.merhcantName = name;
             item.brandId = "";
             item.brandName = "";
+
+            item.businessId = merchantId;
+            item.businessName = name;
             row = { merchantId: merchantId, name };
           } else {
             item.brandId = brandId;
             item.brandName = name;
             item.merchantId = "";
             item.merhcantName = "";
+
+            item.businessId = brandId;
+            item.businessName = name;
             row = { id: brandId, name };
           }
 
@@ -322,6 +331,12 @@ export default {
           item.defaultLogoList = [];
           if (logoUrl) {
             item.defaultLogoList = [{ imgUrl: logoUrl }];
+          }
+
+          // 分享Logo：
+          item.defaultShareLogoList = [];
+          if (shareLogo) {
+            item.defaultShareLogoList = [{ imgUrl: shareLogo }];
           }
 
           item.tableData = [row];
@@ -467,19 +482,6 @@ export default {
 
       //重新查询一遍
       this.queryTableData();
-    },
-    // 全局提示
-    msgOk(txt) {
-      this.$Message.info({
-        content: txt,
-        duration: 3
-      });
-    },
-    msgErr(txt) {
-      this.$Message.error({
-        content: txt,
-        duration: 3
-      });
     },
     // 审核-------------------------------------
     cancelHandleReset(name) {

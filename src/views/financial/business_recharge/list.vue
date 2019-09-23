@@ -5,8 +5,10 @@
   </div>
 </template>
 <script>
+import { postRequest } from "@/libs/axios";
+
 import BusinessRecharge from "./BusinessRecharge";
-// 充值管理 
+// 充值管理
 import RechargeManagement from "./rechargeManagement";
 // U贝管理
 import UbayManagement from "./ubayManagement";
@@ -16,9 +18,36 @@ import FundsDetails from "./FundsDetails";
 // U贝明细
 import UbayDetails from "./UbayDetails";
 
-var i = 0;
 export default {
   name: "bussiness",
+  provide() {
+    return {
+      // 商户类型：下拉选择框“全部、本地商户（多店）、本地商户（单店）”，默认“全部”。 商超门店、零售商
+      //  '商户类型 0-本地商户（单店），1-本地商户（多店）' 2 商超门店、3 零售商
+      merchantTypeOption: [
+        {
+          value: 0,
+          label: "本地商户（单店）"
+        },
+        {
+          value: 1,
+          label: "本地商户（多店）"
+        },
+        {
+          value: 2,
+          label: "商超门店"
+        },
+        {
+          value: 3,
+          label: "零售商"
+        }
+      ],
+      getMoneyAndUbay: this.getMoneyAndUbay,
+      // 全局提示
+      msgOk: this.msgOk,
+      msgErr: this.msgErr
+    };
+  },
   components: {
     [BusinessRecharge.name]: BusinessRecharge,
     [RechargeManagement.name]: RechargeManagement,
@@ -34,12 +63,62 @@ export default {
   data() {
     return {
       // compName: BusinessRecharge.name
+      retailerInfoList: []
     };
+  },
+  created() {
+    this.getRetailerInfoList();
   },
   methods: {
     changeComp(name) {
       console.log(1111, name);
       // this.compName = name;
+    },
+    async getRetailerInfoList() {
+      const url = "/system/sys-shop-info/getRetailerInfoList";
+      const { code, data } = await postRequest(url);
+      let options = [];
+      if (code == 200) {
+        options = data;
+      }
+      this.$store.commit("financial/setRetailerInfoList", options);
+    },
+    async getMoneyAndUbay(type, id) {
+      let params = { merchantType: type, merchantId: "", brandId: "" };
+
+      if (type == 0) {
+        params.merchantId = id;
+      } else {
+        params.brandId = id;
+      }
+
+      const url = "/merchant/account/getMerchantAccountInfoByTypeAndBrandId";
+      //  money: 0, // 商户余额
+      // ubay: 0, // U贝余额
+
+      let money = 0;
+      let ubay = 0;
+      let { code, msg, data } = await postRequest(url, params);
+      if (code == 200) {
+        money = data.money;
+        ubay = data.ubay;
+      } else {
+        this.msgErr(msg);
+      }
+      return { money, ubay };
+    },
+    // 全局提示
+    msgOk(txt) {
+      this.$Message.info({
+        content: txt,
+        duration: 3
+      });
+    },
+    msgErr(txt) {
+      this.$Message.error({
+        content: txt,
+        duration: 3
+      });
     }
   }
 };

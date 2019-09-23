@@ -12,48 +12,92 @@
       :styles="{top: '20px'}"
     >
       <div>
-        <Tabs type="card">
-          <TabPane v-for="tab in tabs" :key="tab.id" :label="tab.label" @click.native="tabClick"></TabPane>
-        </Tabs>
+        <row>
+          <Form ref="searchItem" :model="searchItem" inline :label-width="100" class="search-form">
+            <FormItem label="商户名称：">
+              <Input
+                type="text"
+                v-model="searchItem.merchantName"
+                clearable
+                placeholder="请输入商户名称："
+                style="width: 150px"
+              />
+            </FormItem>
+            <FormItem label="优惠券名称：">
+              <Input
+                type="text"
+                v-model="searchItem.couponName"
+                clearable
+                placeholder="请输入优惠券名称"
+                style="width: 150px"
+              />
+            </FormItem>
+            <!-- <FormItem style label="所在地区">
+              <Select
+                v-model="searchItem.provinceId"
+                style="width:150px"
+                clearable
+                @on-change="getcitylist"
+              >
+                <Option
+                  v-for="(item,index) in provincelist"
+                  :key="index"
+                  :value="item.provinceCode"
+                >{{item.provinceName}}</Option>
+              </Select>
+              <Select v-model="searchItem.cityId" style="width:150px" clearable>
+                <Option
+                  v-for="(item,index) in citylist"
+                  :key="index"
+                  :value="item.cityCode"
+                >{{item.cityName}}</Option>
+              </Select>
+            </FormItem>-->
+            <FormItem style="margin-left:-35px;" class="br">
+              <Button @click="search" type="primary" icon="ios-search">搜索</Button>
+              <Button @click="reset">重置</Button>
+            </FormItem>
+          </Form>
+        </row>
+
+        <!-- 商户列表 -->
+        <Table
+          border
+          ref="selection"
+          size="small"
+          :columns="tableColumns"
+          :data="tableData"
+          :loading="tableLoading"
+          class="bussiness-list"
+        ></Table>
+        <Row type="flex" justify="end" class="page">
+          <!-- show-total 显示总数 共{{ total }}条 -->
+          <!-- show-elevator 显示电梯，可以快速切换到某一页  跳至 xx 页-->
+          <Page
+            show-total
+            show-elevator
+            :current="page.page"
+            :page-size="page.size"
+            :total="page.total"
+            @on-change="changeCurrent"
+          ></Page>
+        </Row>
       </div>
+
+      <Row style="margin-left:350px; margin-top: 30px">
+        <Button style="margin-right: 20px" @click="cancel">取消</Button>
+        <Button type="primary" @click="selectMerchant">确定</Button>
+      </Row>
     </Modal>
   </div>
 </template>
 <script>
-import { postRequest } from "@/libs/axios";
-
-import CompMerchantLlist from "./CompMerchantLlist";
-import CompSuperMarketList from "./CompSuperMarketList";
+import { getRequest, postRequest } from "@/libs/axios";
 
 export default {
   name: "coupon-list",
-  components: {
-    CompMerchantLlist,
-    CompSuperMarketList
-  },
   data() {
     return {
-      //  couponType 优惠券类型 0-商超券 1-商户/周边券
-      // 商超 /zex-mgr/coupon/superMarket/list
-      // 商户 /zex-mgr/coupon/merchant/list
-      tabs: [
-        {
-          id:Math.random(),
-          name: "xxx",
-          couponType: 0,
-          label: "商超",
-          compName: "CompSuperMarketList",
-          url: "/coupon/superMarket/list"
-        },
-        {
-          id:Math.random(),
-          name: "xxx",
-          couponType: 1,
-          label: "商户",
-          compName: "CompMerchantLlist",
-          url: "/coupon/merchant/list"
-        }
-      ],
       isShow: true,
       choice: {
         _id: "",
@@ -103,6 +147,17 @@ export default {
           minWidth: 130,
           key: "merchantName"
         },
+        // {
+        //   title: "省/市",
+        //   align: "center",
+        //   width: 150,
+        //   key: "address",
+        //   render: (h, params) => {
+        //     let { province, city } = params.row;
+        //     let str = `${province}/${city}`;
+        //     return h("span", str);
+        //   }
+        // },
         {
           title: "优惠券名称",
           align: "center",
@@ -122,18 +177,6 @@ export default {
             }
             return h("span", str);
           }
-        },
-        // 商超  isActivityCoupon  0: 是活动券  1: 不是活动券
-        {
-          title: "活动券",
-          align: "center",
-          width: 100,
-          key: "isActivityCoupon",
-          render(h, params) {
-            let { isActivityCoupon } = params.row;
-            const arr = ["是", "否"];
-            return h("span", arr[isActivityCoupon]);
-          }
         }
       ],
       tableData: [],
@@ -145,15 +188,38 @@ export default {
       tableLoading: false,
       searchItem: {
         merchantName: "",
-        couponName: ""
-      }
+        couponName: "",
+        provinceId: "",
+        cityId: ""
+      },
+      provincelist: [],
+      citylist: [],
+      selectedMerchantList: [] //选中的商户列表
     };
   },
 
   methods: {
-    tabClick(...args) {
-      console.log("111:",Math.random());
-      console.log("tabClick:", ...args);
+    //获取省份信息数据
+    getprovincelist() {
+      postRequest("/system/area/province/list").then(res => {
+        if (res.code == 200) {
+          this.provincelist = res.data;
+        } else {
+          this.$Message.error(res.msg);
+        }
+      });
+    },
+    //根据省份code获取城市信息数据
+    getcitylist() {
+      getRequest("/system/area/city/" + this.searchItem.provinceId).then(
+        res => {
+          if (res.code == 200) {
+            this.citylist = res.data;
+          } else {
+            this.$Message.error(res.msg);
+          }
+        }
+      );
     },
     // 关闭商户选择框
     cancel() {
@@ -167,7 +233,10 @@ export default {
       this.page.page = page || 1;
       this.tableLoading = false;
       const reqParams = {
-        ...this.searchItem,
+        couponName: this.searchItem.couponName,
+        merchantName: this.searchItem.merchantName,
+        provinceCode: this.searchItem.provinceId,
+        cityCode: this.searchItem.cityId,
         ...this.page
       };
       postRequest("/coupon/merchant/list", reqParams).then(res => {
@@ -210,7 +279,9 @@ export default {
       // 重置查询参数
       this.searchItem = {
         merchantName: "",
-        couponName: ""
+        couponName: "",
+        provinceId: "",
+        cityId: ""
       };
 
       this.page = {
@@ -241,6 +312,7 @@ export default {
   },
   mounted() {
     this.queryTableData();
+    this.getprovincelist();
   }
 };
 </script>

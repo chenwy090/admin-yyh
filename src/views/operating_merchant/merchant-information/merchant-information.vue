@@ -6,7 +6,7 @@
         <Card>
           <Row>
             <Form ref="searchItem" :model="searchItem" inline :label-width="70" class="search-form">
-              <FormItem label="商户名称">
+              <FormItem label="商户名称：" :label-width="80">
                 <Input
                   type="text"
                   v-model="searchItem.name"
@@ -15,17 +15,45 @@
                   style="width: 200px"
                 />
               </FormItem>
-              <FormItem>
-                  <span>所在地区</span>
-                  <Select v-model="searchItem.provinceId" style="width:150px" clearable @on-change="getcitylist">
-                    <Option v-for="(item,index) in provincelist" :key="index" :value="item.provinceCode">{{item.provinceName}}</Option>
-                  </Select>
-                  <Select v-model="searchItem.cityId" style="width:150px" clearable @on-change="getarealist">
-                    <Option v-for="(item,index) in citylist" :key="index" :value="item.cityCode" >{{item.cityName}}</Option>
-                  </Select>
-                  <Select v-model="searchItem.areaId" style="width:150px" clearable >
-                    <Option v-for="(item,index) in arealist" :key="index" :value="item.areaCode" >{{item.areaName}}</Option>
-                  </Select>
+
+              <FormItem label="标签：">
+                <Select v-model="searchItem.tag" style="width:120px" clearable>
+                  <Option v-for="(v,k) in tagOptions" :value="k" :key="k">{{ v }}</Option>
+                </Select>
+              </FormItem>
+              <FormItem :label-width="0">
+                <span>所在地区：</span>
+                <Select
+                  v-model="searchItem.provinceId"
+                  style="width:150px"
+                  clearable
+                  @on-change="getcitylist"
+                >
+                  <Option
+                    v-for="(item,index) in provincelist"
+                    :key="index"
+                    :value="item.provinceCode"
+                  >{{item.provinceName}}</Option>
+                </Select>
+                <Select
+                  v-model="searchItem.cityId"
+                  style="width:150px"
+                  clearable
+                  @on-change="getarealist"
+                >
+                  <Option
+                    v-for="(item,index) in citylist"
+                    :key="index"
+                    :value="item.cityCode"
+                  >{{item.cityName}}</Option>
+                </Select>
+                <Select v-model="searchItem.areaId" style="width:150px" clearable>
+                  <Option
+                    v-for="(item,index) in arealist"
+                    :key="index"
+                    :value="item.areaCode"
+                  >{{item.areaName}}</Option>
+                </Select>
               </FormItem>
               <FormItem style="margin-left:-35px;" class="br">
                 <Button @click="queryTableList" type="primary" icon="ios-search">搜索</Button>
@@ -33,17 +61,18 @@
                 <!-- <a class="drop-down" @click="dropDown">
                   {{dropDownContent}}
                   <Icon :type="dropDownIcon"></Icon>
-                </a> -->
+                </a>-->
               </FormItem>
             </Form>
           </Row>
         </Card>
         <Card>
           <Row class="operation">
-            
             <Button type="primary" icon="md-add" @click="addInfo()">新增</Button>
-
             <Button @click="updateTableList" icon="md-refresh">刷新</Button>
+            <!-- 排序导入  排序导出 -->
+            <Button type="success" class="marginLeft20" @click="upload">排序导入</Button>
+            <Button type="success" class="marginLeft20" @click="download">排序导出</Button>
           </Row>
 
           <Row>
@@ -55,31 +84,20 @@
               sortable="custom"
               ref="table"
             >
+              <template
+                slot-scope="{ row }"
+                slot="address"
+              >{{row.province}} {{row.city}} {{row.district}} {{row.address}}</template>
 
-
-          <template slot-scope="{ row }" slot="address">
-            {{row.province}} {{row.city}} {{row.district}} {{row.address}}
-            </template>
-            
-            <template slot-scope="{ row }" slot="logoImg">
-              <img :src="row.logoImg" style="width:74px;height:43px;" @click="showBigImg(row)">
-            </template>
+              <template slot-scope="{ row }" slot="logoImg">
+                <img :src="row.logoImg" style="width:74px;height:43px;" @click="showBigImg(row)" />
+              </template>
 
               <template slot-scope="{ row }" slot="operate">
-                <Button
-                  type="text"
-                  size="small"
-                  style="color:#2db7f5"
-                  @click="editInfo(row)"
-                >编辑</Button>
-                <Button
-                  type="text"
-                  size="small"
-                  style="color:#ed4014"
-                  @click="copyInfo(row)"
-                >复制</Button>
-            </template>
-
+                <Button type="text" size="small" style="color:#2db7f5" @click="editInfo(row)">编辑</Button>
+                <Button type="text" size="small" style="color:#ed4014" @click="copyInfo(row)">复制</Button>
+                <Button type="text" size="small" style="color:#2db7f5" @click="setTag(row)">打标签</Button>
+              </template>
             </Table>
           </Row>
           <Row type="flex" justify="end" class="page">
@@ -100,17 +118,25 @@
       <merchantEdit @changeStatus="showMerchantEditStatus" :merchantId="merchantId"></merchantEdit>
     </div>
 
-  <div v-if="merchantCouponPage">
+    <div v-if="merchantCouponPage">
       <merchantCoupon @changeStatus="showMerchantCouponStatus" :merchantId="merchantId"></merchantCoupon>
     </div>
 
-  <div v-if="merchantStaffPage">
+    <div v-if="merchantStaffPage">
       <merchantStaff @changeStatus="showMerchantStaffStatus" :merchantId="merchantId"></merchantStaff>
     </div>
 
-  <Modal v-model="bigImgDialog" title="查看大图" width="600" @on-cancel="bigImgCancel">
-        <img style="width: 100%" :src="big_Image_url" />
-      </Modal>
+    <Modal v-model="bigImgDialog" title="查看大图" width="600" @on-cancel="bigImgCancel">
+      <img style="width: 100%" :src="big_Image_url" />
+    </Modal>
+
+    <FileImport
+      v-if="showFileImport"
+      :showFileImport.sync="showFileImport"
+      @refresh="queryTableData"
+    ></FileImport>
+
+    <SetTag v-if="showTag" :id="id" :showTag.sync="showTag" @refresh="queryTableData"></SetTag>
   </div>
 </template>
 
@@ -127,28 +153,41 @@ import { formatDate } from "@/libs/date";
 import merchantEdit from "./merchantEdit";
 import merchantCoupon from "../merchant-coupon/merchantCoupon";
 import merchantStaff from "../merchant-staff/merchant-staff";
+import FileImport from "./FileImport";
+import SetTag from "./SetTag";
 
 export default {
   name: "merchant-information",
   components: {
     merchantEdit,
     merchantCoupon,
-    merchantStaff
+    merchantStaff,
+    FileImport,
+    SetTag
   },
   data() {
     return {
+      showFileImport: false,
+      //打标签 已打标签、未打标签
+      showTag: false,
+      tagOptions: {
+        0: "已打标签",
+        1: "未打标签"
+      },
       merchantEditPage: false,
       merchantCouponPage: false,
       merchantStaffPage: false,
+      id: "",
       merchantId: "",
       drop: false,
       dropDownContent: "展开",
       dropDownIcon: "ios-arrow-down",
       searchItem: {
         name: "",
+        tag: "",
         provinceId: "",
         cityId: "",
-          areaId: ""
+        areaId: ""
       },
       current: 1,
       totalSize: 0, //总条数
@@ -248,58 +287,63 @@ export default {
       staffList: [],
       res_list: [],
       provincelist: [],
-        citylist: [],
-        arealist: [],
+      citylist: [],
+      arealist: []
     };
   },
-
-  created: function() {},
   methods: {
+    upload() {
+      this.showFileImport = true;
+    },
+    download() {},
+    setTag(row) {
+      // merchantId
+      this.id = row.merchantId;
+      this.showTag = true;
+    },
     init() {
       this.updateTableList();
-      this.getindustryTemplate();
+      this.queryTableData();
       this.getprovincelist();
     },
     //获取省份信息数据
     getprovincelist() {
-        postRequest(
-            "/system/area/province/list"
-        ).then(res => {
-            if (res.code == 200) {
-                this.provincelist = res.data;
-            } else {
-                this.$Message.error(res.msg);
-            }
-        });
+      postRequest("/system/area/province/list").then(res => {
+        if (res.code == 200) {
+          this.provincelist = res.data;
+        } else {
+          this.$Message.error(res.msg);
+        }
+      });
     },
-      //根据省份code获取城市信息数据
-      getcitylist() {
-          getRequest(
-              "/system/area/city/"+this.searchItem.provinceId
-          ).then(res => {
-              if (res.code == 200) {
-                  this.citylist = res.data;
-                  this.searchItem.areaId = '';
-              } else {
-                  this.$Message.error(res.msg);
-              }
-          });
-      },
-      //根据城市code获取区县信息数据
-      getarealist() {
-          getRequest(
-              "/system/area/district/"+this.searchItem.cityId
-          ).then(res => {
-              if (res.code == 200) {
-                  this.arealist = res.data;
-              } else {
-                  this.$Message.error(res.msg);
-              }
-          });
-      },
+    //根据省份code获取城市信息数据
+    getcitylist() {
+      getRequest("/system/area/city/" + this.searchItem.provinceId).then(
+        res => {
+          if (res.code == 200) {
+            this.citylist = res.data;
+            this.searchItem.areaId = "";
+          } else {
+            this.$Message.error(res.msg);
+          }
+        }
+      );
+    },
+    //根据城市code获取区县信息数据
+    getarealist() {
+      getRequest("/system/area/district/" + this.searchItem.cityId).then(
+        res => {
+          if (res.code == 200) {
+            this.arealist = res.data;
+          } else {
+            this.$Message.error(res.msg);
+          }
+        }
+      );
+    },
 
     //获取商业数据
-    getindustryTemplate() {
+    queryTableData() {
       const reqParams = {
         dictCode: "merchant_industry"
       };
@@ -338,9 +382,9 @@ export default {
 
     //搜索
     queryTableList() {
-        this.current = 1;
-        this.totalSize = 0; //总条数
-        this.pageNum = 1; //开始条数
+      this.current = 1;
+      this.totalSize = 0; //总条数
+      this.pageNum = 1; //开始条数
       this.updateTableList();
     },
 
@@ -386,9 +430,9 @@ export default {
 
     //复制
     copyInfo(item) {
-        this.setStore("camp_pageStatus", "copy");
-        this.merchantId = item.merchantId;
-        this.merchantEditPage = true;
+      this.setStore("camp_pageStatus", "copy");
+      this.merchantId = item.merchantId;
+      this.merchantEditPage = true;
     },
 
     showMerchantEditStatus(e) {
@@ -539,7 +583,6 @@ export default {
         }
       });
     }
-
   },
   mounted() {
     this.init();

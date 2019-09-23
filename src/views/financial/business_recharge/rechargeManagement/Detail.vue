@@ -6,14 +6,18 @@
         <FormItem label="商户类型：">
           <Radio :value="true" disabled>{{formData.merchantTypeName}}</Radio>
         </FormItem>
-
-        <FormItem label="商户名称：">
+        <!-- label="商户名称：" -->
+        <FormItem :label="`${formData.businessTypeLabel}名称：`">
           <Row>
             <Col span="16">
               <Input v-model="formData.businessName" disabled></Input>
             </Col>
           </Row>
         </FormItem>
+
+        <!-- 商户余额 money U贝余额 ubay    -->
+        <FormItem label="商户余额：">{{money}}&nbsp;元</FormItem>
+        <FormItem label="U贝余额：">{{ubay}}&nbsp;贝</FormItem>
 
         <template v-if="formData.changeType==0">
           <FormItem label="应收款：">
@@ -116,6 +120,7 @@
 import FeeEntryDetail from "./FeeEntryDetail";
 export default {
   name: "deduction-edit",
+  inject: ["getMoneyAndUbay"],
   props: {
     showDetail: {
       type: Boolean,
@@ -134,15 +139,15 @@ export default {
   // mounted() {
   created() {
     let data = JSON.parse(JSON.stringify(this.detailData));
-    const { merchantType } = data;
-    data.merchantTypeName = this.merchantTypeOption[merchantType];
-    //  merchantName brandName
-    let row = null;
-    if (merchantType == 0) {
-      data.businessName = data.merchantName;
+    const { merchantType: type, merchantId, brandId } = data;
+    let id = null;
+    if (type == 0) {
+      id = merchantId;
     } else {
-      data.businessName = data.brandName;
+      id = brandId;
     }
+    
+    this.setMoneyAndUbay(type, id);
 
     this.formData = data;
 
@@ -153,9 +158,16 @@ export default {
       // 新增、修改 任务抽奖banner
       isShow: false,
       title: "扣款信息",
+      money: 0, // 商户余额 moneyBalance
+      ubay: 0, // U贝余额  ubayBalance
       // merchantType 商户/品牌
-      businessTypeLabel: "商户",
-      merchantTypeOption: { 0: "本地商户（单店）", 1: "本地商户（多店）" },
+      // businessTypeLabel: "商户",
+      // merchantTypeOption: {
+      //   0: "本地商户（单店）",
+      //   1: "本地商户（多店）",
+      //   2: "商超门店",
+      //   3: "零售商"
+      // },
       formData: {
         changeType: 0, //充值0 扣款1 写死
         merchantType: 0,
@@ -167,125 +179,20 @@ export default {
         brandName: "", //
         reduceUbay: "", //消耗U贝
         remark: "remarks" //备注 必填
-      },
-      tableData: [],
-      columns1: [
-        {
-          title: "商户编号",
-          align: "center",
-          width: 200,
-          key: "merchantId"
-        },
-        {
-          title: "商户名称",
-          align: "center",
-          width: 200,
-          key: "name"
-        },
-        {
-          title: "操作",
-          align: "center",
-          width: 140,
-          key: "action",
-          slot: "operate"
-        }
-      ],
-      columns2: [
-        {
-          title: "品牌名称",
-          align: "center",
-          width: 200,
-          key: "name"
-        },
-        {
-          title: "关联店铺数",
-          align: "center",
-          width: 200,
-          key: "relationMerchantCount"
-        },
-        {
-          title: "操作",
-          align: "center",
-          width: 140,
-          key: "action",
-          slot: "operate"
-        }
-      ]
+      }
     };
   },
   methods: {
-    selectedTrCallBack(data) {
-      console.log("selectedTrCallBack----", data);
-      const { merchantType, id, name, row } = data;
-      this.formData.businessId = id;
-      this.formData.businessName = name;
-      if (merchantType == 0) {
-        this.tableData1 = [row];
-      } else {
-        this.tableData2 = [row];
-      }
+    async setMoneyAndUbay(type, id) {
+      const { money, ubay } = await this.getMoneyAndUbay(type, id);
+      this.money = money;
+      this.ubay = ubay;
     },
-    handleChoose() {
-      //  商户类型 0-本地商户（单店），1-本地商户（多店）
-      if (this.formData.merchantType == 0) {
-        this.showBusinessList = true;
-      } else {
-        // brand品牌
-        this.showBrandList = true;
-      }
-    },
-
     closeDialog() {
       //关闭对话框清除表单数据
       // this.$refs.formValidate.resetFields();
       console.log("closeDialog");
       this.$emit(`update:showDetail`, false);
-    },
-    handleSubmit(name) {
-      this.$refs[name].validate(async valid => {
-        // console.log(JSON.stringify(this.formValidate));
-        if (valid) {
-          this.$Message.success("数据验证成功!");
-
-          let oForm = JSON.parse(JSON.stringify(this.formData));
-
-          const type = oForm.merchantType;
-
-          if (type == 0) {
-            oForm.merchantId = oForm.businessId;
-            oForm.merchantName = oForm.businessName;
-          } else {
-            oForm.brandId = oForm.businessId;
-            oForm.brandName = oForm.businessId;
-          }
-          let { code, msg } = await rechargeAndDeduction(oForm);
-
-          if (code == 200) {
-            this.msgOk("保存成功");
-            // 关闭对话框
-            this.closeDialog();
-            //刷新列表数据
-            this.$emit("refresh");
-          } else {
-            this.msgErr(msg);
-          }
-        } else {
-          this.$Message.error("数据验证失败！");
-        }
-      });
-    },
-    // 全局提示
-    msgOk(txt) {
-      this.$Message.info({
-        content: txt,
-        duration: 3
-      });
-    },
-    msgErr(txt) {
-      this.$Message.error({
-        content: txt,
-        duration: 3
-      });
     }
   }
 };

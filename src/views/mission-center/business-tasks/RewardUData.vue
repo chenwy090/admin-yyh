@@ -49,6 +49,13 @@
         <Row type="flex" justify="start">
           <Button type="dashed" icon="md-arrow-round-back" @click="goback">返回列表</Button>
           <Button icon="md-refresh" class="marginLeft20" @click="refresh">刷新</Button>
+          <Button
+            :disabled="tableData.length==0"
+            class="marginLeft20"
+            type="primary"
+            icon="ios-search"
+            @click="download"
+          >下载</Button>
         </Row>
       </Card>
     </div>
@@ -76,15 +83,18 @@ const { mapState } = createNamespacedHelpers("missionCenter");
 import { queryMerchantDataById } from "@/api/sys";
 import { udataColumns as columns } from "./columns";
 
+import { downloadSteam, postRequest } from "@/libs/axios";
+
 export default {
   name: "reward-u-data",
+  inject: ["merchantTypeOption", "msgOk", "msgErr"],
   computed: {
     ...mapState(["id"])
   },
   data() {
     return {
-      anticipatedUbay:"",
-      sunAward:"",
+      anticipatedUbay: "",
+      sunAward: "",
       // id: "",
       /**
         投放：统计整个任务下所有券预计投放的U贝的数量。
@@ -93,10 +103,10 @@ export default {
       receiveNum: "", //领取数量
       anticipatedUbay: "", //核销数量
       // 商户类型：商户 品牌
-      merchantTypeOption: {
-        "0": "商户",
-        "1": "品牌"
-      },
+      // merchantTypeOption: {
+      //   "0": "商户",
+      //   "1": "品牌"
+      // },
       // 奖励类型 rewards “领取、核销、作为分享者，对方领券获奖励、作为分享者，对方用券获奖励”。 默认显示“请选择”。
       awardTypeOption: {
         "1": "领取",
@@ -157,6 +167,36 @@ export default {
     changeCurrent(pageNum) {
       this.queryTableData(pageNum);
     },
+    async download() {
+      const url = "/merchant/assignment/data/download";
+
+      const res = await downloadSteam(url, {
+        id: this.id,
+        ...this.searchData
+      });
+
+      console.log(111111111111111111, res);
+
+      const content = res.data;
+      const { filename } = res.headers;
+
+      console.log(111111111111111111, res);
+      const blob = new Blob([content], { type: "application/vnd.ms-excel" });
+      const oA = document.createElement("a");
+      if ("download" in oA) {
+        // 非IE下载
+        oA.download = decodeURI(filename);
+        oA.style.display = "none";
+        oA.href = URL.createObjectURL(blob);
+        document.body.appendChild(oA);
+        oA.click();
+        URL.revokeObjectURL(oA.href); // 释放URL 对象
+        document.body.removeChild(oA);
+      } else {
+        // IE10+下载
+        navigator.msSaveBlob(blob, filename);
+      }
+    },
     // 查询
     async queryTableData(pageNum) {
       this.page.pageNum = pageNum || 1;
@@ -211,19 +251,6 @@ export default {
 
       //重新查询一遍
       this.queryTableData();
-    },
-    // 全局提示
-    msgOk(txt) {
-      this.$Message.info({
-        content: txt,
-        duration: 3
-      });
-    },
-    msgErr(txt) {
-      this.$Message.error({
-        content: txt,
-        duration: 3
-      });
     }
   }
 };

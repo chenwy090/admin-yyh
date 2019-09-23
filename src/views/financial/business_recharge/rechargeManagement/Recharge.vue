@@ -18,22 +18,44 @@
         </FormItem>
 
         <FormItem
-          label="商户名称："
+          :label="`${businessTypeLabel}名称：`"
           :prop="`businessName`"
           :rules="{ required: true, validator: validateBusinessName }"
         >
           <Row>
             <Col span="12">
-              <Input
-                v-model="formData.businessName"
-                :placeholder="`点击按钮选择${businessTypeLabel}`"
-                disabled
-              >
-                <Button @click="handleChoose" slot="append">选择</Button>
-              </Input>
+              <template v-if="formData.merchantType!=3">
+                <Input
+                  v-model="formData.businessName"
+                  :placeholder="`点击按钮选择${businessTypePlaceholder}`"
+                  disabled
+                >
+                  <Button @click="handleChoose" slot="append">选择</Button>
+                </Input>
+              </template>
+              <template v-else>
+                <Select
+                  :label="formData.businessName"
+                  ref="retailerSel"
+                  @on-clear="clearSel"
+                  clearable
+                >
+                  <Option
+                    v-for="item in retailerInfoList"
+                    :value="item.venderId"
+                    :label="item.venderName"
+                    :key="item.venderId"
+                    @click.native="selectRetailer(item)"
+                  >
+                    <span>{{item.venderName}}</span>
+                    <span style="float:right;">关联店铺数{{item.num}}</span>
+                  </Option>
+                </Select>
+              </template>
             </Col>
           </Row>
         </FormItem>
+
         <Row class="box" style="margin-bottom:20px; ">
           <Table size="small" border width="540" :columns="dynamicColumns" :data="dynamicTableData">
             <template slot-scope="{ row }" slot="operate">
@@ -46,6 +68,11 @@
             </template>
           </Table>
         </Row>
+
+        <!-- 商户余额 money U贝余额 ubay    -->
+        <FormItem label="商户余额：">{{money}}&nbsp;元</FormItem>
+        <FormItem label="U贝余额：">{{ubay}}&nbsp;贝</FormItem>
+
         <FormItem
           label="应收款："
           prop="receivables"
@@ -139,23 +166,39 @@
       :showBrandList.sync="showBrandList"
       @seclectedTr-event="selectedTrCallBack"
     ></BrandList>
+    <SuperMarket
+      v-if="showSuperMarketList"
+      :showSuperMarketList.sync="showSuperMarketList"
+      @seclectedTr-event="selectedTrCallBack"
+    ></SuperMarket>
   </div>
 </template>
 <script>
+import { createNamespacedHelpers } from "vuex";
+const { mapState } = createNamespacedHelpers("financial");
+
 import { formatDate } from "@/libs/dataUtil";
+import { rechargeAndDeduction } from "@/api/sys";
 
 import BusinessList from "../BusinessList";
 import BrandList from "../BrandList";
+import SuperMarket from "../SuperMarket";
 import FeeEntry from "./FeeEntry";
 
-import { rechargeAndDeduction } from "@/api/sys";
+import createTypeDate from "./typeData";
 
 export default {
   name: "recharge-edit",
+  inject: ["merchantTypeOption", "getMoneyAndUbay", "msgOk", "msgErr"],
+  created() {
+    this.typeData = createTypeDate();
+    this.dynamicColumns = this.typeData.type0.columns;
+  },
   components: {
     BusinessList,
     FeeEntry,
-    BrandList
+    BrandList,
+    SuperMarket
   },
   props: {
     showRecharge: {
@@ -164,40 +207,22 @@ export default {
     }
   },
   computed: {
-    dynamicColumns() {
-      return this.formData.merchantType == 0 ? this.columns1 : this.columns2;
-    },
-    dynamicTableData() {
-      return this.formData.merchantType == 0
-        ? this.tableData1
-        : this.tableData2;
-    }
+    ...mapState(["retailerInfoList"])
   },
   watch: {
     ["formData.merchantType"]() {
       const type = this.formData.merchantType;
 
-      this.merchantTypeOption.some(item => {
-        let r = item.value == type;
-        if (r) {
-          this.businessTypeLabel = item.label;
-        }
-        return r;
-      });
+      const { id, name, label, desc, columns, tableData } = this.typeData[
+        `type${type}`
+      ];
+      this.formData.businessId = id;
+      this.formData.businessName = name;
 
-      if (type == 0) {
-        this.formData.brandId = this.formData.businessId;
-        this.formData.brandName = this.formData.businessName;
-
-        this.formData.businessId = this.formData.merchantId;
-        this.formData.businessName = this.formData.merchantName;
-      } else {
-        this.formData.merchantId = this.formData.businessId;
-        this.formData.merchantName = this.formData.businessName;
-
-        this.formData.businessId = this.formData.brandId;
-        this.formData.businessName = this.formData.brandName;
-      }
+      this.businessTypeLabel = label;
+      this.businessTypePlaceholder = desc;
+      this.dynamicColumns = columns;
+      this.dynamicTableData = tableData;
 
       this.$refs.form.validateField("businessName");
     }
@@ -207,19 +232,12 @@ export default {
       // 新增、修改 任务抽奖banner
       isShow: false,
       title: "扣款信息",
-      data: {},
-      // merchantType 商户/品牌
+      // merchantType 商户/品牌/商超/零售商名称
       businessTypeLabel: "商户",
-      merchantTypeOption: [
-        {
-          value: 0,
-          label: "本地商户（单店）"
-        },
-        {
-          value: 1,
-          label: "本地商户（多店）"
-        }
-      ],
+      businessTypePlaceholder: "商户",
+      money: 0, // 商户余额 moneyBalance
+      ubay: 0, // U贝余额  ubayBalance
+      typeData: {},
       formData: {
         changeType: 0, //充值0 扣款1 写死
         merchantType: 0,
@@ -239,48 +257,10 @@ export default {
       ruleValidate: {},
       showBusinessList: false,
       showBrandList: false,
-      tableData1: [],
-      tableData2: [],
-      columns1: [
-        {
-          title: "商户编号",
-          align: "center",
-          width: 200,
-          key: "merchantId"
-        },
-        {
-          title: "商户名称",
-          align: "center",
-          width: 200,
-          key: "name"
-        },
-        {
-          title: "操作",
-          align: "center",
-          key: "action",
-          slot: "operate"
-        }
-      ],
-      columns2: [
-        {
-          title: "品牌名称",
-          align: "center",
-          width: 200,
-          key: "name"
-        },
-        {
-          title: "关联店铺数",
-          align: "center",
-          width: 200,
-          key: "relationMerchantCount"
-        },
-        {
-          title: "操作",
-          align: "center",
-          key: "action",
-          slot: "operate"
-        }
-      ]
+      showSuperMarketList: false,
+      // dynamicColumns: typeData.type0.columns,
+      dynamicColumns: [],
+      dynamicTableData: []
     };
   },
   methods: {
@@ -295,26 +275,140 @@ export default {
         serialNumber: ""
       });
     },
+    selectRetailer(row) {
+      // venderName: "上海世纪联华", num: 7, venderId: "80"}
+      const { venderId: id, venderName: name, num } = row;
+      const { merchantType: type } = this.formData;
+      let typeData = this.typeData[`type${type}`];
+      this.formData.businessId = typeData.id = id;
+      this.formData.businessName = typeData.name = name;
+      this.dynamicTableData = typeData.tableData = [{ ...row }];
+      console.log("dynamicTableData", JSON.stringify(this.dynamicTableData));
+
+      this.setMoneyAndUbay(type, id);
+    },
     selectedTrCallBack(data) {
       console.log("selectedTrCallBack----", data);
+      const { merchantType: type, id, name, row } = data;
 
-      const { merchantType, id, name, row } = data;
-      this.formData.businessId = id;
-      this.formData.businessName = name;
-      if (merchantType == 0) {
-        this.tableData1 = [row];
-      } else {
-        this.tableData2 = [row];
-      }
+      let typeData = this.typeData[`type${type}`];
+      this.formData.businessId = typeData.id = id;
+      this.formData.businessName = typeData.name = name;
+      this.dynamicTableData = typeData.tableData = [row];
+
+      this.setMoneyAndUbay(type, id);
+    },
+    async setMoneyAndUbay(type, id) {
+      const { money, ubay } = await this.getMoneyAndUbay(type, id);
+      this.money = money;
+      this.ubay = ubay;
     },
     handleChoose() {
-      //  商户类型 0-本地商户（单店），1-本地商户（多店）
-      if (this.formData.merchantType == 0) {
-        this.showBusinessList = true;
-      } else {
-        // brand品牌
-        this.showBrandList = true;
+      //  '商户类型 0-本地商户（单店），1-本地商户（多店）' 2 商超门店、3 零售商
+      const arr = [
+        "showBusinessList",
+        "showBrandList",
+        "showSuperMarketList",
+        "retailer"
+      ];
+      const type = this.formData.merchantType;
+      this[arr[type]] = true;
+    },
+    clearSel() {
+      // 清空select绑定值
+      // this.$refs.retailerSel.clearSingleSelect();
+      console.log("clear");
+      const type = this.formData.merchantType;
+      let typeData = this.typeData[`type${type}`];
+
+      this.formData.businessId = typeData.id = "";
+      this.formData.businessName = typeData.name = "";
+      this.dynamicTableData = typeData.tableData = [];
+      this.money = 0;
+      this.ubay = 0;
+    },
+    remove() {
+      const type = this.formData.merchantType;
+      let typeData = this.typeData[`type${type}`];
+
+      this.formData.businessId = typeData.id = "";
+      this.formData.businessName = typeData.name = "";
+      this.dynamicTableData = typeData.tableData = [];
+
+      this.money = 0;
+      this.ubay = 0;
+
+      if (type == 3) {
+        // 清空select绑定值
+        this.$refs.retailerSel.clearSingleSelect();
       }
+    },
+    closeDialog() {
+      //关闭对话框清除表单数据
+      // this.$refs.formValidate.resetFields();
+      console.log("closeDialog");
+      this.$emit(`update:showRecharge`, false);
+    },
+    handleSubmit(name) {
+      this.$refs[name].validate(async valid => {
+        // console.log(JSON.stringify(this.formValidate));
+        if (valid) {
+          this.$Message.success("数据验证成功!");
+
+          let oForm = JSON.parse(JSON.stringify(this.formData));
+
+          // 提交的时候清理数据
+          const {
+            merchantType: type,
+            businessId: id,
+            businessName: name
+          } = oForm;
+
+          if (type == 0) {
+            oForm.merchantId = id;
+            oForm.merchantName = name;
+
+            oForm.brandId = "";
+            oForm.brandName = "";
+          } else {
+            oForm.brandId = id;
+            oForm.brandName = name;
+
+            oForm.merchantId = "";
+            oForm.merchantName = "";
+          }
+
+          // 应收款:给后端*100 转分
+          oForm.receivables *= 100;
+
+          oForm.merchantMoneyChargesRecords = oForm.merchantMoneyChargesRecords.map(
+            item => {
+              item.actualAmount *= 100;
+              item.receivedDateStr = formatDate(
+                new Date(item.receivedDate),
+                "yyyy-MM-dd hh:mm:ss"
+              );
+              return item;
+            }
+          );
+
+          console.log("submit oForm", oForm);
+
+          let { code, msg } = await rechargeAndDeduction(oForm);
+
+          if (code == 200) {
+            this.msgOk("保存成功");
+            // 关闭对话框
+            this.closeDialog();
+            //刷新列表数据
+            this.$emit("refresh");
+          } else {
+            this.msgErr(msg);
+          }
+        } else {
+          this.$Message.error("数据验证失败！");
+        }
+      });
     },
     validateCompatibleList(rule, value, callback) {
       console.log("validateCompatibleList", rule, value);
@@ -329,7 +423,7 @@ export default {
       // 允许不填
       if (value == "") {
         // ("请选择${businessTypeLabel}");
-        return callback(`请选择${this.businessTypeLabel}`);
+        return callback(`请选择${this.businessTypePlaceholder}`);
       }
       callback();
     },
@@ -388,93 +482,6 @@ export default {
       } else {
         callback();
       }
-    },
-    remove() {
-      const type = this.formData.merchantType;
-
-      this.formData.businessId = "";
-      this.formData.businessName = "";
-
-      if (type == 0) {
-        this.formData.merchantId = "";
-        this.formData.merchantName = "";
-        this.tableData1 = [];
-      } else {
-        this.formData.brandId = "";
-        this.formData.brandName = "";
-        this.tableData2 = [];
-      }
-    },
-    changeDrawType(type) {
-      console.log(type);
-    },
-    closeDialog() {
-      //关闭对话框清除表单数据
-      // this.$refs.formValidate.resetFields();
-      console.log("closeDialog");
-      this.$emit(`update:showRecharge`, false);
-    },
-    handleSubmit(name) {
-      this.$refs[name].validate(async valid => {
-        // console.log(JSON.stringify(this.formValidate));
-        if (valid) {
-          this.$Message.success("数据验证成功!");
-
-          let oForm = JSON.parse(JSON.stringify(this.formData));
-          console.log("o1Form", oForm);
-
-          // 应收款:给后端*100 转分
-          oForm.receivables *= 100;
-
-          oForm.merchantMoneyChargesRecords = oForm.merchantMoneyChargesRecords.map(
-            item => {
-              item.actualAmount *= 100;
-              item.receivedDateStr = formatDate(
-                new Date(item.receivedDate),
-                "yyyy-MM-dd hh:mm:ss"
-              );
-              return item;
-            }
-          );
-
-          console.log("oForm", oForm);
-          const type = oForm.merchantType;
-
-          if (type == 0) {
-            oForm.merchantId = oForm.businessId;
-            oForm.merchantName = oForm.businessName;
-          } else {
-            oForm.brandId = oForm.businessId;
-            oForm.brandName = oForm.businessName;
-          }
-          let { code, msg } = await rechargeAndDeduction(oForm);
-
-          if (code == 200) {
-            this.msgOk("保存成功");
-            // 关闭对话框
-            this.closeDialog();
-            //刷新列表数据
-            this.$emit("refresh");
-          } else {
-            this.msgErr(msg);
-          }
-        } else {
-          this.$Message.error("数据验证失败！");
-        }
-      });
-    },
-    // 全局提示
-    msgOk(txt) {
-      this.$Message.info({
-        content: txt,
-        duration: 3
-      });
-    },
-    msgErr(txt) {
-      this.$Message.error({
-        content: txt,
-        duration: 3
-      });
     }
   }
 };

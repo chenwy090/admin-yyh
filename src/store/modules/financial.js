@@ -11,7 +11,8 @@ export default {
         // businessId: "", //商户id
         // businessName: "", //商户名称
         province: "", //省
-        city: "" //市
+        city: "", //市
+        retailerInfoList: [],
     },
     mutations: {
         changeCompName(state, payload) {
@@ -28,7 +29,11 @@ export default {
             // state.businessId = payload.businessId;
             // state.businessName = payload.businessName;
             console.log("mutation showRechargeDetail", payload);
-        }
+        },
+        setRetailerInfoList(state, payload) {
+            console.log("mutations setRetailerInfoList", payload);
+            state.retailerInfoList = payload;
+        },
     },
     actions: {
         changeCompName({ commit }, payload) {
