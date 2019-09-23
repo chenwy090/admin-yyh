@@ -54,6 +54,7 @@
   </div>
 </template>
 <script>
+import { postRequest } from "@/libs/axios";
 export default {
   name: "set-tag",
   props: {
@@ -100,8 +101,8 @@ export default {
     changeStartDate(arr) {
       // yyyy-MM-dd
       console.log(arr);
-      this.formData.startTime = arr[0];
-      this.formData.endTime = arr[1];
+      this.formData.startTime = `${arr[0]}:00`;
+      this.formData.endTime = `${arr[1]}:00`;
     },
     closeDialog() {
       //关闭对话框清除表单数据
@@ -117,9 +118,23 @@ export default {
           let oForm = JSON.parse(JSON.stringify(this.formData));
           console.log(oForm);
 
-          let { code = 200, msg = "" } = {};
+          const { isNew, startTime, endTime } = oForm;
 
-          // let { code, msg } = await exchangeAndConsume(oForm);
+          let params = { merchantId: this.id, merchantTags: [] };
+          if (isNew) {
+            params.merchantTags.push({
+              merchantId: this.id,
+              tagId: "1",
+              startTime,
+              endTime
+            });
+          }
+
+          // let { code = 200, msg = "" } = {};
+
+          const url = "/merchant/tag/rel/add";
+
+          let { code, msg } = await postRequest(url, params);
 
           if (code == 200) {
             this.msgOk("保存成功");

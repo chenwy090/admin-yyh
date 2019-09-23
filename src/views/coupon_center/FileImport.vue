@@ -26,7 +26,7 @@
               <Upload
                 ref="upload"
                 :headers="userToken"
-                action="//jsonplaceholder.typicode.com/posts/"
+                :action="`${url}/template/sort/excel/upload`"
                 :show-upload-list="false"
                 :before-upload="handleBeforeUpload"
                 :multiple="false"
@@ -45,7 +45,7 @@
               <Row type="flex" justify="space-between" class="code-row-bg">
                 <Col span="12">仅支持xlsx文件</Col>
                 <Col span="12">
-                  <a href="javascript:;">模板文件</a>
+                  <a href="/周边劵管理导入模板.xlsx">模板文件</a>
                 </Col>
               </Row>
               <div v-if="file !== null">
@@ -63,6 +63,7 @@
   </div>
 </template>
 <script>
+import { baseUrl } from "@/api/index";
 import { uploadFileRequest } from "@/libs/axios";
 export default {
   name: "file-import",
@@ -95,6 +96,7 @@ export default {
   },
   data() {
     return {
+      url: baseUrl,
       userToken: {}, //用户token
       isShow: true,
       title: "文件上传",
@@ -117,26 +119,29 @@ export default {
   },
   methods: {
     async upload() {
-      this.loadingStatus = true;
-      const url = "/system/sys-shop-info/importShopInfo";
-      let fd = new FormData();
-      fd.append("file", this.file); //append方法传入formData中
+      this.$refs.upload.post(this.file);
+      // console.log("rrssssssssssssss",res);
+      // const { code, msg } = res;
+      // // this.loadingStatus = true;
+      // // const url = "/template/sort/excel/upload";
+      // // let fd = new FormData();
+      // // fd.append("file", this.file); //append方法传入formData中
 
-      const { code, msg } = await uploadFileRequest(url, fd);
+      // // const { code, msg } = await uploadFileRequest(url, fd);
 
-      if (code == 200) {
-        // this.msgOk("保存成功");
-        // 关闭对话框
-        this.closeDialog();
-        //刷新列表数据
-        this.$emit("refresh");
-      } else {
-        this.msgErr(msg);
-      }
+      // if (code == 200) {
+      //   // this.msgOk("保存成功");
+      //   // 关闭对话框
+      //   this.closeDialog();
+      //   //刷新列表数据
+      //   this.$emit("refresh");
+      // } else {
+      //   this.msgErr(msg);
+      // }
 
       this.file = null;
       this.loadingStatus = false;
-      this.$Message.success("Success");
+      this.$Message.success("文件上传成功");
     },
 
     handleSuccess(res, file) {
