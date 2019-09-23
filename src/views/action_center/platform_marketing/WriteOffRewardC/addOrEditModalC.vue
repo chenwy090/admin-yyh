@@ -341,14 +341,21 @@ export default {
       this.couponViewDialogModal = false;
       if (e) {
         var that = this;
-        e.forEach(function(v, i) {
-          that.couponObj.forEach(function(value, index) {
-            if (v.templateId === (value.templateId || value.id)) {
-              e.splice(i, 1);
-            }
-          });
-        });
-        this.couponObj = this.couponObj.concat(e);
+        if(this.couponObj.length==0){
+            this.couponObj = e;
+        }else if((e[0].shopName&&!this.couponObj[0].shopName)||e[0].merchantName&&!this.couponObj[0].merchantName){
+            this.couponObj = e;
+        }else{
+            e.forEach(function(v, i) {
+                that.couponObj.forEach(function(value, index) {
+                    debugger
+                    if (v.templateId === (value.templateId || value.id)) {
+                        that.couponObj.splice(index, 1);
+                    }
+                });
+            });
+            this.couponObj = this.couponObj.concat(e);
+        }
       }
     },
     selectVolume(e) {

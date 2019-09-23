@@ -53,6 +53,9 @@
                                             <div v-if="row.dateType===1">{{row.startDate+'——'+row.endDate}}</div>
                                             <div v-if="row.dateType===2">永久有效</div>
                                         </template>
+                                        <template slot-scope="{ row,index }" slot="isActivityCoupon">
+                                            <div>{{row.isActivityCoupon==1?'否':'是'}}</div>
+                                        </template>
                                     </Table>
                                 </RadioGroup>
                             </Row>
@@ -114,6 +117,9 @@
                                         <!--</template>-->
                                         <template slot-scope="{ row,index }" slot="timer">
                                             <div>{{row.useStartTime+'——'+row.useEndTime}}</div>
+                                        </template>
+                                        <template slot-scope="{ row,index }" slot="isActivityCoupon">
+                                            <div>{{row.isActivityCoupon==0?'否':'是'}}</div>
                                         </template>
                                     </Table>
                                 </RadioGroup>
@@ -217,7 +223,13 @@
                         align: "center",
                         minWidth:300,
                         slot: "timer"
-                    }
+                    },
+                    {
+                        title: "活动券",
+                        minWidth:100,
+                        slot: "isActivityCoupon",
+                        align: 'center',
+                    },
                 ],
                 listData1: [],
                 listData2: [],
