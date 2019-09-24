@@ -38,13 +38,13 @@
                             <FormItem label="终端" span="24"  style="width:23%">
                                 <Select v-model="searchForm.type" style="width:100%">
                                     <Option value="">全部</Option>
-                                    <Option v-for="item in typeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                                    <Option v-for="(item,index) in typeList" :value="item.value" :key="index">{{ item.label }}</Option>
                                 </Select>
                             </FormItem>
                             <FormItem label="运营状态" span="24"  style="width:23%">
                                 <Select v-model="searchForm.status" style="width:100%">
                                     <Option value="">全部</Option>
-                                    <Option v-for="item in statusList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                                    <Option v-for="(item,index) in statusList" :value="item.value" :key="index">{{ item.label }}</Option>
                                 </Select>
                             </FormItem>
                             <FormItem span="24" :label-width="1" style="width:23%">
@@ -70,41 +70,48 @@
                                     @on-selection-change="handleSelect"
                             >
                                 <template slot-scope="{ row }" slot="action">
-                                    <Button v-if="!(row.status==2||row.status==4)"
+                                    <Button v-if="row.status==='0'"
                                             type="success"
                                             style="margin-right: 5px"
                                             size="small"
                                             @click="edit(row)"
                                     >编辑</Button>
-                                    <Button
+                                    <Button v-if="row.status==='0'||row.status==='1'||row.status==='2'"
                                             type="info"
                                             style="margin-right: 5px"
                                             size="small"
                                             @click="showDetail(row)"
-                                    >查看</Button>
+                                    >查看详情</Button>
                                     <Button
-                                            v-if="!(row.status==2||row.status==4)"
+                                            v-if="row.status==='0'"
                                             type="error"
                                             style="margin-right: 5px"
                                             size="small"
                                             @click="del(row)"
                                     >删除</Button>
                                     <Button
-                                            v-if="row.status==2"
+                                            v-if="row.status==='0'"
+                                            type="error"
+                                            style="margin-right: 5px"
+                                            size="small"
+                                            @click="stop(row)"
+                                    >上架</Button>
+                                    <Button
+                                            v-if="row.status==='1'"
                                             type="error"
                                             style="margin-right: 5px"
                                             size="small"
                                             @click="stop(row)"
                                     >下架</Button>
                                 </template>
-                                <template slot-scope="{ row }" slot="activeTime">
-                                    <div>{{row.startTime+' - '+row.endTime}}</div>
-                                </template>
                                 <template slot-scope="{ row }" slot="status">
-                                    <div>{{statusList[row.status-1].label}}</div>
+                                    <div>{{['待上架','上架', '下架'][row.status]}}</div>
                                 </template>
-                                <template slot-scope="{ row }" slot="awardType">
-                                    <div>{{typeList[Number(row.awardType)-1].label}}</div>
+                                <template slot-scope="{ row }" slot="type">
+                                    <div>{{['','ios','ios', '小程序'][row.type]}}</div>
+                                </template>
+                                <template slot-scope="{ row }" slot="image">
+                                    <img style="max-width: 100px;max-height: 50px;" :src="row.image" alt="">
                                 </template>
                             </Table>
                         </Row>
@@ -137,8 +144,8 @@
         components:{AddOrEdit,showDetail},
         data(){
             return{
-                typeList:[{value:1,label:'ios'},{value:2,label:'android'},{value:2,label:'小程序'}],
-                statusList:[{value:0,label:'下架'},{value:1,label:'上架'}],
+                typeList:[{value:1,label:'ios'},{value:2,label:'ios'},{value:2,label:'小程序'}],
+                statusList:[{value:0,label:'待上架'},{value:1,label:'上架'},{value:1,label:'下架'}],
                 TableLoading: false,
                 auditing:0,
                 totalSize: 0,
@@ -157,19 +164,40 @@
                         title: "门店",
                         width: 200,
                         align: "center",
-                        key: "shopName"
+                        key: "shopName",
+                        render: (h, params) => {
+                            return h('div', [
+                                h('Tooltip', {
+                                    props: { placement: 'top' }
+                                }, [
+                                    h('span', {
+                                        style: {
+                                            display: 'inline-block',
+                                            width: params.column._width*0.85+'px',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                        },
+                                    }, params.row.shopName),
+                                    h('span', {
+                                        slot: 'content',
+                                        style: { whiteSpace: 'normal', wordBreak: 'break-all' }
+                                    },params.row.shopName)
+                                ])
+                            ])
+                        }
                     },
                     {
                         title: "标题",
                         width: 150,
                         align: "center",
-                        slot: "title"
+                        key: "title"
                     },
                     {
                         title: "内容Id",
-                        width: 200,
+                        width: 100,
                         align: "center",
-                        slot: "id",
+                        key: "shopId",
                     },
                     {
                         title: "终端",
@@ -181,28 +209,28 @@
                         title: "运营位类型",
                         minWidth: 100,
                         align: "center",
-                        key: "createBy"
+                        key: "businessLayer"
                     },
                     {
                         title: "已选活动",
                         minWidth: 200,
                         align: "center",
-                        key: "createTime"
+                        key: "businessLayer"
                     },{
                         title: "运营位置",
                         minWidth: 200,
                         align: "center",
-                        key: "createTime"
+                        key: "location"
                     },{
                         title: "运营图片",
                         minWidth: 200,
                         align: "center",
-                        key: "createTime"
+                        slot: "image"
                     },{
                         title: "运营状态",
                         minWidth: 200,
                         align: "center",
-                        key: "createTime"
+                        slot: "status"
                     },{
                         title: "开始时间",
                         minWidth: 200,

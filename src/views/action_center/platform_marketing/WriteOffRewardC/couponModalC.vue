@@ -11,8 +11,8 @@
                     <div>
                         <Card :bordered="false" style="margin-bottom:2px">
                             <Form ref="copponForm1" label-position="right" :label-width="80" :model="copponForm1" inline>
-                                <FormItem label="商家名称" span="24" style="width:45%">
-                                    <Input v-model="copponForm1.merchantName" placeholder=" 请填写商家名称" :maxlength=20 />
+                                <FormItem label="商超名称" span="24" style="width:45%">
+                                    <Input v-model="copponForm1.merchantName" placeholder=" 请填写商超名称" :maxlength=20 />
                                 </FormItem>
                                 <!--<FormItem label="省/市" span="24"  style="width:50%">-->
                                 <!--<Cascader :data="addressData" :load-data="addressLoad" v-model="addressValue"></Cascader>-->
