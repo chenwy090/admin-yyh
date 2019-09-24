@@ -10,12 +10,12 @@ let util = {
 
 };
 
-util.title = function (title) {
+util.title = function(title) {
     title = title || '知而行管理系统';
     window.document.title = title;
 };
 
-util.inOf = function (arr, targetArr) {
+util.inOf = function(arr, targetArr) {
     let res = true;
     arr.forEach(item => {
         if (targetArr.indexOf(item) < 0) {
@@ -25,7 +25,7 @@ util.inOf = function (arr, targetArr) {
     return res;
 };
 
-util.oneOf = function (ele, targetArr) {
+util.oneOf = function(ele, targetArr) {
     if (targetArr.indexOf(ele) >= 0) {
         return true;
     } else {
@@ -33,11 +33,10 @@ util.oneOf = function (ele, targetArr) {
     }
 };
 
-util.getRouterObjByName = function (routers, name) {
+util.getRouterObjByName = function(routers, name) {
     if (!name || !routers || !routers.length) {
         return null;
     }
-    // debugger;
     let routerObj = null;
     for (let item of routers) {
         if (item.name === name) {
@@ -51,7 +50,7 @@ util.getRouterObjByName = function (routers, name) {
     return null;
 };
 
-util.handleTitle = function (vm, item) {
+util.handleTitle = function(vm, item) {
     if (typeof item.title === 'object') {
         return vm.$t(item.title.i18n);
     } else {
@@ -59,7 +58,7 @@ util.handleTitle = function (vm, item) {
     }
 };
 
-util.setCurrentPath = function (vm, name) {
+util.setCurrentPath = function(vm, name) {
     let title = '';
     let isOtherRouter = false;
     vm.$store.state.app.routers.forEach(item => {
@@ -162,7 +161,7 @@ util.setCurrentPath = function (vm, name) {
     return currentPathArr;
 };
 
-util.openNewPage = function (vm, name, argu, query) {
+util.openNewPage = function(vm, name, argu, query) {
     let pageOpenedList = vm.$store.state.app.pageOpenedList;
     let openedPageLen = pageOpenedList.length;
     let i = 0;
@@ -202,7 +201,7 @@ util.openNewPage = function (vm, name, argu, query) {
     vm.$store.commit('setCurrentPageName', name);
 };
 
-util.toDefaultPage = function (routers, name, route, next) {
+util.toDefaultPage = function(routers, name, route, next) {
     let len = routers.length;
     let i = 0;
     let notHandle = true;
@@ -222,11 +221,11 @@ util.toDefaultPage = function (routers, name, route, next) {
     }
 };
 
-util.fullscreenEvent = function (vm) {
+util.fullscreenEvent = function(vm) {
     vm.$store.commit('initCachepage');
 };
 
-util.initRouter = function (vm) {
+util.initRouter = function(vm) {
     const constRoutes = [];
     const otherRoutes = [];
 
@@ -287,7 +286,7 @@ util.initRouter = function (vm) {
 };
 
 // 生成路由节点
-util.initRouterNode = function (routers, data) {
+util.initRouterNode = function(routers, data) {
     if (data) {
         for (var item of data) {
             let menu = Object.assign({}, item);

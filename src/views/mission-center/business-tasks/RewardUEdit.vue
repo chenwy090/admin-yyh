@@ -214,6 +214,7 @@ export default {
         brandId: "", // 品牌id
         brandName: "", // 品牌名称
         anticipatedUbay: "", // 预计消耗u贝数量
+        couponType: 0, //优惠券类型 0-商超券 1-商户/周边券
         templateId: "", //券模板id
         templateName: "", //券模板名称
         endTime: "", // 任务中止时间
@@ -266,26 +267,31 @@ export default {
           this.msgOk("数据验证成功!");
           let oForm = JSON.parse(JSON.stringify(this.formData));
 
-          // 提交的时候清理数据
-          const {
-            merchantType: type,
-            businessId: id,
-            businessName: name
-          } = oForm;
+          const { ruleInfoList } = oForm;
 
-          if (type == 0) {
-            oForm.merchantId = id;
-            oForm.merchantName = name;
+          oForm.ruleInfoList = ruleInfoList.map(item => {
+            // 提交的时候清理数据
+            const {
+              merchantType: type,
+              businessId: id,
+              businessName: name
+            } = item;
 
-            oForm.brandId = "";
-            oForm.brandName = "";
-          } else {
-            oForm.brandId = id;
-            oForm.brandName = name;
+            if (type == 0) {
+              item.merchantId = id;
+              item.merchantName = name;
 
-            oForm.merchantId = "";
-            oForm.merchantName = "";
-          }
+              item.brandId = "";
+              item.brandName = "";
+            } else {
+              item.brandId = id;
+              item.brandName = name;
+
+              item.merchantId = "";
+              item.merchantName = "";
+            }
+            return item;
+          });
 
           console.log("add save:", oForm);
           let url = "";

@@ -58,26 +58,32 @@
           </FormItem>
         </Col>
       </Row>
+      <!-- ------------------------------ -->
+      <Divider />
+
+      <Row class="share-info">
+        <h3>分享设置</h3>
+        <!-- 分享标题 shareTitle -->
+        <div class="item">
+          <span class="fl label">分享标题：</span>
+          <span class="fl">{{item.shareTitle}}</span>
+        </div>
+      </Row>
+      <!-- ----------------- -->
+      <Row type="flex" justify="start">
+        <Col span="8">
+          <FormItem label="分享Logo：">
+            <img :src="item.shareLogo" style="width:70px;" />
+          </FormItem>
+        </Col>
+      </Row>
     </Alert>
   </div>
 </template>
 <script>
-import BusinessList from "./BusinessList";
-import BrandList from "./BrandList";
-import CouponList from "./CouponList";
-
 export default {
   name: "rules-item",
-  components: {
-    BusinessList,
-    BrandList,
-    CouponList
-  },
   props: {
-    index: {
-      type: Number,
-      default: 0
-    },
     item: {
       type: Object,
       default: function() {
@@ -90,6 +96,7 @@ export default {
           brandId: "", // 品牌id
           brandName: "", // 品牌名称
           anticipatedUbay: "", // 预计消耗u贝数量
+          couponType: 0, //优惠券类型 0-商超券 1-商户/周边券
           templateId: "", //券模板id
           templateName: "", //券模板名称
           endTime: "", // 任务中止时间
@@ -101,132 +108,17 @@ export default {
           defaultBannerList: [],
           imgUrl: "",
           defaultLogoList: [],
-          logoUrl: ""
+          logoUrl: "",
+          defaultShareLogoList: [],
+          shareLogo: ""
         };
       }
     }
   },
-  computed: {
-    dynamicColumns() {
-      return this.item.merchantType == 0 ? this.columns1 : this.columns2;
-    }
-  },
-  watch: {
-    ["item.merchantType"]() {
-      const type = this.item.merchantType;
-      // this.$refs.form.resetFields();
-      this.businessTypeList.some(item => {
-        let r = item.value == type;
-        if (r) {
-          this.businessTypeLabel = item.label;
-        }
-        return r;
-      });
-      // this.businessTypeLabel = this.businessTypeList[type];
-      // this.$refs.form.validateField("businessName");
-    }
-  },
+
   data() {
-    return {
-      showBusinessList: false,
-      showBrandList: false,
-      showCouponList: false,
-
-      businessTypeLabel: "商户",
-      // 商户类型 0-本地商户（单店），1-本地商户（多店）
-      // businessTypeList: { 0: "商户", 1: "品牌" },
-      businessTypeList: [
-        { value: 0, label: "商户" },
-        { value: 1, label: "品牌" }
-      ],
-      merchantTypeOption: [
-        {
-          value: 0,
-          label: "本地商户（单店）"
-        },
-        {
-          value: 1,
-          label: "本地商户（多店）"
-        }
-      ],
-      payTypeList: [
-        {
-          id: "1",
-          name: "现金"
-        },
-        {
-          id: "2",
-          name: "微信"
-        },
-        {
-          id: "3",
-          name: "支付宝"
-        },
-        {
-          id: "4",
-          name: "银行卡"
-        }
-      ],
-      tableData: [],
-      columns1: [
-        {
-          title: "商户编号",
-          align: "center",
-          width: 200,
-          key: "merchantId"
-        },
-        {
-          title: "商户名称",
-          align: "center",
-          width: 200,
-          key: "name"
-        },
-        {
-          title: "地址",
-          align: "center",
-          minWidth: 300,
-          key: "address"
-        },
-        {
-          title: "操作",
-          align: "center",
-          width: 140,
-          key: "action",
-          slot: "operate"
-        }
-      ],
-      columns2: [
-        {
-          title: "品牌编号",
-          align: "center",
-          width: 200,
-          key: "id"
-        },
-        {
-          title: "品牌名称",
-          align: "center",
-          width: 200,
-          key: "name"
-        },
-        {
-          title: "关联店铺数",
-          align: "center",
-          minWidth: 300,
-          key: "address"
-        },
-        {
-          title: "操作",
-          align: "center",
-          width: 140,
-          key: "action",
-          slot: "operate"
-        }
-      ]
-    };
-  },
-
-  mounted() {},
-  methods: {}
+    return {};
+  }
 };
 </script>
 <style lang="less" scoped>

@@ -175,6 +175,10 @@ export default {
   },
 
   methods: {
+    // 关闭商户选择框
+    cancel() {
+      this.closeDialog();
+    },
     search() {
       this.queryTableData();
     },

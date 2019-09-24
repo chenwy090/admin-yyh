@@ -45,7 +45,8 @@
               <Row type="flex" justify="space-between" class="code-row-bg">
                 <Col span="12">仅支持xlsx文件</Col>
                 <Col span="12">
-                  <a href="/周边劵管理导入模板.xlsx">模板文件</a>
+                  <!-- 周边劵管理导入模板 -->
+                  <a href="/template/coupon_demo.xlsx">模板文件</a>
                 </Col>
               </Row>
               <div v-if="file !== null">
