@@ -152,6 +152,7 @@ export default {
   data() {
     return {
       titleName: "",
+      couponType:'',
       selectActiveVolumeModal: false,
       selectActiveVolumeObj: {},
       couponViewDialogModal: false,
@@ -238,6 +239,7 @@ export default {
         getRequest(`/customer/activity/award/activity/${row.id}`).then(res => {
           if (res.code === "200") {
             var data = res.data;
+            this.couponType = data.couponType;
             this.modal.name = data.name;
             this.modal.startTime = data.startTime;
             this.modal.wardType = data.awardType.toString();
@@ -337,25 +339,23 @@ export default {
         this.$refs["couponModal"].resetRow(this.couponObj);
       });
     },
-    selectCoupon(e) {
+    selectCoupon(e,type) {
       this.couponViewDialogModal = false;
       if (e) {
-        var that = this;
-        if(this.couponObj.length==0){
-            this.couponObj = e;
-        }else if((e[0].shopName&&!this.couponObj[0].shopName)||e[0].merchantName&&!this.couponObj[0].merchantName){
-            this.couponObj = e;
-        }else{
-            e.forEach(function(v, i) {
-                that.couponObj.forEach(function(value, index) {
-                    debugger
-                    if (v.templateId === (value.templateId || value.id)) {
-                        that.couponObj.splice(index, 1);
-                    }
-                });
-            });
-            this.couponObj = this.couponObj.concat(e);
-        }
+          if(this.couponType === type){
+              e.forEach(function(v, i) {
+                  that.couponObj.forEach(function(value, index) {
+                      debugger
+                      if (v.templateId === (value.templateId || value.id)) {
+                          that.couponObj.splice(index, 1);
+                      }
+                  });
+              });
+              this.couponObj = this.couponObj.concat(e);
+          }else{
+              this.couponObj = e;
+          }
+          this.couponType = type;
       }
     },
     selectVolume(e) {
@@ -377,12 +377,13 @@ export default {
       // /merchant/activity/award/add/activity
       // /merchant/activity/award/update/activity
       let params = {
+        couponType:this.couponType,
         endTime: this.modal.endTime,
         id: this.modal.id,
         name: this.modal.name,
         startTime: this.modal.startTime,
         wardType: this.modal.wardType,
-        type: 1
+        type: 1,
       };
       let couponIds = [];
       if (!this.couponObj || !this.couponObj.length) {
