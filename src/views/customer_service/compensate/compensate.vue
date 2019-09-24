@@ -188,7 +188,7 @@
           <!--</Row>-->
         <!--</FormItem>-->
         <FormItem label="发放原因:" required>
-          <RadioGroup v-model="formValidate.reason" vertical>
+          <RadioGroup v-model="formValidate.reason" vertical  @on-change="changeReason">
             <Radio label="客诉补偿" value="1">
               <span>客诉补偿</span>
             </Radio>
@@ -210,11 +210,11 @@
           <Input style="width:250px" v-model="formValidate.remark" placeholder="请输入" clearable />
         </FormItem>
         <FormItem label="用户领取方式:" required>
-          <RadioGroup v-model="formValidate.reveiveType" vertical>
-            <Radio label="1" value="1" style="display: inline-block">
+          <RadioGroup v-model="formValidate.reveiveType" vertical >
+            <Radio label="1" value="1" style="display: inline-block" :disabled="formValidate.reason=='客诉补偿'">
               <span>手动领取</span>
             </Radio>
-            <Radio label="0" value="0" style="display: inline-block">
+            <Radio label="0" value="0" style="display: inline-block" :disabled="formValidate.reason=='客诉补偿'">
               <span>到“我的券”</span>
             </Radio>
           </RadioGroup>
@@ -649,6 +649,14 @@ export default {
           // console.log(112);
           // this.fileList = [];
       },
+      changeReason(){
+          console.log(111);
+          if(this.formValidate.reason=='客诉补偿'){
+            this.formValidate.reveiveType='1';
+        }else{
+            this.formValidate.reveiveType='';
+        }
+      },
       //校验userId
       checkUserId(){
         if(!this.userId){
@@ -713,6 +721,7 @@ export default {
       },
       reduce(){
         this.fileList = [];
+        this.formValidate.userId = [];
       },
       downLoad(list){
           // /compensate/demo/download

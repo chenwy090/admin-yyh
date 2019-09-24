@@ -12,10 +12,7 @@
                             <FormItem label="门店" span="24" style="width:25%">
                                 <Input v-model="searchForm.shopName" placeholder="活动名称" />
                             </FormItem>
-                            <FormItem label="标题" span="24" style="width:25%">
-                                <Input v-model="searchForm.title" placeholder="标题" />
-                            </FormItem>
-                            <FormItem label="开始时间" span="24"  style="width:25%">
+                            <FormItem label="开始时间" span="35"  style="width:35%">
                                 <DatePicker
                                         :value="searchForm.startTime"
                                         type="date"
@@ -25,7 +22,7 @@
                                         @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
                                 ></DatePicker>
                             </FormItem>
-                             <FormItem label="开始时间" span="24"  style="width:25%">
+                             <FormItem label="开始时间" span="35"  style="width:35%">
                                 <DatePicker
                                         :value="searchForm.endTime"
                                         type="date"
@@ -34,6 +31,9 @@
                                         :options="options2"
                                         @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
                                 ></DatePicker>
+                            </FormItem>
+                            <FormItem label="标题" span="24" style="width:25%">
+                                <Input v-model="searchForm.title" placeholder="标题" />
                             </FormItem>
                             <FormItem label="终端" span="24"  style="width:23%">
                                 <Select v-model="searchForm.type" style="width:100%">
@@ -48,7 +48,7 @@
                                 </Select>
                             </FormItem>
                             <FormItem span="24" :label-width="1" style="width:23%">
-                                <Button type="primary" class="submit" icon="ios-search" @click="search('searchForm')" style="margin-right: 5px">搜索</Button>
+                                <Button type="primary" class="submit" icon="ios-search" @click="search()" style="margin-right: 5px">搜索</Button>
                                 <!--<Button type="primary" icon="ios-search" @click="search">搜索</Button>-->
                                 <Button icon="md-refresh" @click="reset">重置</Button>
                             </FormItem>
@@ -94,7 +94,7 @@
                                             type="error"
                                             style="margin-right: 5px"
                                             size="small"
-                                            @click="stop(row)"
+                                            @click="upper(row)"
                                     >上架</Button>
                                     <Button
                                             v-if="row.status==='1'"
@@ -152,10 +152,11 @@
                 current: 1,
                 listData: [],
                 selectDataList: [],
+                confirmValue:'',
                 tableColumns: [
                     {
                         title: "操作",
-                        width: 200,
+                        width: 250,
                         align: "center",
                         slot: "action",
                         fixed: "left"
@@ -352,11 +353,53 @@
                 })
             },
             del(row){
+                var confirmValue = '';
                 this.$Modal.confirm({
-                    title: '确认删除',
-                    content: '<p>您确定要删除该条活动吗？</p>',
+                    title: '删除原因',
+                    render: (h) => {
+                        return h('textarea', {
+                            props: {
+                                class:'confirm-textarea',
+                                rows:3,
+                                autofocus: true,
+                                placeholder: 'Please enter your name...',
+                            },
+                            style: {
+                                width: '100%',
+                                height: '100px',
+                                padding:"5px",
+                                outline: 'none',
+                            },
+                            on: {
+                                input: (val) => {
+                                    confirmValue = val.data;
+                                }
+                            }
+                        })
+                    },
                     onOk: () => {
-                        postRequest(`/customer/activity/award/activity/status`,{id:row.id,status:0,type:1}
+                        console.log(this.confirmValue);
+                        postRequest(`/banner/setting/undercarriage`,{id:row.id,type:3,remark:confirmValue}
+                        ).then(res => {
+                            this.TableLoading = false;
+                            if (res.code === "200") {
+                                this.search();
+                            } else {
+                                this.$Message.error(res.msg);
+                            }
+                        });
+                    },
+                    onCancel: () => {
+                    }
+                });
+            },
+            upper(){
+                var confirmValue = '';
+                this.$Modal.confirm({
+                    title: '确认上架',
+                    onOk: () => {
+                        console.log(this.confirmValue);
+                        postRequest(`/banner/setting/undercarriage`,{id:row.id,type:2,remark:confirmValue}
                         ).then(res => {
                             this.TableLoading = false;
                             if (res.code === "200") {
@@ -371,12 +414,32 @@
                 });
             },
             stop(row){
+                var confirmValue = '';
                 this.$Modal.confirm({
-                    title: '确认终止',
-                    content: '<p>您确定要终止该条活动吗？</p>',
+                    title: '下架原因',
+                    render: (h) => {
+                        return h('textarea', {
+                            props: {
+                                rows:3,
+                                autofocus: true,
+                                placeholder: 'Please enter your name...',
+                            },
+                            style: {
+                                width: '100%',
+                                height: '100px',
+                                padding:"5px",
+                                outline: 'none'
+                            },
+                            on: {
+                                input: (val) => {
+                                    confirmValue = val.data;
+                                }
+                            }
+                        })
+                    },
                     onOk: () => {
                         // /merchant/activity/award/activity/status
-                        postRequest(`/customer/activity/award/activity/status`,{id:row.id,status:4,type:1}
+                        postRequest(`/banner/setting/undercarriage`,{id:row.id,type:1,remark:confirmValue}
                         ).then(res => {
                             this.TableLoading = false;
                             if (res.code === "200") {
@@ -417,5 +480,11 @@
 <style scoped>
     .operation {
         margin-bottom: 2vh;
+    }
+    .confirm-textarea{
+        width: 100%;
+        height: 100px;
+        padding: 5px;
+        outline: none;
     }
 </style>
