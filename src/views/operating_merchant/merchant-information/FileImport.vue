@@ -46,7 +46,8 @@
               <Row type="flex" justify="space-between" class="code-row-bg">
                 <Col span="12">仅支持xlsx文件</Col>
                 <Col span="12">
-                  <a href="/商户管理导入模板.xlsx">模板文件</a>
+                  <!-- 商户管理导入模板 -->
+                  <a href="/template/shop_demo.xlsx">模板文件</a>
                 </Col>
               </Row>
               <div v-if="file !== null">
@@ -120,7 +121,6 @@ export default {
   },
   methods: {
     async upload() {
-
       this.$refs.upload.post(this.file);
 
       // this.loadingStatus = true;

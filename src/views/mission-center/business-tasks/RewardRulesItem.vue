@@ -282,6 +282,9 @@
 <script>
 import { createNamespacedHelpers } from "vuex";
 const { mapState } = createNamespacedHelpers("financial");
+const { mapState: mapStateMissionCenter } = createNamespacedHelpers(
+  "missionCenter"
+);
 
 import BusinessList from "./BusinessList";
 import BrandList from "./BrandList";
@@ -329,6 +332,7 @@ export default {
           brandId: "", // 品牌id
           brandName: "", // 品牌名称
           anticipatedUbay: "", // 预计消耗u贝数量
+          couponType: 0, //优惠券类型 0-商超券 1-商户/周边券
           templateId: "", //券模板id
           templateName: "", //券模板名称
           endTime: "", // 任务中止时间
@@ -340,44 +344,52 @@ export default {
           defaultBannerList: [],
           imgUrl: "",
           defaultLogoList: [],
-          logoUrl: ""
+          logoUrl: "",
+          defaultShareLogoList: [],
+          shareLogo: ""
         };
       }
     }
   },
   computed: {
-    ...mapState(["retailerInfoList"])
+    ...mapState(["retailerInfoList"]),
+    ...mapStateMissionCenter(["type"])
   },
   watch: {
     ["item.merchantType"]() {
       const type = this.item.merchantType;
       // this.$refs.form.resetFields();
 
-      const { id, name, label, desc, columns, tableData } = this.typeData[
+      let { id, name, label, desc, columns, tableData } = this.typeData[
         `type${type}`
       ];
-
-      this.item.businessId = id;
-      this.item.businessName = name;
-
       this.businessTypeLabel = label;
       this.businessTypePlaceholder = desc;
       this.dynamicColumns = columns;
       this.dynamicTableData = tableData;
+      // 新增
+      if (type == "add") {
+        this.item.businessId = id;
+        this.item.businessName = name;
+      } else if (type == "edit") {
+        // 编辑
+        // this.item.businessId = id;
+        // this.item.businessName = name;
+      }
 
-      console.log("refForm:", this.$parent.$parent);
-      console.log("refForm:", this.$parent.$parent.fields);
-      console.log("refForm:", `ruleInfoList.${this.index}.businessName`);
+      // console.log("refForm:", this.$parent.$parent);
+      // console.log("refForm:", this.$parent.$parent.fields);
+      // console.log("refForm:", `ruleInfoList.${this.index}.businessName`);
       this.$parent.$parent.validateField(
         `ruleInfoList.${this.index}.businessName`
       );
       // console.log(this.$refs.form.fields);
-      this.$parent.$parent.fields.forEach(function(e) {
-        console.log("e.prop:", e.prop);
-        // let r = e.prop == "startTime";
-        // r && e.resetField();
-        // return r;
-      });
+      // this.$parent.$parent.fields.forEach(function(e) {
+      //   console.log("e.prop:", e.prop);
+      //   // let r = e.prop == "startTime";
+      //   // r && e.resetField();
+      //   // return r;
+      // });
       // this.businessTypeList.some(item => {
       //   let r = item.value == type;
       //   if (r) {
@@ -435,9 +447,6 @@ export default {
       ]
     };
   },
-  // updated() {
-  //   console.log("updated,", this.item);
-  // },
   methods: {
     bannerUploadSuccess(data) {
       this.item.imgUrl = data.imgUrl;
@@ -464,9 +473,10 @@ export default {
     },
     selectedTrCallBack(data) {
       console.log(this.item.merchantType, "selectedTrCallBack----", data);
-      const { merchantType: type, id, name, row } = data;
+      const { merchantType: type, couponType, id, name, row } = data;
 
       let typeData = this.typeData[`type${type}`];
+      this.item.couponType = couponType; //优惠券类型 0-商超券 1-商户/周边券
       this.item.businessId = typeData.id = id;
       this.item.businessName = typeData.name = name;
       this.dynamicTableData = typeData.tableData = [row];
@@ -481,11 +491,13 @@ export default {
 
     selectedCouponItem(data) {
       // console.log("selectedCouponItem----", data);
-      let { id, name } = data;
+      let { couponType, id, name } = data;
       // templateId 券模板id templateName 券模板名称
+
+      this.item.couponType = couponType;
       this.item.templateId = id;
       this.item.templateName = name;
-      console.log(id, name);
+      console.log(couponType, id, name);
     },
     handleChoose() {
       //  '商户类型 0-本地商户（单店），1-本地商户（多店）' 2 商超门店、3 零售商

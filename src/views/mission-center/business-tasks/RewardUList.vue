@@ -304,24 +304,19 @@ export default {
           let row = null;
           // 商户类型 0-本地商户（单店），1-本地商户（多店）
           item.merchantTypeName = this.merchantTypeOption[merchantType];
+
           if (merchantType == 0) {
-            item.merchantId = merchantId;
-            item.merhcantName = name;
+            item.businessId = item.merchantId = merchantId;
+            item.businessName = item.merhcantName = name;
             item.brandId = "";
             item.brandName = "";
-
-            item.businessId = merchantId;
-            item.businessName = name;
-            row = { merchantId: merchantId, name };
+            // row = { merchantId: merchantId, name };
           } else {
-            item.brandId = brandId;
-            item.brandName = name;
+            item.businessId = item.brandId = brandId;
+            item.businessName = item.brandName = name;
             item.merchantId = "";
             item.merhcantName = "";
-
-            item.businessId = brandId;
-            item.businessName = name;
-            row = { id: brandId, name };
+            // row = { id: brandId, name };
           }
 
           item.defaultBannerList = [];
@@ -339,7 +334,8 @@ export default {
             item.defaultShareLogoList = [{ imgUrl: shareLogo }];
           }
 
-          item.tableData = [row];
+          // item.tableData = [row];
+          item.tableData = [];
           return item;
         });
         return data;

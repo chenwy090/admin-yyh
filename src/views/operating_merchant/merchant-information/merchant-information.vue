@@ -88,7 +88,7 @@
 
               <template slot-scope="{ row }" slot="name">
                 <!-- style="width:74px;height:43px;" -->
-                <img v-if="!row.isNew" style="width:20px;" src="/images/new.png" />
+                <img v-if="row.isNew==1" style="width:20px;" src="/images/new.png" />
                 {{row.name}}
               </template>
               <template
