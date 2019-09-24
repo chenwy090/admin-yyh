@@ -141,7 +141,7 @@
     import showDetail from "./showDetailModal";
     export default {
         name: "bannerPage",
-        inject: ["linkTo", "msgOk", "msgErr"],
+        inject: ["linkTo"],
         components:{AddOrEdit,showDetail},
         data(){
             return{
