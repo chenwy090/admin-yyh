@@ -4,6 +4,8 @@ import Vuex from 'vuex';
 import app from './modules/app';
 import user from './modules/user';
 import comm from './common';
+// 首页CMS
+import cms from './modules/cms';
 // 财务中心
 import financial from './modules/financial';
 // 任务中心
@@ -27,6 +29,7 @@ const store = new Vuex.Store({
         app,
         user,
         comm,
+        cms,
         financial,
         missionCenter
     }
