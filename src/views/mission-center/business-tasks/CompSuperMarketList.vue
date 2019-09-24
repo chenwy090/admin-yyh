@@ -6,7 +6,7 @@
         <FormItem label="商户名称：">
           <Input
             type="text"
-            v-model="searchItem.merchantName"
+            v-model="searchItem.shopName"
             clearable
             placeholder="请输入商户名称："
             style="width: 150px"
@@ -62,6 +62,21 @@ import { postRequest } from "@/libs/axios";
 
 export default {
   name: "coupon-list",
+
+  props: {
+    tab: {
+      type: Object,
+      default: function() {
+        return {
+          name: "xxx",
+          couponType: 0,
+          label: "商超",
+          compName: "CompSuperMarketList",
+          url: "/coupon/superMarket/list"
+        };
+      }
+    }
+  },
   data() {
     return {
       isShow: true,
@@ -111,7 +126,7 @@ export default {
           title: "商户名称",
           align: "center",
           minWidth: 130,
-          key: "merchantName"
+          key: "shopName"
         },
         {
           title: "优惠券名称",
@@ -154,17 +169,13 @@ export default {
       },
       tableLoading: false,
       searchItem: {
-        merchantName: "",
+        shopName: "",
         couponName: ""
       }
     };
   },
 
   methods: {
-    // 关闭商户选择框
-    cancel() {
-      this.closeDialog();
-    },
     search() {
       this.queryTableData();
     },
@@ -176,7 +187,7 @@ export default {
         ...this.searchItem,
         ...this.page
       };
-      postRequest("/coupon/merchant/list", reqParams).then(res => {
+      postRequest(this.tab.url, reqParams).then(res => {
         const {
           code,
           data: { current, total, size, records },
@@ -201,7 +212,7 @@ export default {
     closeDialog() {
       //关闭对话框清除表单数据
       // this.$refs.formValidate.resetFields();
-      this.$emit(`update:showCouponList`, false);
+      this.$emit(`closeDialog`);
     },
     //确定选择商户
     selectMerchant() {
@@ -215,7 +226,7 @@ export default {
     reset() {
       // 重置查询参数
       this.searchItem = {
-        merchantName: "",
+        shopName: "",
         couponName: ""
       };
 
