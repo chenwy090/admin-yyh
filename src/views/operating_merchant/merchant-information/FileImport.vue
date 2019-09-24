@@ -121,22 +121,23 @@ export default {
   },
   methods: {
     async upload() {
-      this.$refs.upload.post(this.file);
+      // this.$refs.upload.post(this.file);
 
-      // this.loadingStatus = true;
-      // const url = "/template/sort/excel/upload";
-      // let fd = new FormData();
-      // fd.append("file", this.file); //append方法传入formData中
-      // const { code, msg } = await uploadFileRequest(url, fd);
-      // if (code == 200) {
-      //   // this.msgOk("保存成功");
-      //   // 关闭对话框
-      //   this.closeDialog();
-      //   //刷新列表数据
-      //   this.$emit("refresh");
-      // } else {
-      //   this.msgErr(msg);
-      // }
+      this.loadingStatus = true;
+      // 商户上传
+      const url = "/merchant/sort/excel/upload";
+      let fd = new FormData();
+      fd.append("file", this.file); //append方法传入formData中
+      const { code, msg } = await uploadFileRequest(url, fd);
+      if (code == 200) {
+        // this.msgOk("保存成功");
+        // 关闭对话框
+        this.closeDialog();
+        //刷新列表数据
+        this.$emit("refresh");
+      } else {
+        this.msgErr(msg);
+      }
 
       this.file = null;
       this.loadingStatus = false;
