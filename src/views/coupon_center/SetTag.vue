@@ -78,6 +78,7 @@
   </div>
 </template>
 <script>
+import { postRequest } from "@/libs/axios";
 export default {
   name: "set-tag",
   props: {
@@ -107,8 +108,8 @@ export default {
       }
     },
     ["formData.isHot"]() {
-      console.log(this.formData.isNew);
-      if (this.formData.isNew) {
+      console.log(this.formData.isHot);
+      if (this.formData.isHot) {
         this.$refs.form.validateField("startTime2");
       } else {
         //清空时间
@@ -143,14 +144,14 @@ export default {
     changeStartDate1(arr) {
       // yyyy-MM-dd
       console.log(arr);
-      this.formData.startTime1 = arr[0];
-      this.formData.endTime1 = arr[1];
+      this.formData.startTime1 = `${arr[0]}:00`;
+      this.formData.endTime1 = `${arr[1]}:00`;
     },
     changeStartDate2(arr) {
       // yyyy-MM-dd
       console.log(arr);
-      this.formData.startTime2 = arr[0];
-      this.formData.endTime2 = arr[1];
+      this.formData.startTime2 = `${arr[0]}:00`;
+      this.formData.endTime2 = `${arr[1]}:00`;
     },
     closeDialog() {
       //关闭对话框清除表单数据
@@ -165,10 +166,38 @@ export default {
 
           let oForm = JSON.parse(JSON.stringify(this.formData));
           console.log(oForm);
+          const {
+            isNew,
+            isHot,
+            startTime1,
+            endTime1,
+            startTime2,
+            endTime2
+          } = oForm;
 
-          let { code = 200, msg = "" } = {};
+          let params = { templateId: this.id, merchantTags: [] };
+          if (isNew) {
+            params.merchantTags.push({
+              templateId: this.id,
+              tagId: "2",
+              startTime: startTime1,
+              endTime: startTime2
+            });
+          }
 
-          // let { code, msg } = await exchangeAndConsume(oForm);
+          if (isHot) {
+            params.merchantTags.push({
+              templateId: this.id,
+              tagId: "3",
+              startTime: startTime2,
+              endTime: endTime2
+            });
+          }
+
+          // let { code = 200, msg = "" } = {};
+
+          const url = "/template/tag/rel/add";
+          let { code, msg } = await postRequest(url, params);
 
           if (code == 200) {
             this.msgOk("保存成功");

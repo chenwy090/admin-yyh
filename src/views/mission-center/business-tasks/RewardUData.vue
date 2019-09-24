@@ -145,8 +145,8 @@ export default {
   methods: {
     changeStartDate(arr) {
       // yyyy-MM-dd
-      this.searchData.createTimeStart = arr[0];
-      this.searchData.createTimeEnd = arr[1];
+      this.searchData.createTimeStart = `${arr[0]} 00:00:00`;
+      this.searchData.createTimeEnd = `${arr[1]} 23:59:59`;
     },
     goback() {
       console.log("reward-u");

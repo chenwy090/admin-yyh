@@ -23,7 +23,7 @@
                 />
               </FormItem>
               <FormItem label="标签：">
-                <Select v-model="searchItem.tag" style="width:120px" clearable>
+                <Select v-model="searchItem.isTag" style="width:120px" clearable>
                   <Option v-for="(v,k) in tagOptions" :value="k" :key="k">{{ v }}</Option>
                 </Select>
               </FormItem>
@@ -115,6 +115,15 @@
               sortable="custom"
               ref="table"
             >
+              <!-- title  isNew新品/isHot 热门 -->
+
+              <template slot-scope="{ row }" slot="title">
+                <!-- style="width:74px;height:43px;" -->
+                <img v-if="!row.isNew" style="width:20px;" src="/images/new.png" />
+                <img v-if="!row.isHot" style="width:20px;" src="/images/hot.png" />
+                {{row.title}}
+              </template>
+
               <template slot-scope="{ row }" slot="couponBigImg">
                 <Tooltip content="点击可查看大图 " placement="right">
                   <img
@@ -288,7 +297,8 @@ import {
   postRequest,
   putRequest,
   deleteRequest,
-  uploadFileRequest
+  uploadFileRequest,
+  downloadSteam
 } from "@/libs/axios";
 
 import { formatDate } from "@/libs/date";
@@ -328,7 +338,8 @@ export default {
       dropDownIcon: "ios-arrow-down",
       searchItem: {
         title: "",
-        tag: "",
+        // 是否有标签 0-未打标签 1-已打标签
+        isTag: "",
         merchantNames: "",
         couponType: "",
         templateStatus: "",
@@ -368,7 +379,8 @@ export default {
           title: "卡券标题",
           key: "title",
           align: "center",
-          width: 150
+          width: 150,
+          slot: "title" //新品/热门
         },
         {
           title: "适用商户",
@@ -480,7 +492,33 @@ export default {
     upload() {
       this.showFileImport = true;
     },
-    download() {},
+    async download() {
+      const url = "/template/sort/excel/download";
+
+      const res = await downloadSteam(url);
+
+      console.log(111111111111111111, res);
+
+      const content = res.data;
+      const { filename } = res.headers;
+
+      console.log(111111111111111111, res);
+      const blob = new Blob([content], { type: "application/vnd.ms-excel" });
+      const oA = document.createElement("a");
+      if ("download" in oA) {
+        // 非IE下载
+        oA.download = decodeURI(filename);
+        oA.style.display = "none";
+        oA.href = URL.createObjectURL(blob);
+        document.body.appendChild(oA);
+        oA.click();
+        URL.revokeObjectURL(oA.href); // 释放URL 对象
+        document.body.removeChild(oA);
+      } else {
+        // IE10+下载
+        navigator.msSaveBlob(blob, filename);
+      }
+    },
     setTag(row) {
       // templateId
       this.id = row.templateId;
@@ -499,13 +537,16 @@ export default {
 
     //	刷新页面
     refresh() {
-      this.searchItem.title = "";
-      this.searchItem.merchantNames = "";
-      this.searchItem.couponType = "";
-      this.searchItem.templateStatus = "";
-      this.searchItem.startDate = "";
-      this.searchItem.endDate = "";
-
+      this.searchItem = {
+        title: "",
+        // 是否有标签 0-未打标签 1-已打标签
+        isTag: "",
+        merchantNames: "",
+        couponType: "",
+        templateStatus: "",
+        startDate: "",
+        endDate: ""
+      };
       this.queryTableList();
     },
 

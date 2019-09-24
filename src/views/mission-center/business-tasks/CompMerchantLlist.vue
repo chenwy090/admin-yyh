@@ -62,6 +62,20 @@ import { postRequest } from "@/libs/axios";
 
 export default {
   name: "CompMerchantLlist",
+  props: {
+    tab: {
+      type: Object,
+      default: function() {
+        return {
+          name: "xxx",
+          couponType: 1,
+          label: "商户",
+          compName: "CompMerchantLlist",
+          url: "/coupon/merchant/list"
+        };
+      }
+    }
+  },
   data() {
     return {
       isShow: true,
@@ -161,10 +175,6 @@ export default {
   },
 
   methods: {
-    // 关闭商户选择框
-    cancel() {
-      this.closeDialog();
-    },
     search() {
       this.queryTableData();
     },
@@ -176,7 +186,7 @@ export default {
         ...this.searchItem,
         ...this.page
       };
-      postRequest("/coupon/merchant/list", reqParams).then(res => {
+      postRequest(this.tab.url, reqParams).then(res => {
         const {
           code,
           data: { current, total, size, records },
@@ -201,7 +211,7 @@ export default {
     closeDialog() {
       //关闭对话框清除表单数据
       // this.$refs.formValidate.resetFields();
-      this.$emit(`update:showCouponList`, false);
+      this.$emit(`closeDialog`);
     },
     //确定选择商户
     selectMerchant() {
