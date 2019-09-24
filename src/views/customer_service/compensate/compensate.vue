@@ -71,7 +71,7 @@
           <Input style="width:250px" v-model="formValidate.pushType" placeholder="请输入" clearable />
         </FormItem>
         <FormItem label="发放的福利:" required>
-          <RadioGroup v-model="formValidate.welfareType">
+          <RadioGroup v-model="formValidate.welfareType" @on-change="changeWelfareType">
             <Radio label="1" value="1" checked>
               <span>优惠券</span>
             </Radio>
@@ -645,6 +645,10 @@ export default {
       this.couponSearchData.name = "";
       this.current1 = 1;
     },
+      changeWelfareType(){
+          // console.log(112);
+          // this.fileList = [];
+      },
       //校验userId
       checkUserId(){
         if(!this.userId){
@@ -678,6 +682,7 @@ export default {
               this.msgOk("上传成功");
               this.fileList = [{name:file.name}];
               this.formValidate.userId = res.successUserIdlist;
+              this.formValidate.failUserIdlist = res.failUserIdlist;
               if(res.failUserIdlist.length){
                   this.downLoad(res.failUserIdlist);
               }
