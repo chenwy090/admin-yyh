@@ -119,8 +119,8 @@
 
               <template slot-scope="{ row }" slot="title">
                 <!-- style="width:74px;height:43px;" -->
-                <img v-if="!row.isNew" style="width:20px;" src="/images/new.png" />
-                <img v-if="!row.isHot" style="width:20px;" src="/images/hot.png" />
+                <img v-if="row.isNew==1" style="width:20px;" src="/images/new.png" />
+                <img v-if="row.isHot==1" style="width:20px;" src="/images/hot.png" />
                 {{row.title}}
               </template>
 
