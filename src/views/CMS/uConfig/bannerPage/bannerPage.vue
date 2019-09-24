@@ -141,6 +141,7 @@
     import showDetail from "./showDetailModal";
     export default {
         name: "bannerPage",
+        inject: ["linkTo", "msgOk", "msgErr"],
         components:{AddOrEdit,showDetail},
         data(){
             return{
@@ -472,6 +473,7 @@
             },
             close(){
                 this.$emit("close",false);
+                this.linkTo("cms");
             }
         }
     }
