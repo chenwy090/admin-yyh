@@ -175,18 +175,18 @@ export default {
             endTime2
           } = oForm;
 
-          let params = { templateId: this.id, merchantTags: [] };
+          let params = { templateId: this.id, templateTags: [] };
           if (isNew) {
-            params.merchantTags.push({
+            params.templateTags.push({
               templateId: this.id,
               tagId: "2",
               startTime: startTime1,
-              endTime: startTime2
+              endTime: endTime1
             });
           }
 
           if (isHot) {
-            params.merchantTags.push({
+            params.templateTags.push({
               templateId: this.id,
               tagId: "3",
               startTime: startTime2,

@@ -120,25 +120,25 @@ export default {
   },
   methods: {
     async upload() {
-      this.$refs.upload.post(this.file);
-      // console.log("rrssssssssssssss",res);
-      // const { code, msg } = res;
-      // // this.loadingStatus = true;
-      // // const url = "/template/sort/excel/upload";
-      // // let fd = new FormData();
-      // // fd.append("file", this.file); //append方法传入formData中
+      // this.$refs.upload.post(this.file);
 
-      // // const { code, msg } = await uploadFileRequest(url, fd);
+      this.loadingStatus = true;
+      // 优惠券上传
+      const url = "/template/sort/excel/upload";
+      let fd = new FormData();
+      fd.append("file", this.file); //append方法传入formData中
 
-      // if (code == 200) {
-      //   // this.msgOk("保存成功");
-      //   // 关闭对话框
-      //   this.closeDialog();
-      //   //刷新列表数据
-      //   this.$emit("refresh");
-      // } else {
-      //   this.msgErr(msg);
-      // }
+      const { code, msg }  = await uploadFileRequest(url, fd);
+      
+      if (code == 200) {
+        // this.msgOk("保存成功");
+        // 关闭对话框
+        this.closeDialog();
+        //刷新列表数据
+        this.$emit("refresh");
+      } else {
+        this.msgErr(msg);
+      }
 
       this.file = null;
       this.loadingStatus = false;
