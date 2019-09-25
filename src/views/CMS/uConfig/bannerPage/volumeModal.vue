@@ -165,7 +165,6 @@
                     current2: 1,
                 },
                 volumeObj:{},
-                // addressData:[],
                 totalSize1: 0,
                 totalSize2: 0,
                 current1: 1,
@@ -207,11 +206,6 @@
                             ])
                         }
                     },
-                    // {
-                    //     title: "省/市",
-                    //     minWidth:200,
-                    //     slot: "address"
-                    // },
                     {
                         title: "优惠券名称",
                         minWidth:200,
@@ -258,7 +252,6 @@
                 this.current2 = 1;
                 this.volumeForm.merchantName = '';
                 this.volumeForm.couponName = '';
-                // this.addressValue = [];
                 this.volumeObj = item;
                 this.TableLoading = false;
                 this.loadTableData1(item);
@@ -281,48 +274,9 @@
                 }
                 // this.addressValue = [];
             },
-            // getProvinceList(formData) {
-            //     postRequest(`/system/area/province/list`,{}).then(res => {
-            //         if (res.code === "200") {
-            //             console.log(res);
-            //             this.addressData = res.data||[];
-            //             if(this.addressData.length){
-            //                 this.addressData.forEach(function(v){
-            //                     v.value = v.provinceCode
-            //                     v.label = v.shortName;
-            //                     v.children= [];
-            //                     v.loading = false
-            //                 })
-            //             }
-            //         } else {
-            //             this.$Message.error("获取数据失败");
-            //         }
-            //     });
-            // },
-            // addressLoad(item,callback){
-            //     item.loading = true;
-            //     getSyncRequest("/system/area/city/" + item.provinceCode).then(res =>{
-            //         if (res.code === "200") {
-            //             item.children = res.data||[];
-            //             item.loading = false;
-            //             if(item.children.length){
-            //                 item.children.forEach(function(v){
-            //                     v.label = v.shortName;
-            //                     v.value = v.cityCode
-            //                 })
-            //             }
-            //             callback();
-            //         } else {
-            //             this.$Message.error("获取数据失败");
-            //             item.loading = false;
-            //             callback();
-            //         }
-            //     });
-            // },
-            loadTableData1(item,page){
+            loadTableData1(page){
                 this.volumeForm.current1 = page||1;
                 var that= this;
-                var item = this.volumeObj
                 this.totalSize1 = 0;
                 this.listData1 = [];
                 this.TableLoading1 = true;
@@ -342,10 +296,14 @@
                     if (res.code === "200") {
                         this.totalSize1 = res.data.total;
                         this.listData1 = res.data.records;
-                        if(item&&(item.awardAmount||item.JObj)){
-                            res.data.records.forEach(function(v,i){
-                                if(v.templateId ===(item.awardAmount||item.award)){
+                        if(this.volumeObj&&this.volumeObj.shopId){
+                            let that = this;
+                            that.selectIndex1 = '';
+                            that.selectIndex2 = '';
+                            this.listData1.forEach(function(v,i){
+                                if(that.volumeObj.shopId == v.templateId&&that.volumeObj.shopName == v.title){
                                     that.selectIndex1 = i;
+                                    that.selectIndex2 = '';
                                 }
                             })
                         }
@@ -377,10 +335,14 @@
                     if (res.code === "200") {
                         this.totalSize2 = res.data.total;
                         this.listData2 = res.data.records;
-                        if(item&&(item.awardAmount||item.JObj)){
-                            res.data.records.forEach(function(v,i){
-                                if(v.templateId === (item.awardAmount||item.award)){
+                        if(this.volumeObj&&this.volumeObj.shopId){
+                            let that = this;
+                            that.selectIndex1 = '';
+                            that.selectIndex2 = '';
+                            this.listData2.forEach(function(v,i){
+                                if(that.volumeObj.shopId == v.templateId&&that.volumeObj.shopName == v.title){
                                     that.selectIndex2 = i;
+                                    that.selectIndex1 = '';
                                 }
                             })
                         }
@@ -408,17 +370,15 @@
                 switch (index) {
                 case 1:
                     this.selectIndex2 = '';
-                    this.volumeObj.JObj = this.listData1[this.selectIndex1];
-                    this.volumeObj.awardName = this.listData1[this.selectIndex1].title;
-                    this.volumeObj.couponType = '1';
-                    this.volumeObj.awardAmount = this.listData1[this.selectIndex1].templateId;
+                    this.volumeObj = this.listData1[this.selectIndex1];
+                    this.volumeObj.shopName = this.listData1[this.selectIndex1].title;
+                    this.volumeObj.shopId = this.listData1[this.selectIndex1].templateId;
                     break;
                 case 2:
                     this.selectIndex1 = '';
-                    this.volumeObj.JObj = this.listData2[this.selectIndex2];
-                    this.volumeObj.awardName = this.listData2[this.selectIndex2].title;
-                    this.volumeObj.couponType = '2';
-                    this.volumeObj.awardAmount = this.listData2[this.selectIndex2].templateId;
+                    this.volumeObj = this.listData2[this.selectIndex2];
+                    this.volumeObj.shopName = this.listData2[this.selectIndex2].title;
+                    this.volumeObj.shopId = this.listData2[this.selectIndex2].templateId;
                     break;
                 }
             },
@@ -426,7 +386,7 @@
                 this.$emit('setViewDialogVisible', false)
             },
             volumeSave(){
-                if(!this.volumeObj.JObj){
+                if(!this.volumeObj||!this.volumeObj.shopId){
                     this.$Message.error({
                         content: "请选择优惠券",
                         duration: 3
