@@ -38,7 +38,8 @@
       </FormItem>
       <div style="margin-top:20px;">
         <FormItem label>
-          <Button type="primary" :disabled="submitDisabled" @click="handleSubmit('form')">提交</Button>
+          <Button type="primary" :disabled="submitDisabled" @click="handleSubmit('form')">保存</Button>
+          <Button type="primary" style="margin-left:10px;" @click="linkTo('bannerPage')">banner设置</Button>
         </FormItem>
       </div>
     </Form>
@@ -49,7 +50,7 @@ import { postRequest } from "@/libs/axios";
 
 export default {
   name: "tab4",
-  inject: ["msgOk", "msgErr"],
+  inject: ["linkTo", "msgOk", "msgErr"],
   props: {
     tab: {
       type: Object,
