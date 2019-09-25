@@ -45,7 +45,7 @@
   </div>
 </template>
 <script>
-import { postRequest, getRequest } from "@/libs/axios";
+import { postRequest } from "@/libs/axios";
 
 export default {
   name: "tab2",
@@ -111,10 +111,10 @@ export default {
   },
   methods: {
     async getData() {
-      const url = "/page/module/layout/getHotCoupon";
-      const { code, msg, data } = await postRequest(url, {
-        type: this.tab.type
-      });
+      const url = "/page/module/layout/getCommonSetting";
+      const { type } = this.tab;
+      const site = 1;
+      const { code, msg, data } = await postRequest(url, { type, site });
       if (code == 200) {
         this.formData = data;
       } else {
@@ -151,19 +151,19 @@ export default {
           return;
         }
 
-        // 超值爆抢首页配置
-
-        const url = "/page/module/layout/saveCommonSetting";
-
         //清洗数据
         let formData = JSON.parse(JSON.stringify(this.formData));
+        const { type } = this.tab;
+        formData.site = 1;
+        formData.type = type;
 
+        // 超值爆抢首页配置
+        const url = "/page/module/layout/saveCommonSetting";
         postRequest(url, formData).then(res => {
           if (res.code == 200) {
             this.msgOk("保存成功");
           } else {
             this.msgErr(res.msg);
-            // this.submitDisabled = false;
           }
         });
       });

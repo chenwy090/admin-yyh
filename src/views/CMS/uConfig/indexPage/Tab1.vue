@@ -109,7 +109,9 @@ export default {
   methods: {
     async getData() {
       const url = "/page/module/layout/getVerification";
-      const { code, msg, data } = await postRequest(url);
+
+      //  site 页面位置，1：首页、2：首页-平台分红
+      const { code, msg, data } = await postRequest(url, { site: 1 });
       if (code == 200) {
         const { verifyIconUrl, backgroundUrl } = data;
 
@@ -159,13 +161,12 @@ export default {
 
         //清洗数据
         let formData = JSON.parse(JSON.stringify(this.formData));
-
+        formData.site = 1;
         postRequest(url, formData).then(res => {
           if (res.code == 200) {
             this.msgOk("保存成功");
           } else {
             this.msgErr(res.msg);
-            // this.submitDisabled = false;
           }
         });
       });

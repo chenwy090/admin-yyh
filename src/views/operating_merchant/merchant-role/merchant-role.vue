@@ -195,7 +195,7 @@
                                     style="float: left; margin-top: 2px; margin-right: 50px"
                             >预约中心</Checkbox>
                             <CheckboxGroup v-model="checkAllGroupReserveCenter" @on-change="checkAllGroupChangeReserveCenter" style="float: left">
-                                <Checkbox label="5001">查看</Checkbox>
+                                <Checkbox label="6001">查看</Checkbox>
                             </CheckboxGroup>
                         </div>
                         <Divider />
@@ -354,7 +354,7 @@
                     this.msgErr('名称不能为空')
                     return
                 }
-                if (this.checkAllGroupCoupon.length == 0 && this.checkAllGroupUse.length == 0 && this.checkAllGroupCustomer.length == 0 && this.checkAllGroupIm.length == 0 && this.checkAllGroupAssignment.length == 0){
+                if (this.checkAllGroupCoupon.length == 0 && this.checkAllGroupUse.length == 0 && this.checkAllGroupCustomer.length == 0 && this.checkAllGroupIm.length == 0 && this.checkAllGroupAssignment.length == 0 && this.checkAllGroupReserveCenter.length == 0){
                     this.msgErr('至少选择一个权限')
                     return
                 }
