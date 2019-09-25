@@ -187,6 +187,18 @@
                             </CheckboxGroup>
                         </div>
                         <Divider />
+                        <div style="width: 400px; float: left; margin-bottom: 10px;">
+                            <Checkbox
+                                    :indeterminate="indeterminateReserveCenter"
+                                    :value="checkAllReserveCenter"
+                                    @click.prevent.native="handleCheckAllReserveCenter"
+                                    style="float: left; margin-top: 2px; margin-right: 50px"
+                            >预约中心</Checkbox>
+                            <CheckboxGroup v-model="checkAllGroupReserveCenter" @on-change="checkAllGroupChangeReserveCenter" style="float: left">
+                                <Checkbox label="5001">查看</Checkbox>
+                            </CheckboxGroup>
+                        </div>
+                        <Divider />
                     </Row>
 
 
@@ -231,6 +243,9 @@
                 indeterminateAssignment: false,
                 checkAllAssignment: false,
                 checkAllGroupAssignment: [],
+                indeterminateReserveCenter: false,
+                checkAllReserveCenter: false,
+                checkAllGroupReserveCenter: [],
                 stopRemark: {
                     roleId: '',
                     remark: '',
@@ -351,6 +366,7 @@
                     checkAllGroupCustomer: this.checkAllGroupCustomer,
                     checkAllGroupIm: this.checkAllGroupIm,
                     checkAllGroupAssignment: this.checkAllGroupAssignment,
+                    checkAllGroupReserveCenter: this.checkAllGroupReserveCenter,
                 };
                 console.info(JSON.stringify(reqParam))
                 postRequest('/merchant/MerchantRoleInfo/add', reqParam).then(res => {
@@ -494,6 +510,32 @@
                     this.checkAllAssignment = false;
                 }
             },
+            handleCheckAllReserveCenter () {
+                if (this.indeterminateReserveCenter) {
+                    this.checkAllReserveCenter = false;
+                } else {
+                    this.checkAllReserveCenter = !this.checkAllReserveCenter;
+                }
+                this.indeterminateReserveCenter = false;
+
+                if (this.checkAllReserveCenter) {
+                    this.checkAllGroupReserveCenter = ['6001'];
+                } else {
+                    this.checkAllGroupReserveCenter = [];
+                }
+            },
+            checkAllGroupChangeReserveCenter (data) {
+                if (data.length === 1) {
+                    this.indeterminateReserveCenter = false;
+                    this.checkAllReserveCenter = true;
+                } else if (data.length > 0) {
+                    this.indeterminateReserveCenter = true;
+                    this.checkAllReserveCenter = false;
+                } else {
+                    this.indeterminateReserveCenter = false;
+                    this.checkAllReserveCenter = false;
+                }
+            },
             checkName() {
 
             },
@@ -594,6 +636,8 @@
                 this.checkAllGroupUse = [];
                 this.checkAllGroupCustomer = [];
                 this.checkAllGroupIm = [];
+                this.checkAllGroupAssignment = [];
+                this.checkAllGroupReserveCenter = [];
                 this.addDisplay = true;
             },
             //编辑
@@ -616,6 +660,8 @@
                             this.checkAllGroupUse = res.data.checkAllGroupUse;
                             this.checkAllGroupCustomer = res.data.checkAllGroupCustomer;
                             this.checkAllGroupIm = res.data.checkAllGroupIm;
+                            this.checkAllGroupAssignment = res.data.checkAllGroupAssignment;
+                            this.checkAllGroupReserveCenter = res.data.checkAllGroupReserveCenter;
                         } else {
                             this.$Message.error(res.msg);
                         }
