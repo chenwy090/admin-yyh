@@ -192,7 +192,7 @@
                 locationList: [{value: 1, label: '首页'}, {value: 2, label: '赚钱'}, {value: 3, label: '领优惠'}, {value: 4, label: '我的'}, {value: 5, label: '平台分红'}],
                 businessLayerList: [{value: 1, label: '1号位置'}, {value: 2, label: '2号位置'}, {value: 3, label: '3号位置'}],
                 layerPriorityList: [{value: 1, label: 'banner1'}, {value: 2, label: 'banner2'}, {value: 3, label: 'banner3'}, {value: 4, label: 'banner4'}, {value: 5, label: 'banner5'}],
-                clientTypeList: [{value: '0', label: '全部'}, {value: '1', label: 'ios'}, {value: '2', label: 'android'}, {value: '3', label: '小程序'}],
+                clientTypeList: [{value: '0', label: '全部'}, {value: '1', label: '小程序'}, {value: '2', label: 'android'}, {value: '3', label: 'ios'}],
                 titleName: "",
                 volumeViewDialogModal: false,
                 contentViewDialogModal: false,
@@ -382,21 +382,6 @@
                 console.log(111);
                 getRequest(`/banner/details/${id}`).then(res => {
                     if (res.code == "200") {
-                        this.modal={
-                            shopId:'',
-                            title: "",
-                            type: "",
-                            value: '',
-                            content:'',
-                            shopRequestList: [],
-                            location: '',
-                            businessLayer: '',
-                            layerPriority: '',
-                            clientType: '',
-                            startTime: "",
-                            endTime: "",
-                            image: '',
-                        }
                         this.modal.title = res.data.bannerInfo.title;
                         this.modal.type = res.data.bannerInfo.type;
                         this.modal.image = res.data.bannerInfo.image;
