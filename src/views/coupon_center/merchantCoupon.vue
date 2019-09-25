@@ -287,7 +287,13 @@
       @refresh="queryTableData"
     ></FileImport>
 
-    <SetTag v-if="showTag" :id="id" :showTag.sync="showTag" @refresh="queryTableData"></SetTag>
+    <SetTag
+      v-if="showTag"
+      :id="id"
+      :showTag.sync="showTag"
+      :tagData="tagData"
+      @refresh="queryTableData"
+    ></SetTag>
   </div>
 </template>
 
@@ -323,9 +329,10 @@ export default {
       //打标签 已打标签、未打标签
       showTag: false,
       tagOptions: {
-        0: "已打标签",
-        1: "未打标签"
+        1: "已打标签",
+        0: "未打标签"
       },
+      tagData: [],
       formShareModal: {
         shareData: []
       },
@@ -523,6 +530,7 @@ export default {
       // templateId
       this.id = row.templateId;
       this.showTag = true;
+      this.tagData = row.templateTags;
     },
     dropDown() {
       if (this.drop) {

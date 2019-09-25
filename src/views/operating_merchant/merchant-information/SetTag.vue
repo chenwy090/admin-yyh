@@ -65,6 +65,10 @@ export default {
     showTag: {
       type: Boolean,
       default: true
+    },
+    tagData: {
+      type: Array,
+      default: () => []
     }
   },
   watch: {
@@ -96,6 +100,20 @@ export default {
       },
       ruleValidate: {}
     };
+  },
+  created() {
+    let tagData = this.tagData;
+    console.log("taaaaa", tagData, tagData.length);
+    if (tagData.length) {
+      // 打标签
+      let { id, merchantId, tagId, startTime, endTime } = tagData[0];
+      this.daterange = [startTime, endTime];
+      this.formData = {
+        isNew: true, // 是否是新店
+        startTime,
+        endTime
+      };
+    }
   },
   methods: {
     changeStartDate(arr) {

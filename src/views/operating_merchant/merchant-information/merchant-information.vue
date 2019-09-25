@@ -21,6 +21,17 @@
                   <Option v-for="(v,k) in tagOptions" :value="k" :key="k">{{ v }}</Option>
                 </Select>
               </FormItem>
+
+              <FormItem label="关联商超名称：" :label-width="100">
+                <Input
+                  type="text"
+                  v-model="searchItem.superMarketingName"
+                  clearable
+                  placeholder="请输入关联商超名称"
+                  style="width: 200px"
+                />
+              </FormItem>
+
               <FormItem :label-width="0">
                 <span>所在地区：</span>
                 <Select
@@ -143,7 +154,13 @@
       @refresh="queryTableData"
     ></FileImport>
 
-    <SetTag v-if="showTag" :id="id" :showTag.sync="showTag" @refresh="updateTableList"></SetTag>
+    <SetTag
+      v-if="showTag"
+      :id="id"
+      :showTag.sync="showTag"
+      :tagData="tagData"
+      @refresh="updateTableList"
+    ></SetTag>
   </div>
 </template>
 
@@ -179,9 +196,10 @@ export default {
       //打标签 已打标签、未打标签
       showTag: false,
       tagOptions: {
-        0: "已打标签",
-        1: "未打标签"
+        1: "已打标签",
+        0: "未打标签"
       },
+      tagData: [],
       merchantEditPage: false,
       merchantCouponPage: false,
       merchantStaffPage: false,
@@ -194,6 +212,7 @@ export default {
         name: "",
         // 是否有标签 0-未打标签 1-已打标签
         isTag: "",
+        superMarketingName: "",
         provinceId: "",
         cityId: "",
         areaId: ""
@@ -336,6 +355,7 @@ export default {
       // merchantId
       this.id = row.merchantId;
       this.showTag = true;
+      this.tagData = row.merchantTags;
     },
     init() {
       this.updateTableList();
@@ -413,6 +433,7 @@ export default {
         name: "",
         // 是否有标签 0-未打标签 1-已打标签
         isTag: "",
+        superMarketingName: "",
         provinceId: "",
         cityId: "",
         areaId: ""
