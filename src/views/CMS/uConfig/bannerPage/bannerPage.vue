@@ -2,7 +2,7 @@
     <div style="height: 100%">
         <div v-if="!AddViewDialogVisible&&!ShowViewDialogVisible" style="min-height: 100%">
             <Card style="height: 100%">
-                <p slot="title">赚钱banner</p>
+                <p slot="title">banner设置</p>
                 <a href="#" slot="extra">
                     <Button type="dashed" icon="md-arrow-round-back" @click="close()">返回上一层</Button>
                 </a>
