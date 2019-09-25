@@ -254,8 +254,8 @@
                 this.volumeForm.couponName = '';
                 this.volumeObj = item;
                 this.TableLoading = false;
-                this.loadTableData1(item);
-                this.loadTableData2(item);
+                this.loadTableData1();
+                this.loadTableData2();
             },
             reset(type){
                 this.volumeForm.current1= 1;
@@ -266,10 +266,10 @@
                 this.volumeForm.couponName = '';
                 switch (type) {
                 case 1:
-                    this.loadTableData1(this.volumeObj);
+                    this.loadTableData1();
                     break;
                 case 2:
-                    this.loadTableData2(this.volumeObj);
+                    this.loadTableData2();
                     break;
                 }
                 // this.addressValue = [];
@@ -312,7 +312,7 @@
                     }
                 });
             },
-            loadTableData2(item,page){
+            loadTableData2(page){
                 this.volumeForm.current2 = page||1;
                 var that= this;
                 var item = this.volumeObj
@@ -357,13 +357,13 @@
             changeCurrent1(current) {
                 if (this.volumeForm.current1 != current) {
                     this.volumeForm.current1 = current;
-                    this.loadTableData1(this.volumeObj,current);
+                    this.loadTableData1(current);
                 }
             },
             changeCurrent2(current) {
-                if (this.current2 != current) {
-                    this.current2 = current;
-                    this.loadTableData2(this.volumeObj,current);
+                if (this.volumeForm.current2 != current) {
+                    this.volumeForm.current2 = current;
+                    this.loadTableData2(current);
                 }
             },
             selectBusiness(index){

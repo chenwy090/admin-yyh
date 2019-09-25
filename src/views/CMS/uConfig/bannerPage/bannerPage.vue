@@ -1,6 +1,6 @@
 <template>
     <div style="height: 100%">
-        <div v-if="!AddViewDialogVisible&&!ShowViewDialogVisible" style="height: 100%">
+        <div v-if="!AddViewDialogVisible&&!ShowViewDialogVisible" style="min-height: 100%">
             <Card style="height: 100%">
                 <p slot="title">赚钱banner</p>
                 <a href="#" slot="extra">
@@ -69,12 +69,12 @@
                                     @on-selection-change="handleSelect"
                             >
                                 <template slot-scope="{ row }" slot="action">
-                                    <Button v-if="row.status==='0'"
-                                            type="success"
-                                            style="margin-right: 5px"
-                                            size="small"
-                                            @click="edit(row)"
-                                    >编辑</Button>
+                                    <!--<Button v-if="row.status==='0'"-->
+                                            <!--type="success"-->
+                                            <!--style="margin-right: 5px"-->
+                                            <!--size="small"-->
+                                            <!--@click="edit(row)"-->
+                                    <!--&gt;编辑</Button>-->
                                     <Button v-if="row.status==='0'||row.status==='1'||row.status==='2'"
                                             type="info"
                                             style="margin-right: 5px"
