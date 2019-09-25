@@ -13,6 +13,8 @@ import { createNamespacedHelpers } from "vuex";
 const { mapGetters, mapState, mapActions } = createNamespacedHelpers("cms");
 
 import ConfigModule from "./ConfigModule";
+import BootAd from "./bootAd";
+import IndexPage from "./indexPage";
 import bannerPage from "./bannerPage/bannerPage";
 
 export default {
@@ -25,7 +27,12 @@ export default {
       msgErr: this.msgErr
     };
   },
-  components: { [ConfigModule.name]: ConfigModule, bannerPage },
+  components: {
+    [ConfigModule.name]: ConfigModule,
+    IndexPage,
+    BootAd,
+    bannerPage
+  },
   computed: {
     ...mapGetters({ compName: "getCompName" })
   },

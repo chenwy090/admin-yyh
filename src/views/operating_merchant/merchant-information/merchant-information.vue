@@ -88,7 +88,7 @@
 
               <template slot-scope="{ row }" slot="name">
                 <!-- style="width:74px;height:43px;" -->
-                <img v-if="row.isNew==1" style="width:20px;" src="/images/new.png" />
+                <img v-if="row.isNew==1" style="width:40px;" src="/images/newShop.png" />
                 {{row.name}}
               </template>
               <template
@@ -219,7 +219,7 @@ export default {
           title: "商户名称",
           key: "name",
           align: "center",
-          minWidth: 120,
+          minWidth: 200,
           slot: "name" //新店
         },
         //        {
