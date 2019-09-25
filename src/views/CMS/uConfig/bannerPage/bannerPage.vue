@@ -22,14 +22,14 @@
                                         @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
                                 ></DatePicker>
                             </FormItem>
-                             <FormItem label="开始时间" span="35"  style="width:35%">
+                             <FormItem label="结束时间" span="35"  style="width:35%">
                                 <DatePicker
                                         :value="searchForm.endTime"
                                         type="date"
                                         placeholder
                                         style="width: 100%"
                                         :options="options2"
-                                        @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
+                                        @on-change="(datetime) =>{ changeDateTime(datetime, 2)}"
                                 ></DatePicker>
                             </FormItem>
                             <FormItem label="标题" span="24" style="width:25%">
@@ -107,7 +107,7 @@
                                     <div>{{['待上架','上架', '下架'][row.status]}}</div>
                                 </template>
                                 <template slot-scope="{ row }" slot="type">
-                                    <div>{{['全部','ios','android', '小程序'][row.type]}}</div>
+                                    <div>{{['全部','小程序','android', 'ios'][row.type]}}</div>
                                 </template>
                                 <template slot-scope="{ row }" slot="image">
                                     <img style="max-width: 100px;max-height: 50px;" :src="row.image" alt="">
@@ -144,7 +144,7 @@
         components:{AddOrEdit,showDetail},
         data(){
             return{
-                typeList:[{value:0,label:'全部'},{value:1,label:'ios'},{value:2,label:'android'},{value:2,label:'小程序'}],
+                typeList: [{value: '0', label: '全部'}, {value: '1', label: '小程序'}, {value: '2', label: 'android'}, {value: 3, label: 'ios'}],
                 statusList:[{value:0,label:'待上架'},{value:1,label:'上架'},{value:1,label:'下架'}],
                 TableLoading: false,
                 auditing:0,
@@ -278,7 +278,7 @@
             changeDateTime(datetime, index) {
                 switch (index) {
                 case 1:
-                    this.modal.startTime = datetime;
+                    this.searchForm.startTime = datetime+' 00:00:00';
                     this.options2 = {
                         disabledDate(date) {
                             return date.valueOf() < new Date(datetime) - 1000 * 60 * 60 * 24;
@@ -286,7 +286,7 @@
                     };
                     break;
                 case 2:
-                    this.modal.endTime = datetime;
+                    this.searchForm.endTime = datetime+' 23:59:59';
                     this.options1 = {
                         disabledDate(date) {
                             return (

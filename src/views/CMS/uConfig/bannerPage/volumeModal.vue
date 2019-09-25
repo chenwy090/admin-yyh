@@ -372,11 +372,13 @@
                     this.selectIndex2 = '';
                     this.volumeObj = this.listData1[this.selectIndex1];
                     this.volumeObj.shopName = this.listData1[this.selectIndex1].title;
+                    this.volumeObj.couponType = '1';
                     this.volumeObj.shopId = this.listData1[this.selectIndex1].templateId;
                     break;
                 case 2:
                     this.selectIndex1 = '';
                     this.volumeObj = this.listData2[this.selectIndex2];
+                    this.volumeObj.couponType = '2';
                     this.volumeObj.shopName = this.listData2[this.selectIndex2].title;
                     this.volumeObj.shopId = this.listData2[this.selectIndex2].templateId;
                     break;

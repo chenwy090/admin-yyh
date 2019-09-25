@@ -288,7 +288,7 @@
                 visible: false,
                 storeTypeList: [{ value: '0', label: "全国" }, { value: '1', label: "门店" }],
                 typeList: [{value: 1, label: '专题活动'}, {value: 2, label: '抽奖团'}, {value: 3, label: '内链'}, {value: 4, label: '外链'}, {value: 5, label: '商户'}, {value: 6, label: '优惠券'}],
-                clientTypeList: [{value: '0', label: '全部'}, {value: '1', label: 'ios'}, {value: '2', label: 'android'}, {value: 3, label: '小程序'}],
+                clientTypeList: [{value: '0', label: '全部'}, {value: '1', label: '小程序'}, {value: '2', label: 'android'}, {value: 3, label: 'ios'}],
                 titleName: "",
                 volumeViewDialogModal: false,
                 contentViewDialogModal: false,
@@ -300,6 +300,7 @@
                     type: "",
                     value: '',
                     content:'',
+                    couponType:'',
                     shopRequestList: [],
                     location: '',
                     businessLayer: '',
@@ -422,7 +423,7 @@
             changeDateTime(datetime, index) {
                 switch (index) {
                 case 1:
-                    this.modal.startTime = datetime;
+                    this.modal.startTime = datetime+ ' 00:00:00';
                     this.options2 = {
                         disabledDate(date) {
                             return date.valueOf() < new Date(datetime) - 1000 * 60 * 60 * 24;
@@ -430,7 +431,7 @@
                     };
                     break;
                 case 2:
-                    this.modal.endTime = datetime;
+                    this.modal.endTime = datetime+ ' 23:59:59';
                     this.options1 = {
                         disabledDate(date) {
                             return (date.valueOf() < Date.now() - 1000 * 60 * 60 * 24 || date.valueOf() > new Date(datetime));
@@ -516,6 +517,7 @@
                 if (e) {
                     this.modal.value = e.shopId;
                     this.modal.content = e.shopName;
+                    this.modal.couponType = e.couponType;
                 }
             },
             changeRadio() {
@@ -623,8 +625,6 @@
                     })
                 }
                 if (true) {
-                    this.modal.startTime = this.modal.startTime+ ' 00:00:00';
-                    this.modal.endTime = this.modal.endTime+ ' 23:59:59';
                     postRequest(`/banner/saveBanner`, this.modal).then(res => {
                         if (res.code == "200") {
                             this.$Message.success("新增成功");

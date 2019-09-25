@@ -343,6 +343,7 @@ export default {
       this.couponViewDialogModal = false;
       if (e) {
           if(this.couponType === type){
+              var that = this;
               e.forEach(function(v, i) {
                   that.couponObj.forEach(function(value, index) {
                       debugger
