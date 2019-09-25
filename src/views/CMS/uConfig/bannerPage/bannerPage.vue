@@ -377,7 +377,10 @@
                         })
                     },
                     onOk: () => {
-                        console.log(this.confirmValue);
+                        if(!confirmValue){
+                            this.$Message.error('请输入下架原因');
+                            return
+                        }
                         postRequest(`/banner/setting/undercarriage`,{id:row.id,type:3,remark:confirmValue}
                         ).then(res => {
                             this.TableLoading = false;
@@ -392,12 +395,11 @@
                     }
                 });
             },
-            upper(){
+            upper(row){
                 var confirmValue = '';
                 this.$Modal.confirm({
                     title: '确认上架',
                     onOk: () => {
-                        console.log(this.confirmValue);
                         postRequest(`/banner/setting/undercarriage`,{id:row.id,type:2,remark:confirmValue}
                         ).then(res => {
                             this.TableLoading = false;
@@ -437,7 +439,10 @@
                         })
                     },
                     onOk: () => {
-                        // /merchant/activity/award/activity/status
+                       if(!confirmValue){
+                           this.$Message.error('请输入下架原因');
+                           return
+                       }
                         postRequest(`/banner/setting/undercarriage`,{id:row.id,type:1,remark:confirmValue}
                         ).then(res => {
                             this.TableLoading = false;

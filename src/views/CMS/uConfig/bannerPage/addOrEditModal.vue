@@ -26,7 +26,7 @@
                                 type="text"
                                 v-model="modal.title"
                                 placeholder="请填写标题"
-                                style="width: 100%"
+                                style="width: 30%"
                         ></Input>
                     </FormItem>
                     </Col>
@@ -117,7 +117,7 @@
                     <Row class="padding-left-12">
                         <Col span="18">
                         <FormItem label="投放位置">
-                            <Cascader :data="cascaderData" v-model="cascaderValue"></Cascader>
+                            <Cascader :data="cascaderData" v-model="cascaderValue" style="width:50%"></Cascader>
                             <!--<Select v-model="modal.location" style="width:30%">-->
                                 <!--<Option v-for="item in locationList" :value="item.value" :key="item.value">{{ item.label-->
                                     <!--}}-->
@@ -170,7 +170,7 @@
                                     :value="modal.startTime"
                                     type="date"
                                     placeholder
-                                    style="width: 48%"
+                                    style="width: 20%"
                                     :options="options1"
                                     @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
                             ></DatePicker>
@@ -179,7 +179,7 @@
                                     :value="modal.endTime"
                                     type="date"
                                     placeholder
-                                    style="width: 48%"
+                                    style="width: 20%"
                                     :options="options2"
                                     @on-change="(datetime) =>{ changeDateTime(datetime, 2)}"
                             ></DatePicker>
