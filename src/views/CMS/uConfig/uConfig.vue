@@ -15,6 +15,8 @@ const { mapGetters, mapState, mapActions } = createNamespacedHelpers("cms");
 import ConfigModule from "./ConfigModule";
 import BootAd from "./bootAd";
 import IndexPage from "./indexPage";
+import PlatformBonus from "./platformBonus"; //平台分红
+
 import bannerPage from "./bannerPage/bannerPage";
 
 export default {
@@ -29,9 +31,10 @@ export default {
   },
   components: {
     [ConfigModule.name]: ConfigModule,
-    IndexPage,
     BootAd,
-    bannerPage
+    bannerPage,
+    IndexPage,
+    PlatformBonus
   },
   computed: {
     ...mapGetters({ compName: "getCompName" })

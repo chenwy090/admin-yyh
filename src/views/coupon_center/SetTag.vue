@@ -89,6 +89,10 @@ export default {
     showTag: {
       type: Boolean,
       default: true
+    },
+    tagData: {
+      type: Array,
+      default: () => []
     }
   },
   watch: {
@@ -139,6 +143,31 @@ export default {
       },
       ruleValidate: {}
     };
+  },
+  created() {
+    let tagData = this.tagData;
+    console.log("taaaaa", tagData, tagData.length);
+    if (tagData.length) {
+      // 打标签
+
+      tagData.forEach(item => {
+        let { id, merchantId, tagId, startTime, endTime } = item;
+
+        if (tagId == 2) {
+          this.daterange1 = [startTime, endTime];
+          this.formData.isNew = true; // 是否是新品
+          this.formData.startTime1 = startTime;
+          this.formData.endTime1 = endTime;
+        }
+
+        if (tagId == 3) {
+          this.daterange2 = [startTime, endTime];
+          this.formData.isHot = true; // 是否是热门
+          this.formData.startTime2 = startTime;
+          this.formData.endTime2 = endTime;
+        }
+      });
+    }
   },
   methods: {
     changeStartDate1(arr) {

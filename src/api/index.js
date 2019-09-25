@@ -11,11 +11,11 @@ import {
 // 本地访问地址
 // export const baseUrl = "http://192.168.31.179:8088/zex-mgr";
 // export const baseUrl = "http://192.168.31.102:8088/zex-mgr"; //姚军
-// export const baseUrl = "http://192.168.31.34:8088/zex-mgr"; //mingyuan
+export const baseUrl = "http://192.168.31.34:8088/zex-mgr"; //mingyuan
 // export const baseUrl = "http://192.168.31.173:8088/zex-mgr"; //建斌
 
 
-export const baseUrl = "http://192.168.31.179:8088/zex-mgr"; //建斌
+// export const baseUrl = "http://192.168.31.179:8088/zex-mgr"; //建斌
 
 
 
