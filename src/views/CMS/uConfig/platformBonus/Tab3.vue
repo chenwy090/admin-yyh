@@ -36,6 +36,15 @@
           />
         </Tooltip>
       </FormItem>
+
+      <FormItem label="图片：" prop="iconUrl" :rules="{ required: true, message: '请上传图片' }">
+        <UploadImage
+          :fileUploadType="'iconUrl'"
+          :defaultList="formData.defaultIconUrlList"
+          @remove="removeIconUrl"
+          @uploadSuccess="iconUrlUploadSuccess"
+        ></UploadImage>
+      </FormItem>
       <div style="margin-top:20px;">
         <FormItem label>
           <Button type="primary" :disabled="submitDisabled" @click="handleSubmit('form')">提交</Button>
@@ -46,19 +55,21 @@
 </template>
 <script>
 import { postRequest } from "@/libs/axios";
+import UploadImage from "./UploadImage";
 
 export default {
   name: "tab3",
   inject: ["msgOk", "msgErr"],
+  components: { UploadImage },
   props: {
     tab: {
       type: Object,
       default: function() {
         return {
           id: "tab3",
-          type: 3,
-          name: "xxx",
-          label: "免费抽大奖",
+          type: 102,
+          site: 2,
+          label: "邀请好友赚钱",
           compName: "tab3"
         };
       }
@@ -66,14 +77,18 @@ export default {
   },
   computed: {
     subTitleRules() {
+      let obj = null;
       if (this.formData.subTitle.length) {
-        return {
+        obj = {
           required: true,
           validator: this.validateEmpty("请输入副标题", 12)
         };
       } else {
-        return { required: false };
+        obj = { required: false };
       }
+      console.log(11111, obj);
+
+      return obj;
     }
   },
   watch: {
@@ -93,8 +108,11 @@ export default {
       submitDisabled: false,
       formData: {
         id: "",
+        type: "",
         mainTitle: "", //主标题：超值爆抢券
-        subTitle: "" //副标题：大家都在领
+        subTitle: "", //副标题：大家都在领
+        iconUrl: "", //首页分红banner图片
+        defaultIconUrlList: []
       },
       ruleValidate: {}
     };
@@ -105,14 +123,30 @@ export default {
   methods: {
     async getData() {
       const url = "/page/module/layout/getCommonSetting";
-      const { type } = this.tab;
-      const site = 1;
+      //  平台分红：4
+      const { type, site } = this.tab;
+      //  site 页面位置，1：首页、2：首页-平台分红
       const { code, msg, data } = await postRequest(url, { type, site });
       if (code == 200) {
+        const { iconUrl } = data;
+
+        data.defaultIconUrlList = [];
+        if (iconUrl) {
+          data.defaultIconUrlList.push({ imgUrl: iconUrl });
+        }
+
         this.formData = data;
       } else {
         this.msgErr(msg);
       }
+    },
+    removeIconUrl() {
+      this.formData.iconUrl = "";
+      this.formData.defaultIconUrlList = [];
+    },
+    iconUrlUploadSuccess({ imgUrl }) {
+      this.formData.iconUrl = imgUrl;
+      this.formData.defaultIconUrlList = [{ imgUrl }];
     },
     validateEmpty(msg, len = 20) {
       return function(rule, value, callback) {
@@ -143,14 +177,15 @@ export default {
           return;
         }
 
+        // 核销扫码首页配置
+        const url = "/page/module/layout/saveCommonSetting";
+
         //清洗数据
         let formData = JSON.parse(JSON.stringify(this.formData));
-        const { type } = this.tab;
-        formData.site = 1;
-        formData.type = type;
 
-        // 超值爆抢首页配置
-        const url = "/page/module/layout/saveCommonSetting";
+        const { type, site } = this.tab;
+        formData.type = type;
+        formData.site = site;
         postRequest(url, formData).then(res => {
           if (res.code == 200) {
             this.msgOk("保存成功");

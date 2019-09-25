@@ -1,6 +1,6 @@
 <template>
   <div class="cms">
-    <Button type="dashed" icon="md-arrow-round-back" @click="goback()">返回上一层</Button>首页
+    <Button type="dashed" icon="md-arrow-round-back" @click="goback()">返回上一层</Button>
     <div>
       <Tabs type="card" v-model="compName">
         <TabPane v-for="(tab,k) in tabs" :key="k" :label="tab.label" :name="tab.compName"></TabPane>
