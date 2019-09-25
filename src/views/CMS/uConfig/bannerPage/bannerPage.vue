@@ -145,7 +145,7 @@
         data(){
             return{
                 typeList: [{value: '0', label: '全部'}, {value: '1', label: '小程序'}, {value: '2', label: 'android'}, {value: 3, label: 'ios'}],
-                statusList:[{value:0,label:'待上架'},{value:1,label:'上架'},{value:1,label:'下架'}],
+                statusList:[{value:0,label:'待上架'},{value:1,label:'上架'},{value:2,label:'下架'}],
                 TableLoading: false,
                 auditing:0,
                 totalSize: 0,
