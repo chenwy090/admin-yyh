@@ -25,7 +25,7 @@
                         <Input
                                 type="text"
                                 v-model="modal.title"
-                                placeholder="请填写活动名称，20字以内"
+                                placeholder="请填写标题"
                                 style="width: 100%"
                         ></Input>
                     </FormItem>
@@ -34,7 +34,7 @@
                 <Row class="padding-left-12">
                     <Col span="18">
                     <FormItem label="内容类型">
-                        <Select v-model="modal.type" style="width:30%">
+                        <Select v-model="modal.type" style="width:30%" @on-change="changeType">
                             <Option v-for="item in typeList" :value="item.value" :key="item.value">{{ item.label }}
                             </Option>
                         </Select>
@@ -53,13 +53,29 @@
                     </FormItem>
                     </Col>
                 </Row>
-                <Row class="padding-left-12" v-if="modal.type==1||modal.type==2||modal.type==5||modal.type==6">
+                <Row class="padding-left-12" v-if="modal.type==1||modal.type==5||modal.type==6">
                     <Col span="18">
                     <FormItem label="内容选择">
                         <Button type="dashed" @click="openContent">
-                            <span v-if="!contentObj.name">请选择</span>
-                            <span v-if="contentObj.name"> {{contentObj.name}}</span>
+                            <span v-if="!modal.content">请选择</span>
+                            <span v-if="modal.content"> {{modal.content}}</span>
                         </Button>
+                    </FormItem>
+                    </Col>
+                </Row>
+                <Row class="padding-left-12" v-if="modal.type==2">
+                    <Col span="18">
+                    <FormItem label="内容选择：">
+                        <RadioGroup v-model="choujiangType">
+                            <Radio :label="'抽奖团'">抽奖团</Radio>
+                            <Radio :label="'抽奖广场'">抽奖广场</Radio>
+                        </RadioGroup>
+                        <div>
+                            <Button type="dashed" @click="openContent" v-if="choujiangType=='抽奖团'">
+                                <span v-if="!modal.content">请选择</span>
+                                <span v-if="modal.content"> {{modal.content}}</span>
+                            </Button>
+                        </div>
                     </FormItem>
                     </Col>
                 </Row>
@@ -67,48 +83,78 @@
                 <div style="padding: 20px;border: 1px solid #999;">
                     <Row class="padding-left-12">
                         <Col span="18">
-                        <FormItem label="门店选择">
-                            <Button type="dashed" @click="openContent">
-                                <span v-if="!contentObj">请选择</span>
-                                <!--<Button :key="index" v-for="(item,index) in couponObj" class="coupon-item">-->
-                                    <!--{{item.title +'&nbsp&nbsp'}}-->
-                                    <!--<Icon @click.stop="reMoveCoupon(index)" type="ios-close"/>-->
-                                <!--</Button>-->
-                            </Button>
+                        <!-- 门店类型： storeType 0 全国 1门店 -->
+                        <FormItem label="投放门店：">
+                            <RadioGroup v-model="modal.shopId">
+                                <Radio
+                                        v-for="item in storeTypeList"
+                                        :key="item.value"
+                                        :label="item.value"
+                                >{{ item.label }}</Radio>
+                            </RadioGroup>
                         </FormItem>
+                        <template v-if="modal.shopId==1">
+                            <FormItem>
+                                <template v-for="(item,index) in drawDailyShopList">
+                                    <storeView
+                                            :key="index"
+                                            :id="item.id"
+                                            v-on:sendProvinceId="sendProvinceId"
+                                            v-on:sendCityId="sendCityId"
+                                            v-on:sendAreaId="sendAreaId"
+                                            v-on:sendShopId="sendShopId"
+                                            @handleRemove-event="shopRemove"
+                                            :shop="item"
+                                    ></storeView>
+                                </template>
+                            </FormItem>
+                            <FormItem label>
+                                <Button type="dashed" long @click="handleAdd" icon="md-add" style="width:100px;"></Button>
+                            </FormItem>
+                        </template>
                         </Col>
                     </Row>
                     <Row class="padding-left-12">
                         <Col span="18">
                         <FormItem label="投放位置">
-                            <Select v-model="modal.location" style="width:30%">
-                                <Option v-for="item in locationList" :value="item.value" :key="item.value">{{ item.label
-                                    }}
-                                </Option>
-                            </Select>
+                            <Cascader :data="cascaderData" v-model="cascaderValue"></Cascader>
+                            <!--<Select v-model="modal.location" style="width:30%">-->
+                                <!--<Option v-for="item in locationList" :value="item.value" :key="item.value">{{ item.label-->
+                                    <!--}}-->
+                                <!--</Option>-->
+                            <!--</Select>-->
+                            <!--<Select v-model="modal.businessLayer" style="width:30%">-->
+                                <!--<Option v-for="item in businessLayerList" :value="item.value" :key="item.value">-->
+                                    <!--{{ item.label }}-->
+                                <!--</Option>-->
+                            <!--</Select>-->
+                            <!--<Select v-model="modal.layerPriority" style="width:30%">-->
+                                <!--<Option v-for="item in layerPriorityList" :value="item.value" :key="item.value">{{-->
+                                    <!--item.label }}-->
+                                <!--</Option>-->
+                            <!--</Select>-->
                         </FormItem>
                         </Col>
                     </Row>
+                    <!--<Row class="padding-left-12">-->
+                        <!--<Col span="18">-->
+                        <!--<FormItem label="运营位置">-->
+                            <!--<Select v-model="modal.businessLayer" style="width:30%">-->
+                                <!--<Option v-for="item in businessLayerList" :value="item.value" :key="item.value">-->
+                                    <!--{{ item.label }}-->
+                                <!--</Option>-->
+                            <!--</Select>-->
+                        <!--</FormItem>-->
+                        <!--</Col>-->
+                    <!--</Row>-->
                     <Row class="padding-left-12">
                         <Col span="18">
-                        <FormItem label="运营位置">
-                            <Select v-model="modal.businessLayer" style="width:30%">
-                                <Option v-for="item in businessLayerList" :value="item.value" :key="item.value">
-                                    {{ item.label }}
-                                </Option>
-                            </Select>
-                        </FormItem>
-                        </Col>
-                    </Row>
-                    <Row class="padding-left-12">
-                        <Col span="18">
-                        <FormItem label="运营位选择">
-                            <Select v-model="modal.layerPriority" style="width:30%">
-                                <Option v-for="item in layerPriorityList" :value="item.value" :key="item.value">{{
-                                    item.label }}
-                                </Option>
-                            </Select>
-                            <span style="margin: 0 10px 0 30px;">终端选择</span>
+                        <FormItem label="终端选择">
+                            <!--<Select v-model="modal.layerPriority" style="width:30%">-->
+                                <!--<Option v-for="item in layerPriorityList" :value="item.value" :key="item.value">{{-->
+                                    <!--item.label }}-->
+                                <!--</Option>-->
+                            <!--</Select>-->
                             <Select v-model="modal.clientType" style="width:30%">
                                 <Option v-for="item in clientTypeList" :value="item.value" :key="item.value">{{
                                     item.label }}
@@ -143,19 +189,14 @@
                     <Row class="padding-left-12">
                         <Col span="18">
                         <FormItem label="banner图片">
-                            <div class="demo-upload-list" v-for="item in uploadList">
-                                <template v-if="item.status === 'finished'">
-                                    <img :src="item.url">
-                                    <div class="demo-upload-list-cover">
-                                        <Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>
-                                        <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
-                                    </div>
-                                </template>
-                                <template v-else>
-                                    <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
-                                </template>
+                            <div class="demo-upload-list"  v-if="modal.image">
+                                <img :src="modal.image">
+                                <div class="demo-upload-list-cover">
+                                    <Icon type="ios-eye-outline" @click.native="handleView"></Icon>
+                                    <Icon type="ios-trash-outline" @click.native="handleRemove"></Icon>
+                                </div>
                             </div>
-                            <Upload
+                            <Upload v-if="!modal.image"
                                     ref="upload"
                                     :show-upload-list="false"
                                     :default-file-list="defaultList"
@@ -167,14 +208,15 @@
                                     :before-upload="handleBeforeUpload"
                                     multiple
                                     type="drag"
-                                    action="//jsonplaceholder.typicode.com/posts/"
+                                    :action="url"
+                                    :headers="userToken"
                                     style="display: inline-block;width:58px;">
                                 <div style="width: 58px;height:58px;line-height: 58px;">
                                     <Icon type="ios-camera" size="20"></Icon>
                                 </div>
                             </Upload>
                             <Modal title="View Image" v-model="visible">
-                                <img :src="'https://o5wwk8baw.qnssl.com/' + imgName + '/large'" v-if="visible"
+                                <img :src="modal.image" v-if="visible"
                                      style="width: 100%">
                             </Modal>
                         </FormItem>
@@ -191,7 +233,7 @@
         <volumeModal
                 ref="volumeModal"
                 :viewDialogVisible="volumeViewDialogModal"
-                @setViewDialogVisible="selectVolume"
+                @setViewDialogVisible="selectContent"
         ></volumeModal>
         <contentModal
                 ref="contentModal"
@@ -212,48 +254,54 @@
 </template>
 
 <script>
+    import { uploadOperationImage2AliOssURl } from "@/api/index";
     import {postRequest, getRequest, getSyncRequest} from "@/libs/axios";
     import volumeModal from "./volumeModal";
     import contentModal from "./contentModal";
     import drawModal from "./drawModal";
     import shopModal from "./shopModal";
+    import storeView from "./store";
 
     export default {
-        name: "add-or-edit-modal", components: {volumeModal, contentModal, drawModal,shopModal}, props: {
+        name: "add-or-edit-modal",
+        components: {volumeModal, contentModal, drawModal,shopModal,storeView},
+        props: {
             viewDialogVisible: {type: Boolean, default: false}
-        }, data() {
+        },
+        data() {
             return {
+                choujiangType:'',
+                userToken:'',
+                url: uploadOperationImage2AliOssURl,
+                drawDailyShopList:[
+                    {provinceCode: null,
+                    cityCode: null,
+                    countryCode: null,
+                    shopId: null,
+                    shopName: null,
+                    id: Math.random(),
+                    status: 1}
+                    ],
                 contentObj:{},
                 uploadList: [{}],
                 defaultList: [],
                 visible: false,
-                typeList: [{value: 1, label: '专题活动'}, {value: 2, label: '抽奖团'}, {value: 3, label: '内链'}, {
-                    value: 4,
-                    label: '外链'
-                }, {value: 5, label: '商户'}, {value: 6, label: '优惠券'}],
-                locationList: [{value: 1, label: '首页'}, {value: 2, label: '赚钱'}, {value: 3, label: '领优惠'}, {
-                    value: 4,
-                    label: '我的'
-                }, {value: 5, label: '平台分红'}],
-                businessLayerList: [{value: 1, label: '1号位置'}, {value: 2, label: '2号位置'}, {value: 3, label: '3号位置'}],
-                layerPriorityList: [{value: 1, label: 'banner1'}, {value: 2, label: 'banner2'}, {
-                    value: 3,
-                    label: 'banner3'
-                }, {value: 4, label: 'banner4'}, {value: 5, label: 'banner5'}],
-                clientTypeList: [{value: 0, label: '全部'}, {value: 1, label: 'ios'}, {
-                    value: 2,
-                    label: 'android'
-                }, {value: 3, label: '小程序'}],
+                storeTypeList: [{ value: '0', label: "全国" }, { value: '1', label: "门店" }],
+                typeList: [{value: 1, label: '专题活动'}, {value: 2, label: '抽奖团'}, {value: 3, label: '内链'}, {value: 4, label: '外链'}, {value: 5, label: '商户'}, {value: 6, label: '优惠券'}],
+                clientTypeList: [{value: '0', label: '全部'}, {value: '1', label: '小程序'}, {value: '2', label: 'android'}, {value: 3, label: 'ios'}],
                 titleName: "",
                 volumeViewDialogModal: false,
                 contentViewDialogModal: false,
                 drawViewDialogModal: false,
                 shopViewDialogModal: false,
                 modal: {
+                    shopId:'',
                     title: "",
                     type: "",
                     value: '',
-                    shopRequestList: '',
+                    content:'',
+                    couponType:'',
+                    shopRequestList: [],
                     location: '',
                     businessLayer: '',
                     layerPriority: '',
@@ -262,6 +310,8 @@
                     endTime: "",
                     image: '',
                 },
+                cascaderData:[],
+                cascaderValue:[],
                 options1: {
                     disabledDate(date) {
                         return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24;
@@ -275,25 +325,89 @@
                 ruleValidate: {}
             };
         }, methods: {
-            handleView(name) {
-                this.imgName = name;
+            sendProvinceId(val, id) {
+                this.drawDailyShopList.some((item, index) => {
+                    if (item.id == id) {
+                        this.drawDailyShopList[index].provinceCode = val;
+                        return true;
+                    }
+                });
+            },
+            sendCityId(val, id) {
+                this.drawDailyShopList.some((item, index) => {
+                    if (item.id == id) {
+                        this.drawDailyShopList[index].cityCode = val;
+                        return true;
+                    }
+                });
+            },
+            sendAreaId(val, id) {
+                this.drawDailyShopList.some((item, index) => {
+                    if (item.id == id) {
+                        this.drawDailyShopList[index].countryCode = val;
+                        return true;
+                    }
+                });
+            },
+            sendShopId(val, name, id) {
+                this.drawDailyShopList.some((item, index) => {
+                    if (item.id == id) {
+                        this.drawDailyShopList[index].shopId = val;
+                        this.drawDailyShopList[index].shopName = name;
+                        return true;
+                    }
+                });
+            },
+            shopRemove(id) {
+                if (this.drawDailyShopList.length == 1) {
+                    return this.msgErr("必须保留一条");
+                }
+                this.drawDailyShopList.some((item, index) => {
+                    if (item.id == id) {
+                        this.drawDailyShopList.splice(index, 1);
+                        return true;
+                    }
+                });
+            },
+            handleAdd() {
+                this.drawDailyShopList.push({
+                    provinceCode: null,
+                    cityCode: null,
+                    countryCode: null,
+                    shopId: null,
+                    shopName: null,
+                    id: Math.random(),
+                    status: 1
+                });
+            },
+            handleView(item) {
                 this.visible = true;
-            }, handleRemove(file) {
-                const fileList = this.$refs.upload.fileList;
-                this.$refs.upload.fileList.splice(fileList.indexOf(file), 1);
-            }, handleSuccess(res, file) {
-                file.url = 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar';
-                file.name = '7eb99afb9d5f317c912f08b5212fd69a';
-            }, handleFormatError(file) {
+            },
+            handleRemove(file) {
+                this.modal.image = '';
+            },
+            handleSuccess(res, file) {
+                console.log(res);
+                if(res.code==200){
+                    this.modal.image = res.image_url;
+                }else{
+                    this.$Message.error('上传失败')
+                }
+                // file.url = 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar';
+                // file.name = '7eb99afb9d5f317c912f08b5212fd69a';
+            },
+            handleFormatError(file) {
                 this.$Notice.warning({
                     title: 'The file format is incorrect',
                     desc: 'File format of ' + file.name + ' is incorrect, please select jpg or png.'
                 });
-            }, handleMaxSize(file) {
+            },
+            handleMaxSize(file) {
                 this.$Notice.warning({
                     title: 'Exceeding file size limit', desc: 'File  ' + file.name + ' is too large, no more than 2M.'
                 });
-            }, handleBeforeUpload() {
+            },
+            handleBeforeUpload() {
                 const check = this.uploadList.length < 5;
                 if (!check) {
                     this.$Notice.warning({
@@ -301,10 +415,15 @@
                     });
                 }
                 return check;
-            }, changeDateTime(datetime, index) {
+            },
+            changeType(){
+                this.modal.value = '';
+                this.modal.content = '';
+            },
+            changeDateTime(datetime, index) {
                 switch (index) {
                 case 1:
-                    this.modal.startTime = datetime;
+                    this.modal.startTime = datetime+ ' 00:00:00';
                     this.options2 = {
                         disabledDate(date) {
                             return date.valueOf() < new Date(datetime) - 1000 * 60 * 60 * 24;
@@ -312,7 +431,7 @@
                     };
                     break;
                 case 2:
-                    this.modal.endTime = datetime;
+                    this.modal.endTime = datetime+ ' 23:59:59';
                     this.options1 = {
                         disabledDate(date) {
                             return (date.valueOf() < Date.now() - 1000 * 60 * 60 * 24 || date.valueOf() > new Date(datetime));
@@ -320,7 +439,36 @@
                     };
                     break;
                 }
-            }, resetRow(row) {
+            },
+            getLocation(){
+                postRequest(`/banner/getLocations`, null).then(res => {
+                    console.log(123);
+                    if (res.code == "200") {
+                        this.cascaderData = res.data;
+                    }else {
+                        this.$Message.error(res.msg);
+                    }
+                });
+            },
+            resetRow(row) {
+                this.getLocation();
+                this.choujiangType = '';
+                this.cascaderValue = [];
+                this.modal={
+                    shopId:'',
+                        title: "",
+                        type: "",
+                        value: '',
+                        content:'',
+                        shopRequestList: [],
+                        location: '',
+                        businessLayer: '',
+                        layerPriority: '',
+                        clientType: '',
+                        startTime: "",
+                        endTime: "",
+                        image: '',
+                },
                 this.options2 = {
                     disabledDate(date) {
                         return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24;
@@ -331,120 +479,32 @@
                         return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24;
                     }
                 };
-                if (row) {
-                    this.titleName = "编辑";
-                    this.modal.id = row.id;
-                    // /merchant/activity/award/activity/{id}
-                    getRequest(`/customer/activity/award/activity/${row.id}`).then(res => {
-                        if (res.code === "200") {
-                            var data = res.data;
-                            this.modal.name = data.name;
-                            this.modal.startTime = data.startTime;
-                            this.modal.wardType = data.awardType.toString();
-                            this.modal.endTime = data.endTime;
-                            this.modal.type = "2";
-                            this.modal.status = data.status;
-                            if (data.awardRuleVos && data.awardRuleVos.length) {
-                                data.awardRuleVos.forEach(function (v, i) {
-                                    v.awardAmount = v.award;
-                                });
-                            }
-                            if (data.awardType == "1") {
-                                this.JawardRuleDtos = data.awardRuleVos;
-                                this.JawardRuleDtos.forEach(function (v, i) {
-                                    if (!v.verifyCountMax) {
-                                        v.verifyCountMax = null;
-                                    }
-                                    if (!v.verifyCountMin) {
-                                        v.verifyCountMin = null;
-                                    }
-                                });
-                                this.UawardRuleDtos = [{
-                                    verifyCountMin: null,
-                                    verifyCountMax: null,
-                                    awardAmount: null,
-                                    awardType: "1",
-                                    couponType: "",
-                                    awardName: ""
-                                }];
-                            } else
-                                if (data.awardType == "2") {
-                                    this.UawardRuleDtos = data.awardRuleVos;
-                                    this.UawardRuleDtos.forEach(function (v, i) {
-                                        if (!v.verifyCountMax) {
-                                            v.verifyCountMax = null;
-                                        }
-                                        if (!v.verifyCountMin) {
-                                            v.verifyCountMin = null;
-                                        }
-                                    });
-                                    this.JawardRuleDtos = [{
-                                        verifyCountMin: null,
-                                        verifyCountMax: null,
-                                        awardAmount: null,
-                                        awardType: "2",
-                                        couponType: "",
-                                        awardName: ""
-                                    }];
-                                }
-                        } else {
-                            this.$Message.error(res.msg);
-                        }
-                    });
-                } else {
-                    this.titleName = "新增";
-                    this.modal.name = "";
-                    this.modal.startTime = "";
-                    this.modal.wardType = "1";
-                    this.modal.endTime = "";
-                    this.modal.type = "1";
-                    this.JawardRuleDtos = [{
-                        verifyCountMin: null,
-                        verifyCountMax: null,
-                        awardAmount: null,
-                        awardType: "1",
-                        couponType: "",
-                        awardName: ""
-                    }];
-                    this.UawardRuleDtos = [{
-                        verifyCountMin: null,
-                        verifyCountMax: null,
-                        awardAmount: null,
-                        awardType: "2",
-                        couponType: "",
-                        awardName: ""
-                    }];
-                }
-            }, openVolume(item) {
-                this.selectActiveVolumeModal = true;
-                this.$nextTick(() => {
-                    this.$refs["volumeModal"].resetRow(item);
-                });
-            }, openContent() {
+            },
+            openContent() {
                 // this.contentViewDialogModal = true;
                 switch (this.modal.type) {
                 case 1:
                     this.contentViewDialogModal = true;
                     this.$nextTick(() => {
-                        this.$refs["contentModal"].resetRow();
+                        this.$refs["contentModal"].resetRow({content:this.modal.content,value:this.modal.value});
                     });
                     break;
                 case 2:
                     this.drawViewDialogModal = true;
                     this.$nextTick(() => {
-                        this.$refs["drawModal"].resetRow();
+                        this.$refs["drawModal"].resetRow({content:this.modal.content,value:this.modal.value});
                     });
                     break;
                 case 5:
                     this.shopViewDialogModal = true;
                     this.$nextTick(() => {
-                        this.$refs["shopModal"].resetRow();
+                        this.$refs["shopModal"].resetRow({content:this.modal.content,value:this.modal.value});
                     });
                     break;
                 case 6:
                     this.volumeViewDialogModal = true;
                     this.$nextTick(() => {
-                        this.$refs["volumeModal"].resetRow();
+                        this.$refs["volumeModal"].resetRow({content:this.modal.content,value:this.modal.value});
                     });
                     break;
                 }
@@ -454,28 +514,13 @@
                 this.drawViewDialogModal = false;
                 this.shopViewDialogModal = false;
                 this.volumeViewDialogModal = false;
-                // if (e) {
-                //     var that = this;
-                //     if (this.couponObj.length == 0) {
-                //         this.couponObj = e;
-                //     } else
-                //         if ((e[0].shopName && !this.couponObj[0].shopName) || e[0].merchantName && !this.couponObj[0].merchantName) {
-                //             this.couponObj = e;
-                //         } else {
-                //             e.forEach(function (v, i) {
-                //                 that.couponObj.forEach(function (value, index) {
-                //                     debugger
-                //                     if (v.templateId === (value.templateId || value.id)) {
-                //                         that.couponObj.splice(index, 1);
-                //                     }
-                //                 });
-                //             });
-                //             this.couponObj = this.couponObj.concat(e);
-                //         }
-                // }
-            }, selectVolume(e) {
-                this.selectActiveVolumeModal = false;
-            }, changeRadio() {
+                if (e) {
+                    this.modal.value = e.shopId;
+                    this.modal.content = e.shopName;
+                    this.modal.couponType = e.couponType;
+                }
+            },
+            changeRadio() {
                 if (this.modal.wardType == '1') {
                     this.JawardRuleDtos = [{
                         verifyCountMin: null,
@@ -511,34 +556,106 @@
                         awardName: ''
                     }];
                 }
-            }, ok() {
-                // /merchant/activity/award/add/activity
-                // /merchant/activity/award/update/activity
-
-                if (this.titleName == "新增") {
-                    postRequest(`/customer/activity/award/add/activity`, params).then(res => {
-                        if (res.code === "200") {
+            },
+            ok() {
+                this.modal.location = this.cascaderValue[0];
+                this.modal.businessLayer = this.cascaderValue[1];
+                this.modal.layerPriority = this.cascaderValue[2];
+                if(!this.modal.title){
+                    this.$Message.error('请填写标题');
+                    return;
+                }
+                if(!this.modal.type){
+                    this.$Message.error('请选择内容类型');
+                    return;
+                }
+                if(this.modal.type ==2 && this.choujiangType == '抽奖广场'){
+                    this.modal.value = '0';
+                    this.modal.content = '0';
+                }
+                if(this.modal.type==3||this.modal.type==4){
+                    this.modal.value = this.modal.content;
+                }
+                if(!this.modal.value||!this.modal.content){
+                    this.$Message.error('请选择内容或链接');
+                    return;
+                }
+                if(!this.modal.shopId&&this.modal.shopId!==0){
+                    this.$Message.error('请选择投放门店');
+                    return;
+                }
+                if(!this.modal.location){
+                    this.$Message.error('请选择投放位置');
+                    return;
+                }
+                if(!this.modal.businessLayer){
+                    this.$Message.error('请选择运营位置');
+                    return;
+                }
+                if(!this.modal.layerPriority){
+                    this.$Message.error('请选择运营位');
+                    return;
+                }
+                if(!this.modal.clientType){
+                    this.$Message.error('请选择终端');
+                    return;
+                }
+                if(!this.modal.startTime||!this.modal.endTime){
+                    this.$Message.error('请选择时间');
+                    return;
+                }
+                if(!this.modal.image){
+                    this.$Message.error('请上传图片');
+                    return;
+                }
+                this.modal.shopRequestList = [];
+                if(this.modal.shopId==1){
+                    for(var i =0;i<this.drawDailyShopList.length;i++){
+                        if(!this.drawDailyShopList[i].shopId||!this.drawDailyShopList[i].shopName){
+                            this.$Message.error('请选择投放门店');
+                            break;
+                        }else{
+                            this.modal.shopRequestList.push({shopId:this.drawDailyShopList[i].shopId,shopName:this.drawDailyShopList[i].shopName})
+                        }
+                    }
+                }else{
+                    this.modal.shopRequestList.push({
+                        shopId:0,
+                        shopName:'全国'
+                    })
+                }
+                if (true) {
+                    postRequest(`/banner/saveBanner`, this.modal).then(res => {
+                        if (res.code == "200") {
                             this.$Message.success("新增成功");
                             this.$emit("setViewDialogVisible", false);
                             this.$emit("search");
-                        } else {
-                            this.$Message.error(res.msg);
-                        }
-                    });
-                } else {
-                    postRequest(`/customer/activity/award/update/activity`, params).then(res => {
-                        if (res.code === "200") {
-                            this.$Message.success("编辑成功");
-                            this.$emit("setViewDialogVisible", false);
-                            this.$emit("search");
-                        } else {
+                        }else if(res.code == "9999"){
+                            var tamplate = `<p>该时间段内，以下门店在所选运营位上已有活动：</p>`
+                            res.data.forEach(function(v,i){
+                                tamplate = tamplate + `<p><span>${v.provinceName} &nbsp;&nbsp;</span> <span>${v.cityName}&nbsp;&nbsp;</span><span>${v.areaName}&nbsp;&nbsp;</span><span>${v.shopName}&nbsp;&nbsp;</span><span>${v.startTime}&nbsp;&nbsp;</span>-<span>${v.endTime}&nbsp;&nbsp;</span><span>${v.content}</span></p>`
+                            })
+                            this.$Modal.confirm({
+                                title: '提示',
+                                width:700,
+                                content:tamplate,
+                                onOk: () => {
+                                }
+                            });
+                        }else {
                             this.$Message.error(res.msg);
                         }
                     });
                 }
-            }, close() {
+            },
+            close() {
                 this.$emit("setViewDialogVisible", false);
             }
+        },
+        created() {
+            this.userToken = {
+                jwttoken: localStorage.getItem("jwttoken")
+            };
         }
     };
 </script>
@@ -573,12 +690,41 @@
         height: auto;
     }
 
-    .coupon-item {
-        position: relative;
-        margin: 10px;
-    }
 
-    .coupon-item .ivu-icon {
+    .demo-upload-list{
+        display: inline-block;
+        width: 60px;
+        height: 60px;
+        text-align: center;
+        line-height: 60px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        overflow: hidden;
+        background: #fff;
+        position: relative;
+        box-shadow: 0 1px 1px rgba(0,0,0,.2);
+        margin-right: 4px;
+    }
+    .demo-upload-list img{
+        width: 100%;
+        height: 100%;
+    }
+    .demo-upload-list-cover{
+        display: none;
         position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0,0,0,.6);
+    }
+    .demo-upload-list:hover .demo-upload-list-cover{
+        display: block;
+    }
+    .demo-upload-list-cover i{
+        color: #fff;
+        font-size: 20px;
+        cursor: pointer;
+        margin: 0 2px;
     }
 </style>

@@ -78,6 +78,7 @@
                 },
                 totalSize: 0,
                 current: 1,
+                contentObj:{},
                 selectIndex:'',
                 tableColumns: [
                     {
@@ -109,22 +110,18 @@
             }
         },
         methods:{
-            resetRow(){
-                this.currentTab = '';
+            resetRow(item){
+                console.log(111);
                 this.modalForm.current= 1;
                 this.current= 1;
                 this.modalForm.name = '';
+                this.contentObj = item;
                 this.loadTableData();
             },
             selectBusiness(index){
-                switch (index) {
-                case 1:
-                    this.selectIndex2 = '';
-                    break;
-                case 2:
-                    this.selectIndex1 = '';
-                    break;
-                }
+                this.contentObj = this.listData[this.selectIndex];
+                this.contentObj.shopId = this.contentObj.id;
+                this.contentObj.shopName = this.contentObj.name;
             },
             search(){
                 this.modalForm.current= 1;
@@ -149,6 +146,15 @@
                     if (res.code === "200") {
                         this.totalSize = res.data.total;
                         this.listData = res.data.records||[];
+                        if(this.contentObj){
+                            var that = this;
+                            that.selectIndex = ''
+                            this.listData.forEach(function(v,i){
+                                if(that.contentObj.value == v.id&&that.contentObj.content == v.name){
+                                    that.selectIndex = i;
+                                }
+                            })
+                        }
                     } else {
                         this.$Message.error("获取数据失败");
                     }
@@ -164,11 +170,11 @@
                 this.$emit('setViewDialogVisible', false)
             },
             contentSave(){
-                if(!this.selectIndex){
+                if(!this.contentObj||!this.contentObj.shopId){
                     this.$Message.error('请选择');
                     return;
                 }
-                this.$emit('setViewDialogVisible', this.selectDataList)
+                this.$emit('setViewDialogVisible', this.contentObj)
             }
         },
         created(){

@@ -45,7 +45,7 @@
                                    @on-selection-change="handleSelect"
                            >
                                <template slot-scope="{ row }" slot="action">
-                                   <Button v-if="!(row.status==2||row.status==4)"
+                                   <Button v-if="row.status==1"
                                            type="success"
                                            style="margin-right: 5px"
                                            size="small"
@@ -58,7 +58,7 @@
                                            @click="showDetail(row)"
                                    >查看</Button>
                                    <Button
-                                           v-if="!(row.status==2||row.status==4)"
+                                           v-if="row.status==1||row.status==3"
                                            type="error"
                                            style="margin-right: 5px"
                                            size="small"

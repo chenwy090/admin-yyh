@@ -27,7 +27,7 @@
                 type="text"
                 v-model="modal.name"
                 placeholder="请填写活动名称，20字以内"
-                style="width: 100%"
+                style="width: 40%"
               ></Input>
             </FormItem>
           </Col>
@@ -38,7 +38,7 @@
               <DatePicker
                 :value="modal.startTime"
                 type="date"
-                placeholder
+                placeholder="请选择时间"
                 style="width: 160px"
                 :options="options1"
                 @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
@@ -46,7 +46,7 @@
               <DatePicker
                 :value="modal.endTime"
                 type="date"
-                placeholder
+                placeholder="请选择时间"
                 style="width: 160px"
                 :options="options2"
                 @on-change="(datetime) =>{ changeDateTime(datetime, 2)}"
@@ -343,6 +343,7 @@ export default {
       this.couponViewDialogModal = false;
       if (e) {
           if(this.couponType === type){
+              var that = this;
               e.forEach(function(v, i) {
                   that.couponObj.forEach(function(value, index) {
                       debugger

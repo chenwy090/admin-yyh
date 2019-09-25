@@ -402,8 +402,8 @@
                 }
             },
             changeCurrent2(current) {
-                if (this.current2 != current) {
-                    this.current2 = current;
+                if (this.volumeForm.current2 != current) {
+                    this.volumeForm.current2 = current;
                     this.loadTableData2(this.volumeObj,current);
                 }
             },
