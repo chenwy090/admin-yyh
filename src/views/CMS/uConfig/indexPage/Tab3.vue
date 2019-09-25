@@ -45,7 +45,7 @@
   </div>
 </template>
 <script>
-import { postRequest, getRequest } from "@/libs/axios";
+import { postRequest } from "@/libs/axios";
 
 export default {
   name: "tab3",
@@ -56,6 +56,7 @@ export default {
       default: function() {
         return {
           id: "tab3",
+          type: 3,
           name: "xxx",
           label: "免费抽大奖",
           compName: "tab3"
@@ -103,8 +104,10 @@ export default {
   },
   methods: {
     async getData() {
-      const url = "/page/module/layout/getDrawDaily";
-      const { code, msg, data } = await postRequest(url);
+      const url = "/page/module/layout/getCommonSetting";
+      const { type } = this.tab;
+      const site = 1;
+      const { code, msg, data } = await postRequest(url, { type, site });
       if (code == 200) {
         this.formData = data;
       } else {
@@ -140,12 +143,14 @@ export default {
           return;
         }
 
-        // 抽奖团首页配置
-        const url = "/page/module/layout/saveDrawDaily";
-
         //清洗数据
         let formData = JSON.parse(JSON.stringify(this.formData));
+        const { type } = this.tab;
+        formData.site = 1;
+        formData.type = type;
 
+        // 超值爆抢首页配置
+        const url = "/page/module/layout/saveCommonSetting";
         postRequest(url, formData).then(res => {
           if (res.code == 200) {
             this.msgOk("保存成功");
