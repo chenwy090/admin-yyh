@@ -53,13 +53,29 @@
                     </FormItem>
                     </Col>
                 </Row>
-                <Row class="padding-left-12" v-if="modal.type==1||modal.type==2||modal.type==5||modal.type==6">
+                <Row class="padding-left-12" v-if="modal.type==1||modal.type==5||modal.type==6">
                     <Col span="18">
                     <FormItem label="内容选择">
                         <Button type="dashed" @click="openContent">
                             <span v-if="!modal.content">请选择</span>
                             <span v-if="modal.content"> {{modal.content}}</span>
                         </Button>
+                    </FormItem>
+                    </Col>
+                </Row>
+                <Row class="padding-left-12" v-if="modal.type==2">
+                    <Col span="18">
+                    <FormItem label="内容选择：">
+                        <RadioGroup v-model="choujiangType">
+                            <Radio :label="'抽奖团'">抽奖团</Radio>
+                            <Radio :label="'抽奖广场'">抽奖广场</Radio>
+                        </RadioGroup>
+                        <div>
+                            <Button type="dashed" @click="openContent" v-if="choujiangType=='抽奖团'">
+                                <span v-if="!modal.content">请选择</span>
+                                <span v-if="modal.content"> {{modal.content}}</span>
+                            </Button>
+                        </div>
                     </FormItem>
                     </Col>
                 </Row>
@@ -101,34 +117,44 @@
                     <Row class="padding-left-12">
                         <Col span="18">
                         <FormItem label="投放位置">
-                            <Select v-model="modal.location" style="width:30%">
-                                <Option v-for="item in locationList" :value="item.value" :key="item.value">{{ item.label
-                                    }}
-                                </Option>
-                            </Select>
+                            <Cascader :data="cascaderData" v-model="cascaderValue"></Cascader>
+                            <!--<Select v-model="modal.location" style="width:30%">-->
+                                <!--<Option v-for="item in locationList" :value="item.value" :key="item.value">{{ item.label-->
+                                    <!--}}-->
+                                <!--</Option>-->
+                            <!--</Select>-->
+                            <!--<Select v-model="modal.businessLayer" style="width:30%">-->
+                                <!--<Option v-for="item in businessLayerList" :value="item.value" :key="item.value">-->
+                                    <!--{{ item.label }}-->
+                                <!--</Option>-->
+                            <!--</Select>-->
+                            <!--<Select v-model="modal.layerPriority" style="width:30%">-->
+                                <!--<Option v-for="item in layerPriorityList" :value="item.value" :key="item.value">{{-->
+                                    <!--item.label }}-->
+                                <!--</Option>-->
+                            <!--</Select>-->
                         </FormItem>
                         </Col>
                     </Row>
+                    <!--<Row class="padding-left-12">-->
+                        <!--<Col span="18">-->
+                        <!--<FormItem label="运营位置">-->
+                            <!--<Select v-model="modal.businessLayer" style="width:30%">-->
+                                <!--<Option v-for="item in businessLayerList" :value="item.value" :key="item.value">-->
+                                    <!--{{ item.label }}-->
+                                <!--</Option>-->
+                            <!--</Select>-->
+                        <!--</FormItem>-->
+                        <!--</Col>-->
+                    <!--</Row>-->
                     <Row class="padding-left-12">
                         <Col span="18">
-                        <FormItem label="运营位置">
-                            <Select v-model="modal.businessLayer" style="width:30%">
-                                <Option v-for="item in businessLayerList" :value="item.value" :key="item.value">
-                                    {{ item.label }}
-                                </Option>
-                            </Select>
-                        </FormItem>
-                        </Col>
-                    </Row>
-                    <Row class="padding-left-12">
-                        <Col span="18">
-                        <FormItem label="运营位选择">
-                            <Select v-model="modal.layerPriority" style="width:30%">
-                                <Option v-for="item in layerPriorityList" :value="item.value" :key="item.value">{{
-                                    item.label }}
-                                </Option>
-                            </Select>
-                            <span style="margin: 0 10px 0 30px;">终端选择</span>
+                        <FormItem label="终端选择">
+                            <!--<Select v-model="modal.layerPriority" style="width:30%">-->
+                                <!--<Option v-for="item in layerPriorityList" :value="item.value" :key="item.value">{{-->
+                                    <!--item.label }}-->
+                                <!--</Option>-->
+                            <!--</Select>-->
                             <Select v-model="modal.clientType" style="width:30%">
                                 <Option v-for="item in clientTypeList" :value="item.value" :key="item.value">{{
                                     item.label }}
@@ -244,6 +270,7 @@
         },
         data() {
             return {
+                choujiangType:'',
                 userToken:'',
                 url: uploadOperationImage2AliOssURl,
                 drawDailyShopList:[
@@ -261,9 +288,6 @@
                 visible: false,
                 storeTypeList: [{ value: '0', label: "全国" }, { value: '1', label: "门店" }],
                 typeList: [{value: 1, label: '专题活动'}, {value: 2, label: '抽奖团'}, {value: 3, label: '内链'}, {value: 4, label: '外链'}, {value: 5, label: '商户'}, {value: 6, label: '优惠券'}],
-                locationList: [{value: 1, label: '首页'}, {value: 2, label: '赚钱'}, {value: 3, label: '领优惠'}, {value: 4, label: '我的'}, {value: 5, label: '平台分红'}],
-                businessLayerList: [{value: 1, label: '1号位置'}, {value: 2, label: '2号位置'}, {value: 3, label: '3号位置'}],
-                layerPriorityList: [{value: 1, label: 'banner1'}, {value: 2, label: 'banner2'}, {value: 3, label: 'banner3'}, {value: 4, label: 'banner4'}, {value: 5, label: 'banner5'}],
                 clientTypeList: [{value: '0', label: '全部'}, {value: '1', label: 'ios'}, {value: '2', label: 'android'}, {value: 3, label: '小程序'}],
                 titleName: "",
                 volumeViewDialogModal: false,
@@ -285,6 +309,8 @@
                     endTime: "",
                     image: '',
                 },
+                cascaderData:[],
+                cascaderValue:[],
                 options1: {
                     disabledDate(date) {
                         return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24;
@@ -413,7 +439,35 @@
                     break;
                 }
             },
+            getLocation(){
+                postRequest(`/banner/getLocations`, null).then(res => {
+                    console.log(123);
+                    if (res.code == "200") {
+                        this.cascaderData = res.data;
+                    }else {
+                        this.$Message.error(res.msg);
+                    }
+                });
+            },
             resetRow(row) {
+                this.getLocation();
+                this.choujiangType = '';
+                this.cascaderValue = [];
+                this.modal={
+                    shopId:'',
+                        title: "",
+                        type: "",
+                        value: '',
+                        content:'',
+                        shopRequestList: [],
+                        location: '',
+                        businessLayer: '',
+                        layerPriority: '',
+                        clientType: '',
+                        startTime: "",
+                        endTime: "",
+                        image: '',
+                },
                 this.options2 = {
                     disabledDate(date) {
                         return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24;
@@ -431,25 +485,25 @@
                 case 1:
                     this.contentViewDialogModal = true;
                     this.$nextTick(() => {
-                        this.$refs["contentModal"].resetRow({shopName:this.modal.shopName,shopId:this.modal.shopId});
+                        this.$refs["contentModal"].resetRow({content:this.modal.content,value:this.modal.value});
                     });
                     break;
                 case 2:
                     this.drawViewDialogModal = true;
                     this.$nextTick(() => {
-                        this.$refs["drawModal"].resetRow({shopName:this.modal.shopName,shopId:this.modal.shopId});
+                        this.$refs["drawModal"].resetRow({content:this.modal.content,value:this.modal.value});
                     });
                     break;
                 case 5:
                     this.shopViewDialogModal = true;
                     this.$nextTick(() => {
-                        this.$refs["shopModal"].resetRow({shopName:this.modal.shopName,shopId:this.modal.shopId});
+                        this.$refs["shopModal"].resetRow({content:this.modal.content,value:this.modal.value});
                     });
                     break;
                 case 6:
                     this.volumeViewDialogModal = true;
                     this.$nextTick(() => {
-                        this.$refs["volumeModal"].resetRow({shopName:this.modal.shopName,shopId:this.modal.shopId});
+                        this.$refs["volumeModal"].resetRow({content:this.modal.content,value:this.modal.value});
                     });
                     break;
                 }
@@ -460,8 +514,8 @@
                 this.shopViewDialogModal = false;
                 this.volumeViewDialogModal = false;
                 if (e) {
-                    this.modal.value = e.id||e.merchantId||e.templateId;
-                    this.modal.content = e.name||e.title;
+                    this.modal.value = e.shopId;
+                    this.modal.content = e.shopName;
                 }
             },
             changeRadio() {
@@ -502,6 +556,9 @@
                 }
             },
             ok() {
+                this.modal.location = this.cascaderValue[0];
+                this.modal.businessLayer = this.cascaderValue[1];
+                this.modal.layerPriority = this.cascaderValue[2];
                 if(!this.modal.title){
                     this.$Message.error('请填写标题');
                     return;
@@ -509,6 +566,10 @@
                 if(!this.modal.type){
                     this.$Message.error('请选择内容类型');
                     return;
+                }
+                if(this.modal.type ==2 && this.choujiangType == '抽奖广场'){
+                    this.modal.value = '0';
+                    this.modal.content = '0';
                 }
                 if(this.modal.type==3||this.modal.type==4){
                     this.modal.value = this.modal.content;
@@ -562,12 +623,26 @@
                     })
                 }
                 if (true) {
+                    this.modal.startTime = this.modal.startTime+ ' 00:00:00';
+                    this.modal.endTime = this.modal.endTime+ ' 23:59:59';
                     postRequest(`/banner/saveBanner`, this.modal).then(res => {
-                        if (res.code === "200") {
+                        if (res.code == "200") {
                             this.$Message.success("新增成功");
                             this.$emit("setViewDialogVisible", false);
                             this.$emit("search");
-                        } else {
+                        }else if(res.code == "9999"){
+                            var tamplate = `<p>该时间段内，以下门店在所选运营位上已有活动：</p>`
+                            res.data.forEach(function(v,i){
+                                tamplate = tamplate + `<p><span>${v.provinceName} &nbsp;&nbsp;</span> <span>${v.cityName}&nbsp;&nbsp;</span><span>${v.areaName}&nbsp;&nbsp;</span><span>${v.shopName}&nbsp;&nbsp;</span><span>${v.startTime}&nbsp;&nbsp;</span>-<span>${v.endTime}&nbsp;&nbsp;</span><span>${v.content}</span></p>`
+                            })
+                            this.$Modal.confirm({
+                                title: '提示',
+                                width:700,
+                                content:tamplate,
+                                onOk: () => {
+                                }
+                            });
+                        }else {
                             this.$Message.error(res.msg);
                         }
                     });

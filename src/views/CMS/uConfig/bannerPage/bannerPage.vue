@@ -37,7 +37,6 @@
                             </FormItem>
                             <FormItem label="终端" span="24"  style="width:23%">
                                 <Select v-model="searchForm.type" style="width:100%">
-                                    <Option value="">全部</Option>
                                     <Option v-for="(item,index) in typeList" :value="item.value" :key="index">{{ item.label }}</Option>
                                 </Select>
                             </FormItem>
@@ -108,7 +107,7 @@
                                     <div>{{['待上架','上架', '下架'][row.status]}}</div>
                                 </template>
                                 <template slot-scope="{ row }" slot="type">
-                                    <div>{{['','ios','ios', '小程序'][row.type]}}</div>
+                                    <div>{{['全部','ios','android', '小程序'][row.type]}}</div>
                                 </template>
                                 <template slot-scope="{ row }" slot="image">
                                     <img style="max-width: 100px;max-height: 50px;" :src="row.image" alt="">
@@ -145,7 +144,7 @@
         components:{AddOrEdit,showDetail},
         data(){
             return{
-                typeList:[{value:1,label:'ios'},{value:2,label:'ios'},{value:2,label:'小程序'}],
+                typeList:[{value:0,label:'全部'},{value:1,label:'ios'},{value:2,label:'android'},{value:2,label:'小程序'}],
                 statusList:[{value:0,label:'待上架'},{value:1,label:'上架'},{value:1,label:'下架'}],
                 TableLoading: false,
                 auditing:0,
@@ -211,13 +210,13 @@
                         title: "运营位类型",
                         minWidth: 100,
                         align: "center",
-                        key: "businessLayer"
+                        key: "bannerType"
                     },
                     {
                         title: "已选活动",
                         minWidth: 200,
                         align: "center",
-                        key: "businessLayer"
+                        key: "content"
                     },{
                         title: "运营位置",
                         minWidth: 200,
@@ -256,10 +255,10 @@
                     title: "",
                     startTime: "",
                     endTime: "",
-                    page: 1,
-                    size: 10,
-                    status:"",
-                    type:'',
+                    pageNum: 1,
+                    pageSize: 10,
+                    status:null,
+                    type:0,
                 },
                 AddViewDialogVisible:false,
                 ShowViewDialogVisible:false,
@@ -300,7 +299,7 @@
                 }
             },
             search() {
-                this.searchForm.page = 1;
+                this.searchForm.pageNum = 1;
                 this.current= 1;
                 this.loadTableData();
             },
@@ -308,20 +307,18 @@
                 this.searchForm.shopName = '';
                 this.searchForm.startTime = '';
                 this.searchForm.endTime = '';
-                this.searchForm.status = '';
-                this.searchForm.type = '';
-                this.searchForm.page = 1;
+                this.searchForm.status = null;
+                this.searchForm.type = 0;
+                this.searchForm.pageNum = 1;
                 this.current= 1;
                 this.loadTableData();
             },
             loadTableData(page) {
-                this.searchForm.page = page||1;
+                this.searchForm.pageNum = page||1;
                 this.totalSize = 0;
                 this.listData = [];
                 this.TableLoading = true;
-                postRequest(`/banner/setting/getPlantFromSetting?pageNum=${this.searchForm.page}&pageSize=10`,{  "pageNum": 10,
-                        "pegeSize": 1
-                    }
+                postRequest(`/banner/setting/getPlantFromSetting?pageNum=${this.searchForm.pageNum}&pageSize=10`,this.searchForm
                 ).then(res => {
                     this.TableLoading = false;
                     if (res.code === "200") {
@@ -347,6 +344,7 @@
                 })
             },
             showDetail(row){
+                console.log(12);
                 this.ShowViewDialogVisible = true;
                 this.$emit("closeTab",true)
                 this.$nextTick(() => {
@@ -461,8 +459,8 @@
 
             },
             changeCurrent(current) {
-                if (this.searchForm.page != current) {
-                    this.searchForm.page = current;
+                if (this.searchForm.pageNum != current) {
+                    this.searchForm.pageNum = current;
                     this.loadTableData(current);
                 }
             },

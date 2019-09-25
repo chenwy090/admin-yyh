@@ -142,7 +142,7 @@
                             let that = this;
                             that.selectIndex = ''
                             this.listData.forEach(function(v,i){
-                                if(that.contentObj.shopId == v.id&&that.contentObj.shopName == v.name){
+                                if(that.contentObj.value == v.id&&that.contentObj.content == v.name){
                                     that.selectIndex = i;
                                 }
                             })

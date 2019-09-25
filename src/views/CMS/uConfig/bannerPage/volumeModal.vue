@@ -301,7 +301,7 @@
                             that.selectIndex1 = '';
                             that.selectIndex2 = '';
                             this.listData1.forEach(function(v,i){
-                                if(that.volumeObj.shopId == v.templateId&&that.volumeObj.shopName == v.title){
+                                if(that.volumeObj.value == v.templateId&&that.volumeObj.content == v.title){
                                     that.selectIndex1 = i;
                                     that.selectIndex2 = '';
                                 }
@@ -340,7 +340,7 @@
                             that.selectIndex1 = '';
                             that.selectIndex2 = '';
                             this.listData2.forEach(function(v,i){
-                                if(that.volumeObj.shopId == v.templateId&&that.volumeObj.shopName == v.title){
+                                if(that.volumeObj.value == v.templateId&&that.volumeObj.content == v.title){
                                     that.selectIndex2 = i;
                                     that.selectIndex1 = '';
                                 }

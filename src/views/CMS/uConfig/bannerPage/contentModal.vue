@@ -111,6 +111,7 @@
         },
         methods:{
             resetRow(item){
+                console.log(111);
                 this.modalForm.current= 1;
                 this.current= 1;
                 this.modalForm.name = '';
@@ -149,7 +150,7 @@
                             var that = this;
                             that.selectIndex = ''
                             this.listData.forEach(function(v,i){
-                                if(that.contentObj.shopId == v.id&&that.contentObj.shopName == v.name){
+                                if(that.contentObj.value == v.id&&that.contentObj.content == v.name){
                                     that.selectIndex = i;
                                 }
                             })
