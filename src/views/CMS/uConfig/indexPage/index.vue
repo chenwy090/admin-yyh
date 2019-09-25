@@ -10,12 +10,12 @@
   </div>
 </template>
 <script>
-import Tab1 from "./tab1";
-import Tab2 from "./tab2";
-import Tab3 from "./tab3";
-import Tab4 from "./tab4";
-import Tab5 from "./tab5";
-import Tab6 from "./tab6";
+import Tab1 from "./Tab1";
+import Tab2 from "./Tab2";
+import Tab3 from "./Tab3";
+import Tab4 from "./Tab4";
+import Tab5 from "./Tab5";
+import Tab6 from "./Tab6";
 export default {
   name: "indePage",
   inject: ["linkTo"],
@@ -26,7 +26,6 @@ export default {
     Tab4,
     Tab5,
     Tab6
-    // CompSuperMarketList
   },
   computed: {
     tab() {
@@ -45,37 +44,37 @@ export default {
       tabs: {
         tab1: {
           id: "tab1",
-          name: "xxx",
+          type: 1,
           label: "核销扫码区",
           compName: "tab1"
         },
         tab2: {
           id: "tab2",
-          name: "xxx",
+          type: 2,
           label: "超值爆抢券",
           compName: "tab2"
         },
         tab3: {
           id: "tab3",
-          name: "xxx",
+          type: 3,
           label: "免费抽大奖",
           compName: "tab3"
         },
         tab4: {
           id: "tab4",
-          name: "xxx",
+          type: 4,
           label: "平台分红",
           compName: "tab4"
         },
         tab5: {
           id: "tab5",
-          name: "xxx",
+          type: 5,
           label: "品牌专区",
           compName: "tab5"
         },
         tab6: {
           id: "tab6",
-          name: "xxx",
+          type: 6,
           label: "好券一起领",
           compName: "tab6"
         }
