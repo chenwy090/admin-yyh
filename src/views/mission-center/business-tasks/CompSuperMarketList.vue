@@ -1,14 +1,14 @@
 <template>
-  <!-- 优惠券 商户 /zex-mgr/coupon/merchant/list -->
+  <!-- 优惠券 商超 /zex-mgr/coupon/merchant/list -->
   <div class="coupon-list-box">
     <row>
       <Form ref="searchItem" :model="searchItem" inline :label-width="100" class="search-form">
-        <FormItem label="商户名称：">
+        <FormItem label="商超名称：">
           <Input
             type="text"
             v-model="searchItem.shopName"
             clearable
-            placeholder="请输入商户名称："
+            placeholder="请输入商超名称："
             style="width: 150px"
           />
         </FormItem>
@@ -68,7 +68,7 @@ export default {
       type: Object,
       default: function() {
         return {
-          name: "xxx",
+          name: "superMarket",
           couponType: 0,
           label: "商超",
           compName: "CompSuperMarketList",
@@ -140,11 +140,17 @@ export default {
           width: 180,
           key: "time",
           render: (h, params) => {
-            let { useStartTime, useEndTime } = params.row;
+            let { dateType, startDate, endDate } = params.row;
             let str = "-";
-            if (useStartTime && useEndTime) {
-              str = `${useStartTime}-${useEndTime}`;
+
+            if (dateType == 2) {
+              str = "永久有效";
+            } else {
+              if (startDate && endDate) {
+                str = `${startDate}-${endDate}`;
+              }
             }
+
             return h("span", str);
           }
         },

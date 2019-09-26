@@ -67,7 +67,7 @@ export default {
       type: Object,
       default: function() {
         return {
-          name: "xxx",
+          name: "merchant",
           couponType: 1,
           label: "商户",
           compName: "CompMerchantLlist",
