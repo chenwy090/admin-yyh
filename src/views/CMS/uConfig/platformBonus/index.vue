@@ -1,6 +1,6 @@
 <template>
   <div class="cms">
-    <Button type="dashed" icon="md-arrow-round-back" @click="goback()">返回上一层</Button>to indexPage
+    <Button type="dashed" icon="md-arrow-round-back" @click="goback()">返回上一层</Button>
     <div>
       <Tabs type="card" v-model="compName">
         <TabPane v-for="(tab,k) in tabs" :key="k" :label="tab.label" :name="tab.compName"></TabPane>
@@ -71,7 +71,7 @@ export default {
         tab5: {
           id: "tab5",
           type: 104,
-          site:2,
+          site: 2,
           label: "赚钱专区",
           compName: "tab5"
         }

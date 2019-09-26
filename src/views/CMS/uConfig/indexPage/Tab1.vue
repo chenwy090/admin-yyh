@@ -17,7 +17,7 @@
         prop="verifyTitle"
         :rules="{ required: true, message: '请输入一键核销文案' }"
       >
-        <Tooltip trigger="focus" title="提醒" content="最多xxxx个汉字" placement="right">
+        <Tooltip trigger="focus" title="提醒" content="最多20个汉字" placement="right">
           <Input
             style="width:200px"
             v-model="formData.verifyTitle"
@@ -48,11 +48,11 @@
         ></UploadImage>
       </FormItem>
       <FormItem label="Solagon：" prop="slogan" :rules="{ required: true, message: '请输入Solagon' }">
-        <Tooltip trigger="focus" title="提醒" content="最多xxxx个汉字" placement="right">
+        <Tooltip trigger="focus" title="提醒" content="最多15个汉字" placement="right">
           <Input
             style="width:200px"
             v-model="formData.slogan"
-            :maxlength="20"
+            :maxlength="15"
             placeholder="请输入Solagon"
             clearable
           />
@@ -60,7 +60,7 @@
       </FormItem>
       <div style="margin-top:20px;">
         <FormItem label>
-          <Button type="primary" :disabled="submitDisabled" @click="handleSubmit('form')">提交</Button>
+          <Button type="primary" :disabled="submitDisabled" @click="handleSubmit('form')">保存</Button>
         </FormItem>
       </div>
     </Form>
