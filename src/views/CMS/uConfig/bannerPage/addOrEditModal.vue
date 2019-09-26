@@ -24,7 +24,7 @@
                     <FormItem label="标题">
                         <Input
                                 type="text"
-                                maxlength="10"
+                                :maxlength="10"
                                 v-model="modal.title"
                                 placeholder="请填写标题"
                                 style="width: 30%"
@@ -139,18 +139,18 @@
                         <FormItem label="选择时间">
                             <DatePicker
                                     :value="modal.startTime"
-                                    type="date"
+                                    type="datetime"
                                     placeholder
-                                    style="width: 20%"
+                                    style="width: 30%"
                                     :options="options1"
                                     @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
                             ></DatePicker>
                             <div style="width: 2%;display: inline-block"></div>
                             <DatePicker
                                     :value="modal.endTime"
-                                    type="date"
+                                    type="datetime"
                                     placeholder
-                                    style="width: 20%"
+                                    style="width: 30%"
                                     :options="options2"
                                     @on-change="(datetime) =>{ changeDateTime(datetime, 2)}"
                             ></DatePicker>
@@ -394,7 +394,7 @@
             changeDateTime(datetime, index) {
                 switch (index) {
                 case 1:
-                    this.modal.startTime = datetime+ ' 00:00:00';
+                    this.modal.startTime = datetime;
                     this.options2 = {
                         disabledDate(date) {
                             return date.valueOf() < new Date(datetime) - 1000 * 60 * 60 * 24;
@@ -402,7 +402,7 @@
                     };
                     break;
                 case 2:
-                    this.modal.endTime = datetime+ ' 23:59:59';
+                    this.modal.endTime = datetime;
                     this.options1 = {
                         disabledDate(date) {
                             return (date.valueOf() < Date.now() - 1000 * 60 * 60 * 24 || date.valueOf() > new Date(datetime));

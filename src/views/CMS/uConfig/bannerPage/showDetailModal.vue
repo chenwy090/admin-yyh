@@ -115,9 +115,9 @@
               <DatePicker
                       disabled
                       :value="modal.startTime"
-                      type="date"
+                      type="datetime"
                       placeholder
-                      style="width: 20%"
+                      style="width: 30%"
                       :options="options1"
                       @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
               ></DatePicker>
@@ -125,9 +125,9 @@
               <DatePicker
                       disabled
                       :value="modal.endTime"
-                      type="date"
+                      type="datetime"
                       placeholder
-                      style="width: 20%"
+                      style="width: 30%"
                       :options="options2"
                       @on-change="(datetime) =>{ changeDateTime(datetime, 2)}"
               ></DatePicker>
