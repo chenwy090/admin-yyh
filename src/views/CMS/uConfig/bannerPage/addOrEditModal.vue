@@ -24,6 +24,7 @@
                     <FormItem label="标题">
                         <Input
                                 type="text"
+                                maxlength="10"
                                 v-model="modal.title"
                                 placeholder="请填写标题"
                                 style="width: 30%"
