@@ -650,9 +650,8 @@ export default {
           // this.fileList = [];
       },
       changeReason(){
-          console.log(111);
           if(this.formValidate.reason=='客诉补偿'){
-            this.formValidate.reveiveType='1';
+            this.formValidate.reveiveType='0';
         }else{
             this.formValidate.reveiveType='';
         }
