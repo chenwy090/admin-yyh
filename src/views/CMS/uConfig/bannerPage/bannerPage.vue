@@ -198,7 +198,7 @@
                         title: "内容Id",
                         width: 100,
                         align: "center",
-                        key: "shopId",
+                        key: "id",
                     },
                     {
                         title: "终端",
