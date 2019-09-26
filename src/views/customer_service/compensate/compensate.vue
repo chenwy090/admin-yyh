@@ -209,7 +209,7 @@
         <FormItem label="备注:">
           <Input style="width:250px" v-model="formValidate.remark" placeholder="请输入" clearable />
         </FormItem>
-        <FormItem label="用户领取方式:" required>
+        <FormItem label="用户领取方式:" required v-if="formValidate.welfareType==1">
           <RadioGroup v-model="formValidate.reveiveType" vertical >
             <Radio label="1" value="1" style="display: inline-block" :disabled="formValidate.reason=='客诉补偿'">
               <span>手动领取</span>
@@ -993,10 +993,6 @@ export default {
           this.msgErr('请上传用户Id');
           return
       }
-      if(!this.formValidate.reveiveType){
-          this.msgErr('请选择用户领取方式');
-          return
-      }
       // if(this.addLuckyDrawFn)
       if (this.add_edit == 1) {
         // console.log(this.formValidate.specialTopicCouponList);
@@ -1124,6 +1120,10 @@ export default {
       if (this.formValidate.reason == "") {
         this.msgErr("请选择发放原因");
         return;
+      }
+      if(this.formValidate.welfareType == 1&&!this.formValidate.reveiveType){
+          this.msgErr('请选择用户领取方式');
+          return
       }
       return true;
     },
