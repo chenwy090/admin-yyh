@@ -590,6 +590,10 @@
                     this.$Message.error('请选择时间');
                     return;
                 }
+                if(new Date(this.modal.startTime)<new Date()){
+                    this.$Message.error('开始时间要大于当前时间');
+                    return;
+                }
                 if(new Date(this.modal.startTime)>=new Date(this.modal.endTime)){
                     this.$Message.error('开始时间不能大于等于结束时间');
                     return;
