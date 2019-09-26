@@ -66,7 +66,20 @@
           </template>
           <!-- 下架：只有在“审核通过且状态未开始、审核通过且状态进行中”  status：1 isStop 0/1 -->
           <template v-if="row.status==1 && (row.isStop==0||row.isStop==1)">
-            <Button type="warning" size="small" @click="dowm(row)">下架</Button>
+            <Poptip
+              :transfer="true"
+              confirm
+              placement="bottom-end"
+              title="确认下架此商户任务吗?"
+              @on-ok="dowm(row)"
+              @on-cancel="cancelDown"
+              ok-text="确认"
+              cancel-text="取消"
+              word-wrap
+            >
+              <!-- <Button type="warning" size="small" @click="dowm(row)">下架</Button> -->
+              <Button type="warning" size="small">下架</Button>
+            </Poptip>
           </template>
           <!-- 只有“待审核、未通过”状态，才会显示“删除”按钮 -->
           <template v-if="row.status==0||row.status==2">
@@ -354,9 +367,9 @@ export default {
         // this.linkTo("reward-u-detail", data);
       }
     },
-    async toData({ id,name }) {
+    async toData({ id, name }) {
       let { code } = await queryMerchantDataById(id);
-      this.linkTo("reward-u-data", { id ,name});
+      this.linkTo("reward-u-data", { id, name });
     },
     examine(row) {
       this.examineModal = true;
@@ -381,9 +394,16 @@ export default {
         }
       });
     },
-    dowm({ id }) {
-      downMerchant(id);
-      this.refresh();
+    async dowm({ id }) {
+      const { code, msg } = await downMerchant(id);
+      if (code == 200) {
+        this.msgOk("下架成功");
+        //查询table
+        this.queryTableData();
+      } else {
+        this.msgErr(msg);
+      }
+      // this.refresh();
     },
     async ok({ id }) {
       this.$Message.info("正在删除");
@@ -396,6 +416,9 @@ export default {
       } else {
         this.msgErr(msg);
       }
+    },
+    cancelDown() {
+      this.$Message.info("已取消下架");
     },
     cancel() {
       this.$Message.info("已取消删除");
