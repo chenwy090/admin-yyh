@@ -9,8 +9,8 @@
             <div>
                 <Card :bordered="false" style="margin-bottom:2px">
                     <Form ref="modalForm" label-position="right" :label-width="100" :model="modalForm" inline>
-                        <FormItem label="专题内容名称" span="24" style="width:45%">
-                            <Input v-model="modalForm.name" placeholder=" 专题内容名称" :maxlength=20 />
+                        <FormItem label="抽奖团名称" span="24" style="width:45%">
+                            <Input v-model="modalForm.name" placeholder=" 抽奖团名称" :maxlength=20 />
                         </FormItem>
                         <FormItem span="24" :label-width="1" style="float: right;">
                             <Button type="primary" class="submit" icon="ios-search" @click="search('searchForm')" style="margin-right: 5px">搜索</Button>
@@ -131,6 +131,7 @@
                     pageNum: this.modalForm.current,
                     pageSize: 10,
                     name: this.modalForm.name,
+                    status:2
                 }
                 postRequest(`/drawDaily/activity/list`,params
                 ).then(res => {

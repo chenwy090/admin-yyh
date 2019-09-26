@@ -216,7 +216,28 @@
                         title: "已选活动",
                         minWidth: 200,
                         align: "center",
-                        key: "content"
+                        key: "content",
+                        render: (h, params) => {
+                            return h('div', [
+                                h('Tooltip', {
+                                    props: { placement: 'top' }
+                                }, [
+                                    h('span', {
+                                        style: {
+                                            display: 'inline-block',
+                                            width: params.column._width*0.85+'px',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                        },
+                                    }, params.row.content),
+                                    h('span', {
+                                        slot: 'content',
+                                        style: { whiteSpace: 'normal', wordBreak: 'break-all' }
+                                    },params.row.content)
+                                ])
+                            ])
+                        }
                     },{
                         title: "运营位置",
                         minWidth: 200,

@@ -140,7 +140,7 @@
                 // this.selectDataList = [];
                 this.totalSize = 0;
                 this.TableLoading = true;
-                postRequest(`/specialTopic/list?isAsc=DESC&orderByColumn=1&pageNum=${this.modalForm.current}&pageSize=10`,{name:this.modalForm.name}
+                postRequest(`/specialTopic/list?isAsc=DESC&orderByColumn=1&pageNum=${this.modalForm.current}&pageSize=10`,{name:this.modalForm.name,status:1}
                 ).then(res => {
                     this.TableLoading = false;
                     if (res.code === "200") {
