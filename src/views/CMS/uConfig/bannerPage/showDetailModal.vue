@@ -39,7 +39,7 @@
         <Row class="padding-left-12" v-if="modal.type==3||modal.type==4">
           <Col span="18">
           <FormItem label="链接">
-            <span>{{modal.vlaue}}</span>
+            <span>{{modal.value}}</span>
           </FormItem>
           </Col>
         </Row>
