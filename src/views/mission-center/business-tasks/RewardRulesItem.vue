@@ -101,6 +101,10 @@
           </template>
         </Table>
       </Row>
+
+      <!-- 商户余额 money U贝余额 ubay    -->
+      <FormItem label="商户余额：">{{money}}&nbsp;元</FormItem>
+      <FormItem label="U贝余额：">{{ubay}}&nbsp;贝</FormItem>
       <!-- :rules="{required: true,  validator: validateEmpty('请填写流水号'), trigger: 'blur'}" -->
       <FormItem
         label="消耗U贝："
@@ -297,11 +301,31 @@ import createTypeDate from "./typeData";
 
 export default {
   name: "rules-item",
-  inject: ["businessTypeList", "merchantTypeOption", "msgOk", "msgErr"],
-  created() {
+  inject: [
+    "businessTypeList",
+    "merchantTypeOption",
+    "getMoneyAndUbay",
+    "msgOk",
+    "msgErr"
+  ],
+  mounted() {
     // console.log("rules-item businessTypeList",this.businessTypeList, this.msgOk);
-    this.typeData = createTypeDate();
-    this.dynamicColumns = this.typeData.type0.columns;
+    // 初始化数据
+
+    setTimeout(() => {
+      this.typeData = createTypeDate();
+      const type = this.item.merchantType;
+      let td = this.typeData[`type${type}`];
+      td.id = this.item.businessId;
+      td.name = this.item.businessName;
+      this.dynamicColumns = td.columns;
+      // console.log("this.item:", JSON.stringify(this.item));
+
+      if (this.type == "edit") {
+        // 编辑
+        this.setMoneyAndUbay(type, td.id);
+      }
+    }, 1000);
   },
   components: {
     BusinessList,
@@ -360,18 +384,23 @@ export default {
       const type = this.item.merchantType;
       // this.$refs.form.resetFields();
 
-      let { id, name, label, desc, columns, tableData } = this.typeData[
-        `type${type}`
-      ];
+      let typeData = this.typeData[`type${type}`];
+
+      console.log(type, this.type, { ...typeData });
+
+      let { id, name, label, desc, columns, tableData } = typeData;
+
       this.businessTypeLabel = label;
       this.businessTypePlaceholder = desc;
       this.dynamicColumns = columns;
       this.dynamicTableData = tableData;
+      this.item.businessId = id;
+      this.item.businessName = name;
       // 新增
-      if (type == "add") {
-        this.item.businessId = id;
-        this.item.businessName = name;
-      } else if (type == "edit") {
+      if (this.type == "add") {
+        // this.item.businessId = id;
+        // this.item.businessName = name;
+      } else if (this.type == "edit") {
         // 编辑
         // this.item.businessId = id;
         // this.item.businessName = name;
@@ -383,25 +412,13 @@ export default {
       this.$parent.$parent.validateField(
         `ruleInfoList.${this.index}.businessName`
       );
-      // console.log(this.$refs.form.fields);
-      // this.$parent.$parent.fields.forEach(function(e) {
-      //   console.log("e.prop:", e.prop);
-      //   // let r = e.prop == "startTime";
-      //   // r && e.resetField();
-      //   // return r;
-      // });
-      // this.businessTypeList.some(item => {
-      //   let r = item.value == type;
-      //   if (r) {
-      //     this.businessTypeLabel = item.label;
-      //   }
-      //   return r;
-      // });
-      // this.businessTypeLabel = this.businessTypeList[type];
     }
   },
   data() {
     return {
+      money: 0, // 商户余额 moneyBalance
+      ubay: 0, // U贝余额  ubayBalance
+
       showBusinessList: false,
       showBrandList: false,
       showSuperMarketList: false,
@@ -470,6 +487,12 @@ export default {
       this.item.businessName = typeData.name = name;
       this.dynamicTableData = typeData.tableData = [{ ...row }];
       console.log("dynamicTableData", JSON.stringify(this.dynamicTableData));
+      this.setMoneyAndUbay(type, id);
+    },
+    async setMoneyAndUbay(type, id) {
+      const { money, ubay } = await this.getMoneyAndUbay(type, id);
+      this.money = money;
+      this.ubay = ubay;
     },
     selectedTrCallBack(data) {
       console.log(this.item.merchantType, "selectedTrCallBack----", data);
@@ -480,7 +503,7 @@ export default {
       this.item.businessId = typeData.id = id;
       this.item.businessName = typeData.name = name;
       this.dynamicTableData = typeData.tableData = [row];
-
+      this.setMoneyAndUbay(type, id);
       // let id = this.item.merchantType ? "brandId" : "merchantId";
       // let name = this.item.merchantType ? "brandName" : "merhcantName";
       // this.item[id] = data.id;

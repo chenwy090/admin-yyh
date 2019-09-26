@@ -103,7 +103,7 @@ import RewardRulesItem from "./RewardRulesItem";
 export default {
   name: "reward-u-edit",
   mixins: [comm],
-  inject: ["msgOk", "msgErr"],
+  inject: ["getMoneyAndUbay", "msgOk", "msgErr"],
   components: {
     RewardRulesItem
   },
@@ -153,6 +153,7 @@ export default {
             brandId: "", // 品牌id
             brandName: "", // 品牌名称
             anticipatedUbay: "", // 预计消耗u贝数量
+            couponType: 0, //优惠券类型 0-商超券 1-商户/周边券
             templateId: "", //券模板id
             templateName: "", //券模板名称
             endTime: "", // 任务中止时间

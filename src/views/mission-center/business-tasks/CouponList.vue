@@ -88,6 +88,9 @@ export default {
     //确定选择商户
     selectedTrCallBack(choice) {
       choice.couponType = this.tab.couponType;
+
+      // console.log("choice",JSON.stringify(choice));
+      
       this.$emit("seclectedTr-event", choice);
     },
     // 全局提示

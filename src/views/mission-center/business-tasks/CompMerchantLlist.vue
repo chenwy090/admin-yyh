@@ -109,11 +109,11 @@ export default {
                 },
                 on: {
                   "on-change": () => {
-                    console.log("change", params.row);
                     self.choice._id = _id;
                     self.choice.id = id;
                     self.choice.name = name;
                     self.choice.row = params.row;
+                    // console.log("change", JSON.stringify(self.choice));
                   }
                 }
               })

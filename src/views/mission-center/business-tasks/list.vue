@@ -45,6 +45,7 @@ export default {
           label: "零售商"
         }
       ],
+      getMoneyAndUbay: this.getMoneyAndUbay,
       // 全局提示
       msgOk: this.msgOk,
       msgErr: this.msgErr
@@ -75,6 +76,31 @@ export default {
         options = data;
       }
       this.$store.commit("financial/setRetailerInfoList", options);
+    },
+    async getMoneyAndUbay(type, id) {
+      let params = { merchantType: type, merchantId: "", brandId: "" };
+
+      if (type == 0) {
+        params.merchantId = id;
+      } else {
+        params.brandId = id;
+      }
+
+      const url = "/merchant/account/getMerchantAccountInfoByTypeAndBrandId";
+      //  money: 0, // 商户余额
+      // ubay: 0, // U贝余额
+
+      let money = 0;
+      let ubay = 0;
+      let { code, msg, data } = await postRequest(url, params);
+      if (code == 200) {
+        money = data.money;
+        ubay = data.ubay;
+      } else {
+        // 不做 没有查询到商户余额信息 的提示
+        // this.msgErr(msg);
+      }
+      return { money, ubay };
     },
     // 全局提示
     msgOk(txt) {
