@@ -140,7 +140,7 @@
                             <DatePicker
                                     :value="modal.startTime"
                                     type="datetime"
-                                    placeholder
+                                    placeholder="请输入开始时间"
                                     style="width: 30%"
                                     :options="options1"
                                     @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
@@ -149,7 +149,7 @@
                             <DatePicker
                                     :value="modal.endTime"
                                     type="datetime"
-                                    placeholder
+                                    placeholder="请输入结束时间"
                                     style="width: 30%"
                                     :options="options2"
                                     @on-change="(datetime) =>{ changeDateTime(datetime, 2)}"
@@ -401,7 +401,7 @@
                             if(a<new Date()){
                                 a = new Date();
                             }
-                            return date.valueOf() < a;
+                            return date.valueOf() < a - 1000 * 60 * 60 * 24;
                         }
                     };
                     break;
@@ -588,6 +588,10 @@
                 }
                 if(!this.modal.startTime||!this.modal.endTime){
                     this.$Message.error('请选择时间');
+                    return;
+                }
+                if(new Date(this.modal.startTime)<new Date()){
+                    this.$Message.error('开始时间要大于当前时间');
                     return;
                 }
                 if(new Date(this.modal.startTime)>=new Date(this.modal.endTime)){
