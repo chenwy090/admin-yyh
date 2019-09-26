@@ -14,10 +14,7 @@
             </Select>
           </FormItem>
 
-          <!-- <FormItem label="商户名称：" :label-width="85"> -->
-          <!-- 商户/品牌/商超名称 -->
-
-          <FormItem label="商户/品牌/商超/零售商名称 ：" :label-width="170">
+          <FormItem label="商户/品牌/商超/零售商名称：" :label-width="185">
             <Input
               style="width:200px"
               type="text"

@@ -2,7 +2,15 @@
   <div class="xxx">
     <!-- 赏U查看 数据 RewardUData   -->
     <h2 class="header">赏U查看 数据</h2>
-    <div v-show="tableData.length">投放{{anticipatedUbay}}U贝 &nbsp;&nbsp; 奖励 {{sunAward}}U贝</div>
+    <div class="data-info">
+      <strong>{{name}}</strong>&nbsp;
+      <span v-show="tableData.length">
+        投放
+        <strong>{{anticipatedUbay}}U贝</strong> &nbsp;&nbsp;
+        奖励
+        <strong>{{sunAward}}U贝</strong>
+      </span>
+    </div>
     <div class="query-row">
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
@@ -21,7 +29,7 @@
             </Select>
           </FormItem>
 
-          <FormItem label="优惠券名称：" :label-width="85">
+          <FormItem label="优惠券名称：" :label-width="100">
             <Input
               style="width:200px"
               type="text"
@@ -89,7 +97,7 @@ export default {
   name: "reward-u-data",
   inject: ["merchantTypeOption", "msgOk", "msgErr"],
   computed: {
-    ...mapState(["id"])
+    ...mapState(["id", "name"])
   },
   data() {
     return {
@@ -256,6 +264,13 @@ export default {
 };
 </script>
 <style scoped>
+.data-info {
+  line-height: 30px;
+  border-left: 4px solid #333;
+  font-size: 14px;
+  text-indent: 1em;
+  margin-bottom: 10px;
+}
 .underline {
   text-decoration: underline;
 }

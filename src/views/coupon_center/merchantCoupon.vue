@@ -66,7 +66,7 @@
                     <Option value="已结束">已结束</Option>
                   </Select>
                 </FormItem>
-                <FormItem label="发布开始时间">
+                <FormItem label="发布开始时间" :label-width="100">
                   <DatePicker
                     type="datetime"
                     v-model="searchItem.startDate"
@@ -75,7 +75,7 @@
                   ></DatePicker>
                 </FormItem>
 
-                <FormItem label="发布结束时间">
+                <FormItem label="发布结束时间" :label-width="100">
                   <DatePicker
                     type="datetime"
                     placeholder="选择日期"
@@ -577,6 +577,7 @@ export default {
 
       const reqParams = {
         title: this.searchItem.title,
+        isTag: this.searchItem.isTag,
         merchantNames: this.searchItem.merchantNames,
         couponType: this.searchItem.couponType,
         templateStatus: this.searchItem.templateStatus,

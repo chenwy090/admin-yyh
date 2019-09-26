@@ -700,7 +700,7 @@ export const financialWithdrawApplyDownload = (obj) => {
     }
     //奖励金充值excel导出
 export const financialWithdrawApplyAwardRechargeDownload = (obj) => {
-    return downloadSteam(`/withdraw/apply/award-recharge/excel/download`, obj)
+    return postRequest(`/withdraw/apply/award-recharge/excel/download`, obj)
 }
 
 //--------------------------------------财务中心 --------------------------

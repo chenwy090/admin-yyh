@@ -354,9 +354,9 @@ export default {
         // this.linkTo("reward-u-detail", data);
       }
     },
-    async toData({ id }) {
+    async toData({ id,name }) {
       let { code } = await queryMerchantDataById(id);
-      this.linkTo("reward-u-data", { id });
+      this.linkTo("reward-u-data", { id ,name});
     },
     examine(row) {
       this.examineModal = true;
