@@ -118,7 +118,7 @@
                         <Col span="10">
                         <FormItem label="投放位置">
                             <template>
-                                <Cascader id="1" :data="cascaderData" v-model="cascaderValue" filterable></Cascader>
+                                <Cascader ref="cascader" id="1" :data="cascaderData" v-model="cascaderValue"></Cascader>
                             </template>
                         </FormItem>
                         </Col>
@@ -423,6 +423,8 @@
             resetRow(row) {
                 this.getLocation();
                 this.choujiangType = '';
+                this.$refs["cascader"].clearSelect();
+                console.log(this.$refs["cascader"]);
                 this.cascaderValue = [];
                 this.modal={
                     shopId:'',
