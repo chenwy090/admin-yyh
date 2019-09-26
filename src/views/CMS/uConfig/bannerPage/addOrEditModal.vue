@@ -440,8 +440,8 @@
                         startTime: "",
                         endTime: "",
                         image: '',
-                },
-                    this.drawDailyShopList={
+                };
+                this.drawDailyShopList=[{
                         provinceCode: null,
                         cityCode: null,
                         countryCode: null,
@@ -449,7 +449,7 @@
                         shopName: null,
                         id: Math.random(),
                         status: 1
-                    };
+                    }];
                 this.options2 = {
                     disabledDate(date) {
                         return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24;
