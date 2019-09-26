@@ -135,6 +135,7 @@ export default {
         this.closeDialog();
         //刷新列表数据
         this.$emit("refresh");
+        this.msgOk("文件上传成功");
       } else if (code == 500) {
         this.msgErr(data);
       } else {
@@ -143,11 +144,6 @@ export default {
 
       this.file = null;
       this.loadingStatus = false;
-      this.$Message.success("文件上传成功");
-    },
-
-    handleSuccess(res, file) {
-      console.log("文件上传成功");
     },
     handleFormatError(file) {
       this.$Notice.warning({
