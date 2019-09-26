@@ -397,7 +397,11 @@
                     this.modal.startTime = datetime;
                     this.options2 = {
                         disabledDate(date) {
-                            return date.valueOf() < new Date(datetime) - 1000 * 60 * 60 * 24;
+                            var a = new Date(datetime)
+                            if(a<new Date()){
+                                a = new Date();
+                            }
+                            return date.valueOf() < a;
                         }
                     };
                     break;
@@ -584,6 +588,10 @@
                 }
                 if(!this.modal.startTime||!this.modal.endTime){
                     this.$Message.error('请选择时间');
+                    return;
+                }
+                if(new Date(this.modal.startTime)>=new Date(this.modal.endTime)){
+                    this.$Message.error('开始时间不能大于等于结束时间');
                     return;
                 }
                 if(!this.modal.image){
