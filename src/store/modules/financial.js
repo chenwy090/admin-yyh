@@ -7,7 +7,7 @@ export default {
         acountId: "", //账号id
         merchantType: "", //商户类型
         merchantId: "", //商户id
-        merchantName: "", //商户名称
+        merhcantName: "", //商户名称
         // businessId: "", //商户id
         // businessName: "", //商户名称
         province: "", //省
@@ -25,7 +25,7 @@ export default {
             state.acountId = payload.acountId;
             state.merchantType = payload.merchantType;
             state.merchantId = payload.merchantId;
-            state.merchantName = payload.merchantName;
+            state.merhcantName = payload.merhcantName;
             // state.businessId = payload.businessId;
             // state.businessName = payload.businessName;
             console.log("mutation showRechargeDetail", payload);

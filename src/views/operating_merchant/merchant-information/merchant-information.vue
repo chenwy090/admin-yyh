@@ -22,7 +22,7 @@
                 </Select>
               </FormItem>
 
-              <FormItem label="关联商超名称：" :label-width="100">
+              <FormItem label="关联商超名称：" :label-width="120">
                 <Input
                   type="text"
                   v-model="searchItem.superMarketingName"

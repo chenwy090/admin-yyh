@@ -99,7 +99,7 @@ private  String merhcantName;
  */
 private String brandName;
 
-private String merchantNameText;
+private String merhcantNameText;
 
 /**
  * 创建时间

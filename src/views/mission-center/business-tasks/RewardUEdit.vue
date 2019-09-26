@@ -12,7 +12,7 @@
         ref="form"
         :model="formData"
         :rules="ruleValidate"
-        :label-width="100"
+        :label-width="120"
       >
         <Row class="task-info">
           <h3>任务信息</h3>
@@ -279,7 +279,7 @@ export default {
 
             if (type == 0) {
               item.merchantId = id;
-              item.merchantName = name;
+              item.merhcantName = name;
 
               item.brandId = "";
               item.brandName = "";
@@ -288,7 +288,7 @@ export default {
               item.brandName = name;
 
               item.merchantId = "";
-              item.merchantName = "";
+              item.merhcantName = "";
             }
             return item;
           });
