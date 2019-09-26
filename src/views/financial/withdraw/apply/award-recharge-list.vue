@@ -1,6 +1,6 @@
 <template>
   <Row>
-    <Form ref="searchForm" :label-width="80" :model="searchForm" inline>
+    <Form ref="searchForm" :label-width="80" inline>
       <FormItem>
         <ButtonGroup>
           <Button type="primary" @click="excelExport()">导出上个月记录</Button>
@@ -20,47 +20,37 @@ export default {
     return {};
   },
   methods: {
-      excelExportU(){
-          getRequest("/report/download/ubay/report").then(res => {
-              console.log(res);
-              const content = res.data;
-              let fileName = 'U贝报表';
-              // const blob = new Blob([content], { type: "application/vnd.ms-excel" });
-              if ("download" in document.createElement("a")) {
-                  // 非IE下载
-                  const elink = document.createElement("a");
-                  elink.download = decodeURI(fileName);
-                  elink.style.display = "none";
-                  elink.href = content;
-                  document.body.appendChild(elink);
-                  elink.click();
-                  URL.revokeObjectURL(elink.href); // 释放URL 对象
-                  document.body.removeChild(elink);
-              } else {
-                  // IE10+下载
-                  navigator.msSaveBlob(content, fileName);
-              }
-          });
-      },
-    excelExport() {
-      financialWithdrawApplyAwardRechargeDownload().then(res => {
+    excelExportU() {
+      getRequest("/report/download/ubay/report").then(res => {
+        console.log(res);
         const content = res.data;
-        let fileName = res.headers["filename"];
-        const blob = new Blob([content], { type: "application/vnd.ms-excel" });
+        let fileName = "U贝报表";
+        // const blob = new Blob([content], { type: "application/vnd.ms-excel" });
         if ("download" in document.createElement("a")) {
           // 非IE下载
           const elink = document.createElement("a");
           elink.download = decodeURI(fileName);
           elink.style.display = "none";
-          elink.href = URL.createObjectURL(blob);
+          elink.href = content;
           document.body.appendChild(elink);
           elink.click();
           URL.revokeObjectURL(elink.href); // 释放URL 对象
           document.body.removeChild(elink);
         } else {
           // IE10+下载
-          navigator.msSaveBlob(blob, fileName);
+          navigator.msSaveBlob(content, fileName);
         }
+      });
+    },
+    excelExport() {
+      financialWithdrawApplyAwardRechargeDownload().then(res => {
+        const filePath = res.data;
+        const oA = document.createElement("a");
+        oA.style.display = "none";
+        oA.href = filePath;
+        document.body.appendChild(oA);
+        oA.click();
+        document.body.removeChild(oA);
       });
     },
     msgErr(txt) {
