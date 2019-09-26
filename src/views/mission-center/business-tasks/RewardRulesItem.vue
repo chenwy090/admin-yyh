@@ -298,6 +298,7 @@ import SuperMarket from "./SuperMarket";
 import UploadImage from "./UploadImage";
 
 import createTypeDate from "./typeData";
+let typeData = createTypeDate();
 
 export default {
   name: "rules-item",
@@ -308,12 +309,11 @@ export default {
     "msgOk",
     "msgErr"
   ],
-  mounted() {
+  created() {
     // console.log("rules-item businessTypeList",this.businessTypeList, this.msgOk);
     // 初始化数据
-
+    this.typeData = createTypeDate();
     setTimeout(() => {
-      this.typeData = createTypeDate();
       const type = this.item.merchantType;
       let td = this.typeData[`type${type}`];
       td.id = this.item.businessId;
@@ -335,9 +335,6 @@ export default {
     UploadImage
   },
   props: {
-    refForm: {
-      type: Object
-    },
     index: {
       type: Number,
       default: 0
@@ -385,6 +382,11 @@ export default {
       // this.$refs.form.resetFields();
 
       let typeData = this.typeData[`type${type}`];
+      // typeData.id = this.item.businessId;
+      // typeData.name = this.item.businessName;
+      // this.dynamicColumns = typeData.columns;
+
+      // let typeData = this.typeData[`type${type}`];
 
       console.log(type, this.type, { ...typeData });
 
@@ -416,6 +418,7 @@ export default {
   },
   data() {
     return {
+      typeData,
       money: 0, // 商户余额 moneyBalance
       ubay: 0, // U贝余额  ubayBalance
 
@@ -497,9 +500,8 @@ export default {
     selectedTrCallBack(data) {
       console.log(this.item.merchantType, "selectedTrCallBack----", data);
       const { merchantType: type, couponType, id, name, row } = data;
-
       let typeData = this.typeData[`type${type}`];
-      this.item.couponType = couponType; //优惠券类型 0-商超券 1-商户/周边券
+
       this.item.businessId = typeData.id = id;
       this.item.businessName = typeData.name = name;
       this.dynamicTableData = typeData.tableData = [row];
@@ -513,7 +515,7 @@ export default {
     },
 
     selectedCouponItem(data) {
-      // console.log("selectedCouponItem----", data);
+      console.log("selectedCouponItem----", data);
       let { couponType, id, name } = data;
       // templateId 券模板id templateName 券模板名称
 

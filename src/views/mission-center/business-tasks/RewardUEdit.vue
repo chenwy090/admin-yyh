@@ -82,7 +82,6 @@
             :item="item"
             :index="index"
             @del="del"
-            :refForm="this"
           ></RewardRulesItem>
         </Row>
       </Form>
@@ -174,14 +173,14 @@ export default {
       ruleValidate: {}
     };
   },
-  mounted() {
-    console.log("xxxxxx mounted", this.$refs.form);
+  created() {
+    // console.log("xxxxxx mounted", this.$refs.form);
 
     let { type, data } = this.$store.state.missionCenter;
     //修改
     if (type == "edit") {
       this.formData = data; //任务数据
-      console.log("this.formData", data);
+      // console.log("edit this.formData", data);
     }
   },
   beforeDestroy() {
