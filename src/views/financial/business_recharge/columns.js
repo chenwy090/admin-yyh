@@ -24,7 +24,7 @@ export default [{
      * 1 brandName
      */
     {
-        title: "商户名称",
+        title: "名称",
         key: "name",
         align: "center",
         width: 120
@@ -134,7 +134,7 @@ export const ubayMColumns = [
      * 1 brandName
      */
     {
-        title: "商户/品牌名称",
+        title: "名称",
         key: "name",
         align: "center",
         minWidth: 80
@@ -221,7 +221,7 @@ export const rechargeMColumns = [{
         title: "审核状态",
         key: "statusName",
         align: "center",
-        minWidth: 80
+        minWidth: 100
     },
     /**
      * merchantType:
@@ -229,7 +229,7 @@ export const rechargeMColumns = [{
      * 1 brandName
      */
     {
-        title: "商户/品牌名称",
+        title: "名称",
         key: "name",
         align: "center",
         minWidth: 80

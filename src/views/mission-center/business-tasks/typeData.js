@@ -68,7 +68,7 @@ export default function createTypeDate() {
                     align: "center"
                 },
                 {
-                    title: "门店名称",
+                    title: "商超名称",
                     key: "shopName",
                     align: "center"
                 },

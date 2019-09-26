@@ -128,7 +128,7 @@ export default {
       let fd = new FormData();
       fd.append("file", this.file); //append方法传入formData中
 
-      const { code, msg } = await uploadFileRequest(url, fd);
+      const { code, msg, data } = await uploadFileRequest(url, fd);
 
       if (code == 200) {
         // this.msgOk("保存成功");

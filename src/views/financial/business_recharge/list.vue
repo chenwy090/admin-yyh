@@ -103,7 +103,8 @@ export default {
         money = data.money;
         ubay = data.ubay;
       } else {
-        this.msgErr(msg);
+        // 不做 没有查询到商户余额信息 的提示
+        // this.msgErr(msg);
       }
       return { money, ubay };
     },

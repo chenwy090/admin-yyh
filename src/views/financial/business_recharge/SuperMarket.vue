@@ -165,7 +165,7 @@ export default {
           align: "center"
         },
         {
-          title: "门店名称",
+          title: "商超名称",
           key: "shopName",
           minWidth: 145,
           align: "center"
@@ -312,6 +312,7 @@ export default {
   },
   mounted() {
     this.queryTableData();
+    this.getprovincelist();
   }
 };
 </script>
