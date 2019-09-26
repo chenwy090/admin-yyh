@@ -46,7 +46,7 @@
                     <FormItem label="链接">
                         <Input
                                 type="text"
-                                v-model="modal.vlaue"
+                                v-model="modal.value"
                                 placeholder="请输入链接"
                                 style="width: 100%"
                         ></Input>
@@ -115,49 +115,19 @@
                         </Col>
                     </Row>
                     <Row class="padding-left-12">
-                        <Col span="18">
+                        <Col span="10">
                         <FormItem label="投放位置">
-                            <Cascader :data="cascaderData" v-model="cascaderValue" style="width:50%"></Cascader>
-                            <!--<Select v-model="modal.location" style="width:30%">-->
-                                <!--<Option v-for="item in locationList" :value="item.value" :key="item.value">{{ item.label-->
-                                    <!--}}-->
-                                <!--</Option>-->
-                            <!--</Select>-->
-                            <!--<Select v-model="modal.businessLayer" style="width:30%">-->
-                                <!--<Option v-for="item in businessLayerList" :value="item.value" :key="item.value">-->
-                                    <!--{{ item.label }}-->
-                                <!--</Option>-->
-                            <!--</Select>-->
-                            <!--<Select v-model="modal.layerPriority" style="width:30%">-->
-                                <!--<Option v-for="item in layerPriorityList" :value="item.value" :key="item.value">{{-->
-                                    <!--item.label }}-->
-                                <!--</Option>-->
-                            <!--</Select>-->
+                            <template>
+                                <Cascader id="1" :data="cascaderData" v-model="cascaderValue" filterable></Cascader>
+                            </template>
                         </FormItem>
                         </Col>
                     </Row>
-                    <!--<Row class="padding-left-12">-->
-                        <!--<Col span="18">-->
-                        <!--<FormItem label="运营位置">-->
-                            <!--<Select v-model="modal.businessLayer" style="width:30%">-->
-                                <!--<Option v-for="item in businessLayerList" :value="item.value" :key="item.value">-->
-                                    <!--{{ item.label }}-->
-                                <!--</Option>-->
-                            <!--</Select>-->
-                        <!--</FormItem>-->
-                        <!--</Col>-->
-                    <!--</Row>-->
                     <Row class="padding-left-12">
                         <Col span="18">
                         <FormItem label="终端选择">
-                            <!--<Select v-model="modal.layerPriority" style="width:30%">-->
-                                <!--<Option v-for="item in layerPriorityList" :value="item.value" :key="item.value">{{-->
-                                    <!--item.label }}-->
-                                <!--</Option>-->
-                            <!--</Select>-->
                             <Select v-model="modal.clientType" style="width:30%">
-                                <Option v-for="item in clientTypeList" :value="item.value" :key="item.value">{{
-                                    item.label }}
+                                <Option v-for="item in clientTypeList" :value="item.value" :key="item.value">{{item.label }}
                                 </Option>
                             </Select>
                         </FormItem>
@@ -310,7 +280,7 @@
                     endTime: "",
                     image: '',
                 },
-                cascaderData:[],
+                cascaderData: [],
                 cascaderValue:[],
                 options1: {
                     disabledDate(date) {
@@ -574,7 +544,7 @@
                     this.modal.content = '0';
                 }
                 if(this.modal.type==3||this.modal.type==4){
-                    this.modal.value = this.modal.content;
+                    this.modal.content = this.modal.value;
                 }
                 if(!this.modal.value||!this.modal.content){
                     this.$Message.error('请选择内容或链接');
@@ -682,13 +652,9 @@
         padding-left: 12px;
     }
 
-    .colof-a2 {
-        color: #a2a2a2;
-    }
-
-    .ivu-radio-group-vertical .ivu-radio-wrapper {
-        height: auto;
-    }
+    /*.ivu-radio-group-vertical .ivu-radio-wrapper {*/
+        /*height: auto;*/
+    /*}*/
 
 
     .demo-upload-list{
