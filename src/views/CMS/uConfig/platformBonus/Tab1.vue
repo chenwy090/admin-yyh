@@ -67,8 +67,15 @@ export default {
       //  平台分红：4
       const { type, site } = this.tab;
       //  site 页面位置，1：首页、2：首页-平台分红
-      const { code, msg, data } = await postRequest(url, { type, site });
+      let { code, msg, data } = await postRequest(url, { type, site });
       if (code == 200) {
+        if (data == "") {
+          data = {
+            id: "",
+            iconUrl: "", //首页分红banner图片
+            defaultIconUrlList: []
+          };
+        }
         const { iconUrl } = data;
 
         data.defaultIconUrlList = [];

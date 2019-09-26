@@ -126,8 +126,18 @@ export default {
       //  平台分红：4
       const { type, site } = this.tab;
       //  site 页面位置，1：首页、2：首页-平台分红
-      const { code, msg, data } = await postRequest(url, { type, site });
+      let { code, msg, data } = await postRequest(url, { type, site });
       if (code == 200) {
+        if (data == "") {
+          data = {
+            id: "",
+            type: "",
+            mainTitle: "", //主标题：超值爆抢券
+            subTitle: "", //副标题：大家都在领
+            iconUrl: "", //首页分红banner图片
+            defaultIconUrlList: []
+          };
+        }
         const { iconUrl } = data;
 
         data.defaultIconUrlList = [];

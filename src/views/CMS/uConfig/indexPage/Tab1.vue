@@ -111,8 +111,19 @@ export default {
       const url = "/page/module/layout/getVerification";
 
       //  site 页面位置，1：首页、2：首页-平台分红
-      const { code, msg, data } = await postRequest(url, { site: 1 });
+      let { code, msg, data } = await postRequest(url, { site: 1 });
       if (code == 200) {
+        if (data == "") {
+          data = {
+            id: "",
+            verifyTitle: "", //一键核销文案
+            verifyIconUrl: "", //一键核销图标
+            defaultVerifyIconUrlList: [],
+            slogan: "", //Solagon
+            backgroundUrl: "", //背景图
+            defaultBackgroundUrlList: []
+          };
+        }
         const { verifyIconUrl, backgroundUrl } = data;
 
         data.defaultVerifyIconUrlList = [];

@@ -106,8 +106,17 @@ export default {
       const url = "/page/module/layout/getCommonSetting";
       const { type } = this.tab;
       const site = 1;
-      const { code, msg, data } = await postRequest(url, { type, site });
+      let { code, msg, data } = await postRequest(url, { type, site });
       if (code == 200) {
+        if (data == "") {
+          data = {
+            id: "",
+            type: "",
+            mainTitle: "", //主标题：超值爆抢券
+            subTitle: "", //副标题：大家都在领
+            iconUrl: "" //副标题：大家都在领
+          };
+        }
         this.formData = data;
       } else {
         this.msgErr(msg);
