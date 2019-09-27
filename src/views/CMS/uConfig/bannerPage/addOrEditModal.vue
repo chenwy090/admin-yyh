@@ -6,7 +6,7 @@
     <!--:closable="false"-->
     <!--:mask-closable="false"-->
     <!--footer-hide>-->
-    <div v-if="viewDialogVisible" class="modal" @click.stop>
+    <div v-if="viewDialogVisible" class="modal">
         <Card>
             <p slot="title">新增</p>
             <a href="#" slot="extra">

@@ -9,8 +9,13 @@
             <div>
                 <Card :bordered="false" style="margin-bottom:2px">
                     <Form ref="modalForm" label-position="right" :label-width="100" :model="modalForm" inline>
-                        <FormItem label="抽奖团名称" span="24" style="width:45%">
+                        <FormItem label="抽奖团名称" span="24" style="width:30%">
                             <Input v-model="modalForm.name" placeholder=" 抽奖团名称" :maxlength=20 />
+                        </FormItem>
+                        <FormItem label="状态" span="24"  style="width:30%">
+                            <Select v-model="modalForm.status" style="width:100%">
+                                <Option v-for="(item,index) in statusList" :value="item.value" :key="index">{{ item.label }}</Option>
+                            </Select>
                         </FormItem>
                         <FormItem span="24" :label-width="1" style="float: right;">
                             <Button type="primary" class="submit" icon="ios-search" @click="search('searchForm')" style="margin-right: 5px">搜索</Button>
@@ -65,10 +70,12 @@
         data(){
             return{
                 listData:[],
+                statusList:[{value:'1',label:'未开始'},{value:'2',label:'进行中'}],
                 selectIndex:'',
                 TableLoading:'',
                 modalForm:{
                     name:'',
+                    status:'1',
                     current: 1,
                 },
                 totalSize: 0,
@@ -103,6 +110,7 @@
                 this.modalForm.current= 1;
                 this.current= 1;
                 this.modalForm.name = '';
+                this.modalForm.status = '1';
                 this.loadTableData();
             },
             selectBusiness(index){
@@ -119,6 +127,7 @@
                 this.modalForm.current= 1;
                 this.current= 1;
                 this.modalForm.name = '';
+                this.modalForm.status = '1';
                 this.loadTableData();
             },
             loadTableData(page){
@@ -131,7 +140,7 @@
                     pageNum: this.modalForm.current,
                     pageSize: 10,
                     name: this.modalForm.name,
-                    status:2
+                    status:this.modalForm.status
                 }
                 postRequest(`/drawDaily/activity/list`,params
                 ).then(res => {
