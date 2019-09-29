@@ -83,7 +83,7 @@ export default {
   },
   data() {
     return {
-      isInit: 0,      
+      isInit: 0,
       provinceList: [],
       cityList: [],
       areaList: [],
@@ -125,8 +125,8 @@ export default {
         } else {
           this.$Message.error(res.msg);
         }
-      }); 
-    
+      });
+
       this.loadShops();
     },
     //根据城市code获取区县信息数据
@@ -152,7 +152,7 @@ export default {
           this.$Message.error(res.msg);
         }
       });
-        
+
       this.loadShops();
     },
      //根据城市code获取区域信息数据
@@ -168,16 +168,16 @@ export default {
       this.loadShops();
     },
     shopCodeChange(item) {
-     
+
       if(this.isInit == 1){
-          
+
        }
       if(!item){
         this.$emit("sendShopCode", this.shopCode, null, this.index);
       }else{
         this.$emit("sendShopCode", this.shopCode, item.label, this.index);
       }
-      
+
     },
     loadShops: function() {
       postRequest("/system/sys-shop-info/list?pageNum=1&pageSize=2000", {
@@ -220,7 +220,7 @@ export default {
           if(this.shop.cityId){
                this.cityName = this.cityList.find((el) => (el.cityCode ==  this.cityId)).cityName;
           }
-         
+
            this.loadShops();
         } else {
           this.$Message.error(res.msg);
@@ -236,7 +236,7 @@ export default {
                      if(this.shop.areaId){
                         this.districtName = this.areaList.find((el) => (el.areaCode ==  this.areaId)).areaName;
                      }
-                    
+
                     if (this.shop.provinceId) {
                     this.shopCode = this.shop.shopCode;
                     this.loadShops();
@@ -245,11 +245,11 @@ export default {
                   this.$Message.error(res.msg);
                 }
               });
-                  
+
               }
-              }); 
-        
-      
+              });
+
+
      });
     }
   },
@@ -258,6 +258,7 @@ export default {
       this.isInit=1;
     }
      this.init();
+      console.log(this.index);
   }
 };
 </script>
