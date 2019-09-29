@@ -6,7 +6,7 @@
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
           <!-- 商户/品牌名称 -->
-          <FormItem label="商户/品牌名称：" :label-width="100">
+          <FormItem label="商户/品牌/商超/零售商名称：" :label-width="185">
             <Input
               style="width:200px"
               type="text"

@@ -27,7 +27,7 @@
                 type="text"
                 v-model="modal.name"
                 placeholder="请填写活动名称，20字以内"
-                style="width: 100%"
+                style="width: 40%"
               ></Input>
             </FormItem>
           </Col>
@@ -38,7 +38,7 @@
               <DatePicker
                 :value="modal.startTime"
                 type="date"
-                placeholder
+                placeholder="请选择时间"
                 style="width: 160px"
                 :options="options1"
                 @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
@@ -46,7 +46,7 @@
               <DatePicker
                 :value="modal.endTime"
                 type="date"
-                placeholder
+                placeholder="请选择时间"
                 style="width: 160px"
                 :options="options2"
                 @on-change="(datetime) =>{ changeDateTime(datetime, 2)}"
@@ -152,6 +152,7 @@ export default {
   data() {
     return {
       titleName: "",
+      couponType:'',
       selectActiveVolumeModal: false,
       selectActiveVolumeObj: {},
       couponViewDialogModal: false,
@@ -238,6 +239,7 @@ export default {
         getRequest(`/customer/activity/award/activity/${row.id}`).then(res => {
           if (res.code === "200") {
             var data = res.data;
+            this.couponType = data.couponType;
             this.modal.name = data.name;
             this.modal.startTime = data.startTime;
             this.modal.wardType = data.awardType.toString();
@@ -337,18 +339,24 @@ export default {
         this.$refs["couponModal"].resetRow(this.couponObj);
       });
     },
-    selectCoupon(e) {
+    selectCoupon(e,type) {
       this.couponViewDialogModal = false;
       if (e) {
-        var that = this;
-        e.forEach(function(v, i) {
-          that.couponObj.forEach(function(value, index) {
-            if (v.templateId === (value.templateId || value.id)) {
-              e.splice(i, 1);
-            }
-          });
-        });
-        this.couponObj = this.couponObj.concat(e);
+          if(this.couponType === type){
+              var that = this;
+              e.forEach(function(v, i) {
+                  that.couponObj.forEach(function(value, index) {
+                      debugger
+                      if (v.templateId === (value.templateId || value.id)) {
+                          that.couponObj.splice(index, 1);
+                      }
+                  });
+              });
+              this.couponObj = this.couponObj.concat(e);
+          }else{
+              this.couponObj = e;
+          }
+          this.couponType = type;
       }
     },
     selectVolume(e) {
@@ -370,12 +378,13 @@ export default {
       // /merchant/activity/award/add/activity
       // /merchant/activity/award/update/activity
       let params = {
+        couponType:this.couponType,
         endTime: this.modal.endTime,
         id: this.modal.id,
         name: this.modal.name,
         startTime: this.modal.startTime,
         wardType: this.modal.wardType,
-        type: 1
+        type: 1,
       };
       let couponIds = [];
       if (!this.couponObj || !this.couponObj.length) {

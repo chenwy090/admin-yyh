@@ -66,7 +66,20 @@
           </template>
           <!-- 下架：只有在“审核通过且状态未开始、审核通过且状态进行中”  status：1 isStop 0/1 -->
           <template v-if="row.status==1 && (row.isStop==0||row.isStop==1)">
-            <Button type="warning" size="small" @click="dowm(row)">下架</Button>
+            <Poptip
+              :transfer="true"
+              confirm
+              placement="bottom-end"
+              title="确认下架此商户任务吗?"
+              @on-ok="dowm(row)"
+              @on-cancel="cancelDown"
+              ok-text="确认"
+              cancel-text="取消"
+              word-wrap
+            >
+              <!-- <Button type="warning" size="small" @click="dowm(row)">下架</Button> -->
+              <Button type="warning" size="small">下架</Button>
+            </Poptip>
           </template>
           <!-- 只有“待审核、未通过”状态，才会显示“删除”按钮 -->
           <template v-if="row.status==0||row.status==2">
@@ -160,6 +173,7 @@ import columns from "./columns";
 import RewardUDetail from "./RewardUDetail";
 export default {
   name: "reward-u",
+  inject: ["merchantTypeOption", "msgOk", "msgErr"],
   components: {
     RewardUDetail
   },
@@ -234,7 +248,7 @@ export default {
         "2": "已结束",
         "3": "已终止"
       },
-      merchantTypeOption: { 0: "本地商户（单店）", 1: "本地商户（多店）" },
+      // merchantTypeOption: { 0: "本地商户（单店）", 1: "本地商户（多店）" },
       // 查询参数
       searchData: {
         name: "", //任务名称
@@ -253,6 +267,7 @@ export default {
     };
   },
   created() {
+    // console.log("okkk", this.msgOk);
     this.queryTableData();
   },
   methods: {
@@ -296,23 +311,25 @@ export default {
             brandId,
             name,
             imgUrl,
-            logoUrl
+            logoUrl,
+            shareLogo
           } = item;
           let row = null;
           // 商户类型 0-本地商户（单店），1-本地商户（多店）
           item.merchantTypeName = this.merchantTypeOption[merchantType];
+
           if (merchantType == 0) {
-            item.merchantId = merchantId;
-            item.merhcantName = name;
+            item.businessId = item.merchantId = merchantId;
+            item.businessName = item.merhcantName = name;
             item.brandId = "";
             item.brandName = "";
-            row = { merchantId: merchantId, name };
+            // row = { merchantId: merchantId, name };
           } else {
-            item.brandId = brandId;
-            item.brandName = name;
+            item.businessId = item.brandId = brandId;
+            item.businessName = item.brandName = name;
             item.merchantId = "";
             item.merhcantName = "";
-            row = { id: brandId, name };
+            // row = { id: brandId, name };
           }
 
           item.defaultBannerList = [];
@@ -324,7 +341,14 @@ export default {
             item.defaultLogoList = [{ imgUrl: logoUrl }];
           }
 
-          item.tableData = [row];
+          // 分享Logo：
+          item.defaultShareLogoList = [];
+          if (shareLogo) {
+            item.defaultShareLogoList = [{ imgUrl: shareLogo }];
+          }
+
+          // item.tableData = [row];
+          item.tableData = [];
           return item;
         });
         return data;
@@ -343,9 +367,9 @@ export default {
         // this.linkTo("reward-u-detail", data);
       }
     },
-    async toData({ id }) {
+    async toData({ id, name }) {
       let { code } = await queryMerchantDataById(id);
-      this.linkTo("reward-u-data", { id });
+      this.linkTo("reward-u-data", { id, name });
     },
     examine(row) {
       this.examineModal = true;
@@ -370,9 +394,16 @@ export default {
         }
       });
     },
-    dowm({ id }) {
-      downMerchant(id);
-      this.refresh();
+    async dowm({ id }) {
+      const { code, msg } = await downMerchant(id);
+      if (code == 200) {
+        this.msgOk("下架成功");
+        //查询table
+        this.queryTableData();
+      } else {
+        this.msgErr(msg);
+      }
+      // this.refresh();
     },
     async ok({ id }) {
       this.$Message.info("正在删除");
@@ -385,6 +416,9 @@ export default {
       } else {
         this.msgErr(msg);
       }
+    },
+    cancelDown() {
+      this.$Message.info("已取消下架");
     },
     cancel() {
       this.$Message.info("已取消删除");
@@ -467,19 +501,6 @@ export default {
 
       //重新查询一遍
       this.queryTableData();
-    },
-    // 全局提示
-    msgOk(txt) {
-      this.$Message.info({
-        content: txt,
-        duration: 3
-      });
-    },
-    msgErr(txt) {
-      this.$Message.error({
-        content: txt,
-        duration: 3
-      });
     },
     // 审核-------------------------------------
     cancelHandleReset(name) {

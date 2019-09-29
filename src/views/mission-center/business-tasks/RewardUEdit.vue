@@ -12,9 +12,9 @@
         ref="form"
         :model="formData"
         :rules="ruleValidate"
-        :label-width="100"
+        :label-width="120"
       >
-        <row class="task-info">
+        <Row class="task-info">
           <h3>任务信息</h3>
 
           <FormItem label="任务名称：" prop="name" :rules="{ required: true, message: '请输入任务名称' }">
@@ -65,10 +65,9 @@
               </Col>
             </Row>
           </FormItem>
-        </row>
-        <row class="task-reward-Rules">
+        </Row>
+        <Row class="task-reward-Rules">
           <h3>奖励规则</h3>
-
           <FormItem
             label="奖励规则："
             prop="ruleInfoList"
@@ -84,7 +83,7 @@
             :index="index"
             @del="del"
           ></RewardRulesItem>
-        </row>
+        </Row>
       </Form>
     </div>
 
@@ -103,6 +102,7 @@ import RewardRulesItem from "./RewardRulesItem";
 export default {
   name: "reward-u-edit",
   mixins: [comm],
+  inject: ["getMoneyAndUbay", "msgOk", "msgErr"],
   components: {
     RewardRulesItem
   },
@@ -134,7 +134,6 @@ export default {
         paddingBottom: "53px",
         position: "static"
       },
-      data: {},
       formData: {
         // 任务信息
         id: "", //主键
@@ -143,7 +142,6 @@ export default {
         endTime: "", // 任务结束时间
         daterange: [], // 任务时间数组
         ruleDescribe: "", //规则描述
-
         // 奖励规则
         ruleInfoList: [
           {
@@ -154,6 +152,7 @@ export default {
             brandId: "", // 品牌id
             brandName: "", // 品牌名称
             anticipatedUbay: "", // 预计消耗u贝数量
+            couponType: 0, //优惠券类型 0-商超券 1-商户/周边券
             templateId: "", //券模板id
             templateName: "", //券模板名称
             endTime: "", // 任务中止时间
@@ -165,19 +164,23 @@ export default {
             defaultBannerList: [],
             imgUrl: "",
             defaultLogoList: [],
-            logoUrl: ""
+            logoUrl: "",
+            defaultShareLogoList: [],
+            shareLogo: ""
           }
         ]
       },
       ruleValidate: {}
     };
   },
-  mounted() {
+  created() {
+    // console.log("xxxxxx mounted", this.$refs.form);
+
     let { type, data } = this.$store.state.missionCenter;
     //修改
     if (type == "edit") {
       this.formData = data; //任务数据
-      console.log("this.formData", data);
+      // console.log("edit this.formData", data);
     }
   },
   beforeDestroy() {
@@ -201,21 +204,17 @@ export default {
       this.formData.endTime = arr[1];
     },
 
-    validateRewardRules(rule, value, callback) {
-      console.log("validateRewardRules", rule, value);
-      if (!value.length) {
-        return callback(`请填写奖励规则`);
-      }
-      callback();
-    },
     addRewardRules() {
       this.formData.ruleInfoList.push({
         merchantType: 0,
+        businessId: "",
+        businessName: "",
         merchantId: "", // 商户id
         merhcantName: "", // 商户名称
         brandId: "", // 品牌id
         brandName: "", // 品牌名称
         anticipatedUbay: "", // 预计消耗u贝数量
+        couponType: 0, //优惠券类型 0-商超券 1-商户/周边券
         templateId: "", //券模板id
         templateName: "", //券模板名称
         endTime: "", // 任务中止时间
@@ -227,43 +226,10 @@ export default {
         defaultBannerList: [],
         imgUrl: "",
         defaultLogoList: [],
-        logoUrl: ""
+        logoUrl: "",
+        defaultShareLogoList: [],
+        shareLogo: ""
       });
-    },
-
-    //验证正整数
-    validateMoney(rule, value, callback) {
-      value += "";
-      value = value.trim();
-      // 允许不填
-      if (value == "") {
-        return callback("金额不能为空");
-      }
-
-      // 排除 "","0","0.0","0.00"格式
-      if (!value || value == "0" || value == "0.0" || value == "0.00") {
-        return callback(new Error("兑换的金额不能为0"));
-      }
-
-      // 验证是否是数字
-      const n = Number(value);
-      if (isNaN(n)) {
-        return callback(new Error("请输入数字"));
-      }
-
-      if (n > 0 && n <= 99999.99) {
-        const reg = /^(0|[1-9]\d*)(\s|$|\.\d{1,2}\b)/;
-
-        if (!reg.test(value)) {
-          return callback(
-            new Error("请输入大于等于0的金额，小数点最多包含两位小数")
-          );
-        }
-      } else {
-        return callback(new Error("请输入[0.01—99999.99]之间的数"));
-      }
-
-      callback();
     },
 
     closeDialog() {
@@ -301,6 +267,32 @@ export default {
           this.msgOk("数据验证成功!");
           let oForm = JSON.parse(JSON.stringify(this.formData));
 
+          const { ruleInfoList } = oForm;
+
+          oForm.ruleInfoList = ruleInfoList.map(item => {
+            // 提交的时候清理数据
+            const {
+              merchantType: type,
+              businessId: id,
+              businessName: name
+            } = item;
+
+            if (type == 0) {
+              item.merchantId = id;
+              item.merhcantName = name;
+
+              item.brandId = "";
+              item.brandName = "";
+            } else {
+              item.brandId = id;
+              item.brandName = name;
+
+              item.merchantId = "";
+              item.merhcantName = "";
+            }
+            return item;
+          });
+
           console.log("add save:", oForm);
           let url = "";
           if (oForm.id) {
@@ -324,22 +316,50 @@ export default {
             this.msgErr(res.msg);
           }
         } else {
-          this.$Message.error("数据验证失败！");
+          this.msgErr("数据验证失败！");
         }
       });
     },
-    // 全局提示
-    msgOk(txt) {
-      this.$Message.info({
-        content: txt,
-        duration: 3
-      });
+    validateRewardRules(rule, value, callback) {
+      console.log("validateRewardRules", rule, value);
+      if (!value.length) {
+        return callback(`请填写奖励规则`);
+      }
+      callback();
     },
-    msgErr(txt) {
-      this.$Message.error({
-        content: txt,
-        duration: 3
-      });
+    //验证正整数
+    validateMoney(rule, value, callback) {
+      value += "";
+      value = value.trim();
+      // 允许不填
+      if (value == "") {
+        return callback("金额不能为空");
+      }
+
+      // 排除 "","0","0.0","0.00"格式
+      if (!value || value == "0" || value == "0.0" || value == "0.00") {
+        return callback(new Error("兑换的金额不能为0"));
+      }
+
+      // 验证是否是数字
+      const n = Number(value);
+      if (isNaN(n)) {
+        return callback(new Error("请输入数字"));
+      }
+
+      if (n > 0 && n <= 99999.99) {
+        const reg = /^(0|[1-9]\d*)(\s|$|\.\d{1,2}\b)/;
+
+        if (!reg.test(value)) {
+          return callback(
+            new Error("请输入大于等于0的金额，小数点最多包含两位小数")
+          );
+        }
+      } else {
+        return callback(new Error("请输入[0.01—99999.99]之间的数"));
+      }
+
+      callback();
     }
   }
 };

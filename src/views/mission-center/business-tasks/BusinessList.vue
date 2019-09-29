@@ -145,6 +145,7 @@ export default {
                 on: {
                   "on-change": () => {
                     console.log("change", params.row);
+                    self.choice.merchantType = 0;
                     self.choice.id = id;
                     self.choice.name = name;
                     self.choice.row = params.row;

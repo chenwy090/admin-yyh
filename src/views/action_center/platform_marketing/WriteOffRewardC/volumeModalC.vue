@@ -11,8 +11,8 @@
                     <div>
                         <Card :bordered="false" style="margin-bottom:2px">
                             <Form ref="volumeForm" label-position="right" :label-width="80" :model="volumeForm" inline>
-                                <FormItem label="商户名称" span="24" style="width:25%">
-                                    <Input v-model="volumeForm.merchantName" placeholder=" 请填写商户名称" :maxlength=20 />
+                                <FormItem label="商超名称" span="24" style="width:25%">
+                                    <Input v-model="volumeForm.shopName" placeholder=" 请填写商超名称" :maxlength=20 />
                                 </FormItem>
                                 <!--<FormItem label="省/市" span="24"  style="width:23%">-->
                                     <!--<Cascader :data="addressData" :load-data="addressLoad" v-model="addressValue"></Cascader>-->
@@ -52,6 +52,9 @@
                                         <template slot-scope="{ row,index }" slot="timer">
                                             <div v-if="row.dateType===1">{{row.startDate+'——'+row.endDate}}</div>
                                             <div v-if="row.dateType===2">永久有效</div>
+                                        </template>
+                                        <template slot-scope="{ row,index }" slot="isActivityCoupon">
+                                            <div>{{row.isActivityCoupon==1?'否':'是'}}</div>
                                         </template>
                                     </Table>
                                 </RadioGroup>
@@ -115,6 +118,9 @@
                                         <template slot-scope="{ row,index }" slot="timer">
                                             <div>{{row.useStartTime+'——'+row.useEndTime}}</div>
                                         </template>
+                                        <template slot-scope="{ row,index }" slot="isActivityCoupon">
+                                            <div>{{row.isActivityCoupon==0?'否':'是'}}</div>
+                                        </template>
                                     </Table>
                                 </RadioGroup>
                             </Row>
@@ -155,6 +161,7 @@
                 volumeForm:{
                     merchantName:'',
                     couponName:'',
+                    shopName:'',
                     current1: 1,
                     current2: 1,
                 },
@@ -217,7 +224,13 @@
                         align: "center",
                         minWidth:300,
                         slot: "timer"
-                    }
+                    },
+                    {
+                        title: "活动券",
+                        minWidth:100,
+                        slot: "isActivityCoupon",
+                        align: 'center',
+                    },
                 ],
                 listData1: [],
                 listData2: [],
@@ -246,6 +259,7 @@
                 this.current2 = 1;
                 this.volumeForm.merchantName = '';
                 this.volumeForm.couponName = '';
+                this.volumeForm.shopName = '';
                 // this.addressValue = [];
                 this.volumeObj = item;
                 this.TableLoading = false;
@@ -259,6 +273,7 @@
                 this.current2 = 1;
                 this.volumeForm.merchantName = '';
                 this.volumeForm.couponName = '';
+                this.volumeForm.shopName = '';
                 switch (type) {
                 case 1:
                     this.loadTableData1(this.volumeObj);
@@ -320,7 +335,7 @@
                     size:10,
                     // cityCode:this.addressValue[1]||'',
                     couponName:this.volumeForm.couponName,
-                    merchantName:this.volumeForm.merchantName,
+                    shopName:this.volumeForm.shopName,
                     // provinceCode:this.addressValue[0]||'',
                 }
                 //商户券列表
@@ -387,8 +402,8 @@
                 }
             },
             changeCurrent2(current) {
-                if (this.current2 != current) {
-                    this.current2 = current;
+                if (this.volumeForm.current2 != current) {
+                    this.volumeForm.current2 = current;
                     this.loadTableData2(this.volumeObj,current);
                 }
             },

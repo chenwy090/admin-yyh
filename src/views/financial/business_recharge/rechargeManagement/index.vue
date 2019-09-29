@@ -5,7 +5,7 @@
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
           <!-- 商户/品牌名称 -->
-          <FormItem label="商户/品牌名称：" :label-width="100">
+          <FormItem label="商户/品牌/商超/零售商名称：" :label-width="185">
             <Input
               style="width:200px"
               type="text"
@@ -120,6 +120,9 @@ import Recharge from "./Recharge";
 import Deduction from "./Deduction";
 import Detail from "./Detail";
 
+import createTypeDate from "./typeData";
+const typeData = createTypeDate();
+
 export default {
   name: "recharge-management",
   components: {
@@ -177,6 +180,9 @@ export default {
       const { code, data, msg } = await queyMoneyDetailById(id);
       if (code == 200) {
         const {
+          merchantType: type, //0/1/2/3
+          merchantName,
+          brandName,
           changeType,
           // 充值
           receivables,
@@ -185,6 +191,16 @@ export default {
           anticipatedDeduction,
           actualDeduction
         } = data;
+
+        let { label, desc } = typeData[`type${type}`];
+        data.businessTypeLabel = label;
+        data.merchantTypeName = desc;
+        if (type == 0) {
+          data.businessName = merchantName;
+        } else {
+          data.businessName = brandName;
+        }
+
         this.detailTitle = changeType == 0 ? "充值信息" : "扣款信息";
 
         if (changeType == 0) {
