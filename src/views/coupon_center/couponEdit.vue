@@ -26,7 +26,63 @@
 
         <Row style="margin-left:15%;">
           <Row class="box">
-            <Col span="3" class="left-text">
+            <Col span="4" class="left-text">
+              <span style="color:red">*</span>优惠券来源
+            </Col>
+            <Col span="16">
+              <RadioGroup v-model="edit_info.couponSource" @on-change="couponSourceChange">
+                <Radio
+                  v-for="item in couponSourceList"
+                  :key="item.value"
+                  :label="item.value"
+                >{{item.label}}</Radio>
+              </RadioGroup>
+            </Col>
+          </Row>
+
+          <Row class="box">
+            <Col span="4" class="left-text">
+              <span style="color:red">*</span>券码类型
+            </Col>
+            <Col span="16">
+              <RadioGroup v-model="edit_info.couponCodeType">
+                <Radio
+                  v-for="item in couponCodeTypeList"
+                  :key="item.value"
+                  :label="item.value"
+                >{{item.label}}</Radio>
+              </RadioGroup>
+            </Col>
+          </Row>
+
+          <Row class="box">
+            <Col span="4" class="left-text">
+              <span style="color:red">*</span>立即使用打开方式
+            </Col>
+            <Col span="20">
+              <RadioGroup v-model="edit_info.userOpenWithCoupon">
+                <Radio
+                  v-for="item in userOpenWithCouponList"
+                  :key="item.value"
+                  :label="item.value"
+                >{{item.label}}</Radio>
+              </RadioGroup>
+              <template v-if="edit_info.userOpenWithCoupon ==1">
+                <Tooltip trigger="focus" title="提醒" content="请输入https地址" placement="right">
+                  <Input
+                    type="text"
+                    v-model="edit_info.thirdUrl"
+                    style="width:300px"
+                    placeholder="请输入https地址"
+                    clearable
+                  ></Input>
+                </Tooltip>
+              </template>
+            </Col>
+          </Row>
+
+          <Row class="box">
+            <Col span="4" class="left-text">
               <span style="color:red">*</span>适用商户
             </Col>
             <Col span="16">
@@ -52,7 +108,7 @@
           </Row>
 
           <Row class="box">
-            <Col span="3" class="left-text">
+            <Col span="4" class="left-text">
               <span style="color:red">*</span>标题
             </Col>
             <Col span="16">
@@ -70,7 +126,7 @@
           </Row>
 
           <!-- <Row class="box">
-        <Col span="3" class="left-text"><span style="color:red">*</span>优惠副标题</Col>
+        <Col span="4" class="left-text"><span style="color:red">*</span>优惠副标题</Col>
         <Col span="16">
             <Input
                 type="text"
@@ -83,7 +139,7 @@
           </Row>-->
 
           <Row class="box">
-            <Col span="3" class="left-text">
+            <Col span="4" class="left-text">
               <span style="color:red">*</span>优惠类型
             </Col>
             <Col span="16">
@@ -103,7 +159,7 @@
           </Row>
 
           <Row class="box" v-if="edit_info.couponType==1">
-            <Col span="3" class="left-text">
+            <Col span="4" class="left-text">
               <span style="color:red">*</span>立减
             </Col>
             <Col span="16">
@@ -122,7 +178,7 @@
           </Row>
 
           <Row class="box" v-if="edit_info.couponType==2">
-            <Col span="3" class="left-text">
+            <Col span="4" class="left-text">
               <span style="color:red">*</span>折扣
             </Col>
             <Col span="16">
@@ -140,7 +196,7 @@
             </Col>
           </Row>
           <Row class="box" v-if="edit_info.couponType==3">
-            <Col span="3" class="left-text">
+            <Col span="4" class="left-text">
               <span style="color:red">*</span>满
             </Col>
             <Col span="16">
@@ -158,7 +214,7 @@
             </Col>
           </Row>
           <Row class="box" v-if="edit_info.couponType==3">
-            <Col span="3" class="left-text">
+            <Col span="4" class="left-text">
               <span style="color:red">*</span>减
             </Col>
             <Col span="16">
@@ -176,7 +232,7 @@
             </Col>
           </Row>
           <Row class="box" v-if="edit_info.couponType==4">
-            <Col span="3" class="left-text">
+            <Col span="4" class="left-text">
               <span style="color:red">*</span>面额描述
             </Col>
             <Col span="16">
@@ -194,7 +250,7 @@
             </Col>
           </Row>
           <Row class="box" v-if="edit_info.couponType==5">
-            <Col span="3" class="left-text">
+            <Col span="4" class="left-text">
               <span style="color:red">*</span>面额描述
             </Col>
             <Col span="16">
@@ -212,7 +268,7 @@
             </Col>
           </Row>
           <Row class="box" v-if="edit_info.couponType==6">
-            <Col span="3" class="left-text">
+            <Col span="4" class="left-text">
               <span style="color:red">*</span>面额描述
             </Col>
             <Col span="16">
@@ -231,7 +287,7 @@
           </Row>
 
           <Row class="box">
-            <Col span="3" class="left-text">
+            <Col span="4" class="left-text">
               <span style="color:red">*</span>活动开始时间
             </Col>
             <Col span="16">
@@ -246,7 +302,7 @@
           </Row>
 
           <Row class="box">
-            <Col span="3" class="left-text">
+            <Col span="4" class="left-text">
               <span style="color:red">*</span>活动结束时间
             </Col>
             <Col span="16">
@@ -261,7 +317,7 @@
           </Row>
 
           <Row class="box">
-            <Col span="3" class="left-text">
+            <Col span="4" class="left-text">
               <span style="color:red">*</span>用券有效期类型
             </Col>
             <Col span="16">
@@ -277,7 +333,7 @@
           </Row>
 
           <Row class="box" v-if="edit_info.useDateType =='1'">
-            <Col span="3" class="left-text">
+            <Col span="4" class="left-text">
               <span style="color:red">*</span>用券开始时间
             </Col>
             <Col span="16">
@@ -292,7 +348,7 @@
           </Row>
 
           <Row class="box" v-if="edit_info.useDateType =='1'">
-            <Col span="3" class="left-text">
+            <Col span="4" class="left-text">
               <span style="color:red">*</span>用券结束时间
             </Col>
             <Col span="16">
@@ -307,7 +363,7 @@
           </Row>
 
           <Row class="box" v-if="edit_info.useDateType =='2'">
-            <Col span="3" class="left-text">
+            <Col span="4" class="left-text">
               <span style="color:red">*</span>加X天开始生效
             </Col>
             <Col span="16">
@@ -323,7 +379,7 @@
           </Row>
 
           <Row class="box" v-if="edit_info.useDateType =='2'">
-            <Col span="3" class="left-text">
+            <Col span="4" class="left-text">
               <span style="color:red">*</span>加Y天结束用券
             </Col>
             <Col span="16">
@@ -339,10 +395,10 @@
           </Row>
 
           <Row class="box">
-            <Col span="3" class="left-text">
+            <Col span="4" class="left-text">
               <span style="color:red">*</span> 是否活动券
             </Col>
-            <Col span="3">
+            <Col span="4">
               <RadioGroup v-model="edit_info.isActivityCoupon">
                 <Radio :label="0">否</Radio>
                 <Radio :label="1">是</Radio>
@@ -351,10 +407,10 @@
           </Row>
 
           <Row class="box">
-            <Col span="3" class="left-text">
+            <Col span="4" class="left-text">
               <span style="color:red">*</span> 优惠券缩略图
             </Col>
-            <Col span="3">
+            <Col span="4">
               <div class="imgSrc_box" v-if="imgSrc1">
                 <img :src="imgSrc1" style="width:100%" />
               </div>
@@ -377,10 +433,10 @@
           </Row>
 
           <Row class="box">
-            <Col span="3" class="left-text">
+            <Col span="4" class="left-text">
               <span style="color:red">*</span> 优惠券详情图
             </Col>
-            <Col span="3">
+            <Col span="4">
               <div class="imgSrc_box" v-if="imgSrc2">
                 <img :src="imgSrc2" style="width:100%" />
               </div>
@@ -402,7 +458,7 @@
             </Col>
           </Row>
           <Row class="box">
-            <Col span="3" class="left-text">
+            <Col span="4" class="left-text">
               <span style="color:red">*</span>库存数量
             </Col>
             <Col span="16">
@@ -420,7 +476,7 @@
             </Col>
           </Row>
           <Row class="box">
-            <Col span="3" class="left-text">
+            <Col span="4" class="left-text">
               <span style="color:red">*</span>用户限领数量
             </Col>
             <Col span="16">
@@ -439,7 +495,7 @@
             </Col>
           </Row>
           <Row class="box">
-            <Col span="3" class="left-text">
+            <Col span="4" class="left-text">
               <span style="color:red">*</span>券使用说明
             </Col>
             <Col span="16">
@@ -456,7 +512,7 @@
             </Col>
           </Row>
           <Row class="box">
-            <Col span="3" class="left-text">备注</Col>
+            <Col span="4" class="left-text">备注</Col>
             <Col span="16">
               <Tooltip trigger="focus" title="提醒" content="最多200个汉字" placement="right">
                 <Input
@@ -472,7 +528,7 @@
           </Row>
 
           <!--<Row class="box"  required v-if="camp_pageStatus =='edit' " >
-        <Col span="3" class="left-text"><span style="color:red">*</span>顺序排序</Col>
+        <Col span="4" class="left-text"><span style="color:red">*</span>顺序排序</Col>
         <Col span="16">
              <Tooltip trigger="focus" title="提醒" content="最大为999999999" placement="right">
               <Input
@@ -663,6 +719,42 @@ export default {
   },
   data() {
     return {
+      //乐刻需求新增begin--------------------------
+      // 优惠券来源 0-平台自营券 1-第三方券
+      // couponSource: "0",
+      couponSourceList: [
+        {
+          value: 0,
+          label: "平台自营券"
+        },
+        {
+          value: 1,
+          label: "第三方券"
+        }
+      ],
+      // 券码类型  0-平台生成券码
+      // couponCodeType: "0",
+      couponCodeTypeList: [
+        {
+          value: 0,
+          label: "平台生成券码"
+        }
+      ],
+      // 立即使用打开方式 0-打开详情 1-跳转第三方
+      // userOpenWithCoupon: "0",
+      userOpenWithCouponList: [
+        {
+          value: 0,
+          label: "打开详情"
+        }
+        // {
+        //   value: 1,
+        //   label: "跳转第三方"
+        // }
+      ],
+      // thirdUrl: "",
+
+      //乐刻需求新增end--------------------------
       formShareModal: {
         shareData: []
       },
@@ -754,8 +846,8 @@ export default {
         serviceContent: "",
         roleIdList: [],
         merchantList: [],
-          userId: "",
-          userId: ""
+        userId: "",
+        userId: ""
       },
       edit_info: {
         // 是否活动券 （默认否）0-否，1-是   isActivityCoupon
@@ -799,6 +891,29 @@ export default {
     this.init();
   },
   methods: {
+    couponSourceChange(couponSource) {
+      console.log("couponSourceChange:", couponSource);
+      if (couponSource === 0) {
+        this.edit_info.userOpenWithCoupon = 0;
+        this.userOpenWithCouponList = [
+          {
+            value: 0,
+            label: "打开详情"
+          }
+        ];
+      } else {
+        this.userOpenWithCouponList = [
+          {
+            value: 0,
+            label: "打开详情"
+          },
+          {
+            value: 1,
+            label: "跳转第三方"
+          }
+        ];
+      }
+    },
     share(row) {
       this.formShareModal.shareData = [];
       postRequest("/commonConfig/queryConfigByCode", {
@@ -868,6 +983,11 @@ export default {
     //新增
     addInfo() {
       this.edit_info = {
+        couponSource: 0, //优惠券来源
+        couponCodeType: 0, //券码类型
+        userOpenWithCoupon: 0, //立即使用打开方式
+        thirdUrl: "",
+
         // 是否活动券 （默认否）0-否，1-是   isActivityCoupon
         isActivityCoupon: 0,
         startDate: "",
@@ -1409,10 +1529,16 @@ export default {
       }*/
 
       this.reqParams = {
+        // ...this.edit_info，
+
+        couponSource: this.edit_info.couponSource,
+        couponCodeType: this.edit_info.couponCodeType,
+        userOpenWithCoupon: this.edit_info.userOpenWithCoupon,
+        thirdUrl: this.edit_info.thirdUrl.trim(),
         // 是否活动券 （默认否）0-否，1-是   isActivityCoupon
         isActivityCoupon: this.edit_info.isActivityCoupon,
         title: this.edit_info.title,
-        // subTitle: this.edit_info.subTitle,
+        subTitle: this.edit_info.subTitle,
         couponType: this.edit_info.couponType,
         ticketMoney: this.new_ticketMoney,
         ticketDiscount: this.new_ticketDiscount,

@@ -132,17 +132,13 @@
               </FormItem>
             </div>
 
-
-
-
-
             <FormItem label="优惠券缩略图" required>
               <div
                 style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
                 v-for="(item, index) in uploadList1"
                 :key="index"
               >
-                <img :src="item.url" style="width:100%">
+                <img :src="item.url" style="width:100%" />
               </div>
               <div style="display: inline-block;">
                 <Upload
@@ -151,33 +147,30 @@
                   type="drag"
                   :format="['jpg','jpeg','png','bmp']"
                   :on-success="handleSuccess1"
-                 :before-upload="handleBeforeUpload"
                   :action="url"
                   accept="image"
                   :max-size="1024"
                   :headers="userToken"
                   style="display: inline-block;width:90px;"
                   @on-change="statusCheckChange"
-                   :on-exceeded-size="handleMaxSize"
-                        :show-upload-list="false"
+                  :on-exceeded-size="handleMaxSize"
+                  :show-upload-list="false"
                 >
                   <div style="width: 90px;height:90px;line-height: 90px;">
-                    <Icon type="ios-camera" size="20"/>
+                    <Icon type="ios-camera" size="20" />
                   </div>
                 </Upload>
-                <p>选择优惠券缩略图 (不大于1M,尺寸为130*130, JPG/PNG/JPEG/BMP）</p>
+                <p>选择优惠券缩略图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
               </div>
             </FormItem>
 
-
-
-         <FormItem label="优惠券详情图" required>
+            <FormItem label="优惠券详情图" required>
               <div
                 style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
                 v-for="(item, index) in uploadList"
                 :key="index"
               >
-                <img :src="item.url" style="width:100%">
+                <img :src="item.url" style="width:100%" />
               </div>
               <div style="display: inline-block;">
                 <Upload
@@ -192,24 +185,18 @@
                   :headers="userToken"
                   style="display: inline-block;width:90px;"
                   @on-change="statusCheckChange"
-                   :on-exceeded-size="handleMaxSize"
-                        :show-upload-list="false"
-                                         :before-upload="handleBeforeUpload1"
-
+                  :on-exceeded-size="handleMaxSize"
+                  :show-upload-list="false"
                 >
                   <div style="width: 90px;height:90px;line-height: 90px;">
-                    <Icon type="ios-camera" size="20"/>
+                    <Icon type="ios-camera" size="20" />
                   </div>
                 </Upload>
-                <p>选择优惠券详情图 (不大于1M,尺寸为280*218, JPG/PNG/JPEG/BMP）</p>
+                <p>选择优惠券详情图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
               </div>
             </FormItem>
 
-
-
-
-
-              <!-- <FormItem label="兑换时间类型" required>
+            <!-- <FormItem label="兑换时间类型" required>
               <Select
                 v-model="edit_info.ChangeDateType"
                 style="width:300px"
@@ -269,8 +256,7 @@
 
                 </FormItem>
 
-         </div> -->
-
+            </div>-->
 
             <FormItem label="优惠券模板" required>
               <Button
@@ -289,15 +275,10 @@
             </FormItem>
 
             <FormItem v-if="edit_info.ticketName">
-
-
               <Alert style="width:500px">
-                    <Row>模版ID：{{edit_info.ticketTemplateId}}  </Row>
-                     <Row>模版名称：{{edit_info.ticketName}}  </Row>
-
+                <Row>模版ID：{{edit_info.ticketTemplateId}}</Row>
+                <Row>模版名称：{{edit_info.ticketName}}</Row>
               </Alert>
-
-
             </FormItem>
 
             <FormItem label="活动/领券规则" required>
@@ -335,7 +316,12 @@
             </FormItem>
 
             <FormItem style="{'margin-top':'54px'}">
-              <Alert type="warning" show-icon v-if="isCheckDisabled == true" style="width:500px">修改后才能保存</Alert>
+              <Alert
+                type="warning"
+                show-icon
+                v-if="isCheckDisabled == true"
+                style="width:500px"
+              >修改后才能保存</Alert>
               <Button
                 type="primary"
                 @click="campagin_add()"
@@ -365,19 +351,15 @@
           size="small"
           height="300"
         >
+          <template slot-scope="{ row }" slot="ChangeStart">
+            <span v-if="row.changeDateType ==0">{{row.changeStartDate}}</span>
+            <span v-if="row.changeDateType ==1">发券后+{{row.changeStart}}天开始兑换</span>
+          </template>
 
-           <template slot-scope="{ row }" slot="ChangeStart">
-            <span v-if="row.changeDateType ==0"> {{row.changeStartDate}}</span>
-              <span  v-if="row.changeDateType ==1"> 发券后+{{row.changeStart}}天开始兑换</span>
-            </template>
-
-
-            <template slot-scope="{ row }" slot="ChangeEnd">
-               <span  v-if="row.changeDateType ==0"> {{row.changeEndDate}}</span>
-              <span v-if="row.changeDateType ==1"> 发券后+{{row.changeEnd}}天结束兑换</span>
-            </template>
-
-
+          <template slot-scope="{ row }" slot="ChangeEnd">
+            <span v-if="row.changeDateType ==0">{{row.changeEndDate}}</span>
+            <span v-if="row.changeDateType ==1">发券后+{{row.changeEnd}}天结束兑换</span>
+          </template>
         </Table>
       </Form>
 
@@ -643,15 +625,19 @@ export default {
         this.camp_Info.couponType == 1
           ? "1"
           : this.camp_Info.couponType == 2
-            ? "2"
-            : this.camp_Info.couponType == 3
-              ? "3"
-              : this.camp_Info.couponType == 4 ? "4" : "5";
+          ? "2"
+          : this.camp_Info.couponType == 3
+          ? "3"
+          : this.camp_Info.couponType == 4
+          ? "4"
+          : "5";
 
       this.edit_info.status =
         this.camp_Info.status == 0
           ? "0"
-          : this.camp_Info.status == 1 ? "1" : "-1";
+          : this.camp_Info.status == 1
+          ? "1"
+          : "-1";
 
       this.edit_info.ticketTemplateId = this.camp_Info.ticketTemplateId;
 

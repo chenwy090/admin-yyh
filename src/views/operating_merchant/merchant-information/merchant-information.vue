@@ -6,7 +6,7 @@
         <Card>
           <Row>
             <Form ref="searchItem" :model="searchItem" inline :label-width="70" class="search-form">
-              <FormItem label="商户名称">
+              <FormItem label="商户名称：" :label-width="80">
                 <Input
                   type="text"
                   v-model="searchItem.name"
@@ -15,17 +15,56 @@
                   style="width: 200px"
                 />
               </FormItem>
-              <FormItem>
-                  <span>所在地区</span>
-                  <Select v-model="searchItem.provinceId" style="width:150px" clearable @on-change="getcitylist">
-                    <Option v-for="(item,index) in provincelist" :key="index" :value="item.provinceCode">{{item.provinceName}}</Option>
-                  </Select>
-                  <Select v-model="searchItem.cityId" style="width:150px" clearable @on-change="getarealist">
-                    <Option v-for="(item,index) in citylist" :key="index" :value="item.cityCode" >{{item.cityName}}</Option>
-                  </Select>
-                  <Select v-model="searchItem.areaId" style="width:150px" clearable >
-                    <Option v-for="(item,index) in arealist" :key="index" :value="item.areaCode" >{{item.areaName}}</Option>
-                  </Select>
+
+              <FormItem label="标签：">
+                <Select v-model="searchItem.isTag" style="width:120px" clearable>
+                  <Option v-for="(v,k) in tagOptions" :value="k" :key="k">{{ v }}</Option>
+                </Select>
+              </FormItem>
+
+              <FormItem label="关联商超名称：" :label-width="120">
+                <Input
+                  type="text"
+                  v-model="searchItem.superMarketingName"
+                  clearable
+                  placeholder="请输入关联商超名称"
+                  style="width: 200px"
+                />
+              </FormItem>
+
+              <FormItem :label-width="0">
+                <span>所在地区：</span>
+                <Select
+                  v-model="searchItem.provinceId"
+                  style="width:150px"
+                  clearable
+                  @on-change="getcitylist"
+                >
+                  <Option
+                    v-for="(item,index) in provincelist"
+                    :key="index"
+                    :value="item.provinceCode"
+                  >{{item.provinceName}}</Option>
+                </Select>
+                <Select
+                  v-model="searchItem.cityId"
+                  style="width:150px"
+                  clearable
+                  @on-change="getarealist"
+                >
+                  <Option
+                    v-for="(item,index) in citylist"
+                    :key="index"
+                    :value="item.cityCode"
+                  >{{item.cityName}}</Option>
+                </Select>
+                <Select v-model="searchItem.areaId" style="width:150px" clearable>
+                  <Option
+                    v-for="(item,index) in arealist"
+                    :key="index"
+                    :value="item.areaCode"
+                  >{{item.areaName}}</Option>
+                </Select>
               </FormItem>
               <FormItem style="margin-left:-35px;" class="br">
                 <Button @click="queryTableList" type="primary" icon="ios-search">搜索</Button>
@@ -33,17 +72,18 @@
                 <!-- <a class="drop-down" @click="dropDown">
                   {{dropDownContent}}
                   <Icon :type="dropDownIcon"></Icon>
-                </a> -->
+                </a>-->
               </FormItem>
             </Form>
           </Row>
         </Card>
         <Card>
           <Row class="operation">
-            
             <Button type="primary" icon="md-add" @click="addInfo()">新增</Button>
-
             <Button @click="updateTableList" icon="md-refresh">刷新</Button>
+            <!-- 排序导入  排序导出 -->
+            <Button type="success" class="marginLeft20" @click="upload">排序导入</Button>
+            <Button type="success" class="marginLeft20" @click="download">排序导出</Button>
           </Row>
 
           <Row>
@@ -55,31 +95,27 @@
               sortable="custom"
               ref="table"
             >
+              <!--     商户名称 name 新店 isNew -->
 
+              <template slot-scope="{ row }" slot="name">
+                <!-- style="width:74px;height:43px;" -->
+                <img v-if="row.isNew==1" style="width:40px;" src="/images/newShop.png" />
+                {{row.name}}
+              </template>
+              <template
+                slot-scope="{ row }"
+                slot="address"
+              >{{row.province}} {{row.city}} {{row.district}} {{row.address}}</template>
 
-          <template slot-scope="{ row }" slot="address">
-            {{row.province}} {{row.city}} {{row.district}} {{row.address}}
-            </template>
-            
-            <template slot-scope="{ row }" slot="logoImg">
-              <img :src="row.logoImg" style="width:74px;height:43px;" @click="showBigImg(row)">
-            </template>
+              <template slot-scope="{ row }" slot="logoImg">
+                <img :src="row.logoImg" style="width:74px;height:43px;" @click="showBigImg(row)" />
+              </template>
 
               <template slot-scope="{ row }" slot="operate">
-                <Button
-                  type="text"
-                  size="small"
-                  style="color:#2db7f5"
-                  @click="editInfo(row)"
-                >编辑</Button>
-                <Button
-                  type="text"
-                  size="small"
-                  style="color:#ed4014"
-                  @click="copyInfo(row)"
-                >复制</Button>
-            </template>
-
+                <Button type="text" size="small" style="color:#2db7f5" @click="editInfo(row)">编辑</Button>
+                <Button type="text" size="small" style="color:#ed4014" @click="copyInfo(row)">复制</Button>
+                <Button type="text" size="small" style="color:#2db7f5" @click="setTag(row)">打标签</Button>
+              </template>
             </Table>
           </Row>
           <Row type="flex" justify="end" class="page">
@@ -100,17 +136,31 @@
       <merchantEdit @changeStatus="showMerchantEditStatus" :merchantId="merchantId"></merchantEdit>
     </div>
 
-  <div v-if="merchantCouponPage">
+    <div v-if="merchantCouponPage">
       <merchantCoupon @changeStatus="showMerchantCouponStatus" :merchantId="merchantId"></merchantCoupon>
     </div>
 
-  <div v-if="merchantStaffPage">
+    <div v-if="merchantStaffPage">
       <merchantStaff @changeStatus="showMerchantStaffStatus" :merchantId="merchantId"></merchantStaff>
     </div>
 
-  <Modal v-model="bigImgDialog" title="查看大图" width="600" @on-cancel="bigImgCancel">
-        <img style="width: 100%" :src="big_Image_url" />
-      </Modal>
+    <Modal v-model="bigImgDialog" title="查看大图" width="600" @on-cancel="bigImgCancel">
+      <img style="width: 100%" :src="big_Image_url" />
+    </Modal>
+
+    <FileImport
+      v-if="showFileImport"
+      :showFileImport.sync="showFileImport"
+      @refresh="queryTableData"
+    ></FileImport>
+
+    <SetTag
+      v-if="showTag"
+      :id="id"
+      :showTag.sync="showTag"
+      :tagData="tagData"
+      @refresh="updateTableList"
+    ></SetTag>
   </div>
 </template>
 
@@ -120,35 +170,52 @@ import {
   postRequest,
   putRequest,
   deleteRequest,
-  uploadFileRequest
+  uploadFileRequest,
+  downloadSteam
 } from "@/libs/axios";
 
 import { formatDate } from "@/libs/date";
 import merchantEdit from "./merchantEdit";
 import merchantCoupon from "../merchant-coupon/merchantCoupon";
 import merchantStaff from "../merchant-staff/merchant-staff";
+import FileImport from "./FileImport";
+import SetTag from "./SetTag";
 
 export default {
   name: "merchant-information",
   components: {
     merchantEdit,
     merchantCoupon,
-    merchantStaff
+    merchantStaff,
+    FileImport,
+    SetTag
   },
   data() {
     return {
+      showFileImport: false,
+      //打标签 已打标签、未打标签
+      showTag: false,
+      tagOptions: {
+        1: "已打标签",
+        0: "未打标签"
+      },
+      tagData: [],
       merchantEditPage: false,
       merchantCouponPage: false,
       merchantStaffPage: false,
+      id: "",
       merchantId: "",
       drop: false,
       dropDownContent: "展开",
       dropDownIcon: "ios-arrow-down",
       searchItem: {
         name: "",
+        // 是否有标签 0-未打标签 1-已打标签
+        isTag: "",
+        superMarketingName: "",
         provinceId: "",
         cityId: "",
-          areaId: ""
+        areaId: ""
       },
       current: 1,
       totalSize: 0, //总条数
@@ -171,7 +238,8 @@ export default {
           title: "商户名称",
           key: "name",
           align: "center",
-          minWidth: 120
+          minWidth: 200,
+          slot: "name" //新店
         },
         //        {
         //          title: "商户行业",
@@ -248,58 +316,90 @@ export default {
       staffList: [],
       res_list: [],
       provincelist: [],
-        citylist: [],
-        arealist: [],
+      citylist: [],
+      arealist: []
     };
   },
-
-  created: function() {},
   methods: {
+    upload() {
+      this.showFileImport = true;
+    },
+    async download() {
+      const url = "/merchant/sort/excel/download";
+
+      const res = await downloadSteam(url);
+
+      console.log(111111111111111111, res);
+
+      const content = res.data;
+      const { filename } = res.headers;
+
+      console.log(111111111111111111, res);
+      const blob = new Blob([content], { type: "application/vnd.ms-excel" });
+      const oA = document.createElement("a");
+      if ("download" in oA) {
+        // 非IE下载
+        oA.download = decodeURI(filename);
+        oA.style.display = "none";
+        oA.href = URL.createObjectURL(blob);
+        document.body.appendChild(oA);
+        oA.click();
+        URL.revokeObjectURL(oA.href); // 释放URL 对象
+        document.body.removeChild(oA);
+      } else {
+        // IE10+下载
+        navigator.msSaveBlob(blob, filename);
+      }
+    },
+    setTag(row) {
+      // merchantId
+      this.id = row.merchantId;
+      this.showTag = true;
+      this.tagData = row.merchantTags;
+    },
     init() {
       this.updateTableList();
-      this.getindustryTemplate();
+      this.queryTableData();
       this.getprovincelist();
     },
     //获取省份信息数据
     getprovincelist() {
-        postRequest(
-            "/system/area/province/list"
-        ).then(res => {
-            if (res.code == 200) {
-                this.provincelist = res.data;
-            } else {
-                this.$Message.error(res.msg);
-            }
-        });
+      postRequest("/system/area/province/list").then(res => {
+        if (res.code == 200) {
+          this.provincelist = res.data;
+        } else {
+          this.$Message.error(res.msg);
+        }
+      });
     },
-      //根据省份code获取城市信息数据
-      getcitylist() {
-          getRequest(
-              "/system/area/city/"+this.searchItem.provinceId
-          ).then(res => {
-              if (res.code == 200) {
-                  this.citylist = res.data;
-                  this.searchItem.areaId = '';
-              } else {
-                  this.$Message.error(res.msg);
-              }
-          });
-      },
-      //根据城市code获取区县信息数据
-      getarealist() {
-          getRequest(
-              "/system/area/district/"+this.searchItem.cityId
-          ).then(res => {
-              if (res.code == 200) {
-                  this.arealist = res.data;
-              } else {
-                  this.$Message.error(res.msg);
-              }
-          });
-      },
+    //根据省份code获取城市信息数据
+    getcitylist() {
+      getRequest("/system/area/city/" + this.searchItem.provinceId).then(
+        res => {
+          if (res.code == 200) {
+            this.citylist = res.data;
+            this.searchItem.areaId = "";
+          } else {
+            this.$Message.error(res.msg);
+          }
+        }
+      );
+    },
+    //根据城市code获取区县信息数据
+    getarealist() {
+      getRequest("/system/area/district/" + this.searchItem.cityId).then(
+        res => {
+          if (res.code == 200) {
+            this.arealist = res.data;
+          } else {
+            this.$Message.error(res.msg);
+          }
+        }
+      );
+    },
 
     //获取商业数据
-    getindustryTemplate() {
+    queryTableData() {
       const reqParams = {
         dictCode: "merchant_industry"
       };
@@ -329,18 +429,23 @@ export default {
     //	刷新页面
     refresh() {
       // this.updateTableList(this.params);
-      this.searchItem.name = "";
-      this.searchItem.provinceId = "";
-      this.searchItem.cityId = "";
-      this.searchItem.areaId = "";
+      this.searchItem = {
+        name: "",
+        // 是否有标签 0-未打标签 1-已打标签
+        isTag: "",
+        superMarketingName: "",
+        provinceId: "",
+        cityId: "",
+        areaId: ""
+      };
       this.updateTableList();
     },
 
     //搜索
     queryTableList() {
-        this.current = 1;
-        this.totalSize = 0; //总条数
-        this.pageNum = 1; //开始条数
+      this.current = 1;
+      this.totalSize = 0; //总条数
+      this.pageNum = 1; //开始条数
       this.updateTableList();
     },
 
@@ -386,9 +491,9 @@ export default {
 
     //复制
     copyInfo(item) {
-        this.setStore("camp_pageStatus", "copy");
-        this.merchantId = item.merchantId;
-        this.merchantEditPage = true;
+      this.setStore("camp_pageStatus", "copy");
+      this.merchantId = item.merchantId;
+      this.merchantEditPage = true;
     },
 
     showMerchantEditStatus(e) {
@@ -539,7 +644,6 @@ export default {
         }
       });
     }
-
   },
   mounted() {
     this.init();

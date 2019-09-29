@@ -59,10 +59,10 @@
           </FormItem>
         </Col>
       </Row>
-      <FormItem label="投放门店" v-for="(item, index) in form.shops" v-if="item.status" :key="index">
+      <FormItem label="投放门店" v-for="(item, i) in form.shops" v-if="item.status" :key="i">
         <div v-if="showStore">
         <storeView
-          :index="item.index"
+          :index="i"
           v-on:sendProvinceId="sendProvinceId"
           v-on:sendCityId="sendCityId"
           v-on:sendAreaId="sendAreaId"
@@ -398,7 +398,7 @@ export default {
       this.couponModalShow = true;
     },
     handleAdd: function() {
-      this.index++;
+        this.index++;
       this.form.shops.push({
         provinceId: null,
         cityId: null,

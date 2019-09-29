@@ -2,7 +2,15 @@
   <div class="xxx">
     <!-- 赏U查看 数据 RewardUData   -->
     <h2 class="header">赏U查看 数据</h2>
-    <div v-show="tableData.length">投放{{anticipatedUbay}}U贝 &nbsp;&nbsp; 奖励 {{sunAward}}U贝</div>
+    <div class="data-info">
+      <strong>{{name}}</strong>&nbsp;
+      <span v-show="tableData.length">
+        投放
+        <strong>{{anticipatedUbay}}U贝</strong> &nbsp;&nbsp;
+        奖励
+        <strong>{{sunAward}}U贝</strong>
+      </span>
+    </div>
     <div class="query-row">
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
@@ -21,7 +29,7 @@
             </Select>
           </FormItem>
 
-          <FormItem label="优惠券名称：" :label-width="85">
+          <FormItem label="优惠券名称：" :label-width="100">
             <Input
               style="width:200px"
               type="text"
@@ -49,6 +57,13 @@
         <Row type="flex" justify="start">
           <Button type="dashed" icon="md-arrow-round-back" @click="goback">返回列表</Button>
           <Button icon="md-refresh" class="marginLeft20" @click="refresh">刷新</Button>
+          <Button
+            :disabled="tableData.length==0"
+            class="marginLeft20"
+            type="primary"
+            icon="ios-search"
+            @click="download"
+          >下载</Button>
         </Row>
       </Card>
     </div>
@@ -76,15 +91,18 @@ const { mapState } = createNamespacedHelpers("missionCenter");
 import { queryMerchantDataById } from "@/api/sys";
 import { udataColumns as columns } from "./columns";
 
+import { downloadSteam, postRequest } from "@/libs/axios";
+
 export default {
   name: "reward-u-data",
+  inject: ["merchantTypeOption", "msgOk", "msgErr"],
   computed: {
-    ...mapState(["id"])
+    ...mapState(["id", "name"])
   },
   data() {
     return {
-      anticipatedUbay:"",
-      sunAward:"",
+      anticipatedUbay: "",
+      sunAward: "",
       // id: "",
       /**
         投放：统计整个任务下所有券预计投放的U贝的数量。
@@ -93,10 +111,10 @@ export default {
       receiveNum: "", //领取数量
       anticipatedUbay: "", //核销数量
       // 商户类型：商户 品牌
-      merchantTypeOption: {
-        "0": "商户",
-        "1": "品牌"
-      },
+      // merchantTypeOption: {
+      //   "0": "商户",
+      //   "1": "品牌"
+      // },
       // 奖励类型 rewards “领取、核销、作为分享者，对方领券获奖励、作为分享者，对方用券获奖励”。 默认显示“请选择”。
       awardTypeOption: {
         "1": "领取",
@@ -135,8 +153,8 @@ export default {
   methods: {
     changeStartDate(arr) {
       // yyyy-MM-dd
-      this.searchData.createTimeStart = arr[0];
-      this.searchData.createTimeEnd = arr[1];
+      this.searchData.createTimeStart = `${arr[0]} 00:00:00`;
+      this.searchData.createTimeEnd = `${arr[1]} 23:59:59`;
     },
     goback() {
       console.log("reward-u");
@@ -156,6 +174,36 @@ export default {
     // 分页（点击第几页）
     changeCurrent(pageNum) {
       this.queryTableData(pageNum);
+    },
+    async download() {
+      const url = "/merchant/assignment/data/download";
+
+      const res = await downloadSteam(url, {
+        id: this.id,
+        ...this.searchData
+      });
+
+      console.log(111111111111111111, res);
+
+      const content = res.data;
+      const { filename } = res.headers;
+
+      console.log(111111111111111111, res);
+      const blob = new Blob([content], { type: "application/vnd.ms-excel" });
+      const oA = document.createElement("a");
+      if ("download" in oA) {
+        // 非IE下载
+        oA.download = decodeURI(filename);
+        oA.style.display = "none";
+        oA.href = URL.createObjectURL(blob);
+        document.body.appendChild(oA);
+        oA.click();
+        URL.revokeObjectURL(oA.href); // 释放URL 对象
+        document.body.removeChild(oA);
+      } else {
+        // IE10+下载
+        navigator.msSaveBlob(blob, filename);
+      }
     },
     // 查询
     async queryTableData(pageNum) {
@@ -211,24 +259,18 @@ export default {
 
       //重新查询一遍
       this.queryTableData();
-    },
-    // 全局提示
-    msgOk(txt) {
-      this.$Message.info({
-        content: txt,
-        duration: 3
-      });
-    },
-    msgErr(txt) {
-      this.$Message.error({
-        content: txt,
-        duration: 3
-      });
     }
   }
 };
 </script>
 <style scoped>
+.data-info {
+  line-height: 30px;
+  border-left: 4px solid #333;
+  font-size: 14px;
+  text-indent: 1em;
+  margin-bottom: 10px;
+}
 .underline {
   text-decoration: underline;
 }

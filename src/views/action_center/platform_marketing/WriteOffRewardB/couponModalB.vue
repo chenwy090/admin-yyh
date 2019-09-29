@@ -41,6 +41,9 @@
                         <template slot-scope="{ row,index }" slot="timer">
                             <div>{{row.useStartTime+' -- '+row.useEndTime}}</div>
                         </template>
+                        <template slot-scope="{ row,index }" slot="isActivityCoupon">
+                            <div>{{row.isActivityCoupon==1?'否':'是'}}</div>
+                        </template>
                     </Table>
                 </Row>
                 <!-- 分页 -->
@@ -132,7 +135,13 @@
                         minWidth:300,
                         slot: "timer",
                         align: 'center',
-                    }
+                    },
+                    {
+                        title: "活动券",
+                        minWidth:100,
+                        slot: "isActivityCoupon",
+                        align: 'center',
+                    },
                 ],
                 listData: [
                 ],

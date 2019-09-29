@@ -134,7 +134,7 @@ export const queryTotalTicketList = (params) => {
 
 // -----------------------运营位管理---------------------------
 
-// 获取小程序接口 
+// 获取小程序接口
 export const getMiniApp = () => {
     return getRequest(`/miniapp/miniapp-info/store`)
 }
@@ -212,7 +212,7 @@ export const editTimed = (cronExpression, jobClassName, jobGroupName) => {
 }
 
 
-// -------------------------------帮助中心-------------------------------------------- 
+// -------------------------------帮助中心--------------------------------------------
 
 // 获取列表
 export const getHelpCenterList = () => {
@@ -226,7 +226,7 @@ export const addHelpCenterInfo = (data) => {
     return postRequest(`/qa/QaInfo/edit`, obj)
 }
 
-// ------------------------------ 查询日志 ------------------------------------------- 
+// ------------------------------ 查询日志 -------------------------------------------
 
 // 获取列表
 export const getQueryLogList = (params, pageNum) => {
@@ -238,7 +238,7 @@ export const getQueryLogAll = (id) => {
     return postRequest(`/system/sys-api-log/queryLogDetail?id=${id}`)
 }
 
-// ------------------------------ 返佣规则管理 ------------------------------------------- 
+// ------------------------------ 返佣规则管理 -------------------------------------------
 
 // 获取列表 /rule/rakeBackRule/selectRakeBackRuleList
 export const getRebateRule = () => {
@@ -262,7 +262,7 @@ export const delRebateRule = (id) => {
     return postRequest(`/rule/rakeBackRule/deleteRakeBackRuleByID?id=${id}`)
 }
 
-// ------------------------------ 返佣提现管规则------------------------------------------- 
+// ------------------------------ 返佣提现管规则-------------------------------------------
 
 // 返佣提现规则查询
 export const getWithdrawCashRuleList = () => {
@@ -315,7 +315,7 @@ export const addQrCodeManagement = (params) => {
     return postRequest(`/qrcode/add`, params)
 }
 
-// 根据字典获取服务类型 
+// 根据字典获取服务类型
 export const getServiceType = (params) => {
     return postRequest(`/system/sys-dict-data/selectDictDataDictCode?dictCode=service_type`)
 }
@@ -339,12 +339,12 @@ export const getMerchantList = () => {
     return postRequest(`/merchant/merchantInfo/list?isAsc=DESC&orderByColumn=1&pageNum=1&pageSize=99999`, {})
 }
 
-// 新增员工 
+// 新增员工
 export const addStaff = (params) => {
     return postRequest(`/merchant/merchantEmployee/add`, params)
 }
 
-// 编辑员工 
+// 编辑员工
 export const editStaff = (params) => {
     return postRequest(`/merchant/merchantEmployee/edit`, params)
 }
@@ -359,9 +359,9 @@ export const delStaff = (id) => {
     return postRequest(`/merchant/merchantEmployee/delete?id=${id}`)
 }
 
-// ------------------------------ 返佣规则管理 ------------------------------------------- 
+// ------------------------------ 返佣规则管理 -------------------------------------------
 
-// 获取列表 
+// 获取列表
 export const getCheckInData = () => {
     return getRequest(`/score/SigninRule/selectSigninRule`)
 }
@@ -379,7 +379,7 @@ export const editCheckInData = (data) => {
 }
 
 
-// ------------------------------ 抽奖活动管理 ------------------------------------------- 
+// ------------------------------ 抽奖活动管理 -------------------------------------------
 
 // 获取抽奖活动列表
 export const getLuckyDrawList = (params, pageNum) => {
@@ -420,7 +420,7 @@ export const getSchedules = (params) => {
     return postRequest(`/drawDaily/banner/activitylist`, params)
 }
 
-// ------------------------------ 配置新人礼包 ------------------------------------------- 
+// ------------------------------ 配置新人礼包 -------------------------------------------
 
 // 获取列表
 export const getPersonGiftList = (params, pageNum) => {
@@ -458,7 +458,7 @@ export const delPersonGift = (id) => {
     return uploadformData(`/cashCouponDrawSet/delete?campId=${id}`)
 }
 
-// ------------------------------ 优惠券领取信息表 ------------------------------------------- 
+// ------------------------------ 优惠券领取信息表 -------------------------------------------
 
 // 获取列表
 export const getCouponList = (params, pageNum) => {
@@ -472,7 +472,7 @@ export const getCouponInformation = (campId, pageNum) => {
 }
 
 
-// ------------------------------ 商户优惠券领取信息表 ------------------------------------------- 
+// ------------------------------ 商户优惠券领取信息表 -------------------------------------------
 
 // 获取列表
 export const getMerchantCouponList = (params, pageNum) => {
@@ -487,7 +487,7 @@ export const getMerchantCouponformation = (templateId, pageNum) => {
 
 // ------------------------------ 奖励金设置 -------------------------------------------
 
-// 获取列表 
+// 获取列表
 export const getRakeBackRule = () => {
     return postRequest(`/rule/rakeBackRule/selectRakeBackRule`)
 }
@@ -534,7 +534,7 @@ export const editSpecialTopic = (id) => {
     return postRequest(`/specialTopic/selectById?id=${id}`)
 }
 
-// 编辑 
+// 编辑
 export const editSpecialTopicData = (data) => {
     let obj = JSON.stringify(data)
     return postRequest(`/specialTopic/edit`, obj)
@@ -592,7 +592,7 @@ export const selectByActivityId = (activityId) => {
     return postRequest(`/nameing/selectByActivityId?activityId=${activityId}`)
 }
 
-// 编辑 
+// 编辑
 export const editRedEnvelopmentData = (data) => {
     let obj = JSON.stringify(data)
     return postRequest(`/nameing/edit`, obj)
@@ -700,7 +700,7 @@ export const financialWithdrawApplyDownload = (obj) => {
     }
     //奖励金充值excel导出
 export const financialWithdrawApplyAwardRechargeDownload = (obj) => {
-    return downloadSteam(`/withdraw/apply/award-recharge/excel/download`, obj)
+    return postRequest(`/withdraw/apply/award-recharge/excel/download`, obj)
 }
 
 //--------------------------------------财务中心 --------------------------
@@ -708,7 +708,7 @@ export const financialWithdrawApplyAwardRechargeDownload = (obj) => {
 export const queryBusinessRechargeList = params => postRequest("/merchant/account/list", params);
 
 
-// 充值管理 
+// 充值管理
 export const queryRechargeMList = params => postRequest("/merchant/money/record/list", params);
 
 // 充值/扣款明细
@@ -718,7 +718,7 @@ export const queyMoneyDetailById = id => postRequest("/merchant/money/record/sel
 export const rechargeAndDeduction = params => postRequest("/merchant/money/record/add", params);
 
 
-// U贝管理 
+// U贝管理
 export const queryUbayMList = params => postRequest("/merchant/ubay/record/list", params);
 // U贝管理 -U贝兑换0 -U贝消耗1  	"changeType":0-1,
 export const exchangeAndConsume = params => postRequest("/merchant/ubay/record/add", params);
@@ -726,17 +726,17 @@ export const exchangeAndConsume = params => postRequest("/merchant/ubay/record/a
 // /commonConfig/queryConfigByCode  获得汇率的value就是汇率的值
 export const getUbayRate = () => postRequest("/commonConfig/queryConfigByCode", { code: 30 });
 
-// 资金明细 
+// 资金明细
 export const queryFundsList = params => postRequest("/merchant/money/record/selectByAccountIdAndType", params);
 
-// U贝明细 
+// U贝明细
 export const queryUbayList = params => postRequest("/merchant/ubay/record/selectByAccountIdAndType", params);
 
 
 
 //--------------------------------------任务中心 --------------------------
 // 商户任务
-// /merchant/assignment/list 赏U列表 RewardUList 
+// /merchant/assignment/list 赏U列表 RewardUList
 export const queryRewardUList = params => postRequest("/merchant/assignment/list", params);
 
 /**
@@ -752,7 +752,7 @@ export const queryDetailById = id => postRequest(`/merchant/assignment/selectByI
 //  /merchant/assignment/check 审核 {id,status,reason}
 export const checkMerchant = params => postRequest(`/merchant/assignment/check`, params);
 
-//   /merchant/assignment/dowm 下架 
+//   /merchant/assignment/dowm 下架
 export const downMerchant = id => postRequest(`/merchant/assignment/dowm?id=${id}`);
 //  /merchant/assignment/delete 删除
 export const delMerchant = id => postRequest(`/merchant/assignment/delete?id=${id}`);
