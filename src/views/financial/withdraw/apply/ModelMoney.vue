@@ -3,12 +3,11 @@
     <Modal
       v-model="isShow"
       title="待提现审核用户明细"
-      width="900"
+      fullscreen
       footer-hide
       :closable="true"
       :mask-closable="false"
       @on-cancel="closeDialog"
-      :styles="{top: '20px'}"
     >
       <div>
         <Table
@@ -20,9 +19,8 @@
           class="bussiness-list"
         ></Table>
       </div>
-
-      <Row style="margin-left:350px; margin-top: 30px">
-        <Button type="primary" @click="closeDialog">确定</Button>
+      <Row style="margin-top: 30px; text-align: center;">
+        <Button type="primary" @click="closeDialog">关闭</Button>
       </Row>
     </Modal>
   </div>

@@ -228,6 +228,9 @@ export default {
                     type: "error",
                     size: "small"
                   },
+                  style: {
+                    margin: "10px"
+                  },
                   on: {
                     click: () => {
                       this.showUserDetail(params.row.id);
@@ -322,7 +325,7 @@ export default {
         this.showModelMoney = true;
         this.moneyData = [data];
       } else {
-        this.msgErr("查询用户明显失败！");
+        this.msgErr("查询用户明细失败！");
       }
     },
     changeCurrent(current) {
