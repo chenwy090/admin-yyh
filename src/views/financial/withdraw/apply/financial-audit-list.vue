@@ -87,6 +87,8 @@
         <Table border :columns="tableAuditRecordColumns" :data="listAuditRecordData"></Table>
       </Modal>
     </Row>
+
+    <ModelMoney v-if="showModelMoney" :showModelMoney.sync="showModelMoney" :moneyData="moneyData"></ModelMoney>
   </Row>
 </template>
 <script>
@@ -96,7 +98,14 @@ import {
   financialWithdrawApplyAuditRecordList,
   financialWithdrawApplyDownload
 } from "@/api/sys";
+
+import { getRequest } from "@/libs/axios";
+import ModelMoney from "./ModelMoney";
+
 export default {
+  components: {
+    ModelMoney
+  },
   data() {
     const auditFormRemarks = (rule, value, callback) => {
       if (value.length > 100) {
@@ -110,17 +119,17 @@ export default {
       callback();
     };
     return {
+      showModelMoney: false,
+      moneyData: [],
       TableLoading: false,
-      auditing:0,
+      auditing: 0,
       totalSize: 0,
       current: 1,
       listData: [],
       selectDataList: [],
-      auditData:{},
+      auditData: {},
       auditFlag: 0,
-      tableColumnsFilters:[
-
-      ],
+      tableColumnsFilters: [],
       tableColumns: [
         {
           type: "selection",
@@ -130,7 +139,7 @@ export default {
         {
           title: "序号",
           type: "index",
-          width: 70,
+          width: 70
         },
         {
           title: "操作",
@@ -211,6 +220,21 @@ export default {
                   }
                 },
                 "查看"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "error",
+                    size: "small"
+                  },
+                  on: {
+                    click: () => {
+                      this.showUserDetail(params.row.id);
+                    }
+                  }
+                },
+                "审核明细"
               )
             ]);
           }
@@ -222,8 +246,8 @@ export default {
         phone: null,
         applyAmountRangeOpen: null,
         applyAmountRangeClose: null,
-        auditStep:"3",
-        status:"0",
+        auditStep: "3",
+        status: "0",
         current: "1",
         pageSize: "10"
       },
@@ -291,6 +315,16 @@ export default {
         }
       });
     },
+    async showUserDetail(id) {
+      const url = `/withdraw/apply/audit/record/ubayDetails/${id}`;
+      const { code, data } = await getRequest(url);
+      if (code === "200") {
+        this.showModelMoney = true;
+        this.moneyData = [data];
+      } else {
+        this.msgErr("查询用户明显失败！");
+      }
+    },
     changeCurrent(current) {
       if (this.searchForm.current != current) {
         this.searchForm.current = current;
@@ -312,7 +346,7 @@ export default {
     },
     audit(raw) {
       this.auditData = raw;
-      this.auditFlag = '1';
+      this.auditFlag = "1";
       this.batchAuditModalShow = true;
     },
     batchAudit() {
@@ -321,27 +355,27 @@ export default {
         return;
       }
       this.batchAuditModalShow = true;
-      this.auditFlag = '2';
+      this.auditFlag = "2";
     },
     batchAuditOk(form) {
       this.batchAuditModalLoading = true;
       this.$refs[form].validate(valid => {
         if (valid) {
-          switch(this.auditFlag){
-            case '1':
+          switch (this.auditFlag) {
+            case "1":
               this.auditForm.applyIds.push(this.auditData.id);
-              break
-            case '2':
+              break;
+            case "2":
               for (var i in this.selectDataList) {
                 this.auditForm.applyIds.push(this.selectDataList[i].id);
               }
               break;
           }
-          if(this.auditing != 0){
+          if (this.auditing != 0) {
             this.msgErr("请勿重复提交审核");
             return;
           }
-          if(this.auditing == 0){
+          if (this.auditing == 0) {
             this.auditing = 1;
           }
           financialWithdrawApplyAudit(this.auditForm).then(res => {
@@ -383,10 +417,10 @@ export default {
       this.auditFormModalChange();
     },
     auditFormModalChange(sta) {
-     this.auditForm.applyIds=[];
-     this.auditForm.result="";
-     this.auditForm.remarks="";
-     this.auditing=0;
+      this.auditForm.applyIds = [];
+      this.auditForm.result = "";
+      this.auditForm.remarks = "";
+      this.auditing = 0;
     },
     msgErr(txt) {
       this.$Message.error({
