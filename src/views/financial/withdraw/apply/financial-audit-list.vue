@@ -233,7 +233,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.showUserDetail(params.row.id);
+                      this.showUserDetail(params.row.userId);
                     }
                   }
                 },
@@ -318,8 +318,8 @@ export default {
         }
       });
     },
-    async showUserDetail(id) {
-      const url = `/withdraw/apply/audit/record/ubayDetails/${id}`;
+    async showUserDetail(userId) {
+      const url = `/withdraw/apply/audit/record/ubayDetails/${userId}`;
       const { code, data } = await getRequest(url);
       if (code === "200") {
         this.showModelMoney = true;
