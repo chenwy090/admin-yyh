@@ -2,13 +2,20 @@
   <div class="supermarket-list-box">
     <Modal
       v-model="isShow"
-      title="待提现审核用户明细"
-      fullscreen
       footer-hide
       :closable="true"
       :mask-closable="false"
       @on-cancel="closeDialog"
+      width="1200"
+      :styles="{top: '20px'}"
     >
+      <p slot="header" style="color:#f60;text-align:center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>
+          待提现审核用户明细
+          <strong>9-20</strong>
+        </span>
+      </p>
       <div>
         <Table
           border
@@ -41,50 +48,38 @@ export default {
       isShow: true,
       tableColumns: [
         {
-          title: "9.20后邀请好友数",
+          title: "邀请好友数",
           key: "inviteAmount",
-          minWidth: 150,
           align: "center"
         },
         {
-          title: "9.20后邀请好友领券数",
+          title: "好友领券数",
           key: "couponAmount",
-          minWidth: 150,
           align: "center"
         },
         {
-          title: "9.20后邀请好友核销数",
+          title: "好友核销数",
           key: "verifyAmount",
-          minWidth: 150,
           align: "center"
         },
         {
-          title: "9.20后邀请好友获得u贝数",
+          title: "邀请好友获得u贝数",
           align: "center",
-          minWidth: 150,
           key: "inviteAward"
         },
         {
-          title: "9.20后总计赚取U贝数",
+          title: "总计赚取U贝数",
           align: "center",
-          minWidth: 150,
           key: "totalAward"
         },
         {
-          title: `9.20以后赚取U贝总计与邀请赚U贝差额
-
-          说明：如差额不大即视为当前用户邀请赚U贝行为均已正常`,
+          title: "赚取U贝总计与邀请赚U贝差额",
           align: "center",
-          width: 340,
           key: "awardDiff"
         },
         {
-          title: `差额百分比
-          说明：
-          （1）一般邀请赚U贝为总体U贝赚取的90%以上，所以10%以内均正常；
-          （2）此外，存在部分9.20之前邀请的用户于9.20之后再发生领券、核销带来奖励的情况，所以可能有少部分9.20未发生成功邀请但9.20后赚到了邀请的U贝`,
+          title: "差额百分比",
           align: "center",
-          width: 340,
           key: "awardDiffPer"
         }
       ],
