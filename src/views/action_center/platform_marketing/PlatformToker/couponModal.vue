@@ -246,7 +246,7 @@
             changeCurrent(current) {
                 if (this.couponForm.current != current) {
                     this.couponForm.current = current;
-                    this.loadTableData();
+                    this.loadTableData(current);
                 }
             },
             selectBusiness(){

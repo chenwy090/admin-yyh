@@ -379,6 +379,7 @@
                 // /merchant/activity/award/add/activity
                 // /merchant/activity/award/update/activity
                 let params =  {
+                    "couponType":2,
                     "endTime": this.modal.endTime,
                     "id": this.modal.id,
                     "name": this.modal.name,
