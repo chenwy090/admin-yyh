@@ -31,7 +31,7 @@
               第一天
               <InputNumber
                       type="text"
-                      v-model="addData.signinRewardContent.cycle1"
+                      v-model="addData.signinRewardObj.cycle1"
                       placeholder="请输入正整数"
                       style="width:100px"
                       :max="9999"
@@ -43,7 +43,7 @@
               第二天
               <InputNumber
                       type="text"
-                      v-model="addData.signinRewardContent.cycle2"
+                      v-model="addData.signinRewardObj.cycle2"
                       placeholder="请输入正整数"
                       style="width:100px"
                       :max="9999"
@@ -55,7 +55,7 @@
               第三天
               <InputNumber
                       type="text"
-                      v-model="addData.signinRewardContent.cycle3"
+                      v-model="addData.signinRewardObj.cycle3"
                       placeholder="请输入正整数"
                       style="width:100px"
                       :max="9999"
@@ -67,7 +67,7 @@
               第四天
               <InputNumber
                       type="text"
-                      v-model="addData.signinRewardContent.cycle4"
+                      v-model="addData.signinRewardObj.cycle4"
                       placeholder="请输入正整数"
                       style="width:100px"
                       :max="9999"
@@ -79,7 +79,7 @@
               第五天
               <InputNumber
                       type="text"
-                      v-model="addData.signinRewardContent.cycle5"
+                      v-model="addData.signinRewardObj.cycle5"
                       placeholder="请输入正整数"
                       style="width:100px"
                       :max="9999"
@@ -175,7 +175,7 @@
                     // signinRuleId: 0, // 签到活动规则id --- (修改时才有)
                     startDate: "", // 开始时间，当dateType=1时填写；
                     status: "" ,// 0.创建；1.启用；
-                    signinRewardContent:{"cycle1":null,"cycle2":null,"cycle3":null,"cycle4":null,"cycle5":null},
+                    signinRewardObj:{"cycle1":null,"cycle2":null,"cycle3":null,"cycle4":null,"cycle5":null},
                 },
                 addEdit: "", // 新增或者编辑，1：新增，2：编辑
                 delDisplay: false, // 删除对话框显示
@@ -201,7 +201,7 @@
                             this.addData.startDate = res.data.startDate;
                             this.addData.status = res.data.status.toString();
                             if(res.data.signinRewardContent){
-                                this.addData.signinRewardContent = JSON.parse(res.data.signinRewardContent);
+                                this.addData.signinRewardObj = JSON.parse(res.data.signinRewardContent);
                             }
                             this.signinRuleId = res.data.signinRuleId;
 
@@ -229,7 +229,7 @@
                     return;
                 }
 
-                if(!this.addData.signinRewardContent.cycle1||!this.addData.signinRewardContent.cycle2||!this.addData.signinRewardContent.cycle3||!this.addData.signinRewardContent.cycle4||!this.addData.signinRewardContent.cycle5){
+                if(!this.addData.signinRewardObj.cycle1||!this.addData.signinRewardObj.cycle2||!this.addData.signinRewardObj.cycle3||!this.addData.signinRewardObj.cycle4||!this.addData.signinRewardObj.cycle5){
                     this.msgErr("连续签到奖励不能为空");
                     return;
                 }
@@ -260,6 +260,7 @@
 
                 if (this.addEdit == 1) {
                     // 新增
+                    this.addData.signinRewardContent = JSON.stringify(this.addData.signinRewardObj);
                     addCheckInData(this.addData).then(res => {
                         if (res.code == 200) {
                             this.msgOk("保存成功");
@@ -274,6 +275,7 @@
                     // 编辑
                     // console.log('编辑');
                     let data = this.addData;
+                    this.addData.signinRewardContent = JSON.stringify(this.addData.signinRewardObj);
                     data.signinRuleId = this.signinRuleId;
                     editCheckInData(data).then(res => {
                         if (res.code == 200) {
