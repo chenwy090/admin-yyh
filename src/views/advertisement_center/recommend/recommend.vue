@@ -331,6 +331,12 @@
                         key: "distributeChannel",
                         slot:"channel"
                     },
+                    {
+                        title: "已曝光量",
+                        align: "center",
+                        minWidth: 100,
+                        key: "actualExposureCount",
+                    },
 
                     {
                         title: "投放位置",
