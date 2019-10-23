@@ -18,7 +18,7 @@
                     <FormItem label="广告标题">
                         <Input
                                 type="text"
-                                :maxlength="10"
+                                :maxlength="20"
                                 v-model="modal.title"
                                 placeholder="请填广告标题"
                                 style="width: 30%"
@@ -41,8 +41,8 @@
                                 :show-upload-list="false"
                                 :default-file-list="defaultList"
                                 :on-success="handleSuccess"
-                                :format="['jpg','jpeg','png']"
-                                :max-size="2048"
+                                :format="['jpg','png']"
+                                :max-size="1024"
                                 :on-format-error="handleFormatError"
                                 :on-exceeded-size="handleMaxSize"
                                 :before-upload="handleBeforeUpload"

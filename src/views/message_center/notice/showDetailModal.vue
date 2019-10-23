@@ -55,16 +55,19 @@
           <Row class="padding-left-12">
             <Col span="18">
             <FormItem label="推送范围">
-              <RadioGroup v-model="modal.pushRange">
-                <Radio :label="'1'">所有商户</Radio>
-                <Radio :label="'2'">部分商户</Radio>（只有在选定的商超范围内的商户才显示公告）
-              </RadioGroup>
+              <!--<RadioGroup v-model="modal.pushRange">-->
+                <!--<Radio :label="'1'">所有商户</Radio>-->
+                <!--<Radio :label="'2'">部分商户</Radio>（只有在选定的商超范围内的商户才显示公告）-->
+              <!--</RadioGroup>-->
               <div>
-                <Button v-if="modal.pushRange=='2'" type="dashed" @click="openContent" style="max-width: 100%;">
+                <span>{{['','所有商户','部分商户'][modal.pushRange]}}</span>|
+                <span>{{shopList.length}}家</span>
+              </div>
+              <div>
+                <Button v-if="modal.pushRange=='2'" type="dashed" style="max-width: 100%;">
                   <span v-if="shopList.length===0">请选择</span>
                   <Button :key="index" v-for="(item,index) in shopList" class="coupon-item" style="float: left;margin: 5px;">
                     {{item.shopName +'&nbsp&nbsp'}}
-                    <Icon @click.stop="reMove(index)" type="ios-close"/>
                   </Button>
                 </Button>
               </div>
@@ -151,6 +154,7 @@
                         this.modal = res.data;
                         this.modal.pushType = String(res.data.pushType);
                         this.modal.pushRange = String(res.data.pushRange);
+                        this.shopList = res.data.shopInfoList;
                     }else {
                         this.$Message.error(res.msg);
                     }
