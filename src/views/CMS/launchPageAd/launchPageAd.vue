@@ -277,11 +277,11 @@
                 this.loadTableData();
             },
             reset(){
-                this.searchForm.shopName = '';
+                this.searchForm.title = '';
                 this.searchForm.startTime = '';
                 this.searchForm.endTime = '';
-                this.searchForm.status = null;
-                this.searchForm.type = 0;
+                this.searchForm.status = '';
+                this.searchForm.clientType = 0;
                 this.searchForm.pageNum = 1;
                 this.current= 1;
                 this.loadTableData();

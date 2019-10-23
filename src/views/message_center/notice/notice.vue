@@ -177,14 +177,13 @@
 
                 ],
                 searchForm: {
-                    shopName: "",
+                    pushType: "",
                     title: "",
                     startTime: "",
                     endTime: "",
                     pageNum: 1,
                     pageSize: 10,
-                    status:null,
-                    type:0,
+                    status:'',
                 },
                 AddViewDialogVisible:false,
                 ShowViewDialogVisible:false,
@@ -230,11 +229,11 @@
                 this.loadTableData();
             },
             reset(){
-                this.searchForm.shopName = '';
+                this.searchForm.title = '';
+                this.searchForm.pushType = '';
                 this.searchForm.startTime = '';
                 this.searchForm.endTime = '';
-                this.searchForm.status = null;
-                this.searchForm.type = 0;
+                this.searchForm.status = '';
                 this.searchForm.pageNum = 1;
                 this.current= 1;
                 this.loadTableData();
