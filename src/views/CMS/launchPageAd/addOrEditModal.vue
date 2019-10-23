@@ -2,15 +2,10 @@
     <!--新增/编辑弹窗-->
     <Modal  width="800"
             v-model="viewDialogVisible"
-            title="新增"
+            :title="titleName"
             :closable="false"
             :mask-closable="false"
             footer-hide>
-        <!--<Card  :bordered="false">-->
-            <!--<p slot="title">新增</p>-->
-            <!--<a href="#" slot="extra">-->
-                <!--<Button type="dashed" icon="md-arrow-round-back" @click="close()">返回上一层</Button>-->
-            <!--</a>-->
             <Form
                     :model="modal"
                     ref="addOrEditModal"
@@ -34,14 +29,14 @@
                 <Row class="padding-left-12">
                     <Col span="18">
                     <FormItem label="广告图片">
-                        <div class="demo-upload-list"  v-if="modal.image">
-                            <img :src="modal.image">
+                        <div class="demo-upload-list"  v-if="modal.imgUrl">
+                            <img :src="modal.imgUrl">
                             <div class="demo-upload-list-cover">
                                 <Icon type="ios-eye-outline" @click.native="handleView"></Icon>
                                 <Icon type="ios-trash-outline" @click.native="handleRemove"></Icon>
                             </div>
                         </div>
-                        <Upload v-if="!modal.image"
+                        <Upload v-if="!modal.imgUrl"
                                 ref="upload"
                                 :show-upload-list="false"
                                 :default-file-list="defaultList"
@@ -61,7 +56,7 @@
                             </div>
                         </Upload>
                         <Modal title="View Image" v-model="visible">
-                            <img :src="modal.image" v-if="visible"
+                            <img :src="modal.imgUrl" v-if="visible"
                                  style="width: 100%">
                         </Modal>
                     </FormItem>
@@ -70,7 +65,7 @@
                 <Row class="padding-left-12">
                     <Col span="18">
                     <FormItem label="投放终端">
-                        <Select v-model="modal.clientType" style="width:30%">
+                        <Select v-model="modal.clientType" multiple style="width:50%">
                             <Option v-for="item in clientTypeList" :value="item.value" :key="item.value">{{item.label }}
                             </Option>
                         </Select>
@@ -82,16 +77,16 @@
                     <FormItem label="投放时间">
                         <DatePicker
                                 :value="modal.startTime"
-                                type="datetime"
+                                type="date"
                                 placeholder="请输入开始时间"
                                 style="width: 30%"
                                 :options="options1"
                                 @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
                         ></DatePicker>
-                        <div style="width: 2%;display: inline-block"></div>
+                        <div style="display: inline-block"> &nbsp;至&nbsp; </div>
                         <DatePicker
                                 :value="modal.endTime"
-                                type="datetime"
+                                type="date"
                                 placeholder="请输入结束时间"
                                 style="width: 30%"
                                 :options="options2"
@@ -100,41 +95,45 @@
                     </FormItem>
                     </Col>
                 </Row>
-                <Row class="padding-left-12" v-if="modal.type==2">
+                <Row class="padding-left-12">
                     <Col span="18">
                     <FormItem label="是否跳转：">
-                        <RadioGroup v-model="choujiangType">
-                            <Radio :label="'抽奖团'">跳转</Radio>
-                            <Radio :label="'抽奖广场'">不跳转</Radio>
+                        <RadioGroup v-model="modal.jumpFlag">
+                            <Radio :label="1">跳转</Radio>
+                            <Radio :label="0">不跳转</Radio>
                         </RadioGroup>
-                        <div>
-                            <Button type="dashed" @click="openContent" v-if="choujiangType=='抽奖团'">
-                                <span v-if="!modal.content">请选择</span>
-                                <span v-if="modal.content"> {{modal.content}}</span>
-                            </Button>
-                        </div>
                     </FormItem>
                     </Col>
                 </Row>
-                <Row class="padding-left-12">
+                <Row class="padding-left-12" v-if="modal.jumpFlag=='1'">
                     <Col span="18">
                     <FormItem label="跳转类型">
-                        <Select v-model="modal.type" style="width:30%" @on-change="changeType">
-                            <Option v-for="item in typeList" :value="item.value" :key="item.value">{{ item.label }}
+                        <Select v-model="modal.contentType" style="width:30%" @on-change="changeType">
+                            <Option v-for="item in contentTypeList" :value="item.value" :key="item.value">{{ item.label }}
                             </Option>
                         </Select>
                     </FormItem>
                     </Col>
                 </Row>
-                <Row class="padding-left-12" v-if="modal.type==3||modal.type==4">
+                <Row class="padding-left-12" v-if="modal.jumpFlag=='1'&&(modal.contentType==3||modal.contentType==4)">
                     <Col span="18">
                     <FormItem label="跳转内容">
                         <Input
                                 type="text"
-                                v-model="modal.value"
+                                v-model="modal.contentValue"
                                 placeholder="请输入链接"
                                 style="width: 100%"
                         ></Input>
+                    </FormItem>
+                    </Col>
+                </Row>
+                <Row class="padding-left-12" v-if="modal.jumpFlag=='1'&&(modal.contentType==1||modal.contentType==10||modal.contentType==11||modal.contentType==12)">
+                    <Col span="18">
+                    <FormItem label="跳转内容">
+                        <Button type="dashed" @click="openContent">
+                            <span v-if="!modal.contentValue">请选择</span>
+                            <span v-if="modal.contentValue"> {{modal.contentTitle}}</span>
+                        </Button>
                     </FormItem>
                     </Col>
                 </Row>
@@ -146,63 +145,65 @@
                 </Row>
             </Form>
         <!--</Card>-->
+        <contentModal
+                ref="contentModal"
+                :viewDialogVisible="contentViewDialogModal"
+                @setViewDialogVisible="selectContent"
+        ></contentModal>
+        <drawModal
+                ref="drawModal"
+                :viewDialogVisible="drawViewDialogModal"
+                @setViewDialogVisible="selectContent"
+        ></drawModal>
+        <couponModal
+                ref="couponModal"
+                :viewDialogVisible="conponViewDialogModal"
+                @setViewDialogVisible="selectContent"
+        ></couponModal>
     </Modal>
 </template>
 
 <script>
     import { uploadOperationImage2AliOssURl } from "@/api/index";
     import {postRequest, getRequest, getSyncRequest} from "@/libs/axios";
+    import contentModal from "./contentModal";
+    import drawModal from "./drawModal";
+    import couponModal from "./couponModal";
+    // import shopModal from "./shopModal";
+    // import storeView from "./store";
 
     export default {
         name: "add-or-edit-modal",
-        components: {},
+        components: {contentModal,drawModal,couponModal},
         props: {
             viewDialogVisible: {type: Boolean, default: false}
         },
         data() {
             return {
-                choujiangType:'',
                 userToken:'',
                 url: uploadOperationImage2AliOssURl,
-                drawDailyShopList:[
-                    {provinceCode: null,
-                    cityCode: null,
-                    countryCode: null,
-                    shopId: null,
-                    shopName: null,
-                    id: Math.random(),
-                    status: 1}
-                    ],
                 contentObj:{},
                 uploadList: [{}],
                 defaultList: [],
                 visible: false,
-                storeTypeList: [{ value: '0', label: "全国" }, { value: '1', label: "门店" }],
-                typeList: [{value: 1, label: '专题活动'}, {value: 2, label: '抽奖团'}, {value: 3, label: '内链'}, {value: 4, label: '外链'}, {value: 5, label: '商户'}, {value: 6, label: '优惠券'}],
-                clientTypeList: [{value: '0', label: '全部'}, {value: '1', label: '小程序'}, {value: '2', label: 'android'}, {value: 3, label: 'ios'}],
-                titleName: "",
-                volumeViewDialogModal: false,
+                contentTypeList: [{value: 1, label: '专题活动'}, {value: 2, label: '抽奖广场页'}, {value: 3, label: '内链'}, {value: 4, label: '外链'}, {value: 5, label: '平台分红页'}, {value: 6, label: '领优惠页－周边券'},{value: 7, label: '领优惠页－超市券'}, {value: 10, label: '抽奖团'}, {value: 11, label: '周边券详情'},{value: 12, label: '商超券详情'}],
+                clientTypeList: [{value: 1, label: '小程序'}, {value: 2, label: 'android'}, {value: 3, label: 'ios'}],
+                titleName: "新增",
                 contentViewDialogModal: false,
                 drawViewDialogModal: false,
-                shopViewDialogModal: false,
+                conponViewDialogModal: false,
                 modal: {
-                    shopId:'',
-                    title: "",
-                    type: "",
-                    value: '',
-                    content:'',
-                    couponType:'',
-                    shopRequestList: [],
-                    location: '',
-                    businessLayer: '',
-                    layerPriority: '',
-                    clientType: '',
+                    clientType:[],
+                    contentTitle: "",
+                    contentType: "",
+                    contentValue: '',
+                    id:'',
+                    imgUrl: '',
+                    jumpFlag: '',
                     startTime: "",
                     endTime: "",
-                    image: '',
+                    title: '',
                 },
-                cascaderData: [],
-                cascaderValue:[],
                 options1: {
                     disabledDate(date) {
                         return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24;
@@ -216,76 +217,19 @@
                 ruleValidate: {}
             };
         }, methods: {
-            sendProvinceId(val, id) {
-                this.drawDailyShopList.some((item, index) => {
-                    if (item.id == id) {
-                        this.drawDailyShopList[index].provinceCode = val;
-                        return true;
-                    }
-                });
-            },
-            sendCityId(val, id) {
-                this.drawDailyShopList.some((item, index) => {
-                    if (item.id == id) {
-                        this.drawDailyShopList[index].cityCode = val;
-                        return true;
-                    }
-                });
-            },
-            sendAreaId(val, id) {
-                this.drawDailyShopList.some((item, index) => {
-                    if (item.id == id) {
-                        this.drawDailyShopList[index].countryCode = val;
-                        return true;
-                    }
-                });
-            },
-            sendShopId(val, name, id) {
-                this.drawDailyShopList.some((item, index) => {
-                    if (item.id == id) {
-                        this.drawDailyShopList[index].shopId = val;
-                        this.drawDailyShopList[index].shopName = name;
-                        return true;
-                    }
-                });
-            },
-            shopRemove(id) {
-                if (this.drawDailyShopList.length == 1) {
-                    return this.msgErr("必须保留一条");
-                }
-                this.drawDailyShopList.some((item, index) => {
-                    if (item.id == id) {
-                        this.drawDailyShopList.splice(index, 1);
-                        return true;
-                    }
-                });
-            },
-            handleAdd() {
-                this.drawDailyShopList.push({
-                    provinceCode: null,
-                    cityCode: null,
-                    countryCode: null,
-                    shopId: null,
-                    shopName: null,
-                    id: Math.random(),
-                    status: 1
-                });
-            },
             handleView(item) {
                 this.visible = true;
             },
             handleRemove(file) {
-                this.modal.image = '';
+                this.modal.imgUrl = '';
             },
             handleSuccess(res, file) {
                 console.log(res);
                 if(res.code==200){
-                    this.modal.image = res.image_url;
+                    this.modal.imgUrl = res.image_url;
                 }else{
                     this.$Message.error('上传失败')
                 }
-                // file.url = 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar';
-                // file.name = '7eb99afb9d5f317c912f08b5212fd69a';
             },
             handleFormatError(file) {
                 this.$Notice.warning({
@@ -308,13 +252,13 @@
                 return check;
             },
             changeType(){
-                this.modal.value = '';
-                this.modal.content = '';
+                this.modal.contentValue = '';
+                this.modal.contentTitle = '';
             },
             changeDateTime(datetime, index) {
                 switch (index) {
                 case 1:
-                    this.modal.startTime = datetime;
+                    this.modal.startTime = datetime+' 00:00:00';
                     this.options2 = {
                         disabledDate(date) {
                             var a = new Date(datetime)
@@ -326,7 +270,7 @@
                     };
                     break;
                 case 2:
-                    this.modal.endTime = datetime;
+                    this.modal.endTime =  datetime+' 23:59:59';
                     this.options1 = {
                         disabledDate(date) {
                             return (date.valueOf() < Date.now() - 1000 * 60 * 60 * 24 || date.valueOf() > new Date(datetime));
@@ -335,46 +279,40 @@
                     break;
                 }
             },
-            getLocation(){
-                postRequest(`/banner/getLocations`, null).then(res => {
-                    console.log(123);
-                    if (res.code == "200") {
-                        this.cascaderData = res.data;
-                    }else {
-                        this.$Message.error(res.msg);
-                    }
-                });
-            },
-            resetRow(row) {
-                this.getLocation();
-                this.choujiangType = '';
-                this.$refs["cascader"].clearSelect();
-                console.log(this.$refs["cascader"]);
-                this.cascaderValue = [];
-                this.modal={
-                    shopId:'',
-                        title: "",
-                        type: "",
-                        value: '',
-                        content:'',
-                        shopRequestList: [],
-                        location: '',
-                        businessLayer: '',
-                        layerPriority: '',
-                        clientType: '',
+            resetRow(row,type) {
+                if(type=='add'){
+                    this.titleName='新增';
+                    this.modal={
+                        clientType:[],
+                        contentTitle: "",
+                        contentType: "",
+                        contentValue: '',
+                        id:'',
+                        imgUrl: '',
+                        jumpFlag: '',
                         startTime: "",
                         endTime: "",
-                        image: '',
-                };
-                this.drawDailyShopList=[{
-                        provinceCode: null,
-                        cityCode: null,
-                        countryCode: null,
-                        shopId: null,
-                        shopName: null,
-                        id: Math.random(),
-                        status: 1
-                    }];
+                        title: '',
+                    };
+                }else{
+                    this.titleName='编辑';
+                    postRequest(`/page/ad/get`,{id:row.id}).then(res => {
+                        if (res.code == "200") {
+                            this.modal.title = res.data.title;
+                            this.modal.id = res.data.id;
+                            this.modal.contentTitle = res.data.contentTitle;
+                            this.modal.imgUrl = res.data.imgUrl;
+                            this.modal.contentValue = res.data.contentValue;
+                            this.modal.startTime = res.data.startTime;
+                            this.modal.endTime = res.data.endTime;
+                            this.modal.clientType = res.data.clientType;
+                            this.modal.contentType = res.data.contentType;
+                            this.modal.jumpFlag = res.data.jumpFlag;
+                        }else {
+                            this.$Message.error(res.msg);
+                        }
+                    });
+                }
                 this.options2 = {
                     disabledDate(date) {
                         return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24;
@@ -388,29 +326,29 @@
             },
             openContent() {
                 // this.contentViewDialogModal = true;
-                switch (this.modal.type) {
+                switch (this.modal.contentType) {
                 case 1:
                     this.contentViewDialogModal = true;
                     this.$nextTick(() => {
-                        this.$refs["contentModal"].resetRow({content:this.modal.content,value:this.modal.value});
+                        this.$refs["contentModal"].resetRow({content:this.modal.contentTitle,value:this.modal.contentValue});
                     });
                     break;
-                case 2:
+                case 10:
                     this.drawViewDialogModal = true;
                     this.$nextTick(() => {
-                        this.$refs["drawModal"].resetRow({content:this.modal.content,value:this.modal.value});
+                        this.$refs["drawModal"].resetRow({content:this.modal.contentTitle,value:this.modal.contentValue});
                     });
                     break;
-                case 5:
-                    this.shopViewDialogModal = true;
+                case 11:
+                    this.conponViewDialogModal = true;
                     this.$nextTick(() => {
-                        this.$refs["shopModal"].resetRow({content:this.modal.content,value:this.modal.value});
+                        this.$refs["couponModal"].resetRow('2',{shopName:this.modal.contentTitle,shopId:this.modal.contentValue});
                     });
                     break;
-                case 6:
-                    this.volumeViewDialogModal = true;
+                case 12:
+                    this.conponViewDialogModal = true;
                     this.$nextTick(() => {
-                        this.$refs["volumeModal"].resetRow({content:this.modal.content,value:this.modal.value});
+                        this.$refs["couponModal"].resetRow('1',{shopName:this.modal.contentTitle,shopId:this.modal.contentValue});
                     });
                     break;
                 }
@@ -418,91 +356,32 @@
             selectContent(e) {
                 this.contentViewDialogModal = false;
                 this.drawViewDialogModal = false;
-                this.shopViewDialogModal = false;
-                this.volumeViewDialogModal = false;
+                this.conponViewDialogModal = false;
                 if (e) {
-                    this.modal.value = e.shopId;
-                    this.modal.content = e.shopName;
-                    this.modal.couponType = e.couponType;
+                    this.modal.contentValue = e.shopId;
+                    this.modal.contentTitle = e.shopName;
                 }
             },
             changeRadio() {
-                if (this.modal.wardType == '1') {
-                    this.JawardRuleDtos = [{
-                        verifyCountMin: null,
-                        verifyCountMax: null,
-                        awardAmount: null,
-                        awardType: '2',
-                        couponType: '',
-                        awardName: ''
-                    }];
-                    this.UawardRuleDtos = [{
-                        verifyCountMin: null,
-                        verifyCountMax: null,
-                        awardAmount: null,
-                        awardType: '1',
-                        couponType: '',
-                        awardName: ''
-                    }];
-                } else {
-                    this.UawardRuleDtos = [{
-                        verifyCountMin: null,
-                        verifyCountMax: null,
-                        awardAmount: null,
-                        awardType: '1',
-                        couponType: '',
-                        awardName: ''
-                    }];
-                    this.JawardRuleDtos = [{
-                        verifyCountMin: null,
-                        verifyCountMax: null,
-                        awardAmount: null,
-                        awardType: '1',
-                        couponType: '',
-                        awardName: ''
-                    }];
-                }
+                this.modal.contentValue = '';
+                this.modal.contentTitle = '';
             },
             ok() {
-                this.modal.location = this.cascaderValue[0];
-                this.modal.businessLayer = this.cascaderValue[1];
-                this.modal.layerPriority = this.cascaderValue[2];
                 if(!this.modal.title){
                     this.$Message.error('请填写标题');
                     return;
                 }
-                if(!this.modal.type){
-                    this.$Message.error('请选择内容类型');
+                if(this.modal.jumpFlag!==0&&this.modal.jumpFlag!==1){
+                    this.$Message.error('请选择跳转类型');
                     return;
                 }
-                if(this.modal.type ==2 && this.choujiangType == '抽奖广场'){
-                    this.modal.value = '0';
-                    this.modal.content = '0';
+                if(this.modal.contentType!==2||this.modal.contentType!==5||this.modal.contentType!==6||this.modal.contentType!==7){
+                    if(!this.modal.contentValue){
+                        this.$Message.error('请选择内容或链接');
+                        return;
+                    }
                 }
-                if(this.modal.type==3||this.modal.type==4){
-                    this.modal.content = this.modal.value;
-                }
-                if(!this.modal.value||!this.modal.content){
-                    this.$Message.error('请选择内容或链接');
-                    return;
-                }
-                if(!this.modal.shopId&&this.modal.shopId!==0){
-                    this.$Message.error('请选择投放门店');
-                    return;
-                }
-                if(!this.modal.location){
-                    this.$Message.error('请选择投放位置');
-                    return;
-                }
-                if(!this.modal.businessLayer){
-                    this.$Message.error('请选择运营位置');
-                    return;
-                }
-                if(!this.modal.layerPriority){
-                    this.$Message.error('请选择运营位');
-                    return;
-                }
-                if(!this.modal.clientType){
+                if(!this.modal.clientType.length){
                     this.$Message.error('请选择终端');
                     return;
                 }
@@ -510,36 +389,16 @@
                     this.$Message.error('请选择时间');
                     return;
                 }
-                if(new Date(this.modal.startTime)<new Date()){
-                    this.$Message.error('开始时间要大于当前时间');
-                    return;
-                }
                 if(new Date(this.modal.startTime)>=new Date(this.modal.endTime)){
                     this.$Message.error('开始时间不能大于等于结束时间');
                     return;
                 }
-                if(!this.modal.image){
+                if(!this.modal.imgUrl){
                     this.$Message.error('请上传图片');
                     return;
                 }
-                this.modal.shopRequestList = [];
-                if(this.modal.shopId==1){
-                    for(var i =0;i<this.drawDailyShopList.length;i++){
-                        if(!this.drawDailyShopList[i].shopId||!this.drawDailyShopList[i].shopName){
-                            this.$Message.error('请选择投放门店');
-                            break;
-                        }else{
-                            this.modal.shopRequestList.push({shopId:this.drawDailyShopList[i].shopId,shopName:this.drawDailyShopList[i].shopName})
-                        }
-                    }
-                }else{
-                    this.modal.shopRequestList.push({
-                        shopId:0,
-                        shopName:'全国'
-                    })
-                }
                 if (true) {
-                    postRequest(`/banner/saveBanner`, this.modal).then(res => {
+                    postRequest(`/page/ad/save`, this.modal).then(res => {
                         if (res.code == "200") {
                             this.$Message.success("新增成功");
                             this.$emit("setViewDialogVisible", false);

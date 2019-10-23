@@ -1,15 +1,15 @@
 <template>
     <div style="height: 100%">
-        <Card style="height: 100%">
+        <Card  v-if="!AddViewDialogVisible&&!ShowViewDialogVisible" style="height: 100%">
             <div>
                 <Card :bordered="false" style="margin-bottom:2px">
                     <Form ref="searchForm" label-position="right" :label-width="80" :model="searchForm" inline>
                         <FormItem label="公告标题" span="24" style="width:20%">
-                            <Input v-model="searchForm.shopName" placeholder="公告标题" />
+                            <Input v-model="searchForm.title" placeholder="公告标题" />
                         </FormItem>
                         <FormItem label="推送对象" span="24"  style="width:20%">
-                            <Select v-model="searchForm.type" style="width:100%">
-                                <Option v-for="(item,index) in typeList" :value="item.value" :key="index">{{ item.label }}</Option>
+                            <Select v-model="searchForm.pushType" style="width:100%">
+                                <Option v-for="(item,index) in pushTypeList" :value="item.value" :key="index">{{ item.label }}</Option>
                             </Select>
                         </FormItem>
                         <FormItem label="推送时间" span="35"  style="width:50%">
@@ -66,41 +66,40 @@
                                 <!--size="small"-->
                                 <!--@click="edit(row)"-->
                                 <!--&gt;编辑</Button>-->
-                                <Button v-if="row.status==='0'||row.status==='1'||row.status==='2'"
-                                        type="info"
+                                <Button type="info"
                                         style="margin-right: 5px"
                                         size="small"
                                         @click="showDetail(row)"
                                 >查看</Button>
-                                <Button v-if="row.status==='0'||row.status==='1'||row.status==='2'"
+                                <Button v-if="row.status!=='1'"
                                         type="info"
                                         style="margin-right: 5px"
                                         size="small"
-                                        @click="showDetail(row)"
+                                        @click="edit(row)"
                                 >编辑</Button>
                                 <Button
-                                        v-if="row.status==='0'"
+                                        v-if="row.status!=='1'"
                                         type="error"
                                         style="margin-right: 5px"
                                         size="small"
                                         @click="del(row)"
                                 >删除</Button>
                                 <Button
-                                        v-if="row.status==='0'"
+                                        v-if="row.status==='1'"
                                         type="error"
                                         style="margin-right: 5px"
                                         size="small"
-                                        @click="upper(row)"
+                                        @click="stop(row)"
                                 >终止</Button>
                             </template>
+                            <template slot-scope="{ row }" slot="pushType">
+                                <div>{{['','商户', '用户'][row.pushType]}}</div>
+                            </template>
                             <template slot-scope="{ row }" slot="status">
-                                <div>{{['待上架','上架', '下架'][row.status]}}</div>
+                                <div>{{['待发布','已发布', '已结束','已终止'][row.status]}}</div>
                             </template>
-                            <template slot-scope="{ row }" slot="type">
-                                <div>{{['全部','小程序','android', 'ios'][row.type]}}</div>
-                            </template>
-                            <template slot-scope="{ row }" slot="image">
-                                <img style="max-width: 100px;max-height: 50px;" :src="row.image" alt="">
+                            <template slot-scope="{ row }" slot="time">
+                                <div>{{row.startTime}}-{{row.endTime}}</div>
                             </template>
                         </Table>
                     </Row>
@@ -118,23 +117,22 @@
                 </Card>
             </div>
         </Card>
-        <!--<AddOrEdit ref="AddOrEdit" :viewDialogVisible="AddViewDialogVisible" @setViewDialogVisible="closeTab" @search="search"></AddOrEdit>-->
-        <!--<showDetail ref="showDetail" :viewDialogVisible="ShowViewDialogVisible" @setViewDialogVisible="closeTab"></showDetail>-->
+        <AddOrEdit ref="AddOrEdit" :viewDialogVisible="AddViewDialogVisible" @setViewDialogVisible="closeTab" @search="search"></AddOrEdit>
+        <showDetail ref="showDetail" :viewDialogVisible="ShowViewDialogVisible" @setViewDialogVisible="closeTab"></showDetail>
     </div>
 </template>
 
 <script>
     import { postRequest, getRequest,getSyncRequest } from "@/libs/axios";
-    // import AddOrEdit from "./addOrEditModal";
-    // import showDetail from "./showDetailModal";
+    import AddOrEdit from "./addOrEditModal";
+    import showDetail from "./showDetailModal";
     export default {
         name: "launchPageAd",
-        inject: ["linkTo"],
-        components:{},
+        components:{AddOrEdit,showDetail},
         data(){
             return{
-                typeList: [{value: '0', label: '全部'}, {value: '1', label: '小程序'}, {value: '2', label: 'android'}, {value: 3, label: 'ios'}],
-                statusList:[{value:0,label:'待上架'},{value:1,label:'上架'},{value:2,label:'下架'}],
+                pushTypeList: [{value: '0', label: '全部'}, {value: '1', label: '商户'}, {value: '2', label: '用户'}],
+                statusList:[{value:'',label:'全部'},{value:0,label:'待发布'},{value:1,label:'已发布'},{value:2,label:'已结束'},{value:2,label:'已终止'}],
                 TableLoading: false,
                 auditing:0,
                 totalSize: 0,
@@ -154,48 +152,27 @@
                         title: "公告标题",
                         width: 200,
                         align: "center",
-                        key: "shopName",
-                        render: (h, params) => {
-                            return h('div', [
-                                h('Tooltip', {
-                                    props: { placement: 'top' }
-                                }, [
-                                    h('span', {
-                                        style: {
-                                            display: 'inline-block',
-                                            width: params.column._width*0.85+'px',
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'nowrap',
-                                        },
-                                    }, params.row.shopName),
-                                    h('span', {
-                                        slot: 'content',
-                                        style: { whiteSpace: 'normal', wordBreak: 'break-all' }
-                                    },params.row.shopName)
-                                ])
-                            ])
-                        }
+                        key: "title"
                     },{
                         title: "推送对象",
                         width: 150,
                         align: "center",
-                        key: "title"
+                        slot: "pushType"
                     },{
                         title: "状态",
-                        minWidth: 200,
+                        minWidth: 150,
                         align: "center",
                         slot: "status"
                     },{
                         title: "有效时间",
-                        minWidth: 200,
+                        minWidth: 300,
                         align: "center",
-                        key: "startTime"
+                        slot: "time"
                     },{
                         title: "创建人",
                         minWidth: 200,
                         align: "center",
-                        key: "operator"
+                        key: "createBy"
                     }
 
                 ],
@@ -267,7 +244,7 @@
                 this.totalSize = 0;
                 this.listData = [];
                 this.TableLoading = true;
-                postRequest(`/banner/setting/getPlantFromSetting?pageNum=${this.searchForm.pageNum}&pageSize=10`,this.searchForm
+                postRequest(`/announcement/list?pageNum=${this.searchForm.pageNum}&pageSize=10`,this.searchForm
                 ).then(res => {
                     this.TableLoading = false;
                     if (res.code === "200") {
@@ -282,14 +259,14 @@
                 this.AddViewDialogVisible = true;
                 this.$emit("closeTab",true)
                 this.$nextTick(() => {
-                    this.$refs['AddOrEdit'].resetRow()
+                    this.$refs['AddOrEdit'].resetRow(null,'add')
                 })
             },
             edit(row){
                 this.AddViewDialogVisible = true;
                 this.$emit("closeTab",true)
                 this.$nextTick(() => {
-                    this.$refs['AddOrEdit'].resetRow(row)
+                    this.$refs['AddOrEdit'].resetRow(row,'edit')
                 })
             },
             showDetail(row){
@@ -301,55 +278,10 @@
                 })
             },
             del(row){
-                var confirmValue = '';
                 this.$Modal.confirm({
-                    title: '删除原因',
-                    render: (h) => {
-                        return h('textarea', {
-                            props: {
-                                class:'confirm-textarea',
-                                rows:3,
-                                autofocus: true,
-                                placeholder: 'Please enter your name...',
-                            },
-                            style: {
-                                width: '100%',
-                                height: '100px',
-                                padding:"5px",
-                                outline: 'none',
-                            },
-                            on: {
-                                input: (val) => {
-                                    confirmValue = val.data;
-                                }
-                            }
-                        })
-                    },
+                    title: '您确定要删除该条公告吗？',
                     onOk: () => {
-                        if(!confirmValue){
-                            this.$Message.error('请输入下架原因');
-                            return
-                        }
-                        postRequest(`/banner/setting/undercarriage`,{id:row.id,type:3,remark:confirmValue}
-                        ).then(res => {
-                            this.TableLoading = false;
-                            if (res.code === "200") {
-                                this.search();
-                            } else {
-                                this.$Message.error(res.msg);
-                            }
-                        });
-                    },
-                    onCancel: () => {
-                    }
-                });
-            },
-            upper(row){
-                var confirmValue = '';
-                this.$Modal.confirm({
-                    title: '确认上架',
-                    onOk: () => {
-                        postRequest(`/banner/setting/undercarriage`,{id:row.id,type:2,remark:confirmValue}
+                        postRequest(`/announcement/delete?id=${row.id}`,{id:row.id}
                         ).then(res => {
                             this.TableLoading = false;
                             if (res.code === "200") {
@@ -364,35 +296,10 @@
                 });
             },
             stop(row){
-                var confirmValue = '';
                 this.$Modal.confirm({
-                    title: '下架原因',
-                    render: (h) => {
-                        return h('textarea', {
-                            props: {
-                                rows:3,
-                                autofocus: true,
-                                placeholder: 'Please enter your name...',
-                            },
-                            style: {
-                                width: '100%',
-                                height: '100px',
-                                padding:"5px",
-                                outline: 'none'
-                            },
-                            on: {
-                                input: (val) => {
-                                    confirmValue = val.data;
-                                }
-                            }
-                        })
-                    },
+                    title: '您确定要终止该条公告吗？',
                     onOk: () => {
-                        if(!confirmValue){
-                            this.$Message.error('请输入下架原因');
-                            return
-                        }
-                        postRequest(`/banner/setting/undercarriage`,{id:row.id,type:1,remark:confirmValue}
+                        postRequest(`/announcement/stop?id=${row.id}`,{id:row.id}
                         ).then(res => {
                             this.TableLoading = false;
                             if (res.code === "200") {

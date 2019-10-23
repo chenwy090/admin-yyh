@@ -282,6 +282,36 @@
               <p>选择优惠券详情图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
             </div>
           </FormItem>
+          <FormItem label="首页缩略图" required>
+            <!-- <FormItem label="首页缩略图"> -->
+            <div
+                    style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
+                    v-for="(item, index) in uploadList1"
+                    :key="index"
+            >
+              <img :src="item.url" style="width:100%">
+            </div>
+            <div style="display: inline-block;">
+              <Upload
+                      ref="upload"
+                      :defaultList="uploadList"
+                      type="drag"
+                      :format="['jpg','jpeg','png','bmp']"
+                      :on-success="handleSuccess2"
+                      :action="url"
+                      accept="image"
+                      :max-size="1024"
+                      :headers="userToken"
+                      style="display: inline-block;width:90px;"
+                      @on-change="statusCheckChange"
+              >
+                <div style="width: 90px;height:90px;line-height: 90px;">
+                  <Icon type="ios-camera" size="20"/>
+                </div>
+              </Upload>
+              <p>选择首页缩略图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
+            </div>
+          </FormItem>
 
           <FormItem label="优惠券模板" required>
             <Button
@@ -916,6 +946,7 @@ export default {
         campType: "57",
         couponType: "",
         couponValueDesc: "",
+        couponSimpleImg: "",
         dateType: "2",
         doorsillDesc: "",
         endDate: "",
@@ -933,6 +964,7 @@ export default {
       url: uploadOperationImage2AliOssURl,
       uploadList: [],
       uploadList1: [],
+      uploadList2: [],
       userToken: "",
       pageStatus: "",
 
@@ -1234,6 +1266,7 @@ export default {
           ) {
             this.uploadList = [{ url: res.data.records[0].imgUrl }];
             this.uploadList1 = [{ url: res.data.records[0].couponImg }];
+            this.uploadList2 = [{ url: res.data.records[0].couponSimpleImg }];
             this.add_info.appid = res.data.records[0].appid;
             this.add_info.campId = res.data.records[0].campId;
             this.add_info.name = res.data.records[0].name;
@@ -1626,6 +1659,26 @@ export default {
       }
       this.statusCheckChange();
     },
+
+      handleSuccess2(res, file) {
+          if (res.code == 200) {
+              this.add_info.couponSimpleImg = res.image_url;
+
+              if (this.uploadList2.length == 0) {
+                  let obj = {
+                      url: res.image_url
+                  };
+                  this.uploadList2.push(obj);
+              } else {
+                  this.uploadList2[0].url = res.image_url;
+              }
+
+              this.$Message.info("上传图片成功");
+          } else {
+              this.$Message.error("上传图片失败，请重新上传");
+          }
+          this.statusCheckChange();
+      },
 
     //获取APPid
     getAppId() {

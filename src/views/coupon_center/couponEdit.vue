@@ -415,8 +415,8 @@
                 <img :src="imgSrc1" style="width:100%" />
               </div>
             </Col>
-            <Col span="9">
-              <div style="width:100px; float:left">
+            <Col span="18">
+              <div style="width:100px;">
                 <ImgCutter
                   :label="'选择图片'"
                   :boxWidth="600"
@@ -441,8 +441,8 @@
                 <img :src="imgSrc2" style="width:100%" />
               </div>
             </Col>
-            <Col span="9">
-              <div style="width:100px; float:left">
+            <Col span="18">
+              <div style="width:100px;">
                 <ImgCutter
                   :label="'选择图片'"
                   :boxWidth="600"
@@ -455,6 +455,31 @@
               </div>
               <br />
               <div class="left-text">选择优惠券缩略图 (不大于1M,JPG/PNG/JPEG/BMP）</div>
+            </Col>
+          </Row>
+          <Row class="box">
+            <Col span="4" class="left-text">
+            首页缩略图
+            </Col>
+            <Col span="4">
+            <div class="imgSrc_box" v-if="imgSrc3">
+              <img :src="imgSrc3" style="width:100%" />
+            </div>
+            </Col>
+            <Col span="18">
+            <div style="width:100px;">
+              <ImgCutter
+                      :label="'选择图片'"
+                      :boxWidth="600"
+                      :boxHeight="500"
+                      :rate="1"
+                      v-on:cutDown="cutDown3"
+              >
+                <button slot="openImgCutter" style="width:100px; background: border-box">上传图片</button>
+              </ImgCutter>
+            </div>
+            <br />
+            <div class="left-text">选择首页缩略图 (不大于1M,JPG/PNG/JPEG/BMP）</div>
             </Col>
           </Row>
           <Row class="box">
@@ -760,6 +785,7 @@ export default {
       },
       imgSrc1: null,
       imgSrc2: null,
+      imgSrc3: null,
       receiveRuleSetPage: false,
       visible: false,
       imgName: "",
@@ -1019,6 +1045,7 @@ export default {
 
       this.imgSrc1 = this.couponEdit_info.couponSmallImg;
       this.imgSrc2 = this.couponEdit_info.couponBigImg;
+      this.imgSrc2 = this.couponEdit_info.couponSimpleImg;
 
       if (this.edit_info.couponKind == 2) {
         this.edit_info.price = this.couponEdit_info.price / 100;
@@ -1619,6 +1646,7 @@ export default {
           this.edit_info.couponSmallImg = res.image_url;
         } else {
           this.$Message.error(res.msg);
+            this.imgSrc1 = ''
         }
       });
     },
@@ -1689,9 +1717,59 @@ export default {
           this.edit_info.couponBigImg = res.image_url;
         } else {
           this.$Message.error(res.msg);
+            this.imgSrc2 = ''
         }
       });
-    }
+    },
+      showSize3() {
+          //获取base64图片大小，返回MB数字
+          var base64url = this.imgSrc3;
+          var str = base64url.replace("data:image/png;base64,", "");
+          var equalIndex = str.indexOf("=");
+          if (str.indexOf("=") > 0) {
+              str = str.substring(0, equalIndex);
+          }
+          var strLength = str.length;
+          var fileLength = parseInt(strLength - (strLength / 8) * 2);
+          // 由字节转换为MB
+          var size = "";
+          size = (fileLength / 1024).toFixed(2);
+          var sizeStr = size + ""; //转成字符串
+          var index = sizeStr.indexOf("."); //获取小数点处的索引
+          var dou = sizeStr.substr(index + 1, 2); //获取小数点后两位的值
+          if (dou == "00") {
+              //判断后两位是否为00，如果是则删除00
+              this.imgSrc3Size =
+                  sizeStr.substring(0, index) + sizeStr.substr(index + 3, 2);
+          }
+          this.imgSrc3Size = size;
+      },
+
+      cutDown3: function(res) {
+          this.imgSrc3 = res.dataURL;
+          this.showSize2();
+          if (this.imgSrc3Size > 1024) {
+              this.$Message.error("图片不能大于1M");
+              return;
+          }
+
+          var reqParams = {
+              imgStr: res.dataURL.substr(22)
+          };
+
+          postRequest(
+              "/operation/operation-info/uploadBase64Image2AliOss",
+              reqParams
+          ).then(res => {
+              if (res.code == 200) {
+                  this.edit_info.couponBigImg = res.image_url;
+              } else {
+                  this.$Message.error(res.msg);
+                  this.imgSrc3 = ''
+              }
+          });
+      }
+
   },
   mounted() {
     // this.init();
