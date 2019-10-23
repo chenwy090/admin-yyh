@@ -16,13 +16,7 @@
       <Row class="padding-left-12">
         <Col span="18">
         <FormItem label="广告标题">
-          <Input
-                  type="text"
-                  :maxlength="10"
-                  v-model="modal.title"
-                  placeholder="请填广告标题"
-                  style="width: 30%"
-          ></Input>
+          {{modal.title}}
         </FormItem>
         </Col>
       </Row>
