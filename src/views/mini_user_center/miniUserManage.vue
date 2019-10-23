@@ -48,7 +48,7 @@
                   </Select>
                 </FormItem>
 
-                <FormItem label="促核销有效期：" :label-width="120">
+                <FormItem label="促核销有效期：" :label-width="120" v-if="searchItem.isWriteoffUser == 1">
                   <DatePicker
                     type="daterange"
                     placeholder="请选择日期"
@@ -174,6 +174,7 @@ export default {
   components: { FileImport },
   data() {
     return {
+      showDateSearch: false,
       // 文件上传
       showFileImport: false,
       // 是否促核销核销用户:isWriteoffUser  全部 空字符串""/ 1是/0否
