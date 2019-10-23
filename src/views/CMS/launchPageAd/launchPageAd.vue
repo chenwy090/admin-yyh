@@ -5,7 +5,7 @@
                     <Card :bordered="false" style="margin-bottom:2px">
                         <Form ref="searchForm" label-position="right" :label-width="80" :model="searchForm" inline>
                             <FormItem label="投放终端" span="24"  style="width:23%">
-                                <Select v-model="searchForm.type" style="width:100%">
+                                <Select v-model="searchForm.clientType" style="width:100%">
                                     <Option v-for="(item,index) in clientTypeList" :value="item.value" :key="index">{{ item.label }}</Option>
                                 </Select>
                             </FormItem>
@@ -16,7 +16,7 @@
                                 </Select>
                             </FormItem>
                             <FormItem label="广告标题" span="24" style="width:25%">
-                                <Input v-model="searchForm.shopName" placeholder="活动名称" />
+                                <Input v-model="searchForm.title" placeholder="活动名称" />
                             </FormItem>
                             <FormItem label="投放时间" span="35"  style="width:50%">
                                 <DatePicker

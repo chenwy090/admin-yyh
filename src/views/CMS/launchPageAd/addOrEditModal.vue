@@ -375,10 +375,12 @@
                     this.$Message.error('请选择跳转类型');
                     return;
                 }
-                if(this.modal.contentType!==2||this.modal.contentType!==5||this.modal.contentType!==6||this.modal.contentType!==7){
-                    if(!this.modal.contentValue){
-                        this.$Message.error('请选择内容或链接');
-                        return;
+                if(this.modal.jumpFlag==1){
+                    if(this.modal.contentType===1||this.modal.contentType===3||this.modal.contentType===4||this.modal.contentType===10||this.modal.contentType===11||this.modal.contentType===12){
+                        if(!this.modal.contentValue){
+                            this.$Message.error('请选择内容或链接');
+                            return;
+                        }
                     }
                 }
                 if(!this.modal.clientType.length){
