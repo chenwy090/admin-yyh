@@ -68,7 +68,7 @@ export default {
       default: function() {
         return {
           name: "merchant",
-          couponType: 1,
+          couponType: 2,
           label: "商户",
           compName: "CompMerchantLlist",
           url: "/coupon/merchant/list"
