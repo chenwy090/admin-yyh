@@ -28,12 +28,11 @@ export function formatDate(date, fmt) {
 
 export function checkImageWH(file, width, height, fmt) {
     let self = this;
-    return new Promise(function(resolve, reject) {
-        if (file.type != "image/png" && file.type != "image/jpeg" && file.type != "image/jpg" && file.type != "image/bmp") {
+    return new Promise(function (resolve, reject) {
+        if (file.type != "image/gif" && file.type != "image/png" && file.type != "image/jpeg" && file.type != "image/jpg" && file.type != "image/bmp") {
 
             Message.error("图片格式只能选择png/jpeg/jpg/bmp");
             reject();
-
         }
 
         let filereader = new FileReader();
@@ -41,7 +40,7 @@ export function checkImageWH(file, width, height, fmt) {
 
             let src = e.target.result;
             const image = new Image();
-            image.onload = function() {
+            image.onload = function () {
                 if (width && this.width != width) {
                     Message.error("请上传宽为" + width + "的图片");
 
@@ -69,12 +68,10 @@ export function checkImageWH(file, width, height, fmt) {
 
 export function checkImage(file, fmt) {
     let self = this;
-    return new Promise(function(resolve, reject) {
-        if (file.type != "image/png" && file.type != "image/jpeg" && file.type != "image/jpg" && file.type != "image/bmp") {
-
+    return new Promise(function (resolve, reject) {
+        if (file.type != "image/gif" && file.type != "image/png" && file.type != "image/jpeg" && file.type != "image/jpg" && file.type != "image/bmp") {
             Message.error("图片格式只能选择png/jpeg/jpg/bmp");
             reject();
-
         }
 
         let filereader = new FileReader();
@@ -99,7 +96,7 @@ export function checkImage(file, fmt) {
 
 export function checkInteger(text, value, fmt) {
     let self = this;
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         let integerReg = /^[1-9]\d*$/;
 
         if (!integerReg.test(value) && value !== "") {
@@ -119,7 +116,7 @@ export function checkInteger(text, value, fmt) {
 
 export function checkTwoDecimal(text, value, fmt) {
     let self = this;
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         let integerReg = /^(([1-9]\d{0,3})|0)(\.\d{0,2})?$/;
 
         if (!integerReg.test(value) && value !== "") {

@@ -1,19 +1,13 @@
 <template>
-  <div class="examine">
+  <div class="publish-list">
     <div class="query-row">
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
-          <FormItem label="审核状态：" :label-width="80">
-            <Select v-model="searchData.status" style="width:120px" clearable>
-              <Option v-for="(v,k) in statusOption" :value="k" :key="k">{{ v }}</Option>
-              <!-- <Option v-for="(item,k) in statusOption" :value="item.value" :key="k">{{ item.label }}</Option> -->
-            </Select>
-          </FormItem>
           <FormItem label="用户id：" :label-width="85">
             <Input style="width:200px" type="text" v-model="searchData.useid" placeholder="请输入"></Input>
           </FormItem>
-          <FormItem label="搜索标题：" :label-width="85">
-            <Input style="width:200px" type="text" v-model="searchData.title" placeholder="请输入"></Input>
+          <FormItem label="发布内容：" :label-width="85">
+            <Input style="width:200px" type="text" v-model="searchData.content" placeholder="请输入"></Input>
           </FormItem>
 
           <FormItem label="发布时间：" :label-width="100">
@@ -25,19 +19,6 @@
               :value="daterange"
               @on-change="changeStartDate"
             ></DatePicker>
-          </FormItem>
-
-          <FormItem label="审核人：" :label-width="70">
-            <Select v-model="searchData.auditBy" style="width:120px" clearable>
-              <Option v-for="(v,k) in isStopOption" :value="k" :key="k">{{ v }}</Option>
-              <!-- <Option v-for="(item,k) in isStopOption" :value="item.value" :key="k">{{ item.label }}</Option> -->
-            </Select>
-          </FormItem>
-
-          <FormItem label="类型：" :label-width="60">
-            <Select v-model="searchData.sourceType" style="width:120px" clearable>
-              <Option v-for="(v,k) in sourceTypeOption" :value="k" :key="k">{{ v }}</Option>
-            </Select>
           </FormItem>
 
           <FormItem :label-width="0">
@@ -52,31 +33,27 @@
             icon="md-arrow-round-back"
             @click="goback()"
           >返回上一层</Button>
+          <Button type="primary" class="marginLeft20" icon="md-add" @click="addOrEdit('add')">新增</Button>
           <Button icon="md-refresh" class="marginLeft20" @click="refresh">刷新</Button>
-
-          <!-- 排序导入  排序导出 -->
-          <Button type="success" class="marginLeft20" @click="upload">排序导入</Button>
-          <Button type="success" class="marginLeft20" @click="download">排序导出</Button>
         </Row>
       </Card>
     </div>
     <Card :bordered="false">
       <Table border :show-index="true" :loading="loading" :columns="columns" :data="tableData">
         <!-- action -->
-        <!-- @click="addOrEdit('edit',row)" -->
+        <!-- 
+           "1": "待审核",  //不能操作
+           "2": "审核成功", //编辑
+           "3": "已下架"    //编辑
+        -->
         <template slot-scope="{ row }" slot="action">
-          <template v-if="row.status==1||row.status==2">
-            <template v-if="row.status == 1">
-              <Button
-                type="primary"
-                size="small"
-                style="margin-right: 5px"
-                @click="examine(row.id, 1)"
-              >审核</Button>
-            </template>
-            <template v-else-if="row.status == 2">
-              <Button type="warning" size="small" @click="examine(row.id, 0)">下架</Button>
-            </template>
+          <template v-if="row.status==2||row.status==3">
+            <Button
+              type="primary"
+              size="small"
+              style="margin-right: 5px"
+              @click="addOrEdit('add')"
+            >编辑</Button>
           </template>
         </template>
 
@@ -107,16 +84,14 @@
   </div>
 </template>
 <script>
-import { getRequest, postRequest, downloadSteam } from "@/libs/axios";
+import { getRequest, postRequest } from "@/libs/axios";
 
 import columns from "./columns";
 
-import FileImport from "./FileImport";
-
 export default {
-  name: "examine",
+  name: "publish-list",
   inject: ["linkTo", "msgOk", "msgErr"],
-  components: { FileImport },
+  components: {},
   computed: {
     tab() {
       return this.tabs[this.compName];
@@ -134,9 +109,9 @@ export default {
       //审核 status 0-创建，1-待审核(创建完成），2-审核成功（上架），3-审核失败（下架）',
       statusOption: {
         "0": "创建",
-        "1": "待审核",
-        "2": "审核成功",
-        "3": "已下架"
+        "1": "待审核", //不能操作
+        "2": "审核成功", //编辑
+        "3": "已下架" //编辑
       },
       // "userStatus": 0,//0-正常 1-封禁
       userStatusOption: {

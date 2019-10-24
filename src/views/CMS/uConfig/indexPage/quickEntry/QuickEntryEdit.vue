@@ -260,6 +260,7 @@ export default {
       }
     },
     validateContent(rule, value, callback) {
+      value = this.formData.content;
       value += "";
       value = value.trim();
 
