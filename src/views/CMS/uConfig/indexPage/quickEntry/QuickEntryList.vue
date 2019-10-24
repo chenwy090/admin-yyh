@@ -14,12 +14,14 @@
         <template slot-scope="{ row }" slot="sortOrder">
           <template v-if="row.status==0">
             <Button
+                    v-if="row.maxFlag"
               type="primary"
               size="small"
               style="margin-right: 5px"
               @click="sortOrder(row,1)"
             >上升</Button>
             <Button
+                    v-if="row.minFlag"
               type="primary"
               size="small"
               style="margin-right: 5px"
@@ -202,7 +204,7 @@ export default {
     },
     async sortOrder(item, stepNum) {
       // 只有启用才能排序
-      const { id, status } = item;
+      const { id, status} = item;
       // stepNum步长，正数提高排名 1 & 负数下降排名-1
       // 快捷入口排序
       const url = "/page/module/layout/sortOrder";
@@ -258,7 +260,7 @@ export default {
       this.action = { id, type, data };
 
       console.log("this.action:",this.action);
-      
+
     },
     // 刷新搜索
     refresh() {
@@ -329,7 +331,7 @@ export default {
       //重新查询一遍
       this.queryTableData();
     },
-    
+
   }
 };
 </script>
