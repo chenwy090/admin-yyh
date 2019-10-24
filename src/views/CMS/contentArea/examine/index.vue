@@ -177,26 +177,26 @@ export default {
 
       // const content = res.data;
 
-    //   const content = res; 
-    //   // const { filename } = res.headers;
+      //   const content = res;
+      //   // const { filename } = res.headers;
 
-    //  const filename = "xxxx.xlsx";
-    //   console.log(111111111111111111, res);
-    //   const blob = new Blob([content], { type: "application/vnd.ms-excel" });
-    //   const oA = document.createElement("a");
-    //   if ("download" in oA) {
-    //     // 非IE下载
-    //     oA.download = decodeURI(filename);
-    //     oA.style.display = "none";
-    //     oA.href = URL.createObjectURL(blob);
-    //     document.body.appendChild(oA);
-    //     oA.click();
-    //     URL.revokeObjectURL(oA.href); // 释放URL 对象
-    //     document.body.removeChild(oA);
-    //   } else {
-    //     // IE10+下载
-    //     navigator.msSaveBlob(blob, filename);
-    //   }
+      //  const filename = "xxxx.xlsx";
+      //   console.log(111111111111111111, res);
+      //   const blob = new Blob([content], { type: "application/vnd.ms-excel" });
+      //   const oA = document.createElement("a");
+      //   if ("download" in oA) {
+      //     // 非IE下载
+      //     oA.download = decodeURI(filename);
+      //     oA.style.display = "none";
+      //     oA.href = URL.createObjectURL(blob);
+      //     document.body.appendChild(oA);
+      //     oA.click();
+      //     URL.revokeObjectURL(oA.href); // 释放URL 对象
+      //     document.body.removeChild(oA);
+      //   } else {
+      //     // IE10+下载
+      //     navigator.msSaveBlob(blob, filename);
+      //   }
     },
 
     changeStartDate(arr) {
@@ -235,7 +235,13 @@ export default {
           this.tableData = records.map(item => {
             // "userStatus": 0,//0-正常 1-封禁
 
-            const { userStatus, sourceType, tags, citys, coupons } = item;
+            const {
+              userStatus,
+              sourceType,
+              tags = [],
+              citys = [],
+              coupons = []
+            } = item;
             // 用户状态:userStatusName  类型:sourceTypeName  城市:cityNames 标签:tagNames 优惠券:couponNames
 
             // 审核状态 status
