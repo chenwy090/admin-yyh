@@ -69,7 +69,7 @@ export default {
       default: function() {
         return {
           name: "superMarket",
-          couponType: 0,
+          couponType: 1,
           label: "商超",
           compName: "CompSuperMarketList",
           url: "/coupon/superMarket/list"

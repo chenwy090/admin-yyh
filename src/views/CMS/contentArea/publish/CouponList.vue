@@ -58,7 +58,7 @@ export default {
         CompSuperMarketList: {
           id: Math.random(),
           name: "xxx",
-          couponType: 0,
+          couponType: 1,
           label: "商超",
           compName: "CompSuperMarketList",
           url: "/coupon/superMarket/list"
@@ -66,7 +66,7 @@ export default {
         CompMerchantLlist: {
           id: Math.random(),
           name: "xxx",
-          couponType: 1,
+          couponType: 2,
           label: "商户",
           compName: "CompMerchantLlist",
           url: "/coupon/merchant/list"
