@@ -150,7 +150,7 @@
       </FormItem>
     </Form>
     <Modal v-model="couponModalShow" title="选择优惠券" width="800px" @footer-hide="false">
-      <chooseCouponListView @seclectedTr-event="selectedTrCallBack"></chooseCouponListView>
+      <chooseCouponListView ref="chooseCoupon" @seclectedTr-event="selectedTrCallBack"></chooseCouponListView>
     </Modal>
     <Modal v-model="downLogModal" title="导入记录" width="800px" @footer-hide="false">
       <Table
@@ -492,6 +492,9 @@ export default {
     },
     handleChoose: function() {
       this.couponModalShow = true;
+        this.$nextTick(() => {
+            this.$refs["chooseCoupon"].resetRow();
+        });
     },
     handleAdd: function() {
         this.index++;
