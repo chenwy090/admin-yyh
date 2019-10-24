@@ -203,7 +203,7 @@
             changeDateTime(datetime, index) {
                 switch (index) {
                 case 1:
-                    this.searchForm.startTime = datetime+' 00:00:00';
+                    this.searchForm.startTime = datetime?datetime+' 00:00:00':'';
                     this.options2 = {
                         disabledDate(date) {
                             return date.valueOf() < new Date(datetime) - 1000 * 60 * 60 * 24;
@@ -211,7 +211,7 @@
                     };
                     break;
                 case 2:
-                    this.searchForm.endTime = datetime+' 23:59:59';
+                    this.searchForm.endTime = datetime?datetime+' 23:59:59':'';
                     this.options1 = {
                         disabledDate(date) {
                             return (

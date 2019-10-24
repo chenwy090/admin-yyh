@@ -3,20 +3,16 @@
     <div>
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
-          <FormItem label="用户id" :label-width="120">
+          <FormItem label="用户id" :label-width="100" style="width: 25%">
             <Input style="width:100%" v-model="searchData.userId" placeholder="请输入" clearable />
           </FormItem>
-          <FormItem label="状态" :label-width="120">
+          <FormItem label="状态" :label-width="100" style="width: 25%">
             <Input style="width:100%" v-model="searchData.status" placeholder="请输入" clearable />
           </FormItem>
-          <FormItem label="发放的类型" :label-width="120">
+          <FormItem label="发放的类型" :label-width="100" style="width: 25%">
             <Input style="width:100%" v-model="searchData.pushType" placeholder="请输入" clearable />
           </FormItem>
-          <FormItem style="margin-left:35px;" class="br">
-            <Button type="primary" icon="ios-search" @click="search">搜索</Button>
-            <Button icon="md-refresh" @click="reset">重置</Button>
-          </FormItem>
-          <FormItem label="提交时间" :label-width="120">
+          <FormItem label="提交时间" :label-width="100" style="width: 45%">
             <DatePicker
                     :value="searchData.sendTimeStart"
                     type="date"
@@ -32,7 +28,7 @@
                       @on-change="(datetime) =>{ changeDateTime(datetime, 2)}"
               ></DatePicker>
           </FormItem>
-          <FormItem label="发送时间" :label-width="120">
+          <FormItem label="发送时间" :label-width="120" style="width: 45%">
             <DatePicker
                     :value="searchData.putTimeStart"
                     type="date"
@@ -47,6 +43,10 @@
                     style="width: 40%"
                     @on-change="(datetime) =>{ changeDateTime(datetime, 4)}"
             ></DatePicker>
+          </FormItem>
+          <FormItem style="margin-left:35px;" class="br">
+            <Button type="primary" icon="ios-search" @click="search">搜索</Button>
+            <Button icon="md-refresh" @click="reset">重置</Button>
           </FormItem>
         </Form>
       </Card>
@@ -660,6 +660,10 @@ export default {
     reset() {
       this.searchData.userId = "";
       this.searchData.status = "";
+      this.searchData.sendTimeStart = "";
+      this.searchData.sendTimeEnd = "";
+      this.searchData.putTimeStart = "";
+      this.searchData.putTimeEnd = "";
       this.searchData.pushType = "";
       this.pagingType = "1";
       this.search();
@@ -914,16 +918,32 @@ export default {
       changeDateTime(datetime, index) {
           switch (index) {
           case 1:
-              this.searchData.sendTimeStart = datetime+' 00:00:00';
+              if(datetime){
+                  this.searchData.sendTimeStart = datetime+' 00:00:00';
+              }else{
+                  this.searchData.sendTimeStart = '';
+              }
               break;
           case 2:
-              this.searchData.sendTimeEnd = datetime+' 23:59:59';
+              if(datetime){
+                  this.searchData.sendTimeEnd = datetime+' 23:59:59';
+              }else{
+                  this.searchData.sendTimeEnd = '';
+              }
               break;
           case 3:
-              this.searchData.putTimeStart = datetime+' 00:00:00';
+              if(datetime){
+                  this.searchData.putTimeStart = datetime+' 00:00:00';
+              }else{
+                  this.searchData.putTimeStart = '';
+              }
               break;
           case 4:
-              this.searchData.putTimeEnd = datetime+' 23:59:59';
+              if(datetime){
+                  this.searchData.putTimeEnd = datetime+' 23:59:59';
+              }else{
+                  this.searchData.putTimeEnd = '';
+              }
               break;
           }
       },
