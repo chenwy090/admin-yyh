@@ -8,11 +8,18 @@ export default [
         slot: "action"
     },
     {
+        title: "内容状态",
+        align: "center",
+        width: 200,
+        key: "statusName",
+    },
+    // contentAction
+    {
         title: "内容",
-        key: "contentAction",
+        key: "content",
         align: "center",
         width: 120,
-        slot: "contentAction"
+        slot: "content"
     },
     {
         title: "标签",
