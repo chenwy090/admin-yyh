@@ -43,7 +43,7 @@
         prop="scanCodeTitle"
         :rules="{ required: true, message: '请输入扫码主标题' }"
       >
-        <Tooltip trigger="focus" title="提醒" content="最多20个汉字" placement="right">
+        <Tooltip trigger="focus" title="提醒" content="最多8个汉字" placement="right">
           <Input
             style="width:200px"
             v-model="formData.scanCodeTitle"
@@ -59,7 +59,7 @@
               prop="subtitle"
               :rules="{ required: true, message: '请输入扫码副标题' }"
       >
-        <Tooltip trigger="focus" title="提醒" content="最多20个汉字" placement="right">
+        <Tooltip trigger="focus" title="提醒" content="最多10个汉字" placement="right">
           <Input
                   style="width:200px"
                   v-model="formData.subtitle"
@@ -93,7 +93,7 @@
               prop="settlementTitle"
               :rules="{ required: true, message: '请输入结算标题' }"
       >
-        <Tooltip trigger="focus" title="提醒" content="最多20个汉字" placement="right">
+        <Tooltip trigger="focus" title="提醒" content="最多4个汉字" placement="right">
           <Input
                   style="width:200px"
                   v-model="formData.settlementTitle"
