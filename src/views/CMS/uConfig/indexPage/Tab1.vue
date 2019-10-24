@@ -47,7 +47,7 @@
           <Input
             style="width:200px"
             v-model="formData.scanCodeTitle"
-            :maxlength="20"
+            :maxlength="8"
             placeholder="请输入扫码主标题"
             clearable
           />
@@ -63,7 +63,7 @@
           <Input
                   style="width:200px"
                   v-model="formData.subtitle"
-                  :maxlength="20"
+                  :maxlength="10"
                   placeholder="请输入扫码副标题"
                   clearable
           />
@@ -97,7 +97,7 @@
           <Input
                   style="width:200px"
                   v-model="formData.settlementTitle"
-                  :maxlength="20"
+                  :maxlength="4"
                   placeholder="请输入扫结算标题"
                   clearable
           />
