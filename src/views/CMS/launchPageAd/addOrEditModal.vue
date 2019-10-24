@@ -77,7 +77,7 @@
                     <FormItem label="投放时间">
                         <DatePicker
                                 :value="modal.startTime"
-                                type="date"
+                                type="datetime"
                                 placeholder="请输入开始时间"
                                 style="width: 30%"
                                 :options="options1"
@@ -86,7 +86,7 @@
                         <div style="display: inline-block"> &nbsp;至&nbsp; </div>
                         <DatePicker
                                 :value="modal.endTime"
-                                type="date"
+                                type="datetime"
                                 placeholder="请输入结束时间"
                                 style="width: 30%"
                                 :options="options2"
