@@ -87,14 +87,7 @@
 </template>
 <script>
 import { getRequest, postRequest, downloadSteam } from "@/libs/axios";
-import {
-  queryRewardUList,
-  queryDetailById,
-  checkMerchant, // 审核
-  downMerchant, // 下架
-  delMerchant, // 删除
-  queryMerchantDataById // 数据
-} from "@/api/sys";
+
 import columns from "./columns";
 
 import FileImport from "./FileImport";
