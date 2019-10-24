@@ -444,6 +444,8 @@ export default {
         }
         if(this.formData[0].id !== null && this.formData[0].id!== undefined && this.formData[0].id!==""){
             console.log("-------------edit------------")
+            this.formData[0].createTime = null;
+            this.formData[0].updateTime = null;
             postRequest("/couponrecommend/edit", this.formData[0]).then(res => {
                 this.isLoading=false;
                 if (res.code == 200) {

@@ -409,11 +409,17 @@ export default {
           key: "welfareInfo"
         },
         {
-          title: "发放时间",
+          title: "提交时间",
           align: "center",
           minWidth: 160,
           key: "createTime"
         },
+          {
+              title: "发送时间",
+              align: "center",
+              minWidth: 160,
+              key: "sendTime"
+          },
         {
           title: "发放原因",
           align: "center",
@@ -431,12 +437,6 @@ export default {
               align: "center",
               minWidth: 160,
               slot: "statusFlag"
-          },
-          {
-              title: "发送时间",
-              align: "center",
-              minWidth: 160,
-              key: "sendTime"
           },
         {
           title: "状态",
