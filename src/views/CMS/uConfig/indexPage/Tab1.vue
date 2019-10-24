@@ -12,52 +12,133 @@
       verifyIconUrl: "string", //一键核销图标
       slogan: "string", //Solagon
       backgroundUrl: "string" //背景图-->
+      <FormItem label="背景图：" prop="backgroundUrl" :rules="{ required: true, message: '请上传背景图' }">
+        <UploadImage
+                :fileUploadType="'backgroundUrl'"
+                :defaultList="formData.defaultBackgroundUrlList"
+                @remove="removeBackgroundUrl"
+                @uploadSuccess="backgroundUrlUploadSuccess"
+        ></UploadImage>
+      </FormItem>
+
+      <FormItem label="扫码背景图：" prop="scanCodeImgUrl" :rules="{ required: true, message: '请上传扫码背景图' }">
+        <UploadImage
+                :fileUploadType="'scanCodeImgUrl'"
+                :defaultList="formData.defaultScanCodeImgUrlList"
+                @remove="removeScanCodeImgUrl"
+                @uploadSuccess="scanCodeImgUrlUploadSuccess"
+        ></UploadImage>
+      </FormItem>
+
+      <FormItem label="扫码icon：" prop="scanCodeIconUrl" :rules="{ required: true, message: '请上传扫码icon' }">
+        <UploadImage
+                :fileUploadType="'scanCodeIconUrl'"
+                :defaultList="formData.defaultScanCodeIconUrlList"
+                @remove="removeScanCodeIconUrl"
+                @uploadSuccess="scanCodeIconUrlUploadSuccess"
+        ></UploadImage>
+      </FormItem>
+
       <FormItem
-        label="一键核销文案："
-        prop="verifyTitle"
-        :rules="{ required: true, message: '请输入一键核销文案' }"
+        label="扫码主标题："
+        prop="scanCodeTitle"
+        :rules="{ required: true, message: '请输入扫码主标题' }"
       >
         <Tooltip trigger="focus" title="提醒" content="最多20个汉字" placement="right">
           <Input
             style="width:200px"
-            v-model="formData.verifyTitle"
+            v-model="formData.scanCodeTitle"
             :maxlength="20"
-            placeholder="请输入一键核销文案"
+            placeholder="请输入扫码主标题"
             clearable
           />
         </Tooltip>
       </FormItem>
+
       <FormItem
-        label="一键核销图标："
-        prop="verifyIconUrl"
-        :rules="{ required: true, message: '请上传一键核销图标' }"
+              label="扫码副标题："
+              prop="subtitle"
+              :rules="{ required: true, message: '请输入扫码副标题' }"
       >
-        <UploadImage
-          :fileUploadType="'verifyIconUrl'"
-          :defaultList="formData.defaultVerifyIconUrlList"
-          @remove="removeVerifyIconUrl"
-          @uploadSuccess="verifyIconUrlUploadSuccess"
-        ></UploadImage>
-      </FormItem>
-      <FormItem label="背景图：" prop="backgroundUrl" :rules="{ required: true, message: '请上传背景图' }">
-        <UploadImage
-          :fileUploadType="'backgroundUrl'"
-          :defaultList="formData.defaultBackgroundUrlList"
-          @remove="removeBackgroundUrl"
-          @uploadSuccess="backgroundUrlUploadSuccess"
-        ></UploadImage>
-      </FormItem>
-      <FormItem label="Solagon：" prop="slogan" :rules="{ required: true, message: '请输入Solagon' }">
-        <Tooltip trigger="focus" title="提醒" content="最多15个汉字" placement="right">
+        <Tooltip trigger="focus" title="提醒" content="最多20个汉字" placement="right">
           <Input
-            style="width:200px"
-            v-model="formData.slogan"
-            :maxlength="15"
-            placeholder="请输入Solagon"
-            clearable
+                  style="width:200px"
+                  v-model="formData.subtitle"
+                  :maxlength="20"
+                  placeholder="请输入扫码副标题"
+                  clearable
           />
         </Tooltip>
       </FormItem>
+
+      <FormItem label="结算背景图：" prop="settlementImgUrl" :rules="{ required: true, message: '请上传结算背景图' }">
+        <UploadImage
+                :fileUploadType="'settlementImgUrl'"
+                :defaultList="formData.defaultSettlementImgUrlList"
+                @remove="removeSettlementImgUrl"
+                @uploadSuccess="settlementImgUrlUploadSuccess"
+        ></UploadImage>
+      </FormItem>
+
+      <FormItem label="结算icon：" prop="settlementIconUrl" :rules="{ required: true, message: '请上传结算icon' }">
+        <UploadImage
+                :fileUploadType="'settlementIconUrl'"
+                :defaultList="formData.defaultSettlementIconUrlList"
+                @remove="removeSettlementIconUrl"
+                @uploadSuccess="settlementIconUrlUploadSuccess"
+        ></UploadImage>
+      </FormItem>
+
+      <FormItem
+              label="结算标题："
+              prop="settlementTitle"
+              :rules="{ required: true, message: '请输入结算标题' }"
+      >
+        <Tooltip trigger="focus" title="提醒" content="最多20个汉字" placement="right">
+          <Input
+                  style="width:200px"
+                  v-model="formData.settlementTitle"
+                  :maxlength="20"
+                  placeholder="请输入扫结算标题"
+                  clearable
+          />
+        </Tooltip>
+      </FormItem>
+
+      <FormItem label="条码背景图：" prop="barcodeImgUrl" :rules="{ required: true, message: '请上传条码背景图' }">
+        <UploadImage
+                :fileUploadType="'barcodeImgUrl'"
+                :defaultList="formData.defaultBarcodeImgUrlList"
+                @remove="removeBarcodeImgUrl"
+                @uploadSuccess="barcodeImgUrlUploadSuccess"
+        ></UploadImage>
+      </FormItem>
+
+      <FormItem label="条码icon：" prop="barcodeIconUrl" :rules="{ required: true, message: '请上传条码icon' }">
+        <UploadImage
+                :fileUploadType="'barcodeIconUrl'"
+                :defaultList="formData.defaultBarcodeIconUrlList"
+                @remove="removeBarcodeIconUrl"
+                @uploadSuccess="barcodeIconUrlUploadSuccess"
+        ></UploadImage>
+      </FormItem>
+
+      <FormItem
+              label="条码标题："
+              prop="barcodeTitle"
+              :rules="{ required: true, message: '请输入条码标题' }"
+      >
+        <Tooltip trigger="focus" title="提醒" content="最多20个汉字" placement="right">
+          <Input
+                  style="width:200px"
+                  v-model="formData.barcodeTitle"
+                  :maxlength="20"
+                  placeholder="请输入条码标题"
+                  clearable
+          />
+        </Tooltip>
+      </FormItem>
+
       <div style="margin-top:20px;">
         <FormItem label>
           <Button type="primary" :disabled="submitDisabled" @click="handleSubmit('form')">保存</Button>
@@ -93,12 +174,33 @@ export default {
       submitDisabled: false,
       formData: {
         id: "",
-        verifyTitle: "", //一键核销文案
+        /*verifyTitle: "", //一键核销文案
         verifyIconUrl: "", //一键核销图标
         defaultVerifyIconUrlList: [],
         slogan: "", //Solagon
         backgroundUrl: "", //背景图
-        defaultBackgroundUrlList: []
+        defaultBackgroundUrlList: []*/
+        backgroundUrl: "",//主背景图
+        defaultBackgroundUrlList: [],
+
+        scanCodeIconUrl: "",//扫码icon
+        efaultScanCodeIconUrlList: [],
+        scanCodeImgUrl: "",//扫码背景图
+        efaultScanCodeImgUrlList: [],
+        scanCodeTitle: "",//扫码主标题
+        subtitle: "",//扫码副标题
+
+        settlementIconUrl: "",//结算icon
+        efaultSettlementIconUrlList: [],
+        settlementImgUrl: "",//结算背景图
+        efaultSettlementImgUrlList: [],
+        settlementTitle: "",//结算标题
+
+        barcodeIconUrl: "",//条码icon
+        efaultBarcodeIconUrlList: [],
+        barcodeImgUrl: "",//条码背景图
+        efaultBarcodeImgUrlList: [],
+        barcodeTitle: "",//条码标题
       },
       ruleValidate: {}
     };
@@ -116,23 +218,62 @@ export default {
         if (data == "") {
           data = {
             id: "",
-            verifyTitle: "", //一键核销文案
-            verifyIconUrl: "", //一键核销图标
-            defaultVerifyIconUrlList: [],
-            slogan: "", //Solagon
-            backgroundUrl: "", //背景图
-            defaultBackgroundUrlList: []
+            backgroundUrl: "",//主背景图
+            defaultBackgroundUrlList: [],
+
+            scanCodeIconUrl: "",//扫码icon
+            defaultScanCodeIconUrlList: [],
+            scanCodeImgUrl: "",//扫码背景图
+            defaultScanCodeImgUrlList: [],
+            scanCodeTitle: "",//扫码主标题
+            subtitle: "",//扫码副标题
+
+            settlementIconUrl: "",//结算icon
+            defaultSettlementIconUrlList: [],
+            settlementImgUrl: "",//结算背景图
+            defaultSettlementImgUrlList: [],
+            settlementTitle: "",//结算标题
+
+            barcodeIconUrl: "",//条码icon
+            defaultBarcodeIconUrlList: [],
+            barcodeImgUrl: "",//条码背景图
+            defaultBarcodeImgUrlList: [],
+            barcodeTitle: "",//条码标题
           };
         }
-        const { verifyIconUrl, backgroundUrl } = data;
+        const { backgroundUrl, scanCodeIconUrl, scanCodeImgUrl, settlementIconUrl, settlementImgUrl, barcodeIconUrl, barcodeImgUrl } = data;
 
-        data.defaultVerifyIconUrlList = [];
-        data.defaultBackgroundUrlList = [];
-        if (verifyIconUrl) {
-          data.defaultVerifyIconUrlList.push({ imgUrl: verifyIconUrl });
-        }
+        data.defaultBackgroundUrlList	= [];
+        data.defaultScanCodeIconUrlList   = [];
+        data.defaultScanCodeImgUrlList    = [];
+        data.defaultSettlementIconUrlList = [];
+        data.defaultSettlementImgUrlList  = [];
+        data.defaultBarcodeIconUrlList    = [];
+        data.defaultBarcodeImgUrlList     = [];
+
         if (backgroundUrl) {
           data.defaultBackgroundUrlList.push({ imgUrl: backgroundUrl });
+        }
+        if (scanCodeIconUrl) {
+          data.defaultScanCodeIconUrlList.push({ imgUrl: scanCodeIconUrl });
+        }
+        if (scanCodeImgUrl) {
+          data.defaultScanCodeImgUrlList.push({ imgUrl: scanCodeImgUrl });
+        }
+        if (settlementIconUrl) {
+          data.defaultSettlementIconUrlList.push({ imgUrl: settlementIconUrl });
+        }
+        if (settlementImgUrl) {
+          data.defaultSettlementIconUrlList.push({ imgUrl: settlementImgUrl });
+        }
+        if (barcodeIconUrl) {
+          data.defaultSettlementImgUrlList.push({ imgUrl: barcodeIconUrl });
+        }
+        if (barcodeIconUrl) {
+          data.defaultBarcodeIconUrlList.push({ imgUrl: barcodeIconUrl });
+        }
+        if (barcodeImgUrl) {
+          data.defaultBarcodeImgUrlList.push({ imgUrl: barcodeImgUrl });
         }
 
         this.formData = data;
@@ -140,22 +281,66 @@ export default {
         this.msgErr(msg);
       }
     },
-    removeVerifyIconUrl() {
-      this.formData.verifyIconUrl = "";
-      this.formData.defaultVerifyIconUrlList = [];
-    },
+
     removeBackgroundUrl() {
       this.formData.backgroundUrl = "";
       this.formData.defaultBackgroundUrlList = [];
     },
-    verifyIconUrlUploadSuccess({ imgUrl }) {
-      this.formData.verifyIconUrl = imgUrl;
-      this.formData.defaultVerifyIconUrlList = [{ imgUrl }];
+    removeScanCodeIconUrl() {
+      this.formData.scanCodeIconUrl = "";
+      this.formData.defaultScanCodeIconUrlList = [];
     },
+    removeScanCodeImgUrl() {
+      this.formData.scanCodeImgUrl = "";
+      this.formData.defaultScanCodeImgUrlList = [];
+    },
+    removeSettlementIconUrl() {
+      this.formData.settlementIconUrl = "";
+      this.formData.defaultSettlementIconUrlList = [];
+    },
+    removeSettlementImgUrl() {
+      this.formData.settlementImgUrl = "";
+      this.formData.defaultSettlementImgUrlList = [];
+    },
+    removeBarcodeIconUrl() {
+      this.formData.barcodeIconUrl = "";
+      this.formData.defaultBarcodeIconUrlList = [];
+    },
+    removeBarcodeImgUrl() {
+      this.formData.barcodeImgUrl = "";
+      this.formData.defaultBarcodeImgUrlList = [];
+    },
+
+
     backgroundUrlUploadSuccess({ imgUrl }) {
       this.formData.backgroundUrl = imgUrl;
       this.formData.defaultBackgroundUrlList = [{ imgUrl }];
     },
+    scanCodeIconUrlUploadSuccess({ imgUrl }) {
+      this.formData.scanCodeIconUrl = imgUrl;
+      this.formData.defaultScanCodeIconUrlList = [{ imgUrl }];
+    },
+    scanCodeImgUrlUploadSuccess({ imgUrl }) {
+      this.formData.scanCodeImgUrl = imgUrl;
+      this.formData.defaultScanCodeImgUrlList = [{ imgUrl }];
+    },
+    settlementIconUrlUploadSuccess({ imgUrl }) {
+      this.formData.settlementIconUrl = imgUrl;
+      this.formData.defaultSettlementIconUrlList = [{ imgUrl }];
+    },
+    settlementImgUrlUploadSuccess({ imgUrl }) {
+      this.formData.settlementImgUrl = imgUrl;
+      this.formData.defaultSettlementImgUrlList = [{ imgUrl }];
+    },
+    barcodeIconUrlUploadSuccess({ imgUrl }) {
+      this.formData.barcodeIconUrl = imgUrl;
+      this.formData.defaultBarcodeIconUrlList = [{ imgUrl }];
+    },
+    barcodeImgUrlUploadSuccess({ imgUrl }) {
+      this.formData.barcodeImgUrl = imgUrl;
+      this.formData.defaultBarcodeImgUrlList = [{ imgUrl }];
+    },
+
     handleSubmit(name) {
       // this.submitDisabled = true;
       this.$refs[name].validate(valid => {
