@@ -74,6 +74,9 @@
       </Table>
     </div>
 
+    <!-- 提现-开关 -->
+    <WithdrawalSwitch></WithdrawalSwitch>
+
     <!--奖励配置-->
     <Modal v-model="modal1.isopen" :title="modal1.name" :mask-closable="false" footer-hide>
       <Row v-if="modal1.type && modal1.type =='3'">
@@ -378,9 +381,10 @@
 import { postRequest, getRequest } from "@/libs/axios";
 import { uploadOperationImage2AliOssURl } from "@/api/index";
 import EditorBar from "@/components/EditorBar";
+import WithdrawalSwitch from "./WithdrawalSwitch";
 export default {
   name: "reward_deploy",
-  components: { EditorBar },
+  components: { EditorBar, WithdrawalSwitch },
   data() {
     return {
       userToken: {}, //用户token
@@ -885,33 +889,32 @@ h3 {
   height: 43px;
   padding: 5px;
 }
-  #content-box{
-    height: 18px;
-    line-height: 18px;
-    display:inline-block;
-    width: 100%;
-    overflow: hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-  }
-.ivu-table-wrapper{
+#content-box {
+  height: 18px;
+  line-height: 18px;
+  display: inline-block;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ivu-table-wrapper {
   overflow: visible;
 }
-  .ivu-tooltip{
-    width: 100%;
-  }
-
+.ivu-tooltip {
+  width: 100%;
+}
 </style>
 <style>
-  #reward_deploy{
-    max-height: 300px;
-    overflow: scroll;
-  }
-  #content-box *{
-    width: 100%;
-    overflow: hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-  }
+#reward_deploy {
+  max-height: 300px;
+  overflow: scroll;
+}
+#content-box * {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 </style>
 
