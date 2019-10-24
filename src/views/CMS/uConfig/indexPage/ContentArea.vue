@@ -1,4 +1,5 @@
 <template>
+  <!-- ContentArea 内容专区 -->
   <div class="cms">
     {{tab.label}}
     <Form
@@ -45,35 +46,39 @@
   </div>
 </template>
 <script>
-import { postRequest, getRequest } from "@/libs/axios";
+import { postRequest } from "@/libs/axios";
 
 export default {
-  name: "tab5",
+  name: "content-area",
   inject: ["msgOk", "msgErr"],
   props: {
     tab: {
       type: Object,
       default: function() {
         return {
-          id: "tab5",
-          type: 5,
-          name: "xxx",
-          label: "品牌专区",
-          compName: "tab5"
+          id: "ContentArea",
+          type: 7,
+          label: "内容专区",
+          compName: "ContentArea"
         };
       }
     }
   },
+  mounted() {},
   computed: {
     subTitleRules() {
+      let obj = null;
       if (this.formData.subTitle.length) {
-        return {
+        obj = {
           required: true,
           validator: this.validateEmpty("请输入副标题", 12)
         };
       } else {
-        return { required: false };
+        obj = { required: false };
       }
+      console.log(11111, obj);
+
+      return obj;
     }
   },
   watch: {
@@ -93,9 +98,12 @@ export default {
       submitDisabled: false,
       formData: {
         id: "",
+        type: "",
         mainTitle: "", //主标题：超值爆抢券
-        subTitle: "" //副标题：大家都在领
+        subTitle: "", //副标题：大家都在领
+        iconUrl: "" //副标题：大家都在领
       },
+
       ruleValidate: {}
     };
   },
@@ -149,10 +157,11 @@ export default {
         console.log("valid", valid);
         if (!valid) {
           this.msgErr("数据验证失败！");
+          // this.submitDisabled = false;
           return;
         }
 
-        ///清洗数据
+        //清洗数据
         let formData = JSON.parse(JSON.stringify(this.formData));
         const { type } = this.tab;
         formData.site = 1;

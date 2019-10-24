@@ -39,41 +39,46 @@
       <div style="margin-top:20px;">
         <FormItem label>
           <Button type="primary" :disabled="submitDisabled" @click="handleSubmit('form')">保存</Button>
+          <Button type="primary" style="margin-left:10px;" @click="linkTo('bannerPage')">banner设置</Button>
         </FormItem>
       </div>
     </Form>
   </div>
 </template>
 <script>
-import { postRequest, getRequest } from "@/libs/axios";
+import { postRequest } from "@/libs/axios";
 
 export default {
-  name: "tab5",
-  inject: ["msgOk", "msgErr"],
+  name: "tab4",
+  inject: ["linkTo", "msgOk", "msgErr"],
   props: {
     tab: {
       type: Object,
       default: function() {
         return {
-          id: "tab5",
-          type: 5,
-          name: "xxx",
-          label: "品牌专区",
-          compName: "tab5"
+          id: "tab4",
+          type: 103,
+          site: 2,
+          label: "市场推广",
+          compName: "tab4"
         };
       }
     }
   },
   computed: {
     subTitleRules() {
+      let obj = null;
       if (this.formData.subTitle.length) {
-        return {
+        obj = {
           required: true,
           validator: this.validateEmpty("请输入副标题", 12)
         };
       } else {
-        return { required: false };
+        obj = { required: false };
       }
+      console.log(11111, obj);
+
+      return obj;
     }
   },
   watch: {
@@ -93,8 +98,11 @@ export default {
       submitDisabled: false,
       formData: {
         id: "",
+        type: "",
         mainTitle: "", //主标题：超值爆抢券
-        subTitle: "" //副标题：大家都在领
+        subTitle: "", //副标题：大家都在领
+        iconUrl: "", //首页分红banner图片
+        defaultIconUrlList: []
       },
       ruleValidate: {}
     };
@@ -105,8 +113,9 @@ export default {
   methods: {
     async getData() {
       const url = "/page/module/layout/getCommonSetting";
-      const { type } = this.tab;
-      const site = 1;
+      //  平台分红：4
+      const { type, site } = this.tab;
+      //  site 页面位置，1：首页、2：首页-平台分红
       let { code, msg, data } = await postRequest(url, { type, site });
       if (code == 200) {
         if (data == "") {
@@ -115,13 +124,29 @@ export default {
             type: "",
             mainTitle: "", //主标题：超值爆抢券
             subTitle: "", //副标题：大家都在领
-            iconUrl: "" //副标题：大家都在领
+            iconUrl: "", //首页分红banner图片
+            defaultIconUrlList: []
           };
         }
+        const { iconUrl } = data;
+
+        data.defaultIconUrlList = [];
+        if (iconUrl) {
+          data.defaultIconUrlList.push({ imgUrl: iconUrl });
+        }
+
         this.formData = data;
       } else {
         this.msgErr(msg);
       }
+    },
+    removeIconUrl() {
+      this.formData.iconUrl = "";
+      this.formData.defaultIconUrlList = [];
+    },
+    iconUrlUploadSuccess({ imgUrl }) {
+      this.formData.iconUrl = imgUrl;
+      this.formData.defaultIconUrlList = [{ imgUrl }];
     },
     validateEmpty(msg, len = 20) {
       return function(rule, value, callback) {
@@ -152,14 +177,15 @@ export default {
           return;
         }
 
-        ///清洗数据
-        let formData = JSON.parse(JSON.stringify(this.formData));
-        const { type } = this.tab;
-        formData.site = 1;
-        formData.type = type;
-
-        // 超值爆抢首页配置
+        // 核销扫码首页配置
         const url = "/page/module/layout/saveCommonSetting";
+
+        //清洗数据
+        let formData = JSON.parse(JSON.stringify(this.formData));
+
+        const { type, site } = this.tab;
+        formData.type = type;
+        formData.site = site;
         postRequest(url, formData).then(res => {
           if (res.code == 200) {
             this.msgOk("保存成功");

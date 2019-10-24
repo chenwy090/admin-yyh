@@ -56,6 +56,7 @@ export default {
       default: function() {
         return {
           id: "tab6",
+          type: 6,
           name: "xxx",
           label: "好券一起领",
           compName: "tab6"
