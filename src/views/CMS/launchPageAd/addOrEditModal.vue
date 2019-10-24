@@ -258,7 +258,7 @@
             changeDateTime(datetime, index) {
                 switch (index) {
                 case 1:
-                    this.modal.startTime = datetime+' 00:00:00';
+                    this.modal.startTime = datetime
                     this.options2 = {
                         disabledDate(date) {
                             var a = new Date(datetime)
@@ -270,7 +270,7 @@
                     };
                     break;
                 case 2:
-                    this.modal.endTime =  datetime+' 23:59:59';
+                    this.modal.endTime =  datetime
                     this.options1 = {
                         disabledDate(date) {
                             return (date.valueOf() < Date.now() - 1000 * 60 * 60 * 24 || date.valueOf() > new Date(datetime));
