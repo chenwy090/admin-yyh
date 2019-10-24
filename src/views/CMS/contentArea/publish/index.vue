@@ -294,6 +294,7 @@ export default {
   created() {
     this.getTagList();
     this.getUserList();
+    this.getCityList();
   },
   methods: {
     handleQueryChange(phoneNumber) {
@@ -336,6 +337,26 @@ export default {
           item._checked = false;
           return item;
         });
+      } else {
+        this.msgErr(msg);
+      }
+    },
+
+    async getCityList() {
+      //标签查询
+      const url = "/system/area/city/list";
+      
+      const { code, msg, data } = await postRequest(url);
+
+   
+      if (code == 200) {
+        // data:[{id,name,sort}]
+        console.log("getCityList", data);
+
+        // this.tagList = data.map(item => {
+        //   item._checked = false;
+        //   return item;
+        // });
       } else {
         this.msgErr(msg);
       }

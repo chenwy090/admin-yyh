@@ -62,7 +62,27 @@
       </Card>
     </div>
     <Card :bordered="false">
-      <Table border :show-index="true" :loading="loading" :columns="columns" :data="tableData"></Table>
+      <Table border :show-index="true" :loading="loading" :columns="columns" :data="tableData">
+        <!-- action -->
+        <!-- @click="addOrEdit('edit',row)" -->
+        <template slot-scope="{ row }" slot="action">
+          <template v-if="row.status == 1">
+            <Button
+              type="primary"
+              size="small"
+              style="margin-right: 5px"
+              @click="examine(row.id, 1)"
+            >审核</Button>
+          </template>
+          <template v-else-if="row.status == 2 || row.status == 3">
+            <Button type="warning" size="small" @click="examine(row.id, 0)">下架</Button>
+          </template>
+        </template>
+
+        <template slot-scope="{ row }" slot="content">
+          <span v-html="row.content"></span>
+        </template>
+      </Table>
       <!-- 分页器 -->
       <Row type="flex" justify="end" class="page">
         <!-- show-total 显示总数 共{{ total }}条 -->
@@ -216,6 +236,21 @@ export default {
     changeCurrent(pageNum) {
       this.queryTableData(pageNum);
     },
+
+    async examine(id, type) {
+      //审核
+      const url = "/content/audit";
+      const { code, msg, data } = await postRequest(url, { id, type });
+
+      if (code == 200) {
+        // data:[{id,name,sort}]
+        console.log("examine", data);
+        this.queryTableData(this.page.pageNum);
+      } else {
+        this.msgErr(msg);
+      }
+    },
+
     // 查询
     queryTableData(pageNum) {
       this.page.pageNum = pageNum || 1;
@@ -236,6 +271,7 @@ export default {
             // "userStatus": 0,//0-正常 1-封禁
 
             const {
+              status,
               userStatus,
               sourceType,
               tags = [],
@@ -256,6 +292,8 @@ export default {
             item.couponNames = citys
               .map(({ couponName }) => couponName)
               .join(",");
+
+            console.log(JSON.stringify(item));
 
             return item;
           });
