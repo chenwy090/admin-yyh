@@ -1,12 +1,18 @@
 <template>
   <div class="cms">
-    <Button type="dashed" icon="md-arrow-round-back" @click="goback()">返回上一层</Button>
-    <div>
-      <Tabs type="card" v-model="compName">
-        <TabPane v-for="tab in tabs" :key="tab.id" :label="tab.label" :name="tab.compName"></TabPane>
-      </Tabs>
-      <component :is="compName" :tab="tab"></component>
-    </div>
+    <Card>
+      <p slot="title">首页</p>
+      <a href="#" slot="extra">
+        <Button type="dashed" icon="md-arrow-round-back" @click="goback()">返回上一层</Button>
+      </a>
+      <!--<Button type="dashed" icon="md-arrow-round-back" @click="goback()">返回上一层</Button>-->
+      <div>
+        <Tabs type="card" v-model="compName">
+          <TabPane v-for="tab in tabs" :key="tab.id" :label="tab.label" :name="tab.compName"></TabPane>
+        </Tabs>
+        <component :is="compName" :tab="tab"></component>
+      </div>
+    </Card>
   </div>
 </template>
 <script>

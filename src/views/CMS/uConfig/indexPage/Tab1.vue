@@ -1,6 +1,5 @@
 <template>
   <div class="cms">
-    {{tab.label}}
     <Form
       label-position="right"
       ref="form"
@@ -254,26 +253,23 @@ export default {
         if (backgroundUrl) {
           data.defaultBackgroundUrlList.push({ imgUrl: backgroundUrl });
         }
+          if (scanCodeImgUrl) {
+              data.defaultScanCodeImgUrlList.push({ imgUrl: scanCodeImgUrl });
+          }
         if (scanCodeIconUrl) {
           data.defaultScanCodeIconUrlList.push({ imgUrl: scanCodeIconUrl });
         }
-        if (scanCodeImgUrl) {
-          data.defaultScanCodeImgUrlList.push({ imgUrl: scanCodeImgUrl });
-        }
+          if (settlementImgUrl) {
+              data.defaultSettlementImgUrlList.push({ imgUrl: settlementImgUrl });
+          }
         if (settlementIconUrl) {
           data.defaultSettlementIconUrlList.push({ imgUrl: settlementIconUrl });
         }
-        if (settlementImgUrl) {
-          data.defaultSettlementIconUrlList.push({ imgUrl: settlementImgUrl });
-        }
-        if (barcodeIconUrl) {
-          data.defaultSettlementImgUrlList.push({ imgUrl: barcodeIconUrl });
-        }
+          if (barcodeImgUrl) {
+              data.defaultBarcodeImgUrlList.push({ imgUrl: barcodeImgUrl });
+          }
         if (barcodeIconUrl) {
           data.defaultBarcodeIconUrlList.push({ imgUrl: barcodeIconUrl });
-        }
-        if (barcodeImgUrl) {
-          data.defaultBarcodeImgUrlList.push({ imgUrl: barcodeImgUrl });
         }
 
         this.formData = data;
@@ -316,13 +312,13 @@ export default {
       this.formData.backgroundUrl = imgUrl;
       this.formData.defaultBackgroundUrlList = [{ imgUrl }];
     },
+      scanCodeImgUrlUploadSuccess({ imgUrl }) {
+          this.formData.scanCodeImgUrl = imgUrl;
+          this.formData.defaultScanCodeImgUrlList = [{ imgUrl }];
+      },
     scanCodeIconUrlUploadSuccess({ imgUrl }) {
       this.formData.scanCodeIconUrl = imgUrl;
       this.formData.defaultScanCodeIconUrlList = [{ imgUrl }];
-    },
-    scanCodeImgUrlUploadSuccess({ imgUrl }) {
-      this.formData.scanCodeImgUrl = imgUrl;
-      this.formData.defaultScanCodeImgUrlList = [{ imgUrl }];
     },
     settlementIconUrlUploadSuccess({ imgUrl }) {
       this.formData.settlementIconUrl = imgUrl;
@@ -371,4 +367,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+  .cms{
+    padding: 10px;
+  }
 </style>
