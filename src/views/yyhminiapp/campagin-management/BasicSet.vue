@@ -448,6 +448,7 @@ export default {
         ticketTemplateId: "",
         useDesc: "",
         couponImg: "",
+        couponSimpleImg: '',
         ChangeDateType: "",
         ChangeStartDate: "",
         ChangeEndDate: "",
@@ -614,6 +615,7 @@ export default {
         startDate: "",
         useDesc: "",
         couponImg: "",
+        couponSimpleImg: '',
         ChangeDateType: "",
         ChangeStartDate: "",
         ChangeEndDate: "",
@@ -807,6 +809,7 @@ export default {
         status: this.edit_info.status,
         ticketName: this.edit_info.ticketName,
         couponImg: this.edit_info.couponImg,
+        couponSimpleImg: this.edit_info.couponSimpleImg,
         imgUrl: this.edit_info.imgUrl
       };
 

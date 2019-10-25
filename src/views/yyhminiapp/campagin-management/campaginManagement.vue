@@ -1333,6 +1333,7 @@ export default {
               doorsillDesc: "",
               imgUrl: "",
               couponImg: "", // 缩略图
+              couponSimpleImg: "", // 首页缩略图
               name: "",
               rules: "",
               status: "0",
@@ -1566,6 +1567,7 @@ export default {
         endDate: this.add_info.endDate,
         imgUrl: this.add_info.imgUrl,
         couponImg: this.add_info.couponImg, // 缩略图
+        couponSimpleImg: this.add_info.couponSimpleImg, // 首页缩略图
         name: this.add_info.name,
         rules: this.add_info.rules.replace(/\t/g, "").replace(/\n/g, "\\n"),
         startDate: this.add_info.startDate,
