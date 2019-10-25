@@ -1045,7 +1045,7 @@ export default {
 
       this.imgSrc1 = this.couponEdit_info.couponSmallImg;
       this.imgSrc2 = this.couponEdit_info.couponBigImg;
-      this.imgSrc2 = this.couponEdit_info.couponSimpleImg;
+      this.imgSrc3 = this.couponEdit_info.couponSimpleImg;
 
       if (this.edit_info.couponKind == 2) {
         this.edit_info.price = this.couponEdit_info.price / 100;
@@ -1581,6 +1581,7 @@ export default {
         addDaysUseEnd: this.edit_info.addDaysUseEnd,
         couponSmallImg: this.edit_info.couponSmallImg,
         couponBigImg: this.edit_info.couponBigImg,
+        couponSimpleImg: this.edit_info.couponSimpleImg,
         buyNotes: this.edit_info.buyNotes,
         useDesc: this.edit_info.useDesc,
         getLimit: this.edit_info.getLimit,
@@ -1762,7 +1763,7 @@ export default {
               reqParams
           ).then(res => {
               if (res.code == 200) {
-                  this.edit_info.couponBigImg = res.image_url;
+                  this.edit_info.couponSimpleImg = res.image_url;
               } else {
                   this.$Message.error(res.msg);
                   this.imgSrc3 = ''

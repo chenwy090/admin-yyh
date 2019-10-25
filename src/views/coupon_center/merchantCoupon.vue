@@ -176,6 +176,7 @@
                 <!--changeStatus(row)-->
                 <Button type="text" size="small" style="color:red" @click="share(row)">分享奖励</Button>
                 <Button type="text" size="small" style="color:#2db7f5" @click="setTag(row)">打标签</Button>
+                <Button type="text" size="small" style="color:#2d8cf0" @click="showDetail(row.templateId)">查看详情</Button>
               </template>
             </Table>
           </Row>
@@ -294,6 +295,9 @@
       :tagData="tagData"
       @refresh="queryTableData"
     ></SetTag>
+
+    <modalDetail ref="modalDetail" :descConfig="descConfig" :show="modalDetailData.show" />
+
   </div>
 </template>
 
@@ -312,9 +316,16 @@ import couponEdit from "./couponEdit";
 import FileImport from "./FileImport";
 import SetTag from "./SetTag";
 
+import modalDetail from "@/components/ModalDetail";
+import {
+  postJson,
+} from "@/libs/axios";
+import { baseUrl } from "@/api/index";
+
 export default {
   name: "merchant-information",
   components: {
+    modalDetail,
     couponEdit,
     FileImport,
     SetTag
@@ -324,6 +335,49 @@ export default {
   },
   data() {
     return {
+      descConfig: [
+        ['templateId', '优惠券模板ID'],
+        ['merchantNames', '商户名称，多个商户'],
+        ['title', '优惠标题'],
+        ['subTitle', '优惠副标题'],
+        ['couponType', '优惠类型'],
+        ['employeeId', '专属客服'],
+        ['templateId', '优惠券模板ID'],
+        ['couponKind', '优惠券种类'],
+        ['isActivityCoupon', '是否为活动券'],
+        ['price', '购买价格，单位分'],
+        ['label', '优惠标签-预留字段'],
+        ['startDate', '活动开始时间'],
+        ['endDate', '活动结束时间'],
+        ['useDateType', '用券有效期类型'],
+        ['useStartDate', '用券开始时间'],
+        ['useEndDate', ' 用券结束时间'],
+
+        ['addDaysUseStart', '加X天开始生效（相对领券日期）'],
+        ['addDaysUseEnd', '加Y天结束用券（相对领券日期）'],
+        ['couponSmallImg', '优惠券缩略图'],
+        ['couponBigImg', '优惠券详情图'],
+        ['buyNotes', '购买须知'],
+        ['useDesc', '券使用说明'],
+        ['getLimit', '用户限领数量'],
+        ['stockCount', '库存数量'],
+        ['isActivityCoupon', '是否活动券：0-不是活动券, 1-活动券'],
+        ['orderBy', '人工排序字段：顺序排序，创建时前端表单默认9999'],
+        ['status', '状态：0.创建, 1.上架,-1.下架'],
+        ['couponSimpleImg', '优惠券简图'],
+        ['receiveCount', '被领取的数量'],
+        ['surplusCount', '剩余库存'],
+        ['source', '来源'],
+        ['userOpenWithCoupon', '使用打开方式'],
+        ['thirdUrl', '第三方Url'],
+      ],
+      modalDetailData: {
+        show: true,
+        data: {
+          _id: '周边券详情',
+          name: '查看详情呀'
+        }
+      },
       id: "", // templateId
       showFileImport: false,
       //打标签 已打标签、未打标签
@@ -495,7 +549,54 @@ export default {
     init() {
       this.queryTableData();
     },
-
+    showDetail(templateId) {
+      console.log(templateId, '549');
+      // /merchantCouponTemplate/selectByTemplateId
+      this.modalDetailData.show = true;
+      // this.modalDetailData.data = {
+      //   templateId: '优惠券模板ID',
+      //   title: '优惠标题',
+      //   subTitle: '优惠副标题',
+      //   couponType: '优惠类型',
+      //   employeeId: '专属客服',
+      //   templateId: '优惠券模板ID',
+      //   couponKind: '优惠券种类',
+      //   price: '购买价格，单位分',
+      //   label: '优惠标签-预留字段',
+      //   startDate: '活动开始时间',
+      //   endDate: '活动结束时间',
+      //   useDateType: '用券有效期类型',
+      //   useStartDate: '用券开始时间',
+      //   useEndDate: ' 用券结束时间',
+      //   couponSmallImg: '优惠券缩略图',
+      //   couponBigImg: '优惠券详情图',
+      //   buyNotes: '购买须知',
+      //   useDesc: '券使用说明',
+      //   getLimit: '用户限领数量',
+      //   stockCount: '库存数量',
+      //   isActivityCoupon: '是否活动券：0-不是活动券, 1-活动券',
+      //   orderBy: '人工排序字段：顺序排序，创建时前端表单默认9999',
+      //   status: '状态：0.创建, 1.上架,-1.下架',
+      //   couponSimpleImg: '优惠券简图',
+      //   merchantNames: '商户名称，多个商户',
+      //   receiveCount: '被领取的数量',
+      //   surplusCount: '剩余库存',
+      //   source: '来源',
+      //   userOpenWithCoupon: '使用打开方式',
+      //   thirdUrl: '第三方Url',
+      // }
+      postJson(baseUrl + "/merchantCouponTemplate/selectByTemplateId", {templateId}).then(res => {
+        // console.log(res);
+        if (res.code == 200) {
+          this.$refs.modalDetail.showByFather(res.data);
+        } else {
+          this.msgErr(res.msg);
+        }
+      }).catch(err=>{
+        // console.log(err, 'operating_merchant/merchant-customer/merchant-customer-add, Line929')
+      });
+      this.$refs.modalDetail.showByFather();
+    },
     upload() {
       this.showFileImport = true;
     },
