@@ -360,13 +360,16 @@
     <!--说明配置-->
     <Modal v-model="modal3.isopen" :title="modal3.name" :mask-closable="false" footer-hide>
       <Form :model="modal3" label-position="right" ref="modalErf3" :rules="ruleValidate3">
-        <Row>
+        <Row v-if="modal3.isEditor">
           <editor-bar
             v-model="modal3.context"
             :content="modal3.context"
             @on-change="change"
             @on-blur="blur"
           ></editor-bar>
+        </Row>
+        <Row v-if="!modal3.isEditor">
+          <Input v-model="modal3.context" style="width: 300px" />
         </Row>
         <FormItem>
           <Button style="float: right;margin-left: 20px" type="primary" @click="ok3('modalErf3')">确认</Button>
@@ -431,7 +434,8 @@ export default {
         name: "",
         isopen: false,
         context: "",
-        newcontext: ""
+        newcontext: "",
+        isEditor: true
       },
       columns1: [
         {
@@ -661,6 +665,14 @@ export default {
       this.modal3.isopen = true;
       this.modal3.context = item.context;
       this.modal3.newcontext = item.context;
+      if (
+          item.code == "12" ||
+          item.code == "13"
+      ){
+        this.modal3.isEditor = false;
+      }else {
+        this.modal3.isEditor = true;
+      }
     },
     ok1(name) {
       if (!this.modal1.type || this.modal1.type != "3") {
@@ -705,6 +717,9 @@ export default {
       }
     },
     ok3(name) {
+      if (!this.modal3.isEditor){
+        this.modal3.newcontext = this.modal3.context;
+      }
       if (this.modal3.newcontext) {
         this.saveChange3();
       } else {
@@ -807,6 +822,7 @@ export default {
     },
     saveChange3() {
       var that = this;
+
       postRequest("/rewardNotice/updateNotice", {
         code: this.modal3.code,
         context: this.modal3.newcontext
