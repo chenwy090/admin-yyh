@@ -50,12 +50,16 @@
           <span class="marginLeft20">粉丝：{{userInfo.followerNum}}</span>
         </Col>
       </Row>
-      <Alert type="warning">视频/图片/GIF(1个视频/1个GIF/15张以内图片) 图片（不大于1M,JPG/JPEG/PNG）</Alert>
+      <Alert type="warning">视频/图片/GIF(1个视频/1个GIF/15张以内图片) 图片（不大于1M,GIF/JPG/JPEG/PNG）</Alert>
       <FormItem :label-width="10">
-        <UploadImageMultiple></UploadImageMultiple>
+        <UploadImageMultiple
+          :defaultList="formData.images"
+          @remove="removeImages"
+          @uploadSuccess="imagesUploadSuccess"
+        ></UploadImageMultiple>
       </FormItem>
 
-      <FormItem
+      <!-- <FormItem
         label
         :label-width="10"
         prop="iconUrl"
@@ -67,10 +71,10 @@
           @remove="removeIconUrl"
           @uploadSuccess="iconUrlUploadSuccess"
         ></UploadImage>
-      </FormItem>
+      </FormItem>-->
 
       <Divider />
-      <Alert type="warning">选择图片（不大于1M,JPG/JPEG/PNG）</Alert>
+      <Alert type="warning">选择图片（不大于1M,GIF/JPG/JPEG/PNG）</Alert>
       <Row type="flex" justify="start">
         <Col span="8">
           <FormItem label="U社区封面图片：" prop="coverImg" :rules="{ required: true, message: '请上传图片' }">
@@ -148,13 +152,13 @@
 
       <FormItem label="标签：">
         <Tag
-          v-for="tag in selectedTagList"
-          v-if="tag.checked"
-          :key="tag.id"
-          :name="tag.name"
+          v-for="tag in tagList"
+          v-if="tag._checked"
+          :key="tag.tagId"
+          :name="tag.tagName"
           closable
           @on-close="handleClose(tag)"
-        >{{ tag.name }}</Tag>
+        >{{ tag.tagName }}</Tag>
         <Button icon="ios-add" type="dashed" size="small" @click="handleAdd">添加标签</Button>
       </FormItem>
 
@@ -330,7 +334,7 @@ export default {
         likeUbay: "", //	点赞赚 U贝
         shareUbay: "" //	分享好友赚 U贝
       },
-
+      images: [], //图片15张 1张gif
       cityList: [], //适用城市
       contentTags: [], //标签
       contentCoupon: [] //优惠券
@@ -427,13 +431,13 @@ export default {
       // this.linkTo("cms");
       this.action.compName = "publish-list";
     },
-    removeIconUrl() {
-      this.formData.iconUrl = "";
-      this.formData.defaultIconUrlList = [];
+    removeImages(images) {
+      this.formData.images = images;
+      console.log("removeImages", images);
     },
-    iconUrlUploadSuccess({ imgUrl }) {
-      this.formData.iconUrl = imgUrl;
-      this.formData.defaultIconUrlList = [{ imgUrl }];
+    imagesUploadSuccess({ images }) {
+      this.formData.images = images;
+      console.log("imagesUploadSuccess", this.formData.images);
     },
 
     removeCoverImg() {
@@ -509,10 +513,10 @@ export default {
         let formData = JSON.parse(JSON.stringify(this.formData));
 
         // images 图片
-        formData.images = formData.defaultIconUrlList.map(item => {
-          item.sort = 9999;
-          return item;
-        });
+        // formData.images = formData.defaultIconUrlList.map(item => {
+        //   item.sort = 9999;
+        //   return item;
+        // });
 
         // 标签
         formData.contentTags = this.tagList.filter(tag => {
@@ -527,6 +531,7 @@ export default {
         postRequest(url, formData).then(res => {
           if (res.code == 200) {
             this.msgOk("保存成功");
+            this.goback();
           } else {
             this.msgErr(res.msg);
           }

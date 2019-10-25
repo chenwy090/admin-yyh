@@ -1,11 +1,11 @@
 <template>
   <div>
-    <span class="label">{{label}} multiple</span>
+    <span class="label">{{label}}</span>
     <div class="demo-upload-list" v-for="(item, index) in uploadList" :key="index">
       <img :src="item.imgUrl" />
       <div class="demo-upload-list-cover">
         <Icon type="ios-eye-outline" @click.native="handleView(item.imgUrl)"></Icon>
-        <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
+        <Icon type="ios-trash-outline" @click.native="handleRemove(item,index)"></Icon>
       </div>
     </div>
     <!-- :default-file-list="defaultList"  :default-file-list="defaultList"-->
@@ -16,7 +16,7 @@
         :headers="userToken"
         :action="url"
         accept="image"
-        :format="['gif','jpg','jpeg','png','bmp']"
+        :format="['gif','jpg','jpeg','png']"
         :on-format-error="handleFormatError"
         :show-upload-list="false"
         :defaultList="defaultList"
@@ -50,24 +50,24 @@ export default {
   props: {
     label: {
       type: String,
-      default: "label"
+      default: ""
     },
     defaultList: {
       type: Array,
       default: function() {
         return [
-          {
-            name: "image1",
-            imgUrl: "http://image.52iuh.cn/wx_mini/hgjdP0vWDQ.png"
-          },
-          {
-            name: "image2",
-            imgUrl: "http://image.52iuh.cn/wx_mini/ykiJ52fpFg.jpeg"
-          },
-          {
-            name: "image3",
-            imgUrl: "http://image.52iuh.cn/wx_mini/6CXwqm7UXz.jpeg"
-          }
+          // {
+          //   name: "image1",
+          //   imgUrl: "http://image.52iuh.cn/wx_mini/hgjdP0vWDQ.png"
+          // },
+          // {
+          //   name: "image2",
+          //   imgUrl: "http://image.52iuh.cn/wx_mini/ykiJ52fpFg.jpeg"
+          // },
+          // {
+          //   name: "image3",
+          //   imgUrl: "http://image.52iuh.cn/wx_mini/6CXwqm7UXz.jpeg"
+          // }
         ];
       }
     },
@@ -93,9 +93,11 @@ export default {
   },
   computed: {
     uploadStyle() {
-      return this.uploadList.length == 0
-        ? "display: inline-block;width:90px;"
-        : "float:'left';padding-top:60px;";
+      // return this.uploadList.length == 0
+      //   ? "display: inline-block;width:90px;"
+      //   : "float:'left';padding-top:60px;";
+
+      return "display: inline-block;width:90px;";
     },
     dragType() {
       return this.uploadList.length ? "select" : "drag";
@@ -120,7 +122,6 @@ export default {
     // this.uploadList = this.$refs.upload.fileList;
     if (this.defaultList.length) {
       this.uploadList = this.defaultList;
-
       console.log("mounted:", this.uploadList);
     }
   },
@@ -130,21 +131,41 @@ export default {
       this.imgUrl = imgUrl;
       this.visible = true;
     },
-    handleRemove(file) {
-      this.uploadList = [];
-      this.defaultList = [];
-      this.$emit("remove");
-    },
+    handleRemove(file, index) {
+      this.uploadList.splice(index, 1);
 
-    // handleBeforeUpload(file) {
-    //   return checkImage(file);
-    // },
-    handleBeforeUpload() {
-      const check = this.uploadList.length < 3;
+      let images = JSON.parse(JSON.stringify(this.uploadList));
+      images = images.map((item, index) => {
+        item.sort = index;
+        return item;
+      });
+      this.$emit("remove", images);
+    },
+    handleBeforeUpload(file) {
+      console.log(file);
+      const len = this.uploadList.length; // 文件长度
+      let re = /\.(gif)$/i;
+
+      // 判断是否是gif 有且只能是一张
+      let isGif = re.test(file.name);
+      if (isGif && len == 0) {
+        return true;
+      } else if (isGif && len > 0) {
+        this.msgErr("最多只能上传1张gif图片！");
+        return false;
+      }
+
+      const hasGif = this.uploadList.some(item => {
+        return re.test(item.imgUrl);
+      });
+
+      if (hasGif) {
+        this.msgErr("hasGif最多只能上传1张gif图片！");
+        return false;
+      }
+      const check = len < 3;
       if (!check) {
-        this.$Notice.warning({
-          title: "Up to 3 pictures can be uploaded."
-        });
+        this.msgErr("最多上传3张图片！");
       }
       return check;
     },
@@ -157,15 +178,20 @@ export default {
     },
     handleUploadSuccess(res, file, fileList) {
       if (res.code == 200) {
-        this.uploadList = [];
         let imgUrl = res.image_url;
-        file.imgUrl = imgUrl;
-        this.$emit("uploadSuccess", {
-          fileUploadType: this.fileUploadType,
-          imgUrl
+        this.uploadList.push({ imgUrl });
+
+        let images = JSON.parse(JSON.stringify(this.uploadList));
+        images = images.map((item, index) => {
+          item.sort = index;
+          return item;
         });
 
-        this.uploadList.push(file);
+        this.$emit("uploadSuccess", {
+          fileUploadType: this.fileUploadType,
+          images
+        });
+
         this.msgOk("上传图片成功");
       } else {
         this.msgErr("上传图片失败，请重新上传");

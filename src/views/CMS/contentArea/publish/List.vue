@@ -190,28 +190,28 @@ export default {
 
       console.log(111111111111111111, res);
 
-      // const content = res.data;
+      const content = res.data;
 
       //   const content = res;
-      //   // const { filename } = res.headers;
+      const { filename } = res.headers;
 
       //  const filename = "xxxx.xlsx";
-      //   console.log(111111111111111111, res);
-      //   const blob = new Blob([content], { type: "application/vnd.ms-excel" });
-      //   const oA = document.createElement("a");
-      //   if ("download" in oA) {
-      //     // 非IE下载
-      //     oA.download = decodeURI(filename);
-      //     oA.style.display = "none";
-      //     oA.href = URL.createObjectURL(blob);
-      //     document.body.appendChild(oA);
-      //     oA.click();
-      //     URL.revokeObjectURL(oA.href); // 释放URL 对象
-      //     document.body.removeChild(oA);
-      //   } else {
-      //     // IE10+下载
-      //     navigator.msSaveBlob(blob, filename);
-      //   }
+      // console.log(111111111111111111, res);
+      const blob = new Blob([content], { type: "application/vnd.ms-excel" });
+      const oA = document.createElement("a");
+      if ("download" in oA) {
+        // 非IE下载
+        oA.download = decodeURI(filename);
+        oA.style.display = "none";
+        oA.href = URL.createObjectURL(blob);
+        document.body.appendChild(oA);
+        oA.click();
+        URL.revokeObjectURL(oA.href); // 释放URL 对象
+        document.body.removeChild(oA);
+      } else {
+        // IE10+下载
+        navigator.msSaveBlob(blob, filename);
+      }
     },
 
     changeStartDate(arr) {
@@ -283,7 +283,7 @@ export default {
             item.sourceTypeName = this.sourceTypeOption[sourceType];
 
             item.cityNames = citys.map(({ cityName }) => cityName).join(",");
-            item.tagNames = citys.map(({ name }) => name).join(",");
+            item.tagNames = tags.map(({ name }) => name).join(",");
             item.couponNames = citys
               .map(({ couponName }) => couponName)
               .join(",");

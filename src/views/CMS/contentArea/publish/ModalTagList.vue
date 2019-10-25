@@ -5,7 +5,6 @@
       v-model="isShow"
       title="标签列表"
       width="500"
-      footer-hide
       :closable="true"
       :mask-closable="false"
       @on-cancel="closeDialog"
@@ -18,10 +17,10 @@
         @on-selection-change="handleSelectionChange"
       ></Table>
 
-      <Row style="margin-left:350px; margin-top: 30px">
+      <div slot="footer">
         <Button style="margin-right: 20px" @click="cancel">取消</Button>
         <Button type="primary" @click="selectedTrCallBack">确定</Button>
-      </Row>
+      </div>
     </Modal>
   </div>
 </template>
@@ -71,7 +70,7 @@ export default {
           }
         }
       });
-      console.log(JSON.stringify(this.tableData));
+      // console.log(JSON.stringify(this.tableData));
     },
     // 关闭商户选择框
     cancel() {
@@ -85,6 +84,7 @@ export default {
     selectedTrCallBack() {
       let data = JSON.parse(JSON.stringify(this.tableData));
       this.$emit("seclectedTr-event", data);
+      this.closeDialog();
     }
   }
 };

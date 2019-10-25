@@ -21,7 +21,7 @@ export default [
         width: 120,
         slot: "content",
         render: (h, params) => {
-            let { content } = params.row;
+            let { content = "" } = params.row;
             if (content.length > 100) {
                 content = "内容太长啦。。。"
             }
