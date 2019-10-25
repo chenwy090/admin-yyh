@@ -51,6 +51,10 @@
         </Col>
       </Row>
       <Alert type="warning">视频/图片/GIF(1个视频/1个GIF/15张以内图片) 图片（不大于1M,JPG/JPEG/PNG）</Alert>
+      <FormItem :label-width="10">
+        <UploadImageMultiple></UploadImageMultiple>
+      </FormItem>
+
       <FormItem
         label
         :label-width="10"
@@ -203,11 +207,12 @@
           clearable
         />&nbsp;U贝
       </FormItem>
-      <FormItem prop="scanUbay" :rules="{ required: true, message: '请输入' }">
-        有效阅读赚
+
+      <FormItem prop="shareUbay" :rules="{ required: true, message: '请输入' }">
+        分享好友赚
         <Input
           style="display:inline-block;width:100px"
-          v-model="formData.scanUbay"
+          v-model="formData.shareUbay"
           placeholder="请输入数字"
           clearable
         />&nbsp;U贝
@@ -226,6 +231,8 @@ import { postRequest } from "@/libs/axios";
 import EditorBar from "@/components/EditorBar";
 
 import CouponList from "./CouponList";
+
+import UploadImageMultiple from "./UploadImageMultiple";
 import UploadImage from "./UploadImage";
 
 import ModalAddPhone from "./ModalAddPhone";
@@ -254,6 +261,7 @@ export default {
     ModalAddPhone,
     CompCheckBoxCity,
     CouponList,
+    UploadImageMultiple,
     UploadImage,
     EditorBar,
     ModalTagList
@@ -320,7 +328,7 @@ export default {
         contentType: "", //	图片类型   1-Gif  2-图片轮播  3-视频
         scanUbay: "", //	  有效阅读赚 U贝
         likeUbay: "", //	点赞赚 U贝
-        scanUbay: "" //	有效阅读赚 U贝
+        shareUbay: "" //	分享好友赚 U贝
       },
 
       cityList: [], //适用城市

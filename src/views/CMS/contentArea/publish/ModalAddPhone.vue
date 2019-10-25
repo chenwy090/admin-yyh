@@ -20,9 +20,9 @@
           <FormItem
             label="手机号码："
             prop="phoneNumber"
-            :rules="{ required: true, validator: validateEmpty('手机号码不能为空') }"
+            :rules="{ required: true, validator: validatePhone('手机号码不能为空') }"
           >
-            <Input v-model="formData.phoneNumber" type="text"></Input>
+            <Input v-model="formData.phoneNumber" type="text" clearable></Input>
           </FormItem>
         </Form>
       </div>
@@ -81,6 +81,21 @@ export default {
           this.$Message.error("数据验证失败！");
         }
       });
+    },
+
+    validatePhone(msg) {
+      return function(rule, value, callback) {
+        value += "";
+        value = value.trim();
+        if (value == "") {
+          return callback(msg);
+        } else {
+          if (!/^1[3456789]\d{9}$/.test(value)) {
+            return callback("手机号码有误，请重填!");
+          }
+        }
+        callback();
+      };
     },
     validateEmpty(msg) {
       return function(rule, value, callback) {
