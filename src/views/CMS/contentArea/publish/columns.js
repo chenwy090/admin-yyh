@@ -19,7 +19,18 @@ export default [
         key: "content",
         align: "center",
         width: 120,
-        slot: "content"
+        slot: "content",
+        render: (h, params) => {
+            let { content } = params.row;
+            if (content.length > 100) {
+                content = "内容太长啦。。。"
+            }
+            return h("div", {//用来写原生的DOM属性
+                domProps: {
+                    innerHTML: content
+                }
+            });
+        }
     },
     {
         title: "标签",

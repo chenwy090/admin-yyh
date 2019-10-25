@@ -1,6 +1,13 @@
 <template>
   <div class="publish-edit">
     <Button type="dashed" icon="md-arrow-round-back" @click="goback()">返回上一层</Button>
+
+    <ModalAddPhone
+      v-if="showAddPhone"
+      :showAddPhone.sync="showAddPhone"
+      @refreshUserList="refreshUserList"
+    ></ModalAddPhone>
+
     <CouponList
       v-if="showCouponList"
       :showCouponList.sync="showCouponList"
@@ -37,7 +44,7 @@
               :value="item.userId"
             >{{ item.phoneNumber }}</Option>
           </Select>
-          <Button icon="ios-add" type="dashed" size="small" @click="handleAdd">添加账号</Button>
+          <Button icon="ios-add" type="dashed" size="small" @click="handleAddPhone">添加账号</Button>
           <span class="marginLeft20">今日发布：{{userInfo.todayPublishNum}}</span>
           <span class="marginLeft20">7日发布：{{userInfo.weekPublishNum}}</span>
           <span class="marginLeft20">粉丝：{{userInfo.followerNum}}</span>
@@ -221,6 +228,7 @@ import EditorBar from "@/components/EditorBar";
 import CouponList from "./CouponList";
 import UploadImage from "./UploadImage";
 
+import ModalAddPhone from "./ModalAddPhone";
 import CompCheckBoxCity from "./CompCheckBoxCity";
 import ModalTagList from "./ModalTagList";
 
@@ -229,7 +237,21 @@ import testData from "./data";
 export default {
   name: "publish-edit",
   inject: ["linkTo", "msgOk", "msgErr"],
+  props: {
+    action: {
+      type: Object,
+      default: function() {
+        return {
+          id: Math.random(),
+          compName: "publish-edit",
+          type: "list", // list/add/edit
+          data: {}
+        };
+      }
+    }
+  },
   components: {
+    ModalAddPhone,
     CompCheckBoxCity,
     CouponList,
     UploadImage,
@@ -245,6 +267,7 @@ export default {
   },
   data() {
     return {
+      showAddPhone: false,
       userInfo: {
         userId: "",
         todayPublishNum: 0, //今日发布
@@ -328,6 +351,9 @@ export default {
 
       this.userInfo = arr.length ? arr[0] : userInfo;
     },
+    handleAddPhone() {
+      this.showAddPhone = true;
+    },
     handleAdd() {
       this.showTagList = true;
     },
@@ -371,11 +397,13 @@ export default {
         this.msgErr(msg);
       }
     },
-
-    async getUserList(tel = "") {
+    refreshUserList() {
+      this.getUserList();
+    },
+    async getUserList(phoneNumber = "") {
       //发布用户查询
       const url = "/content/userlist";
-      const { code, msg, data } = await postRequest(url, { tel });
+      const { code, msg, data } = await postRequest(url, { phoneNumber });
       if (code == 200) {
         // data:[{id,name,sort}]
         this.userList = data.map(item => {
@@ -387,10 +415,10 @@ export default {
       }
     },
 
-    goback(item) {
-      this.linkTo("cms");
+    goback() {
+      // this.linkTo("cms");
+      this.action.compName = "publish-list";
     },
-
     removeIconUrl() {
       this.formData.iconUrl = "";
       this.formData.defaultIconUrlList = [];
@@ -511,10 +539,6 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.publish {
-  padding: 20px;
-  background: #fff;
-}
 .marginLeft20 {
   margin-left: 20px;
 }

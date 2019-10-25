@@ -52,13 +52,14 @@
               type="primary"
               size="small"
               style="margin-right: 5px"
-              @click="addOrEdit('add')"
+              @click="addOrEdit('edit',row)"
             >编辑</Button>
           </template>
         </template>
 
         <template slot-scope="{ row }" slot="content">
-          <span v-html="row.content"></span>
+          <!-- {{row}} -->
+          <div v-html="row.content"></div>
         </template>
       </Table>
       <!-- 分页器 -->
@@ -75,12 +76,6 @@
         ></Page>
       </Row>
     </Card>
-
-    <FileImport
-      v-if="showFileImport"
-      :showFileImport.sync="showFileImport"
-      @refresh="queryTableData"
-    ></FileImport>
   </div>
 </template>
 <script>
@@ -91,6 +86,19 @@ import columns from "./columns";
 export default {
   name: "publish-list",
   inject: ["linkTo", "msgOk", "msgErr"],
+  props: {
+    action: {
+      type: Object,
+      default: function() {
+        return {
+          id: Math.random(),
+          compName: "publish-list",
+          type: "list", // list/add/edit
+          data: {}
+        };
+      }
+    }
+  },
   components: {},
   computed: {
     tab() {
@@ -104,7 +112,6 @@ export default {
   },
   data() {
     return {
-      showFileImport: false,
       daterange: [],
       //审核 status 0-创建，1-待审核(创建完成），2-审核成功（上架），3-审核失败（下架）',
       statusOption: {
@@ -160,6 +167,18 @@ export default {
     this.queryTableData();
   },
   methods: {
+    addOrEdit(type, data) {
+      const id = Math.random();
+      let compName = `publish-${type == "list" ? "list" : "edit"}`;
+      // 新增/编辑
+
+      if (type == "edit") {
+        this.action.data = data;
+      }
+      this.action.compName = compName;
+
+      console.log("addOrEdit:", JSON.stringify(this.action));
+    },
     upload() {
       this.showFileImport = true;
     },
@@ -268,9 +287,6 @@ export default {
             item.couponNames = citys
               .map(({ couponName }) => couponName)
               .join(",");
-
-            console.log(JSON.stringify(item));
-
             return item;
           });
 

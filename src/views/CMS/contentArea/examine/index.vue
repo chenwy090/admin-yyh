@@ -65,18 +65,16 @@
         <!-- action -->
         <!-- @click="addOrEdit('edit',row)" -->
         <template slot-scope="{ row }" slot="action">
-          <template v-if="row.status==1||row.status==2">
-            <template v-if="row.status == 1">
-              <Button
-                type="primary"
-                size="small"
-                style="margin-right: 5px"
-                @click="examine(row.id, 1)"
-              >审核</Button>
-            </template>
-            <template v-else-if="row.status == 2">
-              <Button type="warning" size="small" @click="examine(row.id, 0)">下架</Button>
-            </template>
+          <template v-if="row.status == 1||row.status == 3">
+            <Button
+              type="primary"
+              size="small"
+              style="margin-right: 5px"
+              @click="examine(row.id, 1)"
+            >审核</Button>
+          </template>
+          <template v-else-if="row.status == 2">
+            <Button type="warning" size="small" @click="examine(row.id, 0)">下架</Button>
           </template>
         </template>
 

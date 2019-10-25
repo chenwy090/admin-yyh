@@ -1,6 +1,6 @@
 <template>
   <div class="publish">
-    <component :is="compName"></component>
+    <component :is="action.compName" :action="action"></component>
   </div>
 </template>
 <script>
@@ -11,42 +11,26 @@ import Edit from "./Edit";
 
 export default {
   name: "publish",
-  provide() {
+  components: { [List.name]: List, [Edit.name]: Edit },
+  computed: {},
+  data() {
     return {
-      // 全局提示
-      msgOk: this.msgOk,
-      msgErr: this.msgErr
+      compName: List.name,
+      action: {
+        id: Math.random(),
+        compName: List.name,
+        type: "list", // list/add/edit
+        data: {}
+      }
     };
   },
-  components: {
-    [List.name]: List,
-    [Edit.name]: Edit
-  },
-  computed: {
-    ...mapGetters({
-      compName: "getCompName"
-    })
-  },
-  data() {
-    return {};
-  },
   created() {},
-  methods: {
-    // 全局提示
-    msgOk(txt) {
-      this.$Message.info({
-        content: txt,
-        duration: 3
-      });
-    },
-    msgErr(txt) {
-      this.$Message.error({
-        content: txt,
-        duration: 3
-      });
-    }
-  }
+  methods: {}
 };
 </script>
 <style lang="less">
+.publish {
+  padding: 20px;
+  background: #fff;
+}
 </style>

@@ -115,7 +115,7 @@ export default {
           id: Math.random(),
           type: "add",
           data: {
-            site:'1',
+            site: "1",
             title: "",
             iconUrl: "",
             defaultIconUrlList: [],
@@ -213,7 +213,7 @@ export default {
         // console.log(JSON.stringify(this.formValidate));
         if (valid) {
           this.$Message.success("数据验证成功!");
-            this.formData.site = '1';
+          this.formData.site = "1";
           let oForm = JSON.parse(JSON.stringify(this.formData));
 
           console.log("submit oForm", oForm);
@@ -264,12 +264,12 @@ export default {
       value += "";
       value = value.trim();
 
-      console.log("validateContent",value);
+      console.log("validateContent", value);
 
       if (value == "") {
         callback(new Error("内容不能为空"));
-      } else if (value.length > 30) {
-        callback(new Error("内容最多支持30个字"));
+      } else if (value.length > 200) {
+        callback(new Error("内容最多支持200个字"));
       } else {
         callback();
       }
