@@ -24,7 +24,7 @@
                     <FormItem label="公告标题">
                         <Input
                                 type="text"
-                                :maxlength="10"
+                                :maxlength="20"
                                 v-model="modal.title"
                                 placeholder="请填写公告标题"
                                 style="width: 30%"
