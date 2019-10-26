@@ -315,8 +315,8 @@ export default {
         title: "", //	内容标题
         describe: "", //内容介绍（文字详情）
 
-        contentTags: [], //	标签
-        contentCoupon: [], //优惠券（非必填）
+        tags: [], //	标签
+        coupons: [], //优惠券（非必填）
         citys: [], //适用城市
 
         sourceType: "", //内容创建人来源类型：1-官方 2-PGC 3-UGC
@@ -331,11 +331,9 @@ export default {
       },
       images: [], //图片15张 1张gif
       cityList: [], //适用城市
-      citys: [],
-      contentTags: [], //标签
-
-      tags: [],
-      contentCoupon: [] //优惠券
+      citys: [], //适用城市
+      tags: [], //标签
+      coupons: [] //优惠券
     };
   },
   created() {
@@ -381,6 +379,9 @@ export default {
 
         this.formData.defaultSmallImgList = defaultSmallImgList;
         this.formData.defaultCoverImgList = defaultCoverImgList;
+
+        let couponNames = coupons.map(({ couponName }) => couponName).join(",");
+        this.formData.templateName = couponNames;
 
         // this.tagList.forEach(tag => {
         //   tag._checked = false;
@@ -479,10 +480,7 @@ export default {
       const { code, msg, data } = await postRequest(url, { phoneNumber });
       if (code == 200) {
         // data:[{id,name,sort}]
-        this.userList = data.map(item => {
-          item.phoneNumber = item.phoneNumber || "15657123900";
-          return item;
-        });
+        this.userList = data;
       } else {
         this.msgErr(msg);
       }
@@ -523,17 +521,13 @@ export default {
     },
     selectedCouponItem(data) {
       console.log("selectedCouponItem----", data);
-      let { couponType, id, name } = data;
+      let { couponType, id: couponId, name: couponName } = data;
       // templateId 券模板id templateName 券模板名称
 
-      this.formData.templateName = name;
+      this.formData.templateName = couponName;
 
-      this.formData.contentCoupon = this.contentCoupon = [
-        {
-          couponId: id,
-          couponName: name,
-          couponType
-        }
+      this.formData.coupons = this.coupons = [
+        { couponId, couponName, couponType }
       ];
     },
     handleChooseCoupon() {

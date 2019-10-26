@@ -95,7 +95,7 @@ export default [
     },
     {
         title: "审核人",
-        key: "auditBy",
+        key: "auditName",
         align: "center",
         minWidth: 140
     },

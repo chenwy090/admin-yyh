@@ -3,8 +3,8 @@
     <div class="query-row">
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
-          <FormItem label="用户id：" :label-width="85">
-            <Input style="width:200px" type="text" v-model="searchData.useid" placeholder="请输入"></Input>
+          <FormItem label="创建人：" :label-width="85">
+            <Input style="width:200px" type="text" v-model="searchData.creatBy" placeholder="请输入"></Input>
           </FormItem>
           <FormItem label="发布内容：" :label-width="85">
             <Input style="width:200px" type="text" v-model="searchData.content" placeholder="请输入"></Input>
@@ -143,7 +143,7 @@ export default {
       // 查询参数
       searchData: {
         status: "", // 审核状态
-        useId: "", //  用户id
+        creatBy: "", // 创建人
         title: "", //搜索标题
         //发布时间
         startTime: "", //起始时间 时间格式为（yyyy-MM-dd HH:mm:ss）
@@ -217,8 +217,14 @@ export default {
     changeStartDate(arr) {
       // yyyy-MM-dd HH:mm:ss
       console.log(arr);
-      this.searchData.startTime = `${arr[0]}:00`;
-      this.searchData.endTime = `${arr[1]}:00`;
+      let [startTime, endTime] = arr;
+      if (startTime) {
+        startTime = `${arr[0]}:00`;
+        endTime = `${arr[1]}:00`;
+      }
+      console.log(startTime, endTime);
+      this.searchData.startTime = startTime;
+      this.searchData.endTime = endTime;
     },
     goback() {
       this.linkTo("cms");
@@ -304,7 +310,7 @@ export default {
       this.daterange = [];
       this.searchData = {
         status: "", // 审核状态
-        useId: "", //  用户id
+        creatBy: "", // 创建人
         title: "", //搜索标题
         //发布时间
         startTime: "", //起始时间 时间格式为（yyyy-MM-dd HH:mm:ss）

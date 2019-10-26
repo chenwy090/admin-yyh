@@ -28,10 +28,24 @@ export default {
       }
     };
   },
+  created() {
+    // this.getPerms(perms);
+  },
   methods: {
     fn(item) {
       console.log("click", { ...item });
       this.linkTo(item.compName);
+    },
+    async getPerms(perms) {
+      //获取权限
+      const url = "/system/sys-menu/hasPerms";
+      const { code, msg, data } = await postRequest(url, { perms });
+      if (code == 200) {
+        // data:[{id,name,sort}]
+        this.auditList = data;
+      } else {
+        this.msgErr(msg);
+      }
     }
   }
 };

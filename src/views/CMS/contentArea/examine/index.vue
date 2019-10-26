@@ -9,8 +9,8 @@
               <!-- <Option v-for="(item,k) in statusOption" :value="item.value" :key="k">{{ item.label }}</Option> -->
             </Select>
           </FormItem>
-          <FormItem label="用户id：" :label-width="85">
-            <Input style="width:200px" type="text" v-model="searchData.useid" placeholder="请输入"></Input>
+          <FormItem label="创建人：" :label-width="85">
+            <Input style="width:200px" type="text" v-model="searchData.creatBy" placeholder="请输入"></Input>
           </FormItem>
           <FormItem label="搜索标题：" :label-width="85">
             <Input style="width:200px" type="text" v-model="searchData.title" placeholder="请输入"></Input>
@@ -29,8 +29,11 @@
 
           <FormItem label="审核人：" :label-width="70">
             <Select v-model="searchData.auditBy" style="width:120px" clearable>
-              <Option v-for="(v,k) in isStopOption" :value="k" :key="k">{{ v }}</Option>
-              <!-- <Option v-for="(item,k) in isStopOption" :value="item.value" :key="k">{{ item.label }}</Option> -->
+              <Option
+                v-for="item in auditList"
+                :value="item.userId"
+                :key="item.userId"
+              >{{ item.userName }}</Option>
             </Select>
           </FormItem>
 
@@ -156,10 +159,12 @@ export default {
         "2": "已结束",
         "3": "已终止"
       },
+      auditList: [], //审核列表 [{userId,userName},...]
       // 查询参数
       searchData: {
         status: "", // 审核状态
-        useId: "", //  用户id
+        creatBy: "", // 创建人
+        // userId: "", //  用户id
         title: "", //搜索标题
         //发布时间
         startTime: "", //起始时间 时间格式为（yyyy-MM-dd HH:mm:ss）
@@ -180,6 +185,7 @@ export default {
   },
   created() {
     // console.log("okkk", this.msgOk);
+    this.getAuditList("content:list");
     this.queryTableData();
   },
   methods: {
@@ -217,8 +223,14 @@ export default {
     changeStartDate(arr) {
       // yyyy-MM-dd HH:mm:ss
       console.log(arr);
-      this.searchData.startTime = `${arr[0]}:00`;
-      this.searchData.endTime = `${arr[1]}:00`;
+      let [startTime, endTime] = arr;
+      if (startTime) {
+        startTime = `${arr[0]}:00`;
+        endTime = `${arr[1]}:00`;
+      }
+      console.log(startTime, endTime);
+      this.searchData.startTime = startTime;
+      this.searchData.endTime = endTime;
     },
     goback() {
       this.linkTo("cms");
@@ -226,6 +238,17 @@ export default {
     // 刷新搜索
     refresh() {
       this.queryTableData(this.page.pageNum);
+    },
+    async getAuditList(role) {
+      //发布用户查询
+      const url = "/system/sys-user/auditList";
+      const { code, msg, data } = await postRequest(url, { role });
+      if (code == 200) {
+        // data:[{id,name,sort}]
+        this.auditList = data;
+      } else {
+        this.msgErr(msg);
+      }
     },
     // 分页（点击第几页）
     changeCurrent(pageNum) {
@@ -307,7 +330,8 @@ export default {
       this.daterange = [];
       this.searchData = {
         status: "", // 审核状态
-        useId: "", //  用户id
+        creatBy: "", // 创建人
+        // userId: "", //  用户id
         title: "", //搜索标题
         //发布时间
         startTime: "", //起始时间 时间格式为（yyyy-MM-dd HH:mm:ss）
