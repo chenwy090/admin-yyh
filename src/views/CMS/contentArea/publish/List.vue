@@ -171,7 +171,7 @@ export default {
       const id = Math.random();
       let compName = `publish-${type == "list" ? "list" : "edit"}`;
       // 新增/编辑
-
+      this.action.type = type;
       if (type == "edit") {
         this.action.data = data;
       }
@@ -284,7 +284,7 @@ export default {
 
             item.cityNames = citys.map(({ cityName }) => cityName).join(",");
             item.tagNames = tags.map(({ name }) => name).join(",");
-            item.couponNames = citys
+            item.couponNames = coupons
               .map(({ couponName }) => couponName)
               .join(",");
             return item;

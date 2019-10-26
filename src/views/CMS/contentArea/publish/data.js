@@ -2,6 +2,10 @@ export default function () {
     return {
         "title": `test000888${Math.random()}`,
         "userId": 12,
+        "addWatchNum": 111,
+        "addLikeNum": 222,
+        "addShareNum": 333,
+        "describe": "快看看这是长文发反反复复反反复复方法vvvvvvvv章内容",
         "coverImg": "test000088",
         "smallImg": "33333333333333333",
         "duration": 1,
@@ -41,9 +45,6 @@ export default function () {
             "couponName": "券名称2222222",
             "couponType": 2
         }],
-        "addWatchNum": 111,
-        "addLikeNum": 222,
-        "addShareNum": 333,
-        "describe": "快看看这是长文发反反复复反反复复方法vvvvvvvv章内容"
+
     }
 }

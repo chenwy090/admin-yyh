@@ -17,6 +17,7 @@
     <ModalTagList
       v-if="showTagList"
       :showTagList.sync="showTagList"
+      :tags="tags"
       :tagList="tagList"
       @seclectedTr-event="updateTagList"
     ></ModalTagList>
@@ -28,7 +29,15 @@
       :rules="ruleValidate"
       :label-width="130"
     >
-      <Row>
+      <Row v-if="action.type=='edit'">
+        <Col span="12" style="padding-right:10px">
+          <span>发布账号 {{contentAuthor.phoneNumber}}</span>
+          <span class="marginLeft20">今日发布：{{contentAuthor.todayPublishNum}}</span>
+          <span class="marginLeft20">7日发布：{{contentAuthor.weekPublishNum}}</span>
+          <span class="marginLeft20">粉丝：{{contentAuthor.followerNum}}</span>
+        </Col>
+      </Row>
+      <Row v-else>
         <Col span="12" style="padding-right:10px">
           <span>选择发布账号</span>
           <Select
@@ -45,9 +54,9 @@
             >{{ item.phoneNumber }}</Option>
           </Select>
           <Button icon="ios-add" type="dashed" size="small" @click="handleAddPhone">添加账号</Button>
-          <span class="marginLeft20">今日发布：{{userInfo.todayPublishNum}}</span>
-          <span class="marginLeft20">7日发布：{{userInfo.weekPublishNum}}</span>
-          <span class="marginLeft20">粉丝：{{userInfo.followerNum}}</span>
+          <span class="marginLeft20">今日发布：{{contentAuthor.todayPublishNum}}</span>
+          <span class="marginLeft20">7日发布：{{contentAuthor.weekPublishNum}}</span>
+          <span class="marginLeft20">粉丝：{{contentAuthor.followerNum}}</span>
         </Col>
       </Row>
       <Alert type="warning">视频/图片/GIF(1个视频/1个GIF/15张以内图片) 图片（不大于1M,GIF/JPG/JPEG/PNG）</Alert>
@@ -58,20 +67,6 @@
           @uploadSuccess="imagesUploadSuccess"
         ></UploadImageMultiple>
       </FormItem>
-
-      <!-- <FormItem
-        label
-        :label-width="10"
-        prop="iconUrl"
-        :rules="{ required: true, message: '请上传图片' }"
-      >
-        <UploadImage
-          :fileUploadType="'iconUrl'"
-          :defaultList="formData.defaultIconUrlList"
-          @remove="removeIconUrl"
-          @uploadSuccess="iconUrlUploadSuccess"
-        ></UploadImage>
-      </FormItem>-->
 
       <Divider />
       <Alert type="warning">选择图片（不大于1M,GIF/JPG/JPEG/PNG）</Alert>
@@ -121,7 +116,11 @@
       <!-- 适用城市 -->
 
       <FormItem label="适用城市：">
-        <CompCheckBoxCity :cityList="cityList" @checked-city-list="getCheckedCityList"></CompCheckBoxCity>
+        <CompCheckBoxCity
+          :citys="citys"
+          :cityList="cityList"
+          @checked-city-list="getCheckedCityList"
+        ></CompCheckBoxCity>
       </FormItem>
       <FormItem label="标题：" prop="title" :rules="{ required: true, message: '请输入标题' }">
         <Input
@@ -135,12 +134,11 @@
 
       <FormItem label="类型：">
         <Select v-model="formData.sourceType" style="width:120px" clearable>
-          <Option v-for="(v,k) in sourceTypeOption" :value="k" :key="k">{{ v }}</Option>
+          <Option v-for="(v,k) in sourceTypeOption" :value="parseInt(k)" :key="k">{{ v }}</Option>
         </Select>
       </FormItem>
 
       <!-- 描述 describe	内容介绍（文字详情） -->
-
       <FormItem label="描述：">
         <editor-bar
           v-model="formData.describe"
@@ -152,8 +150,7 @@
 
       <FormItem label="标签：">
         <Tag
-          v-for="tag in tagList"
-          v-if="tag._checked"
+          v-for="tag in tags"
           :key="tag.tagId"
           :name="tag.tagName"
           closable
@@ -280,7 +277,8 @@ export default {
   data() {
     return {
       showAddPhone: false,
-      userInfo: {
+      contentAuthor: {
+        //contentAuthor
         userId: "",
         todayPublishNum: 0, //今日发布
         weekPublishNum: 0, //7日发布
@@ -302,9 +300,6 @@ export default {
       ruleValidate: {},
       item: {},
       formData: {
-        iconUrl: "", //首页分红banner图片
-        defaultIconUrlList: [],
-
         id: "", //内容id
         userId: "", //发布用户id
         images: [
@@ -336,21 +331,76 @@ export default {
       },
       images: [], //图片15张 1张gif
       cityList: [], //适用城市
+      citys: [],
       contentTags: [], //标签
+
+      tags: [],
       contentCoupon: [] //优惠券
     };
   },
   created() {
     this.getTagList();
-    this.getUserList();
     this.getCityList();
+
+    if (this.action.type == "add") {
+      this.getUserList();
+    } else if (this.action.type == "edit") {
+      let { id } = this.action.data;
+      this.queryDetails(id);
+    }
   },
   methods: {
+    async queryDetails(id) {
+      //查询内容详情
+      const url = "/content/queryDetails";
+      const { code, msg, data } = await postRequest(url, { id });
+      if (code == 200) {
+        // data:[{id,name,sort}]
+        this.formData = data;
+        // const { sourceType, tags = [], citys = [], coupons = [] } = data;
+        const {
+          smallImg,
+          coverImg,
+          sourceType,
+          tags = [],
+          citys = [],
+          coupons = []
+        } = data;
+
+        this.citys = citys;
+
+        let defaultSmallImgList = [];
+        if (smallImg) {
+          defaultSmallImgList = [{ imgUrl: smallImg }];
+        }
+        let defaultCoverImgList = [];
+        if (coverImg) {
+          defaultCoverImgList = [{ imgUrl: coverImg }];
+        }
+
+        this.formData.defaultSmallImgList = defaultSmallImgList;
+        this.formData.defaultCoverImgList = defaultCoverImgList;
+
+        // this.tagList.forEach(tag => {
+        //   tag._checked = false;
+        //   for (let i = 0; i < tags.length; i++) {
+        //     let r = tag.tagId == tags[i].tagId;
+        //     if (r) {
+        //       tag._checked = true;
+        //     }
+        //   }
+        // });
+
+        // this.formData.tags = this.tagList;
+      } else {
+        this.msgErr(msg);
+      }
+    },
     handleQueryChange(phoneNumber) {
       this.findUser("phoneNumber", phoneNumber);
     },
     findUser(name, value) {
-      let userInfo = {
+      let contentAuthor = {
         userId: "",
         todayPublishNum: 0, //今日发布
         weekPublishNum: 0, //7日发布
@@ -361,7 +411,7 @@ export default {
         return item[name] == value;
       });
 
-      this.userInfo = arr.length ? arr[0] : userInfo;
+      this.contentAuthor = arr.length ? arr[0] : contentAuthor;
     },
     handleAddPhone() {
       this.showAddPhone = true;
@@ -370,14 +420,8 @@ export default {
       this.showTagList = true;
     },
     handleClose(tag) {
-      const { tagId } = tag;
-      this.tagList.some(item => {
-        let r = item.tagId == tagId;
-        if (r) {
-          item._checked = false;
-        }
-        return r;
-      });
+      // this.tags = this.tags.filter(({ id }) => id != tag.id);
+      this.tags = this.tags.filter(({ tagId }) => tagId != tag.tagId);
     },
     async getTagList() {
       //标签查询
@@ -403,7 +447,6 @@ export default {
       const { code, msg, data } = await postRequest(url);
 
       if (code == 200) {
-        console.log("getCityList", data);
         this.cityList = data;
       } else {
         this.msgErr(msg);
@@ -458,7 +501,7 @@ export default {
     },
     updateTagList(data) {
       console.log("selectedTagList----", data);
-      this.tagList = data;
+      this.tags = data;
     },
     selectedCouponItem(data) {
       console.log("selectedCouponItem----", data);
@@ -492,16 +535,6 @@ export default {
       // 发布
       const url = "/content/Details";
 
-      // postRequest(url, testData()).then(res => {
-      //   if (res.code == 200) {
-      //     this.msgOk("保存成功");
-      //   } else {
-      //     this.msgErr(res.msg);
-      //   }
-      // });
-
-      // return;
-
       this.$refs[name].validate(valid => {
         console.log("valid", valid);
         if (!valid) {
@@ -518,12 +551,10 @@ export default {
         //   return item;
         // });
 
-        // 标签
-        formData.contentTags = this.tagList.filter(tag => {
-          const { _checked, tagId, tagName } = tag;
-          if (_checked) {
-            return { tagId, tagName };
-          }
+        // 标签 this.tags
+        formData.tags = this.tags.filter(tag => {
+          const { id, name } = tag;
+          return { id, name };
         });
 
         console.log("submit formData:", formData);

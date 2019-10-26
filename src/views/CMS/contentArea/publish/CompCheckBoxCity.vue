@@ -9,22 +9,38 @@
       >全选</Checkbox>
     </div>
     <CheckboxGroup v-model="checkAllGroup" @on-change="checkAllGroupChange">
-      <Checkbox v-for="(item,index) in cityList" :key="index" :label="item">{{item.cityName}}</Checkbox>
+      <Checkbox
+        v-for="(item,index) in cityList"
+        :key="index"
+        :label="item.cityCode"
+      >{{item.cityName}}</Checkbox>
     </CheckboxGroup>
   </div>
 </template>
 <script>
 export default {
   props: {
+    citys: {
+      type: Array,
+      default: () => []
+    },
     cityList: {
       type: Array,
       default: () => []
     }
   },
+  created() {},
   watch: {
+    citys: {
+      handler: function(val, oldVal) {
+        this.checkAllGroup = this.citys.map(({ cityCode }) => cityCode);
+        console.log("citys2:", this.checkAllGroup);
+      },
+      immediate: true
+    },
     checkAllGroup() {
-      this.$emit("checked-city-list", this.checkAllGroup);
-      console.log("watch:", this.checkAllGroup);
+      // this.$emit("checked-city-list", this.checkAllGroup);
+      // console.log("watch:", this.checkAllGroup);
     }
   },
   data() {
@@ -55,6 +71,9 @@ export default {
       }
     },
     checkAllGroupChange(data) {
+      console.log("XXX", data);
+      console.log("this.cityList", this.cityList);
+
       if (data.length === this.cityList.length) {
         this.indeterminate = false;
         this.checkAll = true;
@@ -65,6 +84,16 @@ export default {
         this.indeterminate = false;
         this.checkAll = false;
       }
+
+      let checked = this.cityList.filter(item => {
+        for (let i = 0; i < data.length; i++) {
+          if (item.cityCode == data[i]) {
+            return true;
+          }
+        }
+      });
+      console.log("emit checked data:", checked);
+      this.$emit("checked-city-list", checked);
     }
   }
 };

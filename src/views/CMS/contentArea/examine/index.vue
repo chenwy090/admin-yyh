@@ -189,33 +189,31 @@ export default {
     async download() {
       const url = "/content/exportContentSort";
 
-      // const res = await downloadSteam(url);
-      const res = await getRequest(url);
+      const res = await downloadSteam(url);
+      // const res = await getRequest(url);
 
       console.log(111111111111111111, res);
 
       // const content = res.data;
 
-      //   const content = res;
-      //   // const { filename } = res.headers;
+      const content = res;
+      const { filename } = res.headers;
 
-      //  const filename = "xxxx.xlsx";
-      //   console.log(111111111111111111, res);
-      //   const blob = new Blob([content], { type: "application/vnd.ms-excel" });
-      //   const oA = document.createElement("a");
-      //   if ("download" in oA) {
-      //     // 非IE下载
-      //     oA.download = decodeURI(filename);
-      //     oA.style.display = "none";
-      //     oA.href = URL.createObjectURL(blob);
-      //     document.body.appendChild(oA);
-      //     oA.click();
-      //     URL.revokeObjectURL(oA.href); // 释放URL 对象
-      //     document.body.removeChild(oA);
-      //   } else {
-      //     // IE10+下载
-      //     navigator.msSaveBlob(blob, filename);
-      //   }
+      const blob = new Blob([content], { type: "application/vnd.ms-excel" });
+      const oA = document.createElement("a");
+      if ("download" in oA) {
+        // 非IE下载
+        oA.download = decodeURI(filename);
+        oA.style.display = "none";
+        oA.href = URL.createObjectURL(blob);
+        document.body.appendChild(oA);
+        oA.click();
+        URL.revokeObjectURL(oA.href); // 释放URL 对象
+        document.body.removeChild(oA);
+      } else {
+        // IE10+下载
+        navigator.msSaveBlob(blob, filename);
+      }
     },
 
     changeStartDate(arr) {

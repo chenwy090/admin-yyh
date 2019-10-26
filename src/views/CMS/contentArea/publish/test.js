@@ -1,12 +1,17 @@
-var data = [{ "id": 1, "userId": 27, "todayPublishNum": 0, "weekPublishNum": 4, "followerNum": 3, "phoneNumber": "15639283218" }, { "id": 2, "userId": 12, "todayPublishNum": 1, "weekPublishNum": 15, "followerNum": 1, "phoneNumber": "13777446171" }, { "id": 3, "userId": 13, "todayPublishNum": 0, "weekPublishNum": 0, "followerNum": 0, "phoneNumber": "18457123939" }, { "id": 4, "userId": 14, "todayPublishNum": 0, "weekPublishNum": 0, "followerNum": 0, "phoneNumber": "13777889580" }]
+var data = [{ "cityName": "上海市", "cityCode": "310100", "shortName": "上海" }, { "cityName": "无锡市", "cityCode": "320200", "shortName": "无锡" }, { "cityName": "杭州市", "cityCode": "330100", "shortName": "杭州" }]
 
 
-var userId = data.filter(item=>{
-    if(item.id == 1){
-        return item;
+var arr = ["310100", "320200"]
+
+var res = data.filter(item => {
+
+    for (let i = 0; i < arr.length; i++) {
+        if (item.cityCode == arr[i]) {
+            return true;
+        }
     }
 });
 
-console.log(userId);
+console.log(res);
 
 

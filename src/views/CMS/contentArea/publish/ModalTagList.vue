@@ -28,6 +28,10 @@
 export default {
   name: "tag-list",
   props: {
+    tags: {
+      type: Array,
+      default: () => []
+    },
     tagList: {
       type: Array,
       default: () => []
@@ -36,6 +40,7 @@ export default {
   data() {
     return {
       isShow: true,
+      selection: [],
       tableColumns: [
         {
           type: "selection",
@@ -45,32 +50,37 @@ export default {
         {
           title: "标签ID",
           align: "center",
-          key: "tagId"
+          key: "id"
         },
         {
           title: "标签名称",
           align: "center",
-          key: "tagName"
+          key: "name"
         }
       ]
     };
   },
   created() {
     console.log("created");
-    this.tableData = JSON.parse(JSON.stringify(this.tagList));
+    let tableData = JSON.parse(JSON.stringify(this.tagList));
+    tableData.forEach(tag => {
+      tag._checked = false;
+      for (let i = 0; i < this.tags.length; i++) {
+        let r = tag.id == this.tags[i].id;
+        if (r) {
+          tag._checked = true;
+        }
+      }
+      //初始化的时候 保存已经选中的
+      if (tag._checked) {
+        this.selection.push(tag);
+      }
+    });
+    this.tableData = tableData;
   },
   methods: {
     handleSelectionChange(selection) {
-      this.tableData.forEach(tag => {
-        tag._checked = false;
-        for (let i = 0; i < selection.length; i++) {
-          let r = tag.tagId == selection[i].tagId;
-          if (r) {
-            tag._checked = true;
-          }
-        }
-      });
-      // console.log(JSON.stringify(this.tableData));
+      this.selection = selection;
     },
     // 关闭商户选择框
     cancel() {
@@ -82,7 +92,7 @@ export default {
     },
     //确定选择商户
     selectedTrCallBack() {
-      let data = JSON.parse(JSON.stringify(this.tableData));
+      let data = JSON.parse(JSON.stringify(this.selection));
       this.$emit("seclectedTr-event", data);
       this.closeDialog();
     }
