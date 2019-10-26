@@ -47,7 +47,7 @@
                 <Col span="12">仅支持xlsx文件</Col>
                 <Col span="12">
                   <!-- 商户管理导入模板 -->
-                  <a href="/template/shop_demo.xlsx">模板文件</a>
+                  <a href="javascript:;" @click="downloadTemplate">模板文件</a>
                 </Col>
               </Row>
               <div v-if="file !== null">
@@ -66,7 +66,7 @@
 </template>
 <script>
 import { baseUrl } from "@/api/index";
-import { uploadFileRequest } from "@/libs/axios";
+import { uploadFileRequest, downloadSteam } from "@/libs/axios";
 export default {
   name: "file-import",
   props: {
@@ -145,6 +145,32 @@ export default {
       this.file = null;
       this.loadingStatus = false;
     },
+    async downloadTemplate() {
+      const url = "/content/exportContentSortModel";
+
+      const res = await downloadSteam(url);
+
+      const content = res.data;
+
+      const { filename } = res.headers;
+
+      const blob = new Blob([content], { type: "application/vnd.ms-excel" });
+      const oA = document.createElement("a");
+      if ("download" in oA) {
+        // 非IE下载
+        oA.download = decodeURI(filename);
+        oA.style.display = "none";
+        oA.href = URL.createObjectURL(blob);
+        document.body.appendChild(oA);
+        oA.click();
+        URL.revokeObjectURL(oA.href); // 释放URL 对象
+        document.body.removeChild(oA);
+      } else {
+        // IE10+下载
+        navigator.msSaveBlob(blob, filename);
+      }
+    },
+
     handleFormatError(file) {
       this.$Notice.warning({
         title: "文件格式错误",

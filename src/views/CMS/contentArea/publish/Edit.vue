@@ -151,17 +151,17 @@
       <FormItem label="标签：">
         <Tag
           v-for="tag in tags"
-          :key="tag.tagId"
-          :name="tag.tagName"
+          :key="tag.id"
+          :name="tag.name"
           closable
           @on-close="handleClose(tag)"
-        >{{ tag.tagName }}</Tag>
+        >{{ tag.name }}</Tag>
         <Button icon="ios-add" type="dashed" size="small" @click="handleAdd">添加标签</Button>
       </FormItem>
 
       <Divider />
       <!-- :rules="{ required: true, validator: validateUbay }" -->
-      <FormItem prop="addWatchNum" :rules="{ required: true, message: '请输入' }">
+      <FormItem prop="addWatchNum">
         增加观看人数
         <Input
           style="display:inline-block;width:100px"
@@ -170,7 +170,7 @@
           clearable
         />&nbsp;人
       </FormItem>
-      <FormItem prop="addLikeNum" :rules="{ required: true, message: '请输入' }">
+      <FormItem prop="addLikeNum">
         增加点赞人数
         <Input
           style="display:inline-block;width:100px"
@@ -179,7 +179,7 @@
           clearable
         />&nbsp;人
       </FormItem>
-      <FormItem prop="addShareNum" :rules="{ required: true, message: '请输入' }">
+      <FormItem prop="addShareNum">
         增加分享人数
         <Input
           style="display:inline-block;width:100px"
@@ -189,7 +189,7 @@
         />&nbsp;人
       </FormItem>
 
-      <FormItem prop="scanUbay" :rules="{ required: true, message: '请输入' }">
+      <FormItem prop="scanUbay">
         有效阅读赚
         <Input
           style="display:inline-block;width:100px"
@@ -199,7 +199,7 @@
         />&nbsp;U贝
       </FormItem>
 
-      <FormItem prop="likeUbay" :rules="{ required: true, message: '请输入' }">
+      <FormItem prop="likeUbay">
         点赞赚
         <Input
           style="display:inline-block;width:100px"
@@ -209,7 +209,7 @@
         />&nbsp;U贝
       </FormItem>
 
-      <FormItem prop="shareUbay" :rules="{ required: true, message: '请输入' }">
+      <FormItem prop="shareUbay">
         分享好友赚
         <Input
           style="display:inline-block;width:100px"
@@ -368,6 +368,7 @@ export default {
         } = data;
 
         this.citys = citys;
+        this.tags = tags;
 
         let defaultSmallImgList = [];
         if (smallImg) {
@@ -452,8 +453,25 @@ export default {
         this.msgErr(msg);
       }
     },
-    refreshUserList() {
-      this.getUserList();
+    refreshUserList(data) {
+      // this.getUserList();
+      let r = this.userList.some((item, index) => {
+        let r = item.phoneNumber == data.phoneNumber;
+
+        if (r) {
+          this.userList.splice(index, 1, data);
+        }
+        return r;
+      });
+
+      if (!r) {
+        this.userList.push(data);
+      }
+
+      this.formData.userId = "";
+      this.$nextTick(_ => {
+        this.formData.userId = data.userId;
+      });
     },
     async getUserList(phoneNumber = "") {
       //发布用户查询

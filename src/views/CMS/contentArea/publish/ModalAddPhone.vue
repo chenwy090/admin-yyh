@@ -64,14 +64,14 @@ export default {
       this.$refs[name].validate(async valid => {
         // console.log(JSON.stringify(this.formValidate));
         if (valid) {
-          this.$Message.success("数据验证成功!");
+          // this.$Message.success("数据验证成功!");
           let oForm = JSON.parse(JSON.stringify(this.formData));
           const url = "/content/userlist";
           const { code, msg, data } = await postRequest(url, oForm);
           if (code == 200) {
             // data:[{id,name,sort}]
             //刷新列表数据
-            this.$emit("refreshUserList");
+            this.$emit("refreshUserList",data);
             // 关闭对话框
             this.closeDialog();
           } else {

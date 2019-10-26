@@ -65,10 +65,20 @@ export default {
       this.indeterminate = false;
 
       if (this.checkAll) {
-        this.checkAllGroup = this.cityList;
+        this.checkAllGroup = this.cityList.map(({ cityCode }) => cityCode);
       } else {
         this.checkAllGroup = [];
       }
+
+      let checked = this.cityList.filter(item => {
+        for (let i = 0; i < this.checkAllGroup.length; i++) {
+          if (item.cityCode == this.checkAllGroup[i]) {
+            return true;
+          }
+        }
+      });
+      console.log("emit handleCheckAll checked data:", checked);
+      this.$emit("checked-city-list", checked);
     },
     checkAllGroupChange(data) {
       console.log("XXX", data);

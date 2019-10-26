@@ -191,12 +191,10 @@ export default {
 
       const res = await downloadSteam(url);
       // const res = await getRequest(url);
-
       console.log(111111111111111111, res);
 
-      // const content = res.data;
+      const content = res.data;
 
-      const content = res;
       const { filename } = res.headers;
 
       const blob = new Blob([content], { type: "application/vnd.ms-excel" });
