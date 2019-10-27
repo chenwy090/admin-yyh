@@ -440,9 +440,10 @@ export default {
              }
         }
         if(!isOk){
+            this.isLoading = false;
             return;
         }
-        if(this.formData[0].id !== null && this.formData[0].id!== undefined && this.formData[0].id!==""){
+        if(this.formData[0].id){
             console.log("-------------edit------------")
             postRequest("/couponrecommend/edit", this.formData[0]).then(res => {
                 this.isLoading=false;
