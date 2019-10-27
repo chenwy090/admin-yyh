@@ -177,14 +177,13 @@
 
                 ],
                 searchForm: {
-                    shopName: "",
+                    pushType: "",
                     title: "",
                     startTime: "",
                     endTime: "",
                     pageNum: 1,
                     pageSize: 10,
-                    status:null,
-                    type:0,
+                    status:'',
                 },
                 AddViewDialogVisible:false,
                 ShowViewDialogVisible:false,
@@ -204,7 +203,7 @@
             changeDateTime(datetime, index) {
                 switch (index) {
                 case 1:
-                    this.searchForm.startTime = datetime+' 00:00:00';
+                    this.searchForm.startTime = datetime?datetime+' 00:00:00':'';
                     this.options2 = {
                         disabledDate(date) {
                             return date.valueOf() < new Date(datetime) - 1000 * 60 * 60 * 24;
@@ -212,7 +211,7 @@
                     };
                     break;
                 case 2:
-                    this.searchForm.endTime = datetime+' 23:59:59';
+                    this.searchForm.endTime = datetime?datetime+' 23:59:59':'';
                     this.options1 = {
                         disabledDate(date) {
                             return (
@@ -230,11 +229,11 @@
                 this.loadTableData();
             },
             reset(){
-                this.searchForm.shopName = '';
+                this.searchForm.title = '';
+                this.searchForm.pushType = '';
                 this.searchForm.startTime = '';
                 this.searchForm.endTime = '';
-                this.searchForm.status = null;
-                this.searchForm.type = 0;
+                this.searchForm.status = '';
                 this.searchForm.pageNum = 1;
                 this.current= 1;
                 this.loadTableData();

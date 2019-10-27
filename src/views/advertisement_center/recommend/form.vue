@@ -150,7 +150,7 @@
       </FormItem>
     </Form>
     <Modal v-model="couponModalShow" title="选择优惠券" width="800px" @footer-hide="false">
-      <chooseCouponListView @seclectedTr-event="selectedTrCallBack"></chooseCouponListView>
+      <chooseCouponListView ref="chooseCoupon" @seclectedTr-event="selectedTrCallBack"></chooseCouponListView>
     </Modal>
     <Modal v-model="downLogModal" title="导入记录" width="800px" @footer-hide="false">
       <Table
@@ -445,6 +445,8 @@ export default {
         }
         if(this.formData[0].id){
             console.log("-------------edit------------")
+            this.formData[0].createTime = null;
+            this.formData[0].updateTime = null;
             postRequest("/couponrecommend/edit", this.formData[0]).then(res => {
                 this.isLoading=false;
                 if (res.code == 200) {
@@ -493,6 +495,9 @@ export default {
     },
     handleChoose: function() {
       this.couponModalShow = true;
+        this.$nextTick(() => {
+            this.$refs["chooseCoupon"].resetRow();
+        });
     },
     handleAdd: function() {
         this.index++;

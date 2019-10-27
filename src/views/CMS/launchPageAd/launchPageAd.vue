@@ -5,7 +5,7 @@
                     <Card :bordered="false" style="margin-bottom:2px">
                         <Form ref="searchForm" label-position="right" :label-width="80" :model="searchForm" inline>
                             <FormItem label="投放终端" span="24"  style="width:23%">
-                                <Select v-model="searchForm.type" style="width:100%">
+                                <Select v-model="searchForm.clientType" style="width:100%">
                                     <Option v-for="(item,index) in clientTypeList" :value="item.value" :key="index">{{ item.label }}</Option>
                                 </Select>
                             </FormItem>
@@ -16,7 +16,7 @@
                                 </Select>
                             </FormItem>
                             <FormItem label="广告标题" span="24" style="width:25%">
-                                <Input v-model="searchForm.shopName" placeholder="活动名称" />
+                                <Input v-model="searchForm.title" placeholder="活动名称" />
                             </FormItem>
                             <FormItem label="投放时间" span="35"  style="width:50%">
                                 <DatePicker
@@ -249,9 +249,12 @@
         },
         methods:{
             changeDateTime(datetime, index) {
+                if(!datetime){
+                    return;
+                }
                 switch (index) {
                 case 1:
-                    this.searchForm.startTime = datetime+' 00:00:00';
+                    this.searchForm.startTime = datetime?datetime+' 00:00:00':'';
                     this.options2 = {
                         disabledDate(date) {
                             return date.valueOf() < new Date(datetime) - 1000 * 60 * 60 * 24;
@@ -259,7 +262,7 @@
                     };
                     break;
                 case 2:
-                    this.searchForm.endTime = datetime+' 23:59:59';
+                    this.searchForm.endTime = datetime?datetime+' 23:59:59':'';
                     this.options1 = {
                         disabledDate(date) {
                             return (
@@ -277,11 +280,11 @@
                 this.loadTableData();
             },
             reset(){
-                this.searchForm.shopName = '';
+                this.searchForm.title = '';
                 this.searchForm.startTime = '';
                 this.searchForm.endTime = '';
-                this.searchForm.status = null;
-                this.searchForm.type = 0;
+                this.searchForm.status = '';
+                this.searchForm.clientType = '';
                 this.searchForm.pageNum = 1;
                 this.current= 1;
                 this.loadTableData();

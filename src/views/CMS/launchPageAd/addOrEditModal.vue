@@ -77,7 +77,7 @@
                     <FormItem label="投放时间">
                         <DatePicker
                                 :value="modal.startTime"
-                                type="date"
+                                type="datetime"
                                 placeholder="请输入开始时间"
                                 style="width: 30%"
                                 :options="options1"
@@ -86,7 +86,7 @@
                         <div style="display: inline-block"> &nbsp;至&nbsp; </div>
                         <DatePicker
                                 :value="modal.endTime"
-                                type="date"
+                                type="datetime"
                                 placeholder="请输入结束时间"
                                 style="width: 30%"
                                 :options="options2"
@@ -258,7 +258,7 @@
             changeDateTime(datetime, index) {
                 switch (index) {
                 case 1:
-                    this.modal.startTime = datetime+' 00:00:00';
+                    this.modal.startTime = datetime
                     this.options2 = {
                         disabledDate(date) {
                             var a = new Date(datetime)
@@ -270,7 +270,7 @@
                     };
                     break;
                 case 2:
-                    this.modal.endTime =  datetime+' 23:59:59';
+                    this.modal.endTime =  datetime
                     this.options1 = {
                         disabledDate(date) {
                             return (date.valueOf() < Date.now() - 1000 * 60 * 60 * 24 || date.valueOf() > new Date(datetime));
@@ -375,10 +375,16 @@
                     this.$Message.error('请选择跳转类型');
                     return;
                 }
-                if(this.modal.contentType!==2||this.modal.contentType!==5||this.modal.contentType!==6||this.modal.contentType!==7){
-                    if(!this.modal.contentValue){
-                        this.$Message.error('请选择内容或链接');
+                if(this.modal.jumpFlag==1){
+                    if(!this.modal.contentType){
+                        this.$Message.error('请选择内容类型');
                         return;
+                    }
+                    if(this.modal.contentType===1||this.modal.contentType===3||this.modal.contentType===4||this.modal.contentType===10||this.modal.contentType===11||this.modal.contentType===12){
+                        if(!this.modal.contentValue){
+                            this.$Message.error('请选择内容或链接');
+                            return;
+                        }
                     }
                 }
                 if(!this.modal.clientType.length){

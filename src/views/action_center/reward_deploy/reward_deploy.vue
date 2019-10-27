@@ -74,6 +74,9 @@
       </Table>
     </div>
 
+    <!-- 提现-开关 -->
+    <WithdrawalSwitch></WithdrawalSwitch>
+
     <!--奖励配置-->
     <Modal v-model="modal1.isopen" :title="modal1.name" :mask-closable="false" footer-hide>
       <Row v-if="modal1.type && modal1.type =='3'">
@@ -357,13 +360,16 @@
     <!--说明配置-->
     <Modal v-model="modal3.isopen" :title="modal3.name" :mask-closable="false" footer-hide>
       <Form :model="modal3" label-position="right" ref="modalErf3" :rules="ruleValidate3">
-        <Row>
+        <Row v-if="modal3.isEditor">
           <editor-bar
             v-model="modal3.context"
             :content="modal3.context"
             @on-change="change"
             @on-blur="blur"
           ></editor-bar>
+        </Row>
+        <Row v-if="!modal3.isEditor">
+          <Input v-model="modal3.context" style="width: 300px" />
         </Row>
         <FormItem>
           <Button style="float: right;margin-left: 20px" type="primary" @click="ok3('modalErf3')">确认</Button>
@@ -378,9 +384,10 @@
 import { postRequest, getRequest } from "@/libs/axios";
 import { uploadOperationImage2AliOssURl } from "@/api/index";
 import EditorBar from "@/components/EditorBar";
+import WithdrawalSwitch from "./WithdrawalSwitch";
 export default {
   name: "reward_deploy",
-  components: { EditorBar },
+  components: { EditorBar, WithdrawalSwitch },
   data() {
     return {
       userToken: {}, //用户token
@@ -427,7 +434,8 @@ export default {
         name: "",
         isopen: false,
         context: "",
-        newcontext: ""
+        newcontext: "",
+        isEditor: true
       },
       columns1: [
         {
@@ -657,6 +665,14 @@ export default {
       this.modal3.isopen = true;
       this.modal3.context = item.context;
       this.modal3.newcontext = item.context;
+      if (
+          item.code == "12" ||
+          item.code == "13"
+      ){
+        this.modal3.isEditor = false;
+      }else {
+        this.modal3.isEditor = true;
+      }
     },
     ok1(name) {
       if (!this.modal1.type || this.modal1.type != "3") {
@@ -701,6 +717,9 @@ export default {
       }
     },
     ok3(name) {
+      if (!this.modal3.isEditor){
+        this.modal3.newcontext = this.modal3.context;
+      }
       if (this.modal3.newcontext) {
         this.saveChange3();
       } else {
@@ -803,6 +822,7 @@ export default {
     },
     saveChange3() {
       var that = this;
+
       postRequest("/rewardNotice/updateNotice", {
         code: this.modal3.code,
         context: this.modal3.newcontext
@@ -885,33 +905,32 @@ h3 {
   height: 43px;
   padding: 5px;
 }
-  #content-box{
-    height: 18px;
-    line-height: 18px;
-    display:inline-block;
-    width: 100%;
-    overflow: hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-  }
-.ivu-table-wrapper{
+#content-box {
+  height: 18px;
+  line-height: 18px;
+  display: inline-block;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ivu-table-wrapper {
   overflow: visible;
 }
-  .ivu-tooltip{
-    width: 100%;
-  }
-
+.ivu-tooltip {
+  width: 100%;
+}
 </style>
 <style>
-  #reward_deploy{
-    max-height: 300px;
-    overflow: scroll;
-  }
-  #content-box *{
-    width: 100%;
-    overflow: hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-  }
+#reward_deploy {
+  max-height: 300px;
+  overflow: scroll;
+}
+#content-box * {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 </style>
 

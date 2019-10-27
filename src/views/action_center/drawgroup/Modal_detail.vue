@@ -104,7 +104,7 @@ export default {
       ["userOpenGroupCount", "开团次数"],
       ["openGroupMinutes", "开团有效时间"],
       ["openGroupFee", "开团消耗U贝"],
-      ["userOpenGroupCount", "参团次数"],
+      ["userJoinGroupCount", "参团次数"],
       ["joinGroupFee", "参团消耗U贝"],
       ["isFailureBackFee", "团失败u贝返还"],
       ["drawRuleRemarks", "抽奖规则"]

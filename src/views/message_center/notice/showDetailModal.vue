@@ -56,18 +56,17 @@
             <Col span="18">
             <FormItem label="推送范围">
               <!--<RadioGroup v-model="modal.pushRange">-->
-                <!--<Radio :label="'1'">所有商户</Radio>-->
-                <!--<Radio :label="'2'">部分商户</Radio>（只有在选定的商超范围内的商户才显示公告）-->
+                <!--<Radio :label="'1'"></Radio>-->
+                <!--<Radio :label="'2'">部分商户</Radio>-->
               <!--</RadioGroup>-->
-              <div>
-                <span>{{['','所有商户','部分商户'][modal.pushRange]}}</span>|
-                <span>{{shopList.length}}家</span>
+              <div>{{['','所有商户','部分商户'][modal.pushRange]}}
+                <span v-if="modal.pushRange=='2'">{{shopList.length}}家</span>
               </div>
               <div>
-                <Button v-if="modal.pushRange=='2'" type="dashed" style="max-width: 100%;">
-                  <span v-if="shopList.length===0">请选择</span>
+                <Button v-if="modal.pushRange=='2'&&shopList.length" type="dashed" style="max-width: 100%;">
                   <Button :key="index" v-for="(item,index) in shopList" class="coupon-item" style="float: left;margin: 5px;">
                     {{item.shopName +'&nbsp&nbsp'}}
+                    <Icon type="ios-close"/>
                   </Button>
                 </Button>
               </div>
@@ -76,7 +75,7 @@
           </Row>
         </div>
         <FormItem>
-          <Button style="margin:20px" type="primary" size="large" @click="ok()">保存</Button>
+          <!--<Button style="margin:20px" type="primary" size="large" @click="ok()">保存</Button>-->
           <Button style="margin:20px" @click="close">返回</Button>
         </FormItem>
       </Form>
@@ -154,7 +153,7 @@
                         this.modal = res.data;
                         this.modal.pushType = String(res.data.pushType);
                         this.modal.pushRange = String(res.data.pushRange);
-                        this.shopList = res.data.shopInfoList;
+                        this.shopList = res.data.shopInfoList||[];
                     }else {
                         this.$Message.error(res.msg);
                     }
