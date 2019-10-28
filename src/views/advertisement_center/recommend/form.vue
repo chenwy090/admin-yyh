@@ -322,10 +322,10 @@ export default {
              return;
           }
           this.formData[0].shops = []
+          this.formData[0].id = id;
           postRequest("/couponrecommend/selectById?id="+id).then(res =>{
              if (res.code == 200) {
               var info =  res.data;
-              this.formData[0].id = id;
               this.formData[0].campId = info.campId;
               this.formData[0].campName = info.campName;
               this.formData[0].barcodeFileId = info.barcodeFileId;
