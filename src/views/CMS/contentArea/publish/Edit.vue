@@ -31,10 +31,10 @@
     >
       <Row v-if="action.type=='edit'">
         <Col span="12" style="padding-right:10px">
-          <span>发布账号 {{contentAuthor.phoneNumber}}</span>
-          <span class="marginLeft20">今日发布：{{contentAuthor.todayPublishNum}}</span>
-          <span class="marginLeft20">7日发布：{{contentAuthor.weekPublishNum}}</span>
-          <span class="marginLeft20">粉丝：{{contentAuthor.followerNum}}</span>
+          <span>发布账号 {{formData.contentAuthor.phoneNumber}}</span>
+          <span class="marginLeft20">今日发布：{{formData.contentAuthor.todayPublishNum}}</span>
+          <span class="marginLeft20">7日发布：{{formData.contentAuthor.weekPublishNum}}</span>
+          <span class="marginLeft20">粉丝：{{formData.contentAuthor.followerNum}}</span>
         </Col>
       </Row>
       <Row v-else>
@@ -387,11 +387,14 @@ export default {
           tags = [],
           citys = [],
           coupons = [],
-          describe
+          describe,
+          contentAuthor
         } = data;
 
         this.citys = citys;
         this.tags = tags;
+
+        // this.contentAuthor = contentAuthor;
 
         this.formData.newDescribe = describe;
 
@@ -573,7 +576,7 @@ export default {
     handleSubmit(name) {
       // 发布
       const url = "/content/Details";
-console.log(this.formData);
+      console.log(this.formData);
 
       this.$refs[name].validate(valid => {
         console.log("valid", valid);

@@ -1,5 +1,7 @@
 <template>
   <div class="publish-list">
+    <ModalDetail v-if="showDetail" :showDetail.sync="showDetail" :data="row"></ModalDetail>
+
     <div class="query-row">
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
@@ -55,11 +57,7 @@
               @click="addOrEdit('edit',row)"
             >编辑</Button>
           </template>
-        </template>
-
-        <template slot-scope="{ row }" slot="content">
-          <!-- {{row}} -->
-          <div v-html="row.content"></div>
+          <Button type="primary" size="small" style="margin: 5px" @click="queryDetail(row)">查看详情</Button>
         </template>
       </Table>
       <!-- 分页器 -->
@@ -83,6 +81,8 @@ import { getRequest, postRequest } from "@/libs/axios";
 
 import columns from "../columns";
 
+import ModalDetail from "../ModalDetail";
+
 export default {
   name: "publish-list",
   inject: ["linkTo", "msgOk", "msgErr"],
@@ -99,7 +99,7 @@ export default {
       }
     }
   },
-  components: {},
+  components: { ModalDetail },
   computed: {
     tab() {
       return this.tabs[this.compName];
@@ -112,6 +112,8 @@ export default {
   },
   data() {
     return {
+      showDetail: false,
+      row: {},
       daterange: [],
       //审核 status 0-创建，1-待审核(创建完成），2-审核成功（上架），3-审核失败（下架）',
       statusOption: {
@@ -167,6 +169,10 @@ export default {
     this.queryTableData();
   },
   methods: {
+    queryDetail(row) {
+      this.showDetail = true;
+      this.row = row;
+    },
     addOrEdit(type, data) {
       const id = Math.random();
       let compName = `publish-${type == "list" ? "list" : "edit"}`;

@@ -1,5 +1,6 @@
 <template>
   <div class="examine">
+    <ModalDetail v-if="showDetail" :showDetail.sync="showDetail" :data="row"></ModalDetail>
     <div class="query-row">
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
@@ -66,7 +67,12 @@
     <Card :bordered="false">
       <Table border :show-index="true" :loading="loading" :columns="columns" :data="tableData">
         <!-- action -->
-        <!-- @click="addOrEdit('edit',row)" -->
+        <!-- @click="addOrEdit('edit',row)" 
+         //审核 status 0-创建，1-待审核(创建完成），2-审核成功（上架），3-审核失败（下架）',
+          "1": "待审核",     审核 下架
+          "2": "审核成功"    下架
+          "3": "已下架"      审核
+        -->
         <template slot-scope="{ row }" slot="action">
           <template v-if="row.status == 1||row.status == 3">
             <Button
@@ -76,13 +82,10 @@
               @click="examine(row.id, 1)"
             >审核</Button>
           </template>
-          <template v-else-if="row.status == 2">
+          <template v-if="row.status == 1||row.status == 2">
             <Button type="warning" size="small" @click="examine(row.id, 0)">下架</Button>
           </template>
-        </template>
-
-        <template slot-scope="{ row }" slot="content">
-          <span v-html="row.content"></span>
+          <Button type="primary" size="small" style="margin: 5px" @click="queryDetail(row)">查看详情</Button>
         </template>
       </Table>
       <!-- 分页器 -->
@@ -113,11 +116,12 @@ import { getRequest, postRequest, downloadSteam } from "@/libs/axios";
 import columns from "../columns";
 
 import FileImport from "./FileImport";
+import ModalDetail from "../ModalDetail";
 
 export default {
   name: "examine",
   inject: ["linkTo", "msgOk", "msgErr"],
-  components: { FileImport },
+  components: { FileImport, ModalDetail },
   computed: {
     tab() {
       return this.tabs[this.compName];
@@ -130,6 +134,8 @@ export default {
   },
   data() {
     return {
+      showDetail: false,
+      row: {},
       showFileImport: false,
       daterange: [],
       //审核 status 0-创建，1-待审核(创建完成），2-审核成功（上架），3-审核失败（下架）',
@@ -180,6 +186,10 @@ export default {
     this.queryTableData();
   },
   methods: {
+    queryDetail(row) {
+      this.showDetail = true;
+      this.row = row;
+    },
     upload() {
       this.showFileImport = true;
     },
