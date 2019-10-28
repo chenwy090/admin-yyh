@@ -20,7 +20,7 @@
         :on-success="handleUploadSuccess"
         :action="url"
         accept="image"
-        :max-size="1024"
+        :max-size="2048"
         :on-exceeded-size="handleMaxSize"
         :on-format-error="handleFormatError"
         :style="uploadStyle"
@@ -137,7 +137,7 @@ export default {
     },
     //文件上传
     handleMaxSize(file) {
-      this.$Message.error("图片不大于1M");
+      this.$Message.error("图片不大于2M");
     },
     handleFormatError() {
       this.msgErr("只能上传gif,jpg,jpeg,png,bmp格式,请重新上传");
