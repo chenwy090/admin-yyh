@@ -138,7 +138,7 @@
       </FormItem>
       <FormItem label="标题：" prop="title" :rules="{ required: true, message: '请输入标题' }">
         <Input
-          style="width:90%"
+          style="display:inline-block;width:200px"
           v-model="formData.title"
           :maxlength="13"
           placeholder="请输入标题"
@@ -294,6 +294,7 @@ export default {
       contentAuthor: {
         //contentAuthor
         userId: "",
+        phoneNumber: "",
         todayPublishNum: 0, //今日发布
         weekPublishNum: 0, //7日发布
         followerNum: 0 //粉丝
@@ -322,6 +323,14 @@ export default {
       formData: {
         id: "", //内容id
         userId: "", //发布用户id
+        contentAuthor: {
+          id: "",
+          followerNum: "",
+          phoneNumber: "",
+          todayPublishNum: "",
+          userId: "",
+          weekPublishNum: ""
+        },
         images: [
           /*{imgUrl}*/
         ], //图片

@@ -57,7 +57,7 @@
               @click="addOrEdit('edit',row)"
             >编辑</Button>
           </template>
-          <Button type="primary" size="small" style="margin: 5px" @click="queryDetail(row)">查看详情</Button>
+          <Button type="primary" size="small" style="margin: 5px" @click="queryDetail(row)">详情</Button>
         </template>
       </Table>
       <!-- 分页器 -->
@@ -183,7 +183,6 @@ export default {
       }
       this.action.compName = compName;
 
-      console.log("addOrEdit:", JSON.stringify(this.action));
     },
     upload() {
       this.showFileImport = true;

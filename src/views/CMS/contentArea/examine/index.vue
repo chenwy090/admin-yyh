@@ -4,7 +4,7 @@
     <div class="query-row">
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
-          <FormItem label="审核状态：" :label-width="80">
+          <FormItem label="审核状态：" :label-width="80" clearable>
             <Select v-model="searchData.status" style="width:120px" clearable>
               <Option v-for="(v,k) in statusOption" :value="k" :key="k">{{ v }}</Option>
               <!-- <Option v-for="(item,k) in statusOption" :value="item.value" :key="k">{{ item.label }}</Option> -->
@@ -85,7 +85,7 @@
           <template v-if="row.status == 1||row.status == 2">
             <Button type="warning" size="small" @click="examine(row.id, 0)">下架</Button>
           </template>
-          <Button type="primary" size="small" style="margin: 5px" @click="queryDetail(row)">查看详情</Button>
+          <Button type="primary" size="small" style="margin: 5px" @click="queryDetail(row)">详情</Button>
         </template>
       </Table>
       <!-- 分页器 -->
@@ -140,7 +140,7 @@ export default {
       daterange: [],
       //审核 status 0-创建，1-待审核(创建完成），2-审核成功（上架），3-审核失败（下架）',
       statusOption: {
-        "0": "创建",
+        // "0": "创建",
         "1": "待审核",
         "2": "审核成功",
         "3": "已下架"
@@ -307,13 +307,10 @@ export default {
             item.sourceTypeName = this.sourceTypeOption[sourceType];
 
             item.cityNames = citys.map(({ cityName }) => cityName).join(",");
-            item.tagNames = citys.map(({ name }) => name).join(",");
-            item.couponNames = citys
+            item.tagNames = tags.map(({ name }) => name).join(",");
+            item.couponNames = coupons
               .map(({ couponName }) => couponName)
               .join(",");
-
-            console.log(JSON.stringify(item));
-
             return item;
           });
 

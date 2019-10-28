@@ -15,7 +15,7 @@
             <h3>{{data.title}}</h3>
           </FormItem>
           <FormItem label="内容介绍：">
-            <div v-html="data.content" style="width: 300px"></div>
+            <div v-html="data.content"></div>
           </FormItem>
 
           <FormItem label="图片：">

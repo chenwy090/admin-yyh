@@ -22,8 +22,14 @@ export default [
         slot: "content",
         render: (h, params) => {
             let { title, content = "", images } = params.row;
+
+            let reg = /(?<=>)[^<>]+(?=<)/g;
+            let arr = content.match(reg) || [];
+
+            content = arr.join("");
+
             if (content.length > 100) {
-                content = "内容太长啦。。。"
+                content = `${content.substring(0, 100)}...`;
             }
 
             return <div>

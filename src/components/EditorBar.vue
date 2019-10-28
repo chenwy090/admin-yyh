@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import { uploadFileRequest } from "@/libs/axios";
 import { uploadOperationImage2AliOssURl } from "@/api/index";
 import E from "wangeditor";
 export default {
@@ -67,13 +68,49 @@ export default {
         "link", // 插入链接
         "list", // 列表
         "justify", // 对齐方式
-        "image", // 插入图片
+        // "image", // 插入图片
         "table", // 表格
         "undo", // 撤销
         "redo" // 重复
       ];
-      this.editor.customConfig.uploadImgShowBase64 = true; // base 64 存储图片
+
+      let headers = {
+        "Content-Type": "multipart/form-data",
+        jwttoken: this.userToken.jwttoken
+      };
+
+      this.editor.customConfig.uploadImgHeaders = headers;
+
+      this.editor.customConfig.customUploadImg = function(files, insert) {
+        // files 是 input 中选中的文件列表
+        // insert 是获取图片 url 后，插入到编辑器的方法
+
+        // 上传代码返回结果之后，将图片插入到编辑器中
+        let fd = new FormData();
+        fd.append("file", files[0]); //append方法传入formData中
+        let url = "/operation/operation-info/uploadOperationImage2AliOss";
+        uploadFileRequest(url, fd).then(res => {
+          insert(res.image_url);
+        });
+      };
+      // 配置服务器端地址
+      // this.editor.customConfig.uploadImgServer = uploadOperationImage2AliOssURl;
+
+      // 2M
+      this.editor.customConfig.uploadImgMaxSize = 2 * 1024 * 1024;
+      // 限制一次最多上传 1张图片
+      this.editor.customConfig.uploadImgMaxLength = 1;
+      this.editor.customConfig.uploadImgShowBase64 = false; // base 64 存储图片
       this.editor.customConfig.uploadImgHooks = {
+        before: function(xhr, editor, files) {
+          // 图片上传之前触发
+          // xhr 是 XMLHttpRequst 对象，editor 是编辑器对象，files 是选择的图片文件
+          // 如果返回的结果是 {prevent: true, msg: 'xxxx'} 则表示用户放弃上传
+          // return {
+          //     prevent: true,
+          //     msg: '放弃上传'
+          // }
+        },
         fail: (xhr, editor, result) => {
           // 插入图片失败回调
         },
@@ -85,12 +122,13 @@ export default {
         },
         error: (xhr, editor) => {
           // 图片上传错误的回调
-        },
-        customInsert: (insertImg, result, editor) => {
-          // 图片上传成功，插入图片的回调
-          var url = result.data;
-          insertImg(url);
         }
+        // customInsert: (insertImg, result, editor) => {
+        //   // 图片上传成功，插入图片的回调
+        //   var url = result.data;
+        //   debugger
+        //   insertImg(url);
+        // }
       };
       this.editor.customConfig.onchange = html => {
         this.info_ = html; // 绑定当前逐渐地值
