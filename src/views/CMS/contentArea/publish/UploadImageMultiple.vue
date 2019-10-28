@@ -28,7 +28,7 @@
         multiple
       >
         <!-- :style="display: inline-block;width:90px;" -->
-        <template v-if="uploadList.length<=3">
+        <template v-if="uploadList.length<=14">
           <div style="width: 90px;height:90px;line-height: 90px;">
             <Icon type="ios-camera" size="20" />
           </div>

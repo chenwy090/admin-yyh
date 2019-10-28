@@ -70,7 +70,7 @@ export function checkImage(file, fmt) {
     let self = this;
     return new Promise(function (resolve, reject) {
         if (file.type != "image/gif" && file.type != "image/png" && file.type != "image/jpeg" && file.type != "image/jpg" && file.type != "image/bmp") {
-            Message.error("图片格式只能选择png/jpeg/jpg/bmp");
+            Message.error("图片格式只能选择gif/png/jpeg/jpg/bmp");
             reject();
         }
 

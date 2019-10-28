@@ -153,8 +153,13 @@
       </FormItem>
 
       <!-- 描述 describe	内容介绍（文字详情） -->
-      <FormItem label="描述：">
-        <EditorBar v-model="formData.describe" :content="formData.describe" @on-change="change"></EditorBar>
+      <FormItem label="描述：" prop="newDescribe" :rules="{ required: true, message: '请输入描述' }">
+        <EditorBar
+          v-model="formData.describe"
+          :content="formData.describe"
+          @on-change="change"
+          @on-blur="blur"
+        ></EditorBar>
       </FormItem>
 
       <FormItem label="标签：" prop="tags" :rules="{ required: true, validator: validateTags }">
@@ -329,6 +334,7 @@ export default {
 
         title: "", //	内容标题
         describe: "", //内容介绍（文字详情）
+        newDescribe: "",
 
         tags: [], //	标签
         coupons: [], //优惠券（非必填）
@@ -380,11 +386,14 @@ export default {
           sourceType,
           tags = [],
           citys = [],
-          coupons = []
+          coupons = [],
+          describe
         } = data;
 
         this.citys = citys;
         this.tags = tags;
+
+        this.formData.newDescribe = describe;
 
         let defaultSmallImgList = [];
         if (smallImg) {
@@ -554,26 +563,29 @@ export default {
 
     change(val) {
       console.log("change:", val);
-      this.formData.describe = val;
+      this.formData.newDescribe = val;
     },
     blur(val) {
       console.log("blur:", val);
-      this.formData.describe = val;
+      this.formData.newDescribe = val;
     },
 
     handleSubmit(name) {
       // 发布
       const url = "/content/Details";
+console.log(this.formData);
 
       this.$refs[name].validate(valid => {
         console.log("valid", valid);
         if (!valid) {
-          this.msgErr("数据验证失败！");
+          // this.msgErr("数据验证失败！");
           return;
         }
 
         //清洗数据
         let formData = JSON.parse(JSON.stringify(this.formData));
+
+        formData.describe = formData.newDescribe;
 
         // images 图片
         // formData.images = formData.defaultIconUrlList.map(item => {
