@@ -110,7 +110,7 @@
 <script>
 import { getRequest, postRequest, downloadSteam } from "@/libs/axios";
 
-import columns from "./columns";
+import columns from "../columns";
 
 import FileImport from "./FileImport";
 

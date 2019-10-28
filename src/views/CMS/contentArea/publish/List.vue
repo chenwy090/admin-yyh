@@ -81,7 +81,7 @@
 <script>
 import { getRequest, postRequest } from "@/libs/axios";
 
-import columns from "./columns";
+import columns from "../columns";
 
 export default {
   name: "publish-list",

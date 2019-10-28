@@ -163,9 +163,9 @@ export default {
         this.msgErr("hasGif最多只能上传1张gif图片！");
         return false;
       }
-      const check = len < 3;
+      const check = len < 15;
       if (!check) {
-        this.msgErr("最多上传3张图片！");
+        this.msgErr("最多上传15张图片！");
       }
       return check;
     },

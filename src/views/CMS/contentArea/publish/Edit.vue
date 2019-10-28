@@ -38,28 +38,42 @@
         </Col>
       </Row>
       <Row v-else>
-        <Col span="12" style="padding-right:10px">
-          <span>选择发布账号</span>
-          <Select
-            v-model="formData.userId"
-            clearable
-            filterable
-            style="width:200px;"
-            @on-query-change="handleQueryChange"
-          >
-            <Option
-              v-for="item in userList"
-              :key="item.id"
-              :value="item.userId"
-            >{{ item.phoneNumber }}</Option>
-          </Select>
-          <Button icon="ios-add" type="dashed" size="small" @click="handleAddPhone">添加账号</Button>
-          <span class="marginLeft20">今日发布：{{contentAuthor.todayPublishNum}}</span>
-          <span class="marginLeft20">7日发布：{{contentAuthor.weekPublishNum}}</span>
-          <span class="marginLeft20">粉丝：{{contentAuthor.followerNum}}</span>
+        <Col span="24" style="padding-right:10px">
+          <FormItem label="选择发布账号：" prop="userId" :rules="{ required: true, message: '发布账号不能为空' }">
+            <Select
+              v-model="formData.userId"
+              clearable
+              filterable
+              style="width:200px;"
+              @on-query-change="handleQueryChange"
+            >
+              <Option
+                v-for="item in userList"
+                :key="item.id"
+                :value="item.userId"
+              >{{ item.phoneNumber }}</Option>
+            </Select>
+
+            <Button icon="ios-add" type="dashed" size="small" @click="handleAddPhone">添加账号</Button>
+            <span class="marginLeft20">今日发布：{{contentAuthor.todayPublishNum}}</span>
+            <span class="marginLeft20">7日发布：{{contentAuthor.weekPublishNum}}</span>
+            <span class="marginLeft20">粉丝：{{contentAuthor.followerNum}}</span>
+          </FormItem>
         </Col>
       </Row>
       <Alert type="warning">视频/图片/GIF(1个视频/1个GIF/15张以内图片) 图片（不大于2M,GIF/JPG/JPEG/PNG）</Alert>
+      <!-- :rules="{ required: true, message: '请上传图片类型' }" -->
+      <FormItem
+        label="图片类型："
+        prop="contentType"
+        :rules="{ required: true, validator: validateImages }"
+      >
+        <RadioGroup v-model="formData.contentType" @on-change="changeContentType">
+          <Radio v-for="item in contentTypeList" :label="item.value" :key="item.value">
+            <span>{{item.label}}</span>
+          </Radio>
+        </RadioGroup>
+      </FormItem>
       <FormItem :label-width="10">
         <UploadImageMultiple
           :defaultList="formData.images"
@@ -115,7 +129,7 @@
 
       <!-- 适用城市 -->
 
-      <FormItem label="适用城市：">
+      <FormItem label="适用城市：" prop="citys" :rules="{ required: true, validator: validateCitys }">
         <CompCheckBoxCity
           :citys="citys"
           :cityList="cityList"
@@ -132,7 +146,7 @@
         />
       </FormItem>
 
-      <FormItem label="类型：">
+      <FormItem label="类型：" prop="sourceType" :rules="{ required: true, message: '请输入类型' }">
         <Select v-model="formData.sourceType" style="width:120px" clearable>
           <Option v-for="(v,k) in sourceTypeOption" :value="parseInt(k)" :key="k">{{ v }}</Option>
         </Select>
@@ -140,15 +154,10 @@
 
       <!-- 描述 describe	内容介绍（文字详情） -->
       <FormItem label="描述：">
-        <editor-bar
-          v-model="formData.describe"
-          :content="formData.describe"
-          @on-change="change"
-          @on-blur="blur"
-        ></editor-bar>
+        <EditorBar v-model="formData.describe" :content="formData.describe" @on-change="change"></EditorBar>
       </FormItem>
 
-      <FormItem label="标签：">
+      <FormItem label="标签：" prop="tags" :rules="{ required: true, validator: validateTags }">
         <Tag
           v-for="tag in tags"
           :key="tag.id"
@@ -291,6 +300,12 @@ export default {
       showCouponList: false,
       submitDisabled: false,
 
+      //contentType 1-Gif  2-图片轮播  3-视频 区分一下 提交的时候什么图片类型
+      contentTypeList: [
+        { value: 1, label: "Gif" },
+        { value: 2, label: "图片轮播" }
+        // { value: 3, label: "视频" }
+      ],
       // 类型 sourceType 1-官方 2-PGC 3-UGC
       sourceTypeOption: {
         "1": "官方",
@@ -324,7 +339,7 @@ export default {
         addWatchNum: "", //	观看人数
         addLikeNum: "", //	点赞人数
         addShareNum: "", //	分享人数
-        contentType: "", //	图片类型   1-Gif  2-图片轮播  3-视频
+        contentType: 1, //	图片类型   1-Gif  2-图片轮播  3-视频
         scanUbay: "", //	  有效阅读赚 U贝
         likeUbay: "", //	点赞赚 U贝
         shareUbay: "" //	分享好友赚 U贝
@@ -348,6 +363,9 @@ export default {
     }
   },
   methods: {
+    changeContentType(type) {
+      console.log(type);
+    },
     async queryDetails(id) {
       //查询内容详情
       const url = "/content/queryDetails";
@@ -422,8 +440,8 @@ export default {
       this.showTagList = true;
     },
     handleClose(tag) {
-      // this.tags = this.tags.filter(({ id }) => id != tag.id);
-      this.tags = this.tags.filter(({ tagId }) => tagId != tag.tagId);
+      this.tags = this.tags.filter(({ id }) => id != tag.id);
+      // this.tags = this.tags.filter(({ tagId }) => tagId != tag.tagId);
     },
     async getTagList() {
       //标签查询
@@ -580,6 +598,32 @@ export default {
           }
         });
       });
+    },
+
+    validateImages(rule, value, callback) {
+      console.log("validateImages", rule, value);
+      if (!this.formData.contentType) {
+        return callback("请选择图片类型");
+      }
+      if (!this.formData.images.length) {
+        return callback("请上传图片");
+      }
+
+      callback();
+    },
+    validateCitys(rule, value, callback) {
+      console.log("validateCitys", rule, value);
+      if (!this.formData.citys.length) {
+        return callback("请选择适用城市");
+      }
+      callback();
+    },
+    validateTags(rule, value, callback) {
+      console.log("validateCitys", rule, value);
+      if (!this.tags.length) {
+        return callback("请选择标签");
+      }
+      callback();
     },
     validateEmpty(msg) {
       return function(rule, value, callback) {

@@ -3,22 +3,22 @@ export default [
     {
         title: "操作",
         align: "center",
-        width: 200,
+        width: 150,
         fixed: "left",
         slot: "action"
     },
     {
         title: "内容状态",
         align: "center",
-        width: 200,
+        width: 100,
         key: "statusName",
     },
     // contentAction
     {
         title: "内容",
         key: "content",
-        align: "center",
-        width: 120,
+        align: "left",
+        width: 500,
         slot: "content",
         render: (h, params) => {
             let { title, content = "", images } = params.row;
@@ -47,7 +47,7 @@ export default [
         title: "类型",
         key: "sourceTypeName",
         align: "center",
-        width: 120
+        width: 80
     },
 
     {
@@ -78,30 +78,30 @@ export default [
         title: "内容id",
         key: "id",
         align: "center",
-        minWidth: 150
+        minWidth: 80
     },
     {
         title: "用户id",
         key: "userId",
         align: "center",
-        minWidth: 150
+        minWidth: 80
     },
     {
         title: "发布时间",
         key: "createTime",
         align: "center",
-        minWidth: 150
+        minWidth: 180
     },
     {
         title: "用户状态",
         key: "userStatusName",
         align: "center",
-        minWidth: 150
+        minWidth: 100
     },
     {
         title: "审核人",
         key: "auditName",
         align: "center",
-        minWidth: 140
+        minWidth: 100
     },
 ]
