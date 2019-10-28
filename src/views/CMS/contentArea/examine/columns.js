@@ -18,18 +18,23 @@ export default [
         title: "内容",
         key: "content",
         align: "center",
-        width: 120,
+        width: 320,
         slot: "content",
         render: (h, params) => {
-            let { content = "" } = params.row;
+            let { title, content = "", images } = params.row;
             if (content.length > 100) {
                 content = "内容太长啦。。。"
             }
-            return h("div", {//用来写原生的DOM属性
-                domProps: {
-                    innerHTML: content
-                }
-            });
+
+            return <div>
+                <h3>{title}</h3>
+                <div domPropsInnerHTML={content}></div>
+                <div >
+                    {images.map(item => {
+                        return <img width="50" src={item.imgUrl} />
+                    })}
+                </div>
+            </div>
         }
     },
     {

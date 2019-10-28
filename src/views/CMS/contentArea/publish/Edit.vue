@@ -59,7 +59,7 @@
           <span class="marginLeft20">粉丝：{{contentAuthor.followerNum}}</span>
         </Col>
       </Row>
-      <Alert type="warning">视频/图片/GIF(1个视频/1个GIF/15张以内图片) 图片（不大于1M,GIF/JPG/JPEG/PNG）</Alert>
+      <Alert type="warning">视频/图片/GIF(1个视频/1个GIF/15张以内图片) 图片（不大于2M,GIF/JPG/JPEG/PNG）</Alert>
       <FormItem :label-width="10">
         <UploadImageMultiple
           :defaultList="formData.images"
@@ -69,7 +69,7 @@
       </FormItem>
 
       <Divider />
-      <Alert type="warning">选择图片（不大于1M,GIF/JPG/JPEG/PNG）</Alert>
+      <Alert type="warning">选择图片（不大2M,GIF/JPG/JPEG/PNG）</Alert>
       <Row type="flex" justify="start">
         <Col span="8">
           <FormItem label="U社区封面图片：" prop="coverImg" :rules="{ required: true, message: '请上传图片' }">
