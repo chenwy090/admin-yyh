@@ -2,7 +2,7 @@
   <div class="cms">
     <h3>请选择配置模块</h3>
     <Row type="flex" justify="center" :gutter="10">
-      <Col span="6" v-for="(item,k) in choice" :key="k">
+      <Col span="6" v-for="(item,k) in choice" :key="k" v-if="item.show">
         <Card class="card-item" @click.native="fn(item)">
           <span style>{{item.label}}</span>
         </Card>
@@ -11,6 +11,7 @@
   </div>
 </template>
 <script>
+import { postRequest } from "@/libs/axios";
 export default {
   name: "cms",
   inject: ["linkTo"],
@@ -19,17 +20,22 @@ export default {
       choice: {
         examine: {
           compName: "examine",
-          label: "审核"
+          label: "审核",
+          show: false
         },
         publish: {
           compName: "publish",
-          label: "发布"
+          label: "发布",
+          show: false
         }
       }
     };
   },
   created() {
-    // this.getPerms(perms);
+    // content:examine
+    // content:publish
+    this.getPerms("content:examine");
+    this.getPerms("content:publish");
   },
   methods: {
     fn(item) {
@@ -37,14 +43,15 @@ export default {
       this.linkTo(item.compName);
     },
     async getPerms(perms) {
+      let type = perms.split(":")[1];
       //获取权限
       const url = "/system/sys-menu/hasPerms";
       const { code, msg, data } = await postRequest(url, { perms });
-      if (code == 200) {
+      if (code == 200 && data) {
         // data:[{id,name,sort}]
-        this.auditList = data;
+        this.choice[type].show = true;
       } else {
-        this.msgErr(msg);
+        // this.msgErr(msg);
       }
     }
   }
