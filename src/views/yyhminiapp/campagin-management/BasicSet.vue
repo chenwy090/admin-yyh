@@ -195,7 +195,7 @@
                 <p>选择优惠券详情图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
               </div>
             </FormItem>
-            <FormItem label="首页缩略图" required>
+            <FormItem label="首页缩略图">
               <div
                       style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
                       v-for="(item, index) in uploadList2"
