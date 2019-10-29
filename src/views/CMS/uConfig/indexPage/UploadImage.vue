@@ -14,7 +14,7 @@
         :headers="userToken"
         ref="upload"
         :type="dragType"
-        :format="['jpg','jpeg','png','bmp']"
+        :format="['gif','jpg','jpeg','png','bmp']"
         :show-upload-list="false"
         :before-upload="handleBeforeUpload"
         :on-success="handleUploadSuccess"
@@ -140,7 +140,7 @@ export default {
       this.$Message.error("图片不大于1M");
     },
     handleFormatError() {
-      this.msgErr("只能上传jpg,jpeg,png,bmp格式,请重新上传");
+      this.msgErr("只能上传gif,jpg,jpeg,png,bmp格式,请重新上传");
     },
     handleBeforeUpload(file) {
       return checkImage(file);

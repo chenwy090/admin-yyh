@@ -195,7 +195,37 @@
                 <p>选择优惠券详情图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
               </div>
             </FormItem>
-
+            <FormItem label="首页缩略图">
+              <div
+                      style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
+                      v-for="(item, index) in uploadList2"
+                      :key="index"
+              >
+                <img :src="item.url" style="width:100%" />
+              </div>
+              <div style="display: inline-block;">
+                <Upload
+                        ref="upload"
+                        :defaultList="uploadList2"
+                        type="drag"
+                        :format="['jpg','jpeg','png','bmp']"
+                        :on-success="handleSucces2"
+                        :action="url"
+                        accept="image"
+                        :max-size="1024"
+                        :headers="userToken"
+                        style="display: inline-block;width:90px;"
+                        @on-change="statusCheckChange"
+                        :on-exceeded-size="handleMaxSize"
+                        :show-upload-list="false"
+                >
+                  <div style="width: 90px;height:90px;line-height: 90px;">
+                    <Icon type="ios-camera" size="20" />
+                  </div>
+                </Upload>
+                <p>选择首页缩略图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
+              </div>
+            </FormItem>
             <!-- <FormItem label="兑换时间类型" required>
               <Select
                 v-model="edit_info.ChangeDateType"
@@ -418,6 +448,7 @@ export default {
         ticketTemplateId: "",
         useDesc: "",
         couponImg: "",
+        couponSimpleImg: '',
         ChangeDateType: "",
         ChangeStartDate: "",
         ChangeEndDate: "",
@@ -431,6 +462,7 @@ export default {
       url: uploadOperationImage2AliOssURl,
       uploadList: [],
       uploadList1: [],
+      uploadList2: [],
       camp_pageStatus: "",
       getUrl: "",
       msg: "",
@@ -583,6 +615,7 @@ export default {
         startDate: "",
         useDesc: "",
         couponImg: "",
+        couponSimpleImg: '',
         ChangeDateType: "",
         ChangeStartDate: "",
         ChangeEndDate: "",
@@ -595,6 +628,7 @@ export default {
       this.isCheckDisabled = true;
       this.uploadList = [];
       this.uploadList1 = [];
+      this.uploadList2 = [];
     },
 
     //编辑
@@ -602,6 +636,7 @@ export default {
       this.edit_info = this.camp_Info;
       this.uploadList = [{ url: this.camp_Info.imgUrl }];
       this.uploadList1 = [{ url: this.camp_Info.couponImg }];
+      this.uploadList2 = [{ url: this.camp_Info.couponSimpleImg }];
       this.edit_info.appid = this.camp_Info.appid;
       this.campId = this.camp_Info.campId;
 
@@ -774,6 +809,7 @@ export default {
         status: this.edit_info.status,
         ticketName: this.edit_info.ticketName,
         couponImg: this.edit_info.couponImg,
+        couponSimpleImg: this.edit_info.couponSimpleImg,
         imgUrl: this.edit_info.imgUrl
       };
 
@@ -907,6 +943,26 @@ export default {
       }
       this.statusCheckChange();
     },
+      //上传couponImg图片
+      handleSucces2(res, file) {
+          if (res.code == 200) {
+              this.edit_info.couponSimpleImg = res.image_url;
+
+              if (this.uploadList2.length == 0) {
+                  let obj = {
+                      url: res.image_url
+                  };
+                  this.uploadList2.push(obj);
+              } else {
+                  this.uploadList2[0].url = res.image_url;
+              }
+
+              this.$Message.info("上传图片成功");
+          } else {
+              this.$Message.error("上传图片失败，请重新上传");
+          }
+          this.statusCheckChange();
+      },
 
     //获取APPid
     getAppId() {

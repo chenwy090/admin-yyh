@@ -3,14 +3,46 @@
     <div>
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
-          <FormItem label="用户id" :label-width="120">
+          <FormItem label="用户id" :label-width="100" style="width: 25%">
             <Input style="width:100%" v-model="searchData.userId" placeholder="请输入" clearable />
           </FormItem>
-          <FormItem label="状态" :label-width="120">
+          <FormItem label="状态" :label-width="100" style="width: 25%">
             <Input style="width:100%" v-model="searchData.status" placeholder="请输入" clearable />
           </FormItem>
-          <FormItem label="发放的类型" :label-width="120">
+          <FormItem label="发放的类型" :label-width="100" style="width: 25%">
             <Input style="width:100%" v-model="searchData.pushType" placeholder="请输入" clearable />
+          </FormItem>
+          <FormItem label="提交时间" :label-width="100" style="width: 45%">
+            <DatePicker
+                    :value="searchData.sendTimeStart"
+                    type="date"
+                    placeholder
+                    style="width: 40%"
+                    @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
+            ></DatePicker> -
+              <DatePicker
+                      :value="searchData.sendTimeEnd"
+                      type="date"
+                      placeholder
+                      style="width: 40%"
+                      @on-change="(datetime) =>{ changeDateTime(datetime, 2)}"
+              ></DatePicker>
+          </FormItem>
+          <FormItem label="发送时间" :label-width="120" style="width: 45%">
+            <DatePicker
+                    :value="searchData.putTimeStart"
+                    type="date"
+                    placeholder
+                    style="width: 40%"
+                    @on-change="(datetime) =>{ changeDateTime(datetime, 3)}"
+            ></DatePicker> -
+            <DatePicker
+                    :value="searchData.putTimeEnd"
+                    type="date"
+                    placeholder
+                    style="width: 40%"
+                    @on-change="(datetime) =>{ changeDateTime(datetime, 4)}"
+            ></DatePicker>
           </FormItem>
           <FormItem style="margin-left:35px;" class="br">
             <Button type="primary" icon="ios-search" @click="search">搜索</Button>
@@ -22,6 +54,7 @@
         <Row class="operation">
           <Button type="primary" icon="md-add" @click="addStaff">发券</Button>
           <Button icon="md-refresh" @click="search">刷新</Button>
+          <Button type="primary" @click="checkSend">确认发送</Button>
         </Row>
         <div>
           <!-- 推送列表 -->
@@ -31,6 +64,7 @@
             :columns="columns8"
             :data="personGiftList"
             :loading="TableLoading"
+            @on-selection-change="handleSelect"
           >
             <!--  <template slot-scope="{ row }" slot="action">
               <Button
@@ -40,6 +74,10 @@
                 @click="checkDetails(row)"
               >查看</Button>
             </template>-->
+            <template slot-scope="{ row }" slot="statusFlag">
+              <div>{{["待审核","成功","失败"][row.statusFlag]}}</div>
+            </template>
+
           </Table>
           <!-- 推送列表 -->
         </div>
@@ -341,6 +379,11 @@ export default {
       dropDownIcon: "ios-arrow-down",
       // 活动列表
       columns8: [
+          {
+              type: 'selection',
+              width: 60,
+              align: 'center'
+          },
         {
           title: "昵称",
           align: "center",
@@ -366,11 +409,17 @@ export default {
           key: "welfareInfo"
         },
         {
-          title: "发放时间",
+          title: "提交时间",
           align: "center",
           minWidth: 160,
           key: "createTime"
         },
+          {
+              title: "发送时间",
+              align: "center",
+              minWidth: 160,
+              key: "sendTime"
+          },
         {
           title: "发放原因",
           align: "center",
@@ -383,6 +432,12 @@ export default {
           minWidth: 160,
           key: "pushType"
         },
+          {
+              title: "状态标志",
+              align: "center",
+              minWidth: 160,
+              slot: "statusFlag"
+          },
         {
           title: "状态",
           align: "center",
@@ -486,6 +541,7 @@ export default {
           key: "templateId"
         }
       ],
+        selectDataList:[],
       materiaValidate: [],
       failList: [],
       personGiftList: [], //红包冠名活动列表数据
@@ -498,7 +554,11 @@ export default {
         // campId: null,
           userId: "",
         status: "",
-        pushType: ""
+        pushType: "",
+          sendTimeStart:'',
+          sendTimeEnd:'',
+          putTimeStart:'',
+          putTimeEnd:''
       },
       couponModalShow: false,
       // 优惠券搜索
@@ -593,11 +653,17 @@ export default {
       this.getStaffListFn(this.searchData);
       this.pagingType = "2";
     },
-
+      handleSelect(selection, index) {
+          this.selectDataList = selection;
+      },
     // 重置
     reset() {
       this.searchData.userId = "";
       this.searchData.status = "";
+      this.searchData.sendTimeStart = "";
+      this.searchData.sendTimeEnd = "";
+      this.searchData.putTimeStart = "";
+      this.searchData.putTimeEnd = "";
       this.searchData.pushType = "";
       this.pagingType = "1";
       this.search();
@@ -612,6 +678,12 @@ export default {
           this.current = res.data.current;
           this.totalSize = res.data.total;
           this.TableLoading = false;
+            console.log(1);
+            this.personGiftList.forEach(function(v){
+                if(v.statusFlag=='1'||v.statusFlag=='2'){
+                    v._disabled=true;
+                }
+            })
         } else {
           this.msgErr(res.msg);
         }
@@ -655,6 +727,34 @@ export default {
         }else{
             this.formValidate.reveiveType='';
         }
+      },
+// /compensate/checkSend
+      checkSend(){
+        var params = [];
+        if(!this.selectDataList.length){
+            return;
+        }
+        this.selectDataList.forEach(function(v){
+            params.push(v.id)
+        });
+          postRequest(`/compensate/checkSend`, {id:params}).then(res => {
+              if (res.code == 200) {
+                  this.getStaffListFn({});
+                  // this.list2.forEach(function(v){
+                  //     if(v.level == that.modal2.level){
+                  //         v.verifyQuantityMin = that.modal2.verifyQuantityMin;
+                  //     }
+                  // })
+                  // this.getData1();
+                  // setTimeout(() => {
+                  //     that.modal1.isopen = false;
+                  // }, 500);
+                  // this.$Message.info('用户存在');
+                  this.selectDataList = [];
+              } else {
+                  this.$Message.error(res.msg);
+              }
+          });
       },
       //校验userId
       checkUserId(){
@@ -815,7 +915,38 @@ export default {
         }
       });
     },
-
+      changeDateTime(datetime, index) {
+          switch (index) {
+          case 1:
+              if(datetime){
+                  this.searchData.sendTimeStart = datetime+' 00:00:00';
+              }else{
+                  this.searchData.sendTimeStart = '';
+              }
+              break;
+          case 2:
+              if(datetime){
+                  this.searchData.sendTimeEnd = datetime+' 23:59:59';
+              }else{
+                  this.searchData.sendTimeEnd = '';
+              }
+              break;
+          case 3:
+              if(datetime){
+                  this.searchData.putTimeStart = datetime+' 00:00:00';
+              }else{
+                  this.searchData.putTimeStart = '';
+              }
+              break;
+          case 4:
+              if(datetime){
+                  this.searchData.putTimeEnd = datetime+' 23:59:59';
+              }else{
+                  this.searchData.putTimeEnd = '';
+              }
+              break;
+          }
+      },
     // 选中优惠活动
     selectionCampagin(selection, row) {
       let obj = {};

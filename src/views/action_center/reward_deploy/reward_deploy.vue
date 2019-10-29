@@ -16,7 +16,7 @@
               v-else-if="row.code == '8'||row.code == '18'||row.code == '19'||row.code == '21'||row.code == '26'"
             >{{row.value}}元</div>
             <div v-else-if="row.code == '9'">{{row.value}}U贝=1元</div>
-            <div v-else-if="row.code == '10'||row.code=='27'||row.code=='31'">{{row.value}}次</div>
+            <div v-else-if="row.code == '10'||row.code=='27'||row.code=='31'||row.code=='33'||row.code=='34'||row.code=='35'">{{row.value}}次</div>
             <div v-else-if="row.code == '11'||row.code == '12'||row.code == '13'||row.code == '14'">
               <p>第一名{{row.value.split(',')[0]}}U贝</p>
               <p>第二名{{row.value.split(',')[1]}}U贝</p>
@@ -73,6 +73,9 @@
         </template>
       </Table>
     </div>
+
+    <!-- 提现-开关 -->
+    <WithdrawalSwitch></WithdrawalSwitch>
 
     <!--奖励配置-->
     <Modal v-model="modal1.isopen" :title="modal1.name" :mask-closable="false" footer-hide>
@@ -191,7 +194,7 @@
             <span class="ivu-form-item-label">U贝=1元</span>
           </Col>
         </Row>
-        <Row v-else-if="modal1.code == '10'||modal1.code == '27'||modal1.code == '31'">
+        <Row v-else-if="modal1.code == '10'||modal1.code == '27'||modal1.code == '31'||modal1.code=='33'||modal1.code=='34'||modal1.code=='35'">
           <Col span="18">
             <FormItem label="次数">
               <InputNumber
@@ -357,13 +360,16 @@
     <!--说明配置-->
     <Modal v-model="modal3.isopen" :title="modal3.name" :mask-closable="false" footer-hide>
       <Form :model="modal3" label-position="right" ref="modalErf3" :rules="ruleValidate3">
-        <Row>
+        <Row v-if="modal3.isEditor">
           <editor-bar
             v-model="modal3.context"
             :content="modal3.context"
             @on-change="change"
             @on-blur="blur"
           ></editor-bar>
+        </Row>
+        <Row v-if="!modal3.isEditor">
+          <Input v-model="modal3.context" style="width: 300px" />
         </Row>
         <FormItem>
           <Button style="float: right;margin-left: 20px" type="primary" @click="ok3('modalErf3')">确认</Button>
@@ -378,9 +384,10 @@
 import { postRequest, getRequest } from "@/libs/axios";
 import { uploadOperationImage2AliOssURl } from "@/api/index";
 import EditorBar from "@/components/EditorBar";
+import WithdrawalSwitch from "./WithdrawalSwitch";
 export default {
   name: "reward_deploy",
-  components: { EditorBar },
+  components: { EditorBar, WithdrawalSwitch },
   data() {
     return {
       userToken: {}, //用户token
@@ -427,7 +434,8 @@ export default {
         name: "",
         isopen: false,
         context: "",
-        newcontext: ""
+        newcontext: "",
+        isEditor: true
       },
       columns1: [
         {
@@ -657,6 +665,14 @@ export default {
       this.modal3.isopen = true;
       this.modal3.context = item.context;
       this.modal3.newcontext = item.context;
+      if (
+          item.code == "12" ||
+          item.code == "13"
+      ){
+        this.modal3.isEditor = false;
+      }else {
+        this.modal3.isEditor = true;
+      }
     },
     ok1(name) {
       if (!this.modal1.type || this.modal1.type != "3") {
@@ -701,6 +717,9 @@ export default {
       }
     },
     ok3(name) {
+      if (!this.modal3.isEditor){
+        this.modal3.newcontext = this.modal3.context;
+      }
       if (this.modal3.newcontext) {
         this.saveChange3();
       } else {
@@ -803,6 +822,7 @@ export default {
     },
     saveChange3() {
       var that = this;
+
       postRequest("/rewardNotice/updateNotice", {
         code: this.modal3.code,
         context: this.modal3.newcontext
@@ -885,33 +905,32 @@ h3 {
   height: 43px;
   padding: 5px;
 }
-  #content-box{
-    height: 18px;
-    line-height: 18px;
-    display:inline-block;
-    width: 100%;
-    overflow: hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-  }
-.ivu-table-wrapper{
+#content-box {
+  height: 18px;
+  line-height: 18px;
+  display: inline-block;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ivu-table-wrapper {
   overflow: visible;
 }
-  .ivu-tooltip{
-    width: 100%;
-  }
-
+.ivu-tooltip {
+  width: 100%;
+}
 </style>
 <style>
-  #reward_deploy{
-    max-height: 300px;
-    overflow: scroll;
-  }
-  #content-box *{
-    width: 100%;
-    overflow: hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-  }
+#reward_deploy {
+  max-height: 300px;
+  overflow: scroll;
+}
+#content-box * {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 </style>
 
