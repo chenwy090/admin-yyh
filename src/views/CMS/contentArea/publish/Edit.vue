@@ -86,7 +86,7 @@
       <Alert type="warning">选择图片（不大2M,GIF/JPG/JPEG/PNG）</Alert>
       <Row type="flex" justify="start">
         <Col span="8">
-          <FormItem label="U社区封面图片：" prop="coverImg" :rules="{ required: true, message: '请上传图片' }">
+          <FormItem label="U社区封面：" prop="coverImg" :rules="{ required: true, message: '请上传图片' }">
             <UploadImage
               :fileUploadType="'coverImg'"
               :defaultList="formData.defaultCoverImgList"
@@ -96,7 +96,7 @@
           </FormItem>
         </Col>
         <Col span="8">
-          <FormItem label="列表小图片：" prop="smallImg" :rules="{ required: true, message: '请上传图片' }">
+          <FormItem label="列表封面：" prop="smallImg" :rules="{ required: true, message: '请上传图片' }">
             <UploadImage
               :fileUploadType="'smallImg'"
               :defaultList="formData.defaultSmallImgList"
@@ -337,7 +337,7 @@ export default {
         defaultImagesList: [],
         coverImg: "", //封面图片URL
         defaultCoverImgList: [],
-        smallImg: "", //列表小图片
+        smallImg: "", //列表封面
         defaultSmallImgList: [],
         duration: "", //内容时常
 
