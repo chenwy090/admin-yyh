@@ -361,6 +361,9 @@ import {
 import { uploadOperationImage2AliOssURl,baseUrl } from "@/api/index";
 import { postRequest, getRequest,downloadSteam } from "@/libs/axios";
 
+
+import columns, { division100 } from "./columns";
+
 //import chooseCouponListView from "./chooseCouponList";
 export default {
   /*components: {
