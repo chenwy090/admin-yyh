@@ -6,6 +6,15 @@
         <div class="yyh-modal-item" v-for="(el, i) in descConfig" :key="'modal_detail' + i" v-show="dataList[el[0]]">
           <span class="title">{{el[1]}}:</span>
           <span class="modal-content" v-if="el[1] === '活动开奖时间'" style="flex: 1">{{dataList[el[0]] ? dataList[el[0]] : ''}} &nbsp;&nbsp; {{dataList.openDrawTimeType == 2? ' 满' + dataList.openDrawTimeNeedPlayers + '人开奖': ''}}</span>
+          <span class="modal-content" v-else-if="el[1] === '收费类型'" style="flex: 1">
+            {{['免费券','付费券'][[el[0]-1]]}}
+          </span>
+          <span class="modal-content" v-else-if="el[1] === '售后条件'" style="flex: 1">
+            <span v-for="value in el[0]">{{value.value}}</span>
+          </span>
+          <span class="modal-content" v-else-if="el[1] === '投放渠道'" style="flex: 1">
+            <span v-for="value in el[0]">{{value.value}}</span>
+          </span>
           <span class="modal-content" v-else-if="el[1] === '抽奖规则'" style="flex: 1">
             {{dataList[el[0]]}}
           </span>
@@ -13,33 +22,33 @@
             <div class="par yyh-modal-item">
               <span class="flex" style="width: 280px;">
                 <!-- <span class="title width-5">列表banner</span> -->
-                  <img class="mgr-1 banner-img" :src="dataList[el[0]]" alt="banner">                        
+                  <img class="mgr-1 banner-img" :src="dataList[el[0]]" alt="banner">
               </span>
               <!-- <span class="flex" style="width: 280px;">
                 <span class="title width-5">详情banner</span>
-                  <img class="mgr-1 banner-img" :src="dataList.advertBannerImgUrl" alt="banner">                        
+                  <img class="mgr-1 banner-img" :src="dataList.advertBannerImgUrl" alt="banner">
               </span>
               <span class="flex" style="width: 280px;">
                 <span class="title width-5" >logo图</span>
-                  <img class="mgr-1 banner-img" :src="dataList.advertLogoImgUrl" alt="logo">            
+                  <img class="mgr-1 banner-img" :src="dataList.advertLogoImgUrl" alt="logo">
               </span> -->
             </div>
           </span>
           <span class="modal-content" v-else style="flex: 1">{{dataList[el[0]]}}</span>
         </div>
-        
+
         <!-- <div class="par mgl-2 yyh-modal-item">
           <span class="flex" style="width: 280px;">
             <span class="title width-5">列表banner</span>
-              <img class="mgr-1 banner-img" :src="dataList.drawActiveUrl" alt="banner">                        
+              <img class="mgr-1 banner-img" :src="dataList.drawActiveUrl" alt="banner">
           </span>
           <span class="flex" style="width: 280px;">
             <span class="title width-5">详情banner</span>
-              <img class="mgr-1 banner-img" :src="dataList.advertBannerImgUrl" alt="banner">                        
+              <img class="mgr-1 banner-img" :src="dataList.advertBannerImgUrl" alt="banner">
           </span>
           <span class="flex" style="width: 280px;">
             <span class="title width-5" >logo图</span>
-              <img class="mgr-1 banner-img" :src="dataList.advertLogoImgUrl" alt="logo">            
+              <img class="mgr-1 banner-img" :src="dataList.advertLogoImgUrl" alt="logo">
           </span>
         </div> -->
       </div>
@@ -83,7 +92,7 @@ export default {
     };
   },
   created() {
-    
+
   },
   methods: {
     handleNone(e) {
@@ -126,7 +135,7 @@ export default {
   display: flex;
   margin: .5em .8em;
   color: #666;
-  
+
 }
 .yyh-modal{
   .title {

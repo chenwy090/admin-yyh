@@ -1,6 +1,6 @@
 <template>
   <div class="search">
-    <Row v-if="!couponEditPage">
+    <Row v-if="!couponEditPage&&!couponDetailPage">
       <!--  <div
         style="width: 90%;background: #fff;box-shadow:0 6px 6px -4px rgba(0,0,0,.2);z-index: 5;position:fixed; padding:14px"
       >
@@ -170,13 +170,20 @@
                   @click="inputUpdateAccountStatus(row)"
                   v-if="row.templateStatus == '进行中' "
                 >下架</Button>
+                <Button
+                        type="text"
+                        size="small"
+                        style="color:red"
+                        @click="upStatus(row)"
+                        v-if="row.templateStatus == '待发布'||row.templateStatus == '已结束'"
+                >上架</Button>
                 <!--<Button type="text" size="small" style="color:blue" @click="" v-if="row.templateStatus == '进行中' || row.templateStatus == '已结束' ">查看明细</Button>-->
                 <!--<Button type="text" size="small" style="color:red" @click="inputAppendStockCountStatus(row)" v-if="row.templateStatus == '进行中' ">追加</Button>-->
-                <!--<Button type="text" size="small" style="color:green" @click="" >复制</Button>-->
+                <Button type="text" size="small" style="color:green" @click="editInfo(row,'copy')" >复制</Button>
                 <!--changeStatus(row)-->
                 <Button type="text" size="small" style="color:red" @click="share(row)">分享奖励</Button>
                 <Button type="text" size="small" style="color:#2db7f5" @click="setTag(row)">打标签</Button>
-                <Button type="text" size="small" style="color:#2d8cf0" @click="showDetail(row.templateId)">查看详情</Button>
+                <Button type="text" size="small" style="color:#2d8cf0" @click="detailInfo(row.templateId)">查看详情</Button>
               </template>
             </Table>
           </Row>
@@ -196,6 +203,9 @@
 
     <div v-if="couponEditPage">
       <couponEdit @changeStatus="showbasicSetStatus" :couponEdit_info="couponEdit_info"></couponEdit>
+    </div>
+    <div v-if="couponDetailPage">
+      <couponDetail ref="modalDetail" @changeStatus="showbasicSetStatus" :couponEdit_info="couponEdit_info"></couponDetail>
     </div>
 
     <Modal v-model="bigImgDialog" title="查看大图" width="600" @on-cancel="bigImgCancel">
@@ -317,6 +327,8 @@ import FileImport from "./FileImport";
 import SetTag from "./SetTag";
 
 import modalDetail from "@/components/ModalDetail";
+import couponDetail from "./couponDetail";
+
 import {
   postJson,
 } from "@/libs/axios";
@@ -328,7 +340,8 @@ export default {
     modalDetail,
     couponEdit,
     FileImport,
-    SetTag
+    SetTag,
+      couponDetail
   },
   props: {
     merchantId: String
@@ -344,9 +357,14 @@ export default {
         ['thirdUrl', '第三方Url'],
         ['subTitle', '优惠副标题'],
         ['couponTypeName', '优惠类型'],
+        ['couponKind', '收费类型'],
         ['employeeId', '专属客服'],
         ['couponKindName', '优惠券种类'],
+          ['price','售卖价'],
+          ['originalPrice','原价'],
+          ['couponSaleAfterList','售后条件'],
         ['isActivityCouponName', '是否为活动券'],
+        ['couponPutChannelList', '投放渠道'],
         ['price', '购买价格，单位分'],
         ['label', '优惠标签-预留字段'],
         ['startDate', '活动开始时间'],
@@ -391,6 +409,7 @@ export default {
         shareData: []
       },
       couponEditPage: false,
+        couponDetailPage: false,
       updateTemplateStatusDisplay: false,
       appendStockCountDisplay: false,
       shareDisplay: false,
@@ -584,7 +603,7 @@ export default {
       //   userOpenWithCoupon: '使用打开方式',
       //   thirdUrl: '第三方Url',
       // }
-      postJson(baseUrl + "/merchantCouponTemplate/selectByTemplateId", {templateId}).then(res => {
+      postJson(baseUrl + "/merchantCouponTemplate/selectByTemplateId?templateId="+templateId, {templateId}).then(res => {
         // console.log(res);
         if (res.code == 200) {
           this.$refs.modalDetail.showByFather(res.data);
@@ -794,6 +813,13 @@ export default {
       this.formCustom.status = "-1";
       this.updateTemplateStatusDisplay = true;
     },
+      // 传值到审核对话框
+      upStatus(row) {
+          this.formCustom.templateId = row.templateId;
+          this.formCustom.type = "优惠券管理";
+          this.formCustom.status = "1";
+          this.updateTemplateStatusDisplay = true;
+      },
 
     // 更新账户
     updateTemplateStatusFn(item) {
@@ -806,7 +832,7 @@ export default {
       postRequest(
         "/merchantCouponTemplate/updStatus/?templateId=" +
           this.formCustom.templateId +
-          "&status=-1",
+          "&status="+this.formCustom.status,
         reqParams
       ).then(res => {
         if (res.code == 200) {
@@ -834,14 +860,29 @@ export default {
     },
 
     //编辑
-    editInfo(item) {
-      this.setStore("camp_pageStatus", "edit");
+    editInfo(item,type) {
+        if(type){
+            this.setStore("camp_pageStatus", "copy");
+        }else{
+            this.setStore("camp_pageStatus", "edit");
+        }
+
       this.couponEdit_info = item;
       this.couponEditPage = true;
     },
 
+      //查看详情
+      detailInfo(item) {
+          this.setStore("camp_pageStatus", "detail");
+          this.couponEdit_info = item;
+          this.couponDetailPage = true;
+          this.couponEditPage = false;
+          // this.$refs.modalDetail.rowDate(item);
+
+      },
     showbasicSetStatus(e) {
       this.couponEditPage = e;
+      this.couponDetailPage = e;
       this.queryTableData();
     },
 

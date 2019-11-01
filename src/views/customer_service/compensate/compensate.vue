@@ -7,7 +7,10 @@
             <Input style="width:100%" v-model="searchData.userId" placeholder="请输入" clearable />
           </FormItem>
           <FormItem label="状态" :label-width="100" style="width: 25%">
-            <Input style="width:100%" v-model="searchData.status" placeholder="请输入" clearable />
+            <!--<Input style="width:100%" v-model="searchData.status" placeholder="请输入" clearable />-->
+            <Select v-model="searchData.statusFlag" clearable>
+              <Option v-for="(v,k) in statusList" :value="k" :key="k">{{ v }}</Option>
+            </Select>
           </FormItem>
           <FormItem label="发放的类型" :label-width="100" style="width: 25%">
             <Input style="width:100%" v-model="searchData.pushType" placeholder="请输入" clearable />
@@ -55,6 +58,7 @@
           <Button type="primary" icon="md-add" @click="addStaff">发券</Button>
           <Button icon="md-refresh" @click="search">刷新</Button>
           <Button type="primary" @click="checkSend">确认发送</Button>
+          <Button type="primary" @click="downExcl">下载</Button>
         </Row>
         <div>
           <!-- 推送列表 -->
@@ -369,6 +373,11 @@ export default {
   name: "compensate",
   data() {
     return {
+        statusList:{
+            2:'失败',
+            1: "成功",
+            0: "待审核"
+        },
       userId:'',
       upLoadUrl:'',
         fileList:[],
@@ -391,13 +400,13 @@ export default {
           key: "userName"
         },
         {
-          title: "用户id",
+          title: "用户ID",
           align: "center",
           minWidth: 160,
           key: "userId"
         },
         {
-          title: "券id",
+          title: "券ID",
           align: "center",
           minWidth: 160,
           key: "templateId"
@@ -408,6 +417,36 @@ export default {
           minWidth: 100,
           key: "welfareInfo"
         },
+          {
+              title: "发放原因",
+              align: "center",
+              minWidth: 160,
+              key: "reason"
+          },
+          {
+              title: "发放的类型",
+              align: "center",
+              minWidth: 160,
+              key: "pushType"
+          },
+          {
+              title: "状态标志",
+              align: "center",
+              minWidth: 160,
+              slot: "statusFlag"
+          },
+          {
+              title: "状态",
+              align: "center",
+              minWidth: 160,
+              key: "status"
+          },
+          {
+              title: "操作人员",
+              align: "center",
+              minWidth: 120,
+              key: "createBy"
+          },
         {
           title: "提交时间",
           align: "center",
@@ -420,36 +459,6 @@ export default {
               minWidth: 160,
               key: "sendTime"
           },
-        {
-          title: "发放原因",
-          align: "center",
-          minWidth: 160,
-          key: "reason"
-        },
-        {
-          title: "发放的类型",
-          align: "center",
-          minWidth: 160,
-          key: "pushType"
-        },
-          {
-              title: "状态标志",
-              align: "center",
-              minWidth: 160,
-              slot: "statusFlag"
-          },
-        {
-          title: "状态",
-          align: "center",
-          minWidth: 160,
-          key: "status"
-        },
-        {
-          title: "操作人员",
-          align: "center",
-          minWidth: 120,
-          key: "createBy"
-        },
         {
           title: "备注",
           align: "center",
@@ -554,6 +563,7 @@ export default {
         // campId: null,
           userId: "",
         status: "",
+          statusFlag:'',
         pushType: "",
           sendTimeStart:'',
           sendTimeEnd:'',
@@ -660,6 +670,7 @@ export default {
     reset() {
       this.searchData.userId = "";
       this.searchData.status = "";
+      this.searchData.statusFlag = "";
       this.searchData.sendTimeStart = "";
       this.searchData.sendTimeEnd = "";
       this.searchData.putTimeStart = "";
@@ -825,6 +836,29 @@ export default {
       downLoad(list){
           // /compensate/demo/download
           downloadSteam('/compensate/fail/download',{failUserIdlist:list}).then(res => {
+              const content = res.data;
+              let fileName = res.headers["filename"];
+              const blob = new Blob([content], { type: "application/vnd.ms-excel" });
+              if ("download" in document.createElement("a")) {
+                  // 非IE下载
+                  const elink = document.createElement("a");
+                  elink.download = decodeURI(fileName);
+                  elink.style.display = "none";
+                  elink.href = URL.createObjectURL(blob);
+                  document.body.appendChild(elink);
+                  elink.click();
+                  URL.revokeObjectURL(elink.href); // 释放URL 对象
+                  document.body.removeChild(elink);
+              } else {
+                  // IE10+下载
+                  navigator.msSaveBlob(blob, fileName);
+              }
+          });
+
+      },
+      downExcl(list){
+          // /compensate/demo/download
+          downloadSteam('/compensate/data/download',this.searchData).then(res => {
               const content = res.data;
               let fileName = res.headers["filename"];
               const blob = new Blob([content], { type: "application/vnd.ms-excel" });
@@ -1120,6 +1154,10 @@ export default {
       if (!this.ruleValidate()) {
         return;
       }
+      if(this.formValidate.userId.length==0&&this.userId){
+          console.log(1123);
+          this.formValidate.userId=[this.userId];
+      }
       if(!this.formValidate.userId.length){
           this.msgErr('请上传用户Id');
           return
@@ -1168,6 +1206,7 @@ export default {
       this.formValidate.welfareType = "";
       this.formValidate.amount = "";
       this.formValidate.userId = [];
+      this.userId = '';
       this.formValidate.failUserIdlist = [];
       this.formValidate.title = "";
       this.formValidate.reason = "";
