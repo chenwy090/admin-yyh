@@ -102,8 +102,10 @@
 
             <Button @click="queryTableData" icon="md-refresh">刷新</Button>
             <!-- 排序导入  排序导出 -->
-            <Button type="success" class="marginLeft20" @click="upload">排序导入</Button>
-            <Button type="success" class="marginLeft20" @click="download">排序导出</Button>
+            <Button type="success" class="marginLeft20" @click="upload(1)">排序导入</Button>
+            <Button type="success" class="marginLeft20" @click="download(1)">排序导出</Button>
+            <Button type="success" class="marginLeft20" @click="upload(2)">分享奖励导入</Button>
+            <!--<Button type="success" class="marginLeft20" @click="download(2)">分享奖励导出</Button>-->
           </Row>
 
           <Row>
@@ -293,6 +295,7 @@
       </Form>
     </Modal>
     <FileImport
+            ref="fileImport"
       v-if="showFileImport"
       :showFileImport.sync="showFileImport"
       @refresh="queryTableData"
@@ -615,8 +618,10 @@ export default {
       });
       this.$refs.modalDetail.showByFather();
     },
-    upload() {
+    upload(type) {
       this.showFileImport = true;
+        console.log(type);
+        this.$refs.fileImport.retRow(type);
     },
     async download() {
       const url = "/template/sort/excel/download";
