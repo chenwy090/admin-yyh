@@ -21,16 +21,16 @@
         <Card>
           <Form :label-width="240">
             <FormItem label="每人每天开团次数" required>
-               <Tooltip trigger="focus" title="提醒" content="只能输入整数" placement="right">
-              <InputNumber
-                :min="0"
-                v-model="edit_info.dailyOpenTimes"
-                placeholder="请输入"
-                style="width:300px"
-                @on-change="statusCheckChange"
-              ></InputNumber>
-               </Tooltip>
-               <span style="color:red"> &nbsp;&nbsp;次</span>
+              <Tooltip trigger="focus" title="提醒" content="只能输入整数" placement="right">
+                <InputNumber
+                  :min="0"
+                  v-model="edit_info.dailyOpenTimes"
+                  placeholder="请输入"
+                  style="width:300px"
+                  @on-change="statusCheckChange"
+                ></InputNumber>
+              </Tooltip>
+              <span style="color:red">&nbsp;&nbsp;次</span>
             </FormItem>
 
             <!-- <FormItem label="每人每天免费开团次数" required>
@@ -42,25 +42,29 @@
                 @on-change="statusCheckChange"
               ></InputNumber>
               <span>（只能输入整数）</span>
-            </FormItem> -->
+            </FormItem>-->
 
             <FormItem label="成团人数" required>
-                 <Tooltip trigger="focus" title="提醒" content="只能输入整数" placement="right">
-              <InputNumber
-                :min="0"
-                v-model="edit_info.groupCount"
-                placeholder="请输入"
-                style="width:300px"
-                @on-change="statusCheckChange"
-                disabled
-              ></InputNumber>
-                   <span style="color:red"> &nbsp;&nbsp;人</span>
-                 </Tooltip>
-
+              <Tooltip trigger="focus" title="提醒" content="只能输入整数" placement="right">
+                <InputNumber
+                  :min="0"
+                  v-model="edit_info.groupCount"
+                  placeholder="请输入"
+                  style="width:300px"
+                  @on-change="statusCheckChange"
+                  disabled
+                ></InputNumber>
+                <span style="color:red">&nbsp;&nbsp;人</span>
+              </Tooltip>
             </FormItem>
 
             <FormItem label="拼团限时(分钟)" required>
-              <Tooltip trigger="focus" title="提醒" content="单位为(分钟),范围为(0~60)  (只能输入整数)" placement="right">
+              <Tooltip
+                trigger="focus"
+                title="提醒"
+                content="单位为(分钟),范围为(0~60)  (只能输入整数)"
+                placement="right"
+              >
                 <InputNumber
                   :min="1"
                   :max="60"
@@ -69,24 +73,21 @@
                   style="width:300px"
                   @on-change="statusCheckChange"
                 ></InputNumber>
-                   <span style="color:red"> &nbsp;&nbsp;分钟</span>
+                <span style="color:red">&nbsp;&nbsp;分钟</span>
               </Tooltip>
-
-
             </FormItem>
 
             <FormItem label="每人每天参团限制次数" required>
-                <Tooltip trigger="focus" title="提醒" content="只能输入整数" placement="right">
-              <InputNumber
-                :min="0"
-                v-model="edit_info.dailyJoinGroupTimes"
-                placeholder="请输入 "
-                style="width:300px"
-                @on-change="statusCheckChange"
-              ></InputNumber>
-                    <span style="color:red">&nbsp;&nbsp;次</span>
-                </Tooltip>
-
+              <Tooltip trigger="focus" title="提醒" content="只能输入整数" placement="right">
+                <InputNumber
+                  :min="0"
+                  v-model="edit_info.dailyJoinGroupTimes"
+                  placeholder="请输入 "
+                  style="width:300px"
+                  @on-change="statusCheckChange"
+                ></InputNumber>
+                <span style="color:red">&nbsp;&nbsp;次</span>
+              </Tooltip>
             </FormItem>
 
             <!-- <FormItem label="兑换要优惠一次所需积分" required>
@@ -98,19 +99,19 @@
                 @on-change="statusCheckChange"
               ></InputNumber>
               <span>（只能输入整数）</span>
-            </FormItem> -->
+            </FormItem>-->
 
             <FormItem label="每人每天接受分享奖励限制次数" required>
-                 <Tooltip trigger="focus" title="提醒" content="只能输入整数" placement="right">
-              <InputNumber
-                :min="0"
-                v-model="edit_info.dailyAcceptShareTimes"
-                placeholder="请输入"
-                style="width:300px"
-                @on-change="statusCheckChange"
-              ></InputNumber>
-                 </Tooltip>
-                  <span style="color:red">&nbsp;&nbsp;次</span>
+              <Tooltip trigger="focus" title="提醒" content="只能输入整数" placement="right">
+                <InputNumber
+                  :min="0"
+                  v-model="edit_info.dailyAcceptShareTimes"
+                  placeholder="请输入"
+                  style="width:300px"
+                  @on-change="statusCheckChange"
+                ></InputNumber>
+              </Tooltip>
+              <span style="color:red">&nbsp;&nbsp;次</span>
             </FormItem>
 
             <FormItem label="助力得全场满减现金券面额下限百分比" required>
@@ -123,9 +124,8 @@
                   style="width:300px"
                   @on-change="statusCheckChange"
                 ></InputNumber>
-                  <span style="color:red">&nbsp;&nbsp; %</span>
+                <span style="color:red">&nbsp;&nbsp; %</span>
               </Tooltip>
-
             </FormItem>
 
             <FormItem label="助力得全场满减现金券面额上限百分比" required>
@@ -138,9 +138,8 @@
                   style="width:300px"
                   @on-change="statusCheckChange"
                 ></InputNumber>
-                 <span style="color:red">&nbsp;&nbsp; %</span>
+                <span style="color:red">&nbsp;&nbsp; %</span>
               </Tooltip>
-
             </FormItem>
 
             <!-- <FormItem label="助力者用券后给分享者返佣百分比" required>
@@ -154,7 +153,7 @@
                 ></InputNumber>
                 <span>（只能输入整数）</span>
               </Tooltip>
-            </FormItem> -->
+            </FormItem>-->
 
             <FormItem label="接受分享领用现金券金额比例" required>
               <Tooltip trigger="focus" title="提醒" content="范围为(0~100)  (只能输入整数)" placement="right">
@@ -166,9 +165,8 @@
                   style="width:300px"
                   @on-change="statusCheckChange"
                 ></InputNumber>
-                 <span style="color:red">&nbsp;&nbsp; %</span>
+                <span style="color:red">&nbsp;&nbsp; %</span>
               </Tooltip>
-
             </FormItem>
           </Form>
         </Card>
@@ -178,17 +176,17 @@
             <h4>要优惠算法参数</h4>
           </Alert>
           <Form :label-width="240" inline>
-             <FormItem label="前" required>
-                 <Tooltip trigger="focus" title="提醒" content="只能输入整数" placement="right">
-              <InputNumber
-                :min="0"
-                v-model="edit_info.receiveCount"
-                placeholder="请输入"
-                style="width:100px"
-                @on-change="statusCheckChange"
-              ></InputNumber>
-               <span style="color:red">&nbsp;&nbsp;次</span>
-                 </Tooltip>
+            <FormItem label="前" required>
+              <Tooltip trigger="focus" title="提醒" content="只能输入整数" placement="right">
+                <InputNumber
+                  :min="0"
+                  v-model="edit_info.receiveCount"
+                  placeholder="请输入"
+                  style="width:100px"
+                  @on-change="statusCheckChange"
+                ></InputNumber>
+                <span style="color:red">&nbsp;&nbsp;次</span>
+              </Tooltip>
             </FormItem>
             <FormItem label="折扣比例百分比" required>
               <Tooltip trigger="focus" title="提醒" content="范围在(0~100)  (只能输入整数)" placement="right">
@@ -200,7 +198,7 @@
                   style="width:300px"
                   @on-change="statusCheckChange"
                 ></InputNumber>
-                   <span style="color:red">&nbsp;&nbsp; %</span>
+                <span style="color:red">&nbsp;&nbsp; %</span>
               </Tooltip>
             </FormItem>
             <FormItem label="后续获得折扣比例百分比" required>
@@ -213,7 +211,7 @@
                   style="width:300px"
                   @on-change="statusCheckChange"
                 ></InputNumber>
-                   <span style="color:red">&nbsp;&nbsp; %</span>
+                <span style="color:red">&nbsp;&nbsp; %</span>
               </Tooltip>
             </FormItem>
             <FormItem label="随机因子" required>
@@ -243,7 +241,7 @@
                   style="width:300px"
                   @on-change="statusCheckChange"
                 ></InputNumber>
-                   <span style="color:red">&nbsp;&nbsp; 元</span>
+                <span style="color:red">&nbsp;&nbsp; 元</span>
               </Tooltip>
             </FormItem>
 
@@ -256,7 +254,7 @@
                   style="width:300px"
                   @on-change="statusCheckChange"
                 ></InputNumber>
-                    <span style="color:red">&nbsp;&nbsp; 元</span>
+                <span style="color:red">&nbsp;&nbsp; 元</span>
               </Tooltip>
             </FormItem>
 
@@ -287,6 +285,21 @@
               >返回</Button>
             </FormItem>
           </Form>
+
+          <row>
+            特定barcode金额：
+            <!-- 排序导入  排序导出 -->
+            <Button type="success" class="marginLeft20" @click="download">{{edit_info.fileName}}</Button>
+            <Button type="success" class="marginLeft20" @click="upload">上传</Button>
+
+            <!-- @refresh="queryTableData" -->
+            <FileImport
+              :campId="campId"
+              v-if="showFileImport"
+              :showFileImport.sync="showFileImport"
+              @refresh="uploadFileName"
+            ></FileImport>
+          </row>
         </Card>
       </p>
     </Card>
@@ -299,19 +312,22 @@ import {
   postRequest,
   putRequest,
   deleteRequest,
-  uploadFileRequest
+  uploadFileRequest,
+  downloadSteam
 } from "@/libs/axios";
 
 import { formatDate } from "@/libs/date";
+import FileImport from "./FileImport";
 
 export default {
   name: "grabInfoSet",
-  components: {},
+  components: { FileImport },
   props: {
     campId: String
   },
   data() {
     return {
+      showFileImport: false,
       edit_info: {
         campId: "",
         addMultiple: 0,
@@ -330,8 +346,9 @@ export default {
         // shareUseRakeBackPercent: 0,
         upperDiscountAmount: 0,
         acceptPercent: 0,
-        receiveCount:0,
-        laterDiscountRatio:0,
+        receiveCount: 0,
+        laterDiscountRatio: 0,
+        fileName: ""
       },
       edit_loading: false,
       status: "",
@@ -341,10 +358,44 @@ export default {
     };
   },
 
-  created: function() {
-      this.init();
+  created() {
+    this.init();
   },
   methods: {
+    uploadFileName(filename) {
+      this.edit_info.fileName = filename;
+    },
+    upload() {
+      this.showFileImport = true;
+      console.log(this.campId);
+    },
+    async download() {
+      const url = "/campaginGrabInfoSet/download/barcodeToMoney";
+
+      const res = await downloadSteam(url, { campId: this.campId });
+
+      console.log(111111111111111111, res);
+
+      const content = res.data;
+      const { filename } = res.headers;
+
+      console.log(111111111111111111, res);
+      const blob = new Blob([content], { type: "application/vnd.ms-excel" });
+      const oA = document.createElement("a");
+      if ("download" in oA) {
+        // 非IE下载
+        oA.download = decodeURI(filename);
+        oA.style.display = "none";
+        oA.href = URL.createObjectURL(blob);
+        document.body.appendChild(oA);
+        oA.click();
+        URL.revokeObjectURL(oA.href); // 释放URL 对象
+        document.body.removeChild(oA);
+      } else {
+        // IE10+下载
+        navigator.msSaveBlob(blob, filename);
+      }
+    },
     init() {
       this.updateTableList();
     },
@@ -353,12 +404,9 @@ export default {
       const reqParams = {
         campId: this.campId
       };
+      const url = `/campaginGrabInfoSet/selectCampaginGrabInfoByCampId?campId=${this.campId}`;
 
-      postRequest(
-        "/campaginGrabInfoSet/selectCampaginGrabInfoByCampId?campId=" +
-          this.campId,
-        reqParams
-      ).then(res => {
+      postRequest(url, reqParams).then(res => {
         if (res.code == 200) {
           if (res.data.length > 0) {
             this.edit_info = res.data[0];
@@ -367,8 +415,11 @@ export default {
 
             this.edit_info.helpAwardLower = this.edit_info.helpAwardLower * 100;
             this.edit_info.helpAwardUpper = this.edit_info.helpAwardUpper * 100;
-            this.edit_info.discountRatio = parseInt(this.edit_info.discountRatio * 100);
-             this.edit_info.laterDiscountRatio = this.edit_info.laterDiscountRatio * 100;
+            this.edit_info.discountRatio = parseInt(
+              this.edit_info.discountRatio * 100
+            );
+            this.edit_info.laterDiscountRatio =
+              this.edit_info.laterDiscountRatio * 100;
             this.edit_info.limitTime = this.edit_info.limitTime / 60;
 
             this.status = "edit";
@@ -391,8 +442,8 @@ export default {
               // shareUseRakeBackPercent: 0,
               upperDiscountAmount: 0,
               acceptPercent: 0,
-              receiveCount:0,
-              laterDiscountRatio:0,
+              receiveCount: 0,
+              laterDiscountRatio: 0
             };
             this.status = "add";
           }
@@ -461,7 +512,10 @@ export default {
         return;
       }
 
-      if (!this.edit_info.laterDiscountRatio && this.edit_info.laterDiscountRatio != 0) {
+      if (
+        !this.edit_info.laterDiscountRatio &&
+        this.edit_info.laterDiscountRatio != 0
+      ) {
         this.$Message.error("后续折扣比例不能为空");
         return;
       } else if (this.edit_info.laterDiscountRatio > 100) {
@@ -469,10 +523,10 @@ export default {
         return;
       }
 
-       if (!this.edit_info.receiveCount && this.edit_info.receiveCount != 0) {
-         this.$Message.error("领取次数不能为空");
-         return;
-       }
+      if (!this.edit_info.receiveCount && this.edit_info.receiveCount != 0) {
+        this.$Message.error("领取次数不能为空");
+        return;
+      }
 
       if (!this.edit_info.limitTime && this.edit_info.limitTime != 0) {
         this.$Message.error("拼团限时不能为空");
@@ -582,8 +636,8 @@ export default {
         // shareUseRakeBackPercent: this.edit_info.shareUseRakeBackPercent / 100,
         upperDiscountAmount: this.edit_info.upperDiscountAmount,
         acceptPercent: this.edit_info.acceptPercent / 100,
-        receiveCount:  this.edit_info.receiveCount,
-        laterDiscountRatio:  this.edit_info.laterDiscountRatio / 100,
+        receiveCount: this.edit_info.receiveCount,
+        laterDiscountRatio: this.edit_info.laterDiscountRatio / 100
       };
 
       postRequest(this.getUrl, reqParams).then(res => {
@@ -664,8 +718,7 @@ export default {
       return true;
     }
   },
-  mounted() {
-  }
+  mounted() {}
 };
 </script>
 
