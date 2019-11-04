@@ -5,20 +5,20 @@
                 <div>
                     <Card :bordered="false" style="margin-bottom:2px">
                         <Form ref="searchForm" label-position="right" :label-width="75" :model="searchForm" inline>
-                            <FormItem label="领取人手机：" span="24" style="width:40%">
-                                <Input style="width:48%" v-model="searchForm.phoneNumber" placeholder="请填写领取人手机" :disabled="!searchForm.merchantType" />
+                            <FormItem label="领取人手机：" span="24" style="width:30%">
+                                <Input v-model="searchForm.phoneNumber" placeholder="请填写领取人手机" :disabled="!searchForm.merchantType" />
                             </FormItem>
-                            <FormItem label="订单号：" span="24" style="width:40%">
-                                <Input style="width:48%" v-model="searchForm.orderNo" placeholder="请填写订单号" :disabled="!searchForm.merchantType" />
+                            <FormItem label="订单号：" span="24" style="width:30%">
+                                <Input v-model="searchForm.orderNo" placeholder="请填写订单号" :disabled="!searchForm.merchantType" />
                             </FormItem>
-                            <FormItem label="状态：" span="24" style="width:40%">
-                                <Select v-model="searchForm.status" style="width:48%" placeholder="请选择状态">
+                            <FormItem label="状态：" span="24" style="width:30%">
+                                <Select v-model="searchForm.status" placeholder="请选择状态">
                                     <Option value="">全部</Option>
                                     <Option v-for="item in statusList" :value="item.value" :key="item.value">{{ item.label }}</Option>
                                 </Select>
                             </FormItem>
-                            <FormItem label="领取终端：" span="24" style="width:40%">
-                                <Select v-model="searchForm.source" style="width:48%" placeholder="请选择领取终端">
+                            <FormItem label="领取终端：" span="24" style="width:30%">
+                                <Select v-model="searchForm.source" placeholder="请选择领取终端">
                                     <Option value="">全部</Option>
                                     <Option v-for="item in sourceList" :value="item.value" :key="item.value">{{ item.label }}</Option>
                                 </Select>
@@ -266,6 +266,7 @@
             },
             loadTableData(page) {
                 this.searchForm.current = page||1;
+                this.searchForm.pageNum = page||1;
                 this.totalSize = 0;
                 this.listData = [];
                 this.TableLoading = true;

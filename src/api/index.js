@@ -10,8 +10,8 @@ import {
 
 // 本地访问地址
 
-// export const baseUrl = "http://192.168.0.39:8088//zex-mgr";
-export const baseUrl = "http://192.168.34.104:8088//zex-mgr";
+export const baseUrl = "http://192.168.0.19:8088//zex-mgr";
+// export const baseUrl = "http://192.168.34.104:8088//zex-mgr";
 // export const baseUrl = "http://192.168.0.25:8088/zex-mgr";
 
 // export const baseUrl = "http://192.168.0.47:8088/zex-mgr";

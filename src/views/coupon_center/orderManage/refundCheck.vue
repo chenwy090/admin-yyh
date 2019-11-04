@@ -253,6 +253,7 @@
             },
             loadTableData(page) {
                 this.searchForm.current = page||1;
+                this.searchForm.pageNum = page||1;
                 this.totalSize = 0;
                 this.listData = [];
                 this.TableLoading = true;
