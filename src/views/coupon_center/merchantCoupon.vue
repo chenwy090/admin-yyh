@@ -295,10 +295,10 @@
       </Form>
     </Modal>
     <FileImport
-            ref="fileImport"
-      v-if="showFileImport"
+            v-if="showFileImport"
       :showFileImport.sync="showFileImport"
       @refresh="queryTableData"
+            :upType="upType"
     ></FileImport>
 
     <SetTag
@@ -351,6 +351,7 @@ export default {
   },
   data() {
     return {
+        upType:'',
       descConfig: [
         ['templateId', '优惠券模板ID'],
         ['merchantNames', '商户名称，多个商户'],
@@ -620,8 +621,7 @@ export default {
     },
     upload(type) {
       this.showFileImport = true;
-        console.log(type);
-        this.$refs.fileImport.retRow(type);
+      this.upType = type;
     },
     async download() {
       const url = "/template/sort/excel/download";

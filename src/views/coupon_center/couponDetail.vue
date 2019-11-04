@@ -122,70 +122,72 @@
             </div>
             </Col>
           </Row>
-          <Row class="box" v-if="edit_info.couponType==1">
-            <Col span="4" class="left-text">
+          <div v-if="edit_info.couponKind==1">
+            <Row class="box" v-if="edit_info.couponType==1">
+              <Col span="4" class="left-text">
               <span style="color:red">*</span>立减
-            </Col>
-            <Col span="16">
-             {{edit_info.ticketMoney}}
-                <span style="color:red">&nbsp;&nbsp; 元</span>
-            </Col>
-          </Row>
+              </Col>
+              <Col span="16">
+              {{edit_info.ticketMoney}}
+              <span style="color:red">&nbsp;&nbsp; 元</span>
+              </Col>
+            </Row>
 
-          <Row class="box" v-if="edit_info.couponType==2">
-            <Col span="4" class="left-text">
+            <Row class="box" v-if="edit_info.couponType==2">
+              <Col span="4" class="left-text">
               <span style="color:red">*</span>折扣
-            </Col>
-            <Col span="16">
+              </Col>
+              <Col span="16">
               {{edit_info.ticketDiscount}}
-                <span style="color:red">&nbsp;&nbsp; 折</span>
-            </Col>
-          </Row>
-          <Row class="box" v-if="edit_info.couponType==3">
-            <Col span="4" class="left-text">
+              <span style="color:red">&nbsp;&nbsp; 折</span>
+              </Col>
+            </Row>
+            <Row class="box" v-if="edit_info.couponType==3">
+              <Col span="4" class="left-text">
               <span style="color:red">*</span>满
-            </Col>
-            <Col span="16">
-             {{edit_info.fullAmout}}
-                <span style="color:red">&nbsp;&nbsp; 元</span>
-            </Col>
-          </Row>
-          <Row class="box" v-if="edit_info.couponType==3">
-            <Col span="4" class="left-text">
+              </Col>
+              <Col span="16">
+              {{edit_info.fullAmout}}
+              <span style="color:red">&nbsp;&nbsp; 元</span>
+              </Col>
+            </Row>
+            <Row class="box" v-if="edit_info.couponType==3">
+              <Col span="4" class="left-text">
               <span style="color:red">*</span>减
-            </Col>
-            <Col span="16">
-             {{edit_info.decreaseAmount}}
-                <span style="color:red">&nbsp;&nbsp; 元</span>
-            </Col>
-          </Row>
-          <Row class="box" v-if="edit_info.couponType==4">
-            <Col span="4" class="left-text">
+              </Col>
+              <Col span="16">
+              {{edit_info.decreaseAmount}}
+              <span style="color:red">&nbsp;&nbsp; 元</span>
+              </Col>
+            </Row>
+            <Row class="box" v-if="edit_info.couponType==4">
+              <Col span="4" class="left-text">
               <span style="color:red">*</span>面额描述
-            </Col>
-            <Col span="16">
-             {{edit_info.displayText}}
-                <span style="color:red">&nbsp;&nbsp; 体验券</span>
-            </Col>
-          </Row>
-          <Row class="box" v-if="edit_info.couponType==5">
-            <Col span="4" class="left-text">
+              </Col>
+              <Col span="16">
+              {{edit_info.displayText}}
+              <span style="color:red">&nbsp;&nbsp; 体验券</span>
+              </Col>
+            </Row>
+            <Row class="box" v-if="edit_info.couponType==5">
+              <Col span="4" class="left-text">
               <span style="color:red">*</span>面额描述
-            </Col>
-            <Col span="16">
-             {{edit_info.displayText}}
-                <span style="color:red">&nbsp;&nbsp; 换购券</span>
-            </Col>
-          </Row>
-          <Row class="box" v-if="edit_info.couponType==6">
-            <Col span="4" class="left-text">
+              </Col>
+              <Col span="16">
+              {{edit_info.displayText}}
+              <span style="color:red">&nbsp;&nbsp; 换购券</span>
+              </Col>
+            </Row>
+            <Row class="box" v-if="edit_info.couponType==6">
+              <Col span="4" class="left-text">
               <span style="color:red">*</span>面额描述
-            </Col>
-            <Col span="16">
-            {{edit_info.displayText}}
-                <span style="color:red">&nbsp;&nbsp; 赠品券</span>
-            </Col>
-          </Row>
+              </Col>
+              <Col span="16">
+              {{edit_info.displayText}}
+              <span style="color:red">&nbsp;&nbsp; 赠品券</span>
+              </Col>
+            </Row>
+          </div>
           <Row class="box" v-if="edit_info.couponKind==2">
             <Col span="4" class="left-text">
             <span style="color:red">*</span>售后条件
@@ -577,7 +579,7 @@ export default {
                 this.imgSrc3 = this.edit_info.couponSimpleImg;
 
                 if (this.edit_info.couponKind == 2) {
-                    this.edit_info.price = this.edit_info.price / 100;
+                    this.edit_info.price = this.edit_info.price;
                 } else {
                     this.edit_info.price = 0;
                 }
