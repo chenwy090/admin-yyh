@@ -25,7 +25,7 @@
             <FormItem label="商户名称">
               <Input
                 type="text"
-                v-model="searchItem.name"
+                v-model="searchItem.merchantName"
                 clearable
                 placeholder="请输入商户名称"
                 style="width: 150px"
@@ -33,7 +33,7 @@
             </FormItem>
             <FormItem style label="所在地区">
               <Select
-                v-model="searchItem.provinceId"
+                v-model="searchItem.provinceCode"
                 style="width:150px"
                 clearable
                 @on-change="getcitylist"
@@ -199,11 +199,17 @@ export default {
       pageNum: 1, //开始条数
       tableLoading: false,
       searchItem: {
+        type: 1,
         merchantId: "",
-        name: "",
-        provinceId: "",
+        merchantName: "",
+        provinceCode: "",
         cityId: "",
         areaId: ""
+      },
+      page: {
+        pageNum: 1, //页码
+        pageSize: 10, //每页数量
+        total: 0 //数据总数
       },
       provincelist: [],
       citylist: [],
@@ -226,7 +232,7 @@ export default {
     },
     //根据省份code获取城市信息数据
     getcitylist() {
-      getRequest("/system/area/city/" + this.searchItem.provinceId).then(
+      getRequest("/system/area/city/" + this.searchItem.provinceCode).then(
         res => {
           if (res.code == 200) {
             this.citylist = res.data;
@@ -263,18 +269,17 @@ export default {
     queryTableData() {
       this.tableLoading = false;
       const reqParams = {
+        ...this.searchItem,
         merchantId: this.searchItem.merchantId,
-        name: this.searchItem.name,
-        provinceCode: this.searchItem.provinceId,
+        merchantName: this.searchItem.merchantName,
+        provinceCode: this.searchItem.provinceCode,
         cityCode: this.searchItem.cityId,
         areaCode: this.searchItem.areaId
       };
-      postRequest(
-        "/merchant/merchantInfo/list?isAsc=DESC&orderByColumn=1&pageNum=" +
-          this.pageNum +
-          "&pageSize=10",
-        reqParams
-      ).then(res => {
+      // 获取成功开户的商户信息,type=1 商户;type = 2 品牌
+      const url = "/trade/merchant/fund/account/basic/success";
+
+      postRequest(url, reqParams).then(res => {
         if (res.code == 200) {
           this.totalSize = res.data.total;
           this.tableData = res.data.records;
@@ -305,7 +310,7 @@ export default {
       // this.updateTableList(this.params);
       this.searchItem.merchantId = "";
       this.searchItem.name = "";
-      this.searchItem.provinceId = "";
+      this.searchItem.provinceCode = "";
       this.searchItem.cityId = "";
       this.searchItem.areaId = "";
       this.queryTableData();

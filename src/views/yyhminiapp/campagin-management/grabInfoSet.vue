@@ -373,13 +373,9 @@ export default {
       const url = "/campaginGrabInfoSet/download/barcodeToMoney";
 
       const res = await downloadSteam(url, { campId: this.campId });
-
-      console.log(111111111111111111, res);
-
       const content = res.data;
       const { filename } = res.headers;
-
-      console.log(111111111111111111, res);
+      
       const blob = new Blob([content], { type: "application/vnd.ms-excel" });
       const oA = document.createElement("a");
       if ("download" in oA) {

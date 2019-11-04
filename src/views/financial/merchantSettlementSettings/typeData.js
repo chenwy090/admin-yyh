@@ -6,7 +6,7 @@ export default function createTypeDate() {
             type: 0,
             id: "",
             name: "",
-            label: "商户",
+            label: "商户单",
             desc: "本地商户（单店）",
             columns: [{
                     title: "商户编号",
@@ -33,7 +33,7 @@ export default function createTypeDate() {
             type: 1,
             id: "",
             name: "",
-            label: "商户",
+            label: "商户多",
             desc: "本地商户（多店）",
             columns: [{
                     title: "品牌名称",

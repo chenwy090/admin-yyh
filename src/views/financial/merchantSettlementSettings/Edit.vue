@@ -1,15 +1,15 @@
 <template>
-  <!--  扣款  -->
-  <div class="deduction-edit">
+  <!--  新建/编辑  -->
+  <div class="edit">
     <div>
       <Form
         label-position="right"
         ref="form"
         :model="formData"
         :rules="ruleValidate"
-        :label-width="100"
+        :label-width="120"
       >
-        <FormItem label="商户类型：" prop="merchantType">
+        <FormItem label="结算商户类型：" prop="merchantType">
           <RadioGroup v-model="formData.merchantType">
             <Radio v-for="item in merchantTypeOption" :label="item.value" :key="item.value">
               <span>{{item.label}}</span>
@@ -26,37 +26,18 @@
             <Col span="12">
               <template v-if="formData.merchantType!=3">
                 <Input
-                  v-model="formData.businessName"
+                  v-model.trim="formData.businessName"
                   :placeholder="`点击按钮选择${businessTypePlaceholder}`"
                   disabled
                 >
                   <Button @click="handleChoose" slot="append">选择</Button>
                 </Input>
               </template>
-              <template v-else>
-                <Select
-                  :label="formData.businessName"
-                  ref="retailerSel"
-                  @on-clear="clearSel"
-                  clearable
-                >
-                  <Option
-                    v-for="item in retailerInfoList"
-                    :value="item.venderId"
-                    :label="item.venderName"
-                    :key="item.venderId"
-                    @click.native="selectRetailer(item)"
-                  >
-                    <span>{{item.venderName}}</span>
-                    <span style="float:right;">关联店铺数{{item.num}}</span>
-                  </Option>
-                </Select>
-              </template>
             </Col>
           </Row>
         </FormItem>
 
-        <Row class="box" style="margin-bottom:20px;">
+        <Row class="box" style="margin-bottom:20px; ">
           <Table size="small" border width="540" :columns="dynamicColumns" :data="dynamicTableData">
             <template slot-scope="{ row }" slot="operate">
               <Button
@@ -69,56 +50,89 @@
           </Table>
         </Row>
 
-        <!-- 商户余额 money U贝余额 ubay    -->
-        <FormItem label="商户余额：">{{money}}&nbsp;元</FormItem>
-        <FormItem label="U贝余额：">{{ubay}}&nbsp;贝</FormItem>
+        <FormItem label="提现手续费：">
+          <span>企业对公账户：10元/每笔（银行8元/每笔、平台2元/每笔）</span>
+          <span>个人账户：1元/每笔（银行1元/每笔）</span>
+        </FormItem>
+        <FormItem label="支付通道费：">
+          <span>平台承担 0.6%/每笔（微信）</span>
+          <span>0.6%/每笔（支付宝）</span>
+        </FormItem>
 
-        <!-- anticipatedDeduction // 应扣款 -->
+        <FormItem label="润模板：">
+          <span>商户分润： 97%/每笔</span>
+          <span>平台分润： 3%/每笔</span>
+          <span>（未分润部分归平台所有；分润金额四舍五入，保留至小数点两位）</span>
+        </FormItem>
+
         <FormItem
-          label="应扣款："
-          prop="anticipatedDeduction"
-          :rules="{ required: true, validator: validateMoney('应扣款') }"
+          label="最低提现金额："
+          prop="withdrawMin"
+          :rules="{ required: formData.requiredWithdrawMin, validator:formData.requiredWithdrawMin?validatorWithdrawMin:null }"
         >
           <Row>
-            <Col span="16">
+            <Col span="20">
               <Input
-                style="width:80%"
-                v-model="formData.anticipatedDeduction"
-                placeholder="请输入应扣款金额，小数点后两位"
+                style="width:60%"
+                v-model.trim="formData.withdrawMin"
+                placeholder="请输入最低提现金额"
                 clearable
-              />&nbsp;元
+              />不填，则不限制
             </Col>
           </Row>
         </FormItem>
-        <!-- actualDeduction  //实扣款 -->
         <FormItem
-          label="实扣款："
-          prop="actualDeduction"
-          :rules="{ required: true, validator: validateMoney('实扣款') }"
+          label="关联提现账号："
+          prop="withdrawUserId"
+          :rules="{ required: true, validator: validateContractNumber }"
         >
-          <Row>
-            <Col span="16">
-              <Input
-                style="width:80%"
-                v-model="formData.actualDeduction"
-                placeholder="请输入实扣款金额，小数点后两位"
-                clearable
-              />&nbsp;元
-            </Col>
-          </Row>
+          <Button type="primary" class="marginLeft20" @click="handleChoose">选择商户账号</Button>（只有关联账号才可以提现，提现余额为结算商户所有余额）
+        </FormItem>
+        <Row class="box" style="margin-bottom:20px; ">
+          <Table
+            size="small"
+            border
+            width="540"
+            :columns="withdrawUserColumns"
+            :data="withdrawUserTableData"
+          >
+            <template slot-scope="{ row }" slot="operate">
+              <Button
+                size="small"
+                style="color:#2db7f5"
+                @click="remove(row)"
+                icon="ios-trash-outline"
+              >移除</Button>
+            </template>
+          </Table>
+        </Row>
+
+        <FormItem label="生效时间：">
+          <Radio :value="true" disabled>保存即生效</Radio>
+        </FormItem>
+        <FormItem label="审核结果：">
+          <Radio :value="true" disabled>保存即生效</Radio>
+        </FormItem>
+
+        <FormItem label="审核结果：" prop="status">
+          <RadioGroup v-model="formData.status">
+            <Radio v-for="item in merchantTypeOption" :label="item.value" :key="item.value">
+              <span>{{item.label}}</span>
+            </Radio>
+          </RadioGroup>
         </FormItem>
 
         <!-- 必填项 -->
-        <FormItem label="备注：">
+        <FormItem label="原因：">
           <Row>
             <Col span="10">
-              <Tooltip trigger="focus" title="提醒" content="最多500个汉字" placement="right">
+              <Tooltip trigger="focus" title="提醒" content="最多100个汉字" placement="right">
                 <Input
                   v-model="formData.remark"
                   type="textarea"
                   style="width:300px"
                   :autosize="{minRows: 4,maxRows: 8}"
-                  placeholder="请输入500个字符以内备注"
+                  placeholder="请输入100字以内未通过原因"
                   :maxlength="500"
                 />
               </Tooltip>
@@ -142,11 +156,6 @@
       :showBrandList.sync="showBrandList"
       @seclectedTr-event="selectedTrCallBack"
     ></BrandList>
-    <SuperMarket
-      v-if="showSuperMarketList"
-      :showSuperMarketList.sync="showSuperMarketList"
-      @seclectedTr-event="selectedTrCallBack"
-    ></SuperMarket>
   </div>
 </template>
 <script>
@@ -159,34 +168,31 @@ import { rechargeAndDeduction } from "@/api/sys";
 
 import BusinessList from "./BusinessList";
 import BrandList from "./BrandList";
-import SuperMarket from "./SuperMarket";
 
 import createTypeDate from "./typeData";
 
+import { withdrawUserColumns } from "./columns";
+
 export default {
-  name: "deduction-edit",
-  inject: ["merchantTypeOption", "getMoneyAndUbay", "msgOk", "msgErr"],
+  name: "edit",
   created() {
     this.typeData = createTypeDate();
     this.dynamicColumns = this.typeData.type0.columns;
   },
   components: {
     BusinessList,
-    BrandList,
-    SuperMarket
+    BrandList
   },
   props: {
-    showDeduction: {
+    showEdit: {
       type: Boolean,
       default: true
     }
   },
-  computed: {
-    ...mapState(["retailerInfoList"])
-  },
+  computed: {},
   watch: {
     ["formData.merchantType"]() {
-      const type = this.formData.merchantType;
+      const { merchantType: type } = this.formData;
 
       const { id, name, label, desc, columns, tableData } = this.typeData[
         `type${type}`
@@ -200,20 +206,25 @@ export default {
       this.dynamicTableData = tableData;
 
       this.$refs.form.validateField("businessName");
+    },
+    ["formData.withdrawMin"]() {
+      const { withdrawMin } = this.formData;
+      this.formData.requiredWithdrawMin = !!withdrawMin.length;
+      console.log(this.formData.requiredWithdrawMin);
+
+      if (this.formData.requiredWithdrawMin) {
+        this.$refs.form.validateField("withdrawMin");
+      } else {
+        // this.$refs.form.resetFields();
+        this.$refs.form.fields.some(function(e) {
+          let r = e.prop == "withdrawMin";
+          r && e.resetField();
+          return r;
+        });
+      }
     }
   },
   data() {
-    const validateRemarks = (rule, value, callback) => {
-      value += "";
-      value = value.trim();
-      if (value == "") {
-        callback(new Error("备注不能为空"));
-      } else if (value.length < 6) {
-        callback(new Error("备注不得少于6个字"));
-      } else {
-        callback();
-      }
-    };
     return {
       // 新增、修改 任务抽奖banner
       isShow: false,
@@ -225,7 +236,9 @@ export default {
       ubay: 0, // U贝余额  ubayBalance
       typeData: {},
       formData: {
-        changeType: 1, //充值0 扣款1 写死
+        requiredWithdrawMin: false,
+        withdrawMin: "",
+        changeType: 0, //充值0 扣款1 写死
         merchantType: 0,
         businessId: "",
         businessName: "",
@@ -233,31 +246,34 @@ export default {
         merchantName: "",
         brandId: "", //
         brandName: "", //
-        reduceUbay: "", //消耗U贝
+        receivables: "", //应收款
+        contractNumber: "", //合同号
+        biller: "", //签单销售 销售名字 salesName
+        // 签单销售
         remark: "" //备注 必填
       },
       ruleValidate: {},
       showBusinessList: false,
       showBrandList: false,
-      showSuperMarketList: false,
+      //  '商户类型 0-本地商户（单店），1-本地商户（多店）' 2 商超门店、3 零售商
+      merchantTypeOption: [
+        {
+          value: 0,
+          label: "本地商户（单店）"
+        },
+        {
+          value: 1,
+          label: "本地商户（多店）"
+        }
+      ],
       // dynamicColumns: typeData.type0.columns,
       dynamicColumns: [],
-      dynamicTableData: []
+      dynamicTableData: [],
+      withdrawUserColumns,
+      withdrawUserTableData: []
     };
   },
   methods: {
-    selectRetailer(row) {
-      // venderName: "上海世纪联华", num: 7, venderId: "80"}
-      const { venderId: id, venderName: name, num } = row;
-      const { merchantType: type } = this.formData;
-      let typeData = this.typeData[`type${type}`];
-      this.formData.businessId = typeData.id = id;
-      this.formData.businessName = typeData.name = name;
-      this.dynamicTableData = typeData.tableData = [{ ...row }];
-      console.log("dynamicTableData", JSON.stringify(this.dynamicTableData));
-
-      this.setMoneyAndUbay(type, id);
-    },
     selectedTrCallBack(data) {
       console.log("selectedTrCallBack----", data);
       const { merchantType: type, id, name, row } = data;
@@ -266,37 +282,13 @@ export default {
       this.formData.businessId = typeData.id = id;
       this.formData.businessName = typeData.name = name;
       this.dynamicTableData = typeData.tableData = [row];
+    },
 
-      this.setMoneyAndUbay(type, id);
-    },
-    async setMoneyAndUbay(type, id) {
-      const { money, ubay } = await this.getMoneyAndUbay(type, id);
-      this.money = money;
-      this.ubay = ubay;
-    },
     handleChoose() {
       //  '商户类型 0-本地商户（单店），1-本地商户（多店）' 2 商超门店、3 零售商
-      const arr = [
-        "showBusinessList",
-        "showBrandList",
-        "showSuperMarketList",
-        "retailer"
-      ];
+      const arr = ["showBusinessList", "showBrandList"];
       const type = this.formData.merchantType;
       this[arr[type]] = true;
-    },
-    clearSel() {
-      // 清空select绑定值
-      // this.$refs.retailerSel.clearSingleSelect();
-      console.log("clear");
-      const type = this.formData.merchantType;
-      let typeData = this.typeData[`type${type}`];
-
-      this.formData.businessId = typeData.id = "";
-      this.formData.businessName = typeData.name = "";
-      this.dynamicTableData = typeData.tableData = [];
-      this.money = 0;
-      this.ubay = 0;
     },
     remove() {
       const type = this.formData.merchantType;
@@ -305,20 +297,12 @@ export default {
       this.formData.businessId = typeData.id = "";
       this.formData.businessName = typeData.name = "";
       this.dynamicTableData = typeData.tableData = [];
-
-      this.money = 0;
-      this.ubay = 0;
-
-      if (type == 3) {
-        // 清空select绑定值
-        this.$refs.retailerSel.clearSingleSelect();
-      }
     },
     closeDialog() {
       //关闭对话框清除表单数据
       // this.$refs.formValidate.resetFields();
       console.log("closeDialog");
-      this.$emit(`update:showDeduction`, false);
+      this.$emit(`update:showEdit`, false);
     },
     handleSubmit(name) {
       this.$refs[name].validate(async valid => {
@@ -349,9 +333,7 @@ export default {
             oForm.merchantName = "";
           }
 
-          // 应扣款 anticipatedDeduction  实扣款 actualDeduction 给后端*100 转分
-          oForm.anticipatedDeduction = oForm.anticipatedDeduction * 100;
-          oForm.actualDeduction = oForm.actualDeduction * 100;
+          console.log("submit oForm", oForm);
 
           let { code, msg } = await rechargeAndDeduction(oForm);
 
@@ -365,7 +347,7 @@ export default {
             this.msgErr(msg);
           }
         } else {
-          this.$Message.error("数据验证失败！");
+          this.msgErr("数据验证失败！");
         }
       });
     },
@@ -379,47 +361,82 @@ export default {
       }
       callback();
     },
+    //验证金额 validateMoney
+    validatorWithdrawMin(rule, value, callback) {
+      value += "";
+      value = value.trim();
+      // 允许不填
+      if (value == "") {
+        return callback("金额不能为空");
+      }
 
-    validateMoney(msg) {
-      //验证正整数
-      return function(rule, value, callback) {
-        value += "";
-        value = value.trim();
-        // 允许不填
-        if (value == "") {
-          return callback("金额不能为空");
+      // 排除 "","0","0.0","0.00"格式
+      if (!value || value == "0" || value == "0.0" || value == "0.00") {
+        return callback(new Error("兑换的金额不能为0"));
+      }
+
+      // 验证是否是数字
+      const n = Number(value);
+      if (isNaN(n)) {
+        return callback(new Error("请输入数字"));
+      }
+
+      if (n > 0 && n <= 99999.99) {
+        const reg = /^(0|[1-9]\d*)(\s|$|\.\d{1,2}\b)/;
+
+        if (!reg.test(value)) {
+          return callback(
+            new Error("请输入大于等于0的金额，小数点最多包含两位小数")
+          );
         }
+      } else {
+        return callback(new Error("请输入[0.01—99999.99]之间的数"));
+      }
 
-        // 排除 "","0","0.0","0.00"格式
-        if (!value || value == "0" || value == "0.0" || value == "0.00") {
-          return callback(new Error(`${msg}金额不能为0`));
-        }
-
-        // 验证是否是数字
-        const n = Number(value);
-        if (isNaN(n)) {
-          return callback(new Error("请输入数字"));
-        }
-
-        if (n > 0 && n <= 99999.99) {
-          const reg = /^(0|[1-9]\d*)(\s|$|\.\d{1,2}\b)/;
-
-          if (!reg.test(value)) {
-            return callback(
-              new Error("请输入大于等于0的金额，小数点最多包含两位小数")
-            );
-          }
-        } else {
-          return callback(new Error("请输入[0.01—99999.99]之间的数"));
-        }
-
+      callback();
+    },
+    validateContractNumber(rule, value, callback) {
+      value += "";
+      value = value.trim();
+      if (value == "") {
+        callback(new Error("合同号不能为空,且最多支持30个字"));
+      } else if (value.length > 30) {
+        callback(new Error("合同号最多支持30个字"));
+      } else {
         callback();
-      };
+      }
+    },
+    validateSalesName(rule, value, callback) {
+      value += "";
+      value = value.trim();
+      if (value == "") {
+        callback(new Error("签单销售不能为空"));
+      } else if (value.length > 30) {
+        callback(new Error("签单销售最多支持30个字"));
+      } else {
+        callback();
+      }
+    },
+    // 全局提示
+    msgOk(txt) {
+      this.$Message.info({
+        content: txt,
+        duration: 3
+      });
+    },
+    msgErr(txt) {
+      this.$Message.error({
+        content: txt,
+        duration: 3
+      });
     }
   }
 };
 </script>
 <style scoped>
+.edit {
+  padding-bottom: 50px;
+}
 .demo-drawer-footer {
   width: 100%;
   position: fixed;

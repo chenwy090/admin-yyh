@@ -1,129 +1,168 @@
-// 商户预充值列表 商户类型 、 商户名称、 预充值余额（元）、 剩余U贝、 创建时间
-export default [
+
+
+export const columns8 = [
+    {
+        type: 'selection',
+        width: 60,
+        align: 'center'
+    },
+    {
+        title: "昵称",
+        align: "center",
+        minWidth: 100,
+        key: "userName"
+    },
+    {
+        title: "用户id",
+        align: "center",
+        minWidth: 160,
+        key: "userId"
+    },
+    {
+        title: "券id",
+        align: "center",
+        minWidth: 160,
+        key: "templateId"
+    },
+    {
+        title: "发放福利",
+        align: "center",
+        minWidth: 100,
+        key: "welfareInfo"
+    },
+    {
+        title: "发放的类型",
+        align: "center",
+        minWidth: 160,
+        key: "pushType"
+    },
+    {
+        title: "发放原因",
+        align: "center",
+        minWidth: 160,
+        key: "reason"
+    },
+    {
+        title: "状态标志",
+        align: "center",
+        minWidth: 160,
+        slot: "statusFlag"
+    },
+    {
+        title: "状态",
+        align: "center",
+        minWidth: 160,
+        key: "status"
+    },
+    {
+        title: "操作人员",
+        align: "center",
+        minWidth: 120,
+        key: "createBy"
+    },
+    {
+        title: "提交时间",
+        align: "center",
+        minWidth: 160,
+        key: "createTime"
+    },
+    {
+        title: "发送时间",
+        align: "center",
+        minWidth: 160,
+        key: "sendTime"
+    },
+    {
+        title: "备注",
+        align: "center",
+        minWidth: 120,
+        key: "remark"
+    }
+];
+// 优惠活动列表
+export const columns4 = [
     {
         title: "操作",
         align: "center",
-        width: 180,
+        width: 100,
         fixed: "left",
         slot: "action"
     },
     {
-        title: "结算商户",
-        key: "merchantName",
+        title: "类型",
         align: "center",
-        minWidth: 120
-    },
-    /**
-     * merchantType:
-     * 0 merchantName
-     * 1 brandName
-     */
-    {
-        title: "商户类型",
-        key: "merchantTypeDesc",
-        align: "center",
-        minWidth: 80
+        minWidth: 140,
+        key: "couponKind",
+        slot: "couponKind"
     },
     {
-        title: "提现账号",
-        key: "withdrawAccountNumber",
+        title: "优惠券ID",
         align: "center",
-        minWidth: 80
-    },
-    {
-        title: "最低提现金额",
-        key: "withdrawMin",
-        align: "center",
-        width: 150,
-        render: (h, params) => {
-            let { withdrawMin } = params.row;
-            return (
-                <span>{`${withdrawMin}￥`}</span>
-            );
-        }
-    },
-
-    {
-        title: "商户分润比例",
-        key: "merchantSharePercentage",
-        align: "center",
-        width: 150,
-        render: (h, params) => {
-            let { merchantSharePercentage: per } = params.row;
-            return (
-                <span>{`${per}%`}</span>
-            );
-        }
-    },
-    {
-        title: "平台分润比例",
-        key: "platformSharePercentage",
-        align: "center",
-        width: 150,
-        render: (h, params) => {
-            let { platformSharePercentage: per } = params.row;
-            return (
-                <span>{`${per}%`}</span>
-            );
-        }
-    },
-    // status
-    {
-        title: "审核状态",
-        key: "auditDesc",
-        align: "center",
-        minWidth: 100
-    },
-    {
-        title: "操作人",
-        key: "auditBy",
-        align: "center",
-        minWidth: 120
-    },
-    {
-        title: "操作时间",
-        key: "auditTime",
-        align: "center",
-        minWidth: 160
-    },
-    {
-        title: "审核日志",
-        align: "center",
-        minWidth: 160,
-        slot: "auditLog",
-    },
+        minWidth: 140,
+        key: "templateId"
+    }
 ];
-
-
-export const auditLogColoumns = [
+// 新增/编辑 周边券列表
+export const columns9 = [
     {
-        title: "审核人",
-        key: "auditUserName",
-        align: "center",
-        width: 160
+        type: "selection",
+        width: 60,
+        align: "center"
     },
     {
-        title: "审核时间",
-        key: "auditTime",
+        title: "优惠券ID",
         align: "center",
-        width: 180
+        minWidth: 140,
+        key: "templateId"
     },
     {
-        title: "审核结果",
-        key: "auditDesc",
+        title: "优惠券名称",
         align: "center",
-        width: 100
+        minWidth: 140,
+        key: "title"
     },
     {
-        title: "审核备注",
-        key: "auditResultDesc",
+        title: "所属商户",
         align: "center",
+        minWidth: 140,
+        key: "merchantName"
+    }
+];
+// 超市券
+export const columns10 = [
+    {
+        type: "selection",
+        width: 60,
+        align: "center"
     },
+    {
+        title: "优惠券ID",
+        align: "center",
+        minWidth: 140,
+        key: "campId"
+    },
+    {
+        title: "优惠券名称",
+        align: "center",
+        minWidth: 140,
+        key: "name"
+    }
+];
+// 错误数据
+export const columns11 = [
+    {
+        title: "用户id",
+        align: "center",
+        minWidth: 140,
+        key: "userId"
+    },
+    {
+        title: "券id",
+        align: "center",
+        minWidth: 140,
+        key: "templateId"
+    }
 ];
 
 
 
-
-export function division100(n) {
-    return Math.floor10(n / 100, -2);
-}

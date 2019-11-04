@@ -120,6 +120,40 @@ export const auditLogColoumns = [
         align: "center",
     },
 ];
+export const withdrawUserColumns = [
+    {
+        title: "userID",
+        key: "userID",
+        align: "center"
+    },
+    {
+        title: "手机号",
+        key: "shopName",
+        align: "center"
+    },
+    {
+        title: "微信昵称",
+        key: "venderName",
+        align: "center"
+    },
+    {
+        title: "头像",
+        key: "venderName",
+        align: "center"
+    },
+    {
+        title: "商户角色",
+        key: "venderName",
+        align: "center"
+    },
+    {
+        title: "操作",
+        align: "center",
+        key: "action",
+        slot: "operate"
+    }
+];
+
 
 
 

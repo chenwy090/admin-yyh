@@ -40,14 +40,6 @@
           class="bussiness-list"
         ></Table>
         <Row type="flex" justify="end" class="page">
-          <!-- <Page
-            :total="totalSize"
-            show-total
-            show-elevator
-            @on-change="changeCurrent"
-            :current.sync="current"
-            style="float: right"
-          ></Page>-->
           <Page
             style="float: right"
             show-total

@@ -1,114 +1,41 @@
 <template>
-  <!--  查看充值详情页  -->
-  <div class="money-detail">
+  <!--  查看详情页  -->
+  <div class="detail">
     <div>
-      <Form label-position="right" ref="form" :model="formData" :label-width="100">
+      <Form label-position="right" :label-width="120">
         <FormItem label="商户类型：">
           <Radio :value="true" disabled>{{formData.merchantTypeName}}</Radio>
         </FormItem>
         <!-- label="商户名称：" -->
-        <FormItem :label="`${formData.businessTypeLabel}名称：`">
-          <Row>
-            <Col span="16">
-              <Input v-model="formData.businessName" disabled></Input>
-            </Col>
-          </Row>
+        <FormItem :label="`${formData.businessTypeLabel}名称：`">{{formData.businessName}}</FormItem>
+
+        <FormItem label="提现手续费：">
+          <span>企业对公账户：10元/每笔（银行8元/每笔、平台2元/每笔）</span>
+          <span>个人账户：1元/每笔（银行1元/每笔）</span>
+        </FormItem>
+        <FormItem label="支付通道费：">
+          <span>平台承担 0.6%/每笔（微信）</span>
+          <span>0.6%/每笔（支付宝）</span>
         </FormItem>
 
-        <!-- 商户余额 money U贝余额 ubay    -->
-        <FormItem label="商户余额：">{{money}}&nbsp;元</FormItem>
-        <FormItem label="U贝余额：">{{ubay}}&nbsp;贝</FormItem>
-
-        <template v-if="formData.changeType==0">
-          <FormItem label="应收款：">
-            <Row>
-              <Col span="16">
-                <Input
-                  style="width:80%"
-                  v-model="formData.receivables"
-                  placeholder="请输入应收款金额，小数点后两位"
-                  disabled
-                />&nbsp;元
-              </Col>
-            </Row>
-          </FormItem>
-          <!-- Contract number -->
-          <FormItem label="合同号：">
-            <Row>
-              <Col span="16">
-                <Input
-                  style="width:80%"
-                  v-model="formData.contractNumber"
-                  placeholder="请输入合同号"
-                  disabled
-                />
-              </Col>
-            </Row>
-          </FormItem>
-
-          <!--签单销售：请输入销售名字 salesName: "", //销售名字 -->
-          <FormItem label="签单销售：">
-            <Row>
-              <Col span="16">
-                <Input style="width:80%" v-model="formData.biller" placeholder="请输入销售名字" disabled />
-              </Col>
-            </Row>
-          </FormItem>
-        </template>
-
-        <template v-if="formData.changeType==1">
-          <!-- anticipatedDeduction // 应扣款 -->
-          <FormItem label="应扣款：">
-            <Row>
-              <Col span="16">
-                <Input
-                  style="width:80%"
-                  v-model="formData.anticipatedDeduction"
-                  placeholder="请输入应扣款金额，小数点后两位"
-                  disabled
-                />&nbsp;元
-              </Col>
-            </Row>
-          </FormItem>
-          <!-- actualDeduction  //实扣款 -->
-          <FormItem label="实扣款：">
-            <Row>
-              <Col span="16">
-                <Input
-                  style="width:80%"
-                  v-model="formData.actualDeduction"
-                  placeholder="请输入实扣款金额，小数点后两位"
-                  disabled
-                />&nbsp;元
-              </Col>
-            </Row>
-          </FormItem>
-        </template>
-
-        <!-- 必填项 -->
-        <FormItem label="备注：">
-          <Row>
-            <Col span="10">
-              <Input
-                v-model="formData.remark"
-                type="textarea"
-                style="width:300px"
-                :autosize="{minRows: 4,maxRows: 8}"
-                placeholder="请输入500个字符以内备注"
-                :maxlength="500"
-                disabled
-              />
-            </Col>
-          </Row>
+        <FormItem label="润模板：">
+          <span>商户分润： 97%/每笔</span>
+          <span>平台分润： 3%/每笔</span>
+          <span>（未分润部分归平台所有；分润金额四舍五入，保留至小数点两位）</span>
         </FormItem>
 
-        <template v-if="formData.changeType==0">
-          <FormItem label="收费条目："></FormItem>
-          <FeeEntryDetail
-            v-if="formData.merchantMoneyChargesRecords && formData.merchantMoneyChargesRecords.length"
-            :merchantMoneyChargesRecords="formData.merchantMoneyChargesRecords"
-          ></FeeEntryDetail>
-        </template>
+        <FormItem label="最低提现金额：">{{formData.withdrawMin}}</FormItem>
+        <FormItem label="关联提现账号："></FormItem>
+
+        <Row class="box" style="margin-bottom:20px; ">
+          <Table
+            size="small"
+            border
+            width="540"
+            :columns="withdrawUserColumns"
+            :data="withdrawUserTableData"
+          ></Table>
+        </Row>
       </Form>
     </div>
     <div class="demo-drawer-footer">
@@ -117,10 +44,9 @@
   </div>
 </template>
 <script>
-import FeeEntryDetail from "./FeeEntryDetail";
+import { withdrawUserColumns } from "./columns";
 export default {
-  name: "deduction-edit",
-  inject: ["getMoneyAndUbay"],
+  name: "detail",
   props: {
     showDetail: {
       type: Boolean,
@@ -133,9 +59,7 @@ export default {
       }
     }
   },
-  components: {
-    FeeEntryDetail
-  },
+  components: {},
   // mounted() {
   created() {
     let data = JSON.parse(JSON.stringify(this.detailData));
@@ -146,8 +70,6 @@ export default {
     } else {
       id = brandId;
     }
-    
-    this.setMoneyAndUbay(type, id);
 
     this.formData = data;
 
@@ -179,15 +101,12 @@ export default {
         brandName: "", //
         reduceUbay: "", //消耗U贝
         remark: "remarks" //备注 必填
-      }
+      },
+      withdrawUserColumns,
+      withdrawUserTableData: []
     };
   },
   methods: {
-    async setMoneyAndUbay(type, id) {
-      const { money, ubay } = await this.getMoneyAndUbay(type, id);
-      this.money = money;
-      this.ubay = ubay;
-    },
     closeDialog() {
       //关闭对话框清除表单数据
       // this.$refs.formValidate.resetFields();

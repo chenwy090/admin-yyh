@@ -22,7 +22,8 @@
         <Row type="flex" justify="start">
           <Button icon="md-refresh" class="marginLeft20" @click="refresh">刷新</Button>
           <Button type="primary" class="marginLeft20" @click="addOrEdit('add')">新增</Button>
-          <!-- <Button type="primary" class="marginLeft20" @click="showDeduction=true">扣款</Button> -->
+          <Button type="primary" class="marginLeft20" @click="showAudit=true">审核</Button>
+          <Button type="primary" class="marginLeft20" @click="showDetail=true">详情</Button>
         </Row>
       </Card>
     </div>
@@ -55,32 +56,12 @@
     <ModalAuditLogList :id="id" v-if="showAuditLogList" :showAuditLogList.sync="showAuditLogList"></ModalAuditLogList>
 
     <!-- @on-close="closeDialog" -->
-    <Drawer
-      v-model="showRecharge"
-      :closable="true"
-      :mask-closable="false"
-      width="820"
-      :styles="styles"
-    >
+    <Drawer v-model="showEdit" :closable="true" :mask-closable="false" width="820" :styles="styles">
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="ios-information-circle"></Icon>
-        <span>充值信息</span>
+        <span>新增/编辑</span>
       </p>
-      <Recharge v-if="showRecharge" :showRecharge.sync="showRecharge" @refresh="queryTableData"></Recharge>
-    </Drawer>
-
-    <Drawer
-      v-model="showDeduction"
-      :closable="true"
-      :mask-closable="false"
-      width="820"
-      :styles="styles"
-    >
-      <p slot="header" style="color:#f60;text-align:center">
-        <Icon type="ios-information-circle"></Icon>
-        <span>扣款信息</span>
-      </p>
-      <Deduction v-if="showDeduction" :showDeduction.sync="showDeduction" @refresh="queryTableData"></Deduction>
+      <Edit v-if="showEdit" :showEdit.sync="showEdit" @refresh="queryTableData"></Edit>
     </Drawer>
 
     <Drawer
@@ -92,42 +73,46 @@
     >
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="ios-information-circle"></Icon>
-        <span>{{detailTitle}}</span>
+        <span>详情</span>
       </p>
       <Detail v-if="showDetail" :showDetail.sync="showDetail" :id="id" :detailData="detailData"></Detail>
     </Drawer>
-
-    <!-- 
-    <Recharge v-if="showRecharge" :showRecharge.sync="showRecharge" @refresh="queryTableData"></Recharge>
-    <Deduction v-if="showDeduction" :showDeduction.sync="showDeduction" @refresh="queryTableData"></Deduction>-->
+    <Drawer v-model="showAudit" :closable="true" :mask-closable="true" width="820" :styles="styles">
+      <p slot="header" style="color:#f60;text-align:center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>审核</span>
+      </p>
+      <Audit v-if="showAudit" :showAudit.sync="showAudit" :id="id" :detailData="detailData"></Audit>
+    </Drawer>
   </div>
 </template>
 <script>
 import { postRequest } from "@/libs/axios";
-import { queryRechargeMList, queyMoneyDetailById } from "@/api/sys";
-import columns, { division100 } from "./columns";
+import columns from "./columns";
 
-import Recharge from "./Recharge";
-import Deduction from "./Deduction";
+import Edit from "./Edit";
 import Detail from "./Detail";
+import Audit from "./Audit";
 import ModalAuditLogList from "./ModalAuditLogList";
 
 import createTypeDate from "./typeData";
 const typeData = createTypeDate();
 
 export default {
-  name: "recharge-management",
+  name: "Edit-management",
   components: {
     ModalAuditLogList,
-    Detail
+    Edit,
+    Detail,
+    Audit
   },
   watch: {},
   data() {
     return {
       showAuditLogList: false,
-      showRecharge: false,
-      showDeduction: false,
+      showEdit: false,
       showDetail: false,
+      showAudit: false,
       styles: {
         height: "calc(100% - 55px)",
         overflow: "auto",
@@ -164,6 +149,9 @@ export default {
     this.queryTableData();
   },
   methods: {
+    addOrEdit() {
+      this.showEdit = true;
+    },
     queryAuditList(id) {
       console.log("queryAuditList", id);
       this.id = id;
@@ -195,23 +183,6 @@ export default {
           data.businessName = merchantName;
         } else {
           data.businessName = brandName;
-        }
-
-        this.detailTitle = changeType == 0 ? "充值信息" : "扣款信息";
-
-        if (changeType == 0) {
-          // 应收款:回显的时候除以100
-          data.receivables = division100(receivables);
-
-          data.merchantMoneyChargesRecords = arr.map(it => {
-            // 实际收款金额
-            it.actualAmount = division100(it.actualAmount);
-            return it;
-          });
-        } else {
-          // 应扣款 anticipatedDeduction  实扣款 actualDeduction
-          data.anticipatedDeduction = division100(anticipatedDeduction);
-          data.actualDeduction = division100(actualDeduction);
         }
 
         this.detailData = data;
