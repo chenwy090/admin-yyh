@@ -63,27 +63,27 @@
                   </Input>
                 </template>
                 <template v-else-if="formData.type==6">
-                  <Row >
+                  <Row>
                     <Col span="7">
                       <Select
-                              v-model="formData.value"
-                              style="width:120px"
-                              placeholder="请选择主行业"
-                              @on-change="getIndustrySecendList()"
+                        v-model="formData.value"
+                        style="width:120px"
+                        placeholder="请选择主行业"
+                        @on-change="getIndustrySecendList()"
                       >
                         <Option
-                                v-for="item in mainIndustryList"
-                                :value="item.id"
-                                :key="item.id"
+                          v-for="item in mainIndustryList"
+                          :value="item.id"
+                          :key="item.id"
                         >{{ item.name }}</Option>
                       </Select>
                     </Col>
                     <Col span="7">
                       <Select v-model="formData.value1" style="width:120px" placeholder="请选择二级行业">
                         <Option
-                                v-for="item in secendIndustryList"
-                                :value="item.id"
-                                :key="item.id"
+                          v-for="item in secendIndustryList"
+                          :value="item.id"
+                          :key="item.id"
                         >{{ item.name }}</Option>
                       </Select>
                     </Col>
@@ -91,10 +91,10 @@
                 </template>
                 <template v-else>
                   <Input
-                        style="width:80%"
-                        v-model="formData.content"
-                        placeholder="请输入内容"
-                        clearable
+                    style="width:80%"
+                    v-model="formData.content"
+                    placeholder="请输入内容"
+                    clearable
                   />
                 </template>
               </Col>
@@ -124,11 +124,7 @@ import ThematicActivities from "./ThematicActivities";
 export default {
   name: "quick-entry-edit",
   inject: ["typeOption", "msgOk", "msgErr"],
-  created() {
-  },
-  mounted() {
-
-  },
+  created() {},
   components: {
     UploadImage,
     ThematicActivities
@@ -171,9 +167,9 @@ export default {
       handler(val, oldVal) {
         let { data } = this.action;
         this.formData = JSON.parse(JSON.stringify(data));
-        if (this.formData.type == 6){
+        if (this.formData.type == 6) {
           this.getIndustryMaindList();
-          this.getIndustrySecendList()
+          this.getIndustrySecendList();
         }
         console.log("this.formData:", JSON.stringify(this.formData));
         console.log("typeOption:", JSON.stringify(this.typeOption));
@@ -183,10 +179,10 @@ export default {
     },
     ["formData.type"]() {
       console.log("formData.type", this.formData.type);
-        if (this.formData.type == 6){
-            this.getIndustryMaindList();
-            this.getIndustrySecendList();
-        }
+      if (this.formData.type == 6) {
+        this.getIndustryMaindList();
+        this.getIndustrySecendList();
+      }
       this.contentLabel = this.typeOption[this.formData.type];
       this.formData.content = "";
       this.formData.value = "";
@@ -208,14 +204,14 @@ export default {
         defaultIconUrlList: [],
         hotUrl: "",
         defaultHotUrlList: [],
-        value: '',
-        value1: ''
+        value: "",
+        value1: ""
       },
       ruleValidate: {},
       showThematicActivities: false,
       mainIndustryList: [],
       secendIndustryList: [],
-      mainIndustryId: "",
+      mainIndustryId: ""
     };
   },
   methods: {
@@ -228,7 +224,7 @@ export default {
             name: "全部",
             id: "0"
           });
-          this.mainIndustryList = this.mainIndustryList.map(item=>{
+          this.mainIndustryList = this.mainIndustryList.map(item => {
             item.id = `${item.id}`;
             return item;
           });
@@ -241,21 +237,23 @@ export default {
     getIndustrySecendList() {
       //this.formData.value1 = '0';
       if (this.formData.value && this.formData.value != null) {
-        getRequest("/merchant/industrySecond/all/" + this.formData.value).then(res => {
-          if (res.code == 200) {
-            this.secendIndustryList = res.data;
-            this.secendIndustryList.unshift({
-              name: "全部",
-              id: "0"
-            });
-            this.secendIndustryList = this.secendIndustryList.map(item=>{
-              item.id = `${item.id}`;
-              return item;
-            });
-          } else {
-            this.$Message.error(res.msg);
+        getRequest("/merchant/industrySecond/all/" + this.formData.value).then(
+          res => {
+            if (res.code == 200) {
+              this.secendIndustryList = res.data;
+              this.secendIndustryList.unshift({
+                name: "全部",
+                id: "0"
+              });
+              this.secendIndustryList = this.secendIndustryList.map(item => {
+                item.id = `${item.id}`;
+                return item;
+              });
+            } else {
+              this.$Message.error(res.msg);
+            }
           }
-        });
+        );
       }
     },
     handleChoose() {
@@ -342,9 +340,9 @@ export default {
       }
     },
     validateContent(rule, value, callback) {
-      if (this.formData.type == 6){
+      if (this.formData.type == 6) {
         value = this.formData.value;
-      }else {
+      } else {
         value = this.formData.content;
       }
       value += "";

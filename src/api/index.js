@@ -16,10 +16,13 @@ import {
 // export const baseUrl = "http://192.168.0.47:8088/zex-mgr";
 
 // export const baseUrl = "http://192.168.31.102:8088/zex-mgr"; //姚军
-// export const baseUrl = "http://192.168.31.34:8088/zex-mgr"; //mingyuan
+// export const baseUrl = "http://192.168.0.25:8088/zex-mgr"; //mingyuan
 // export const baseUrl = "http://192.168.34.109:8088/zex-mgr"; //建斌
 // export const baseUrl = "http://192.168.31.225:8088/zex-mgr"; //yz
 // export const baseUrl = "http://192.168.34.115:8088/zex-mgr"; //lubin
+// export const baseUrl = "http://192.168.34.119:8088/zex-mgr"; //张磊
+
+
 
 
 // export const baseUrl = "http://192.168.31.206:8088/zex-mgr"; //内容审核
@@ -39,12 +42,15 @@ export const downloadUrl = "http://47.103.117.70:8088/zex-mgr";
 // export const downloadUrl = "http://review.52iuh.com:8088/zex-mgr";
 
 // 正式环境 http://crm.52iuh.com:8088/zex-mgr
-export const baseUrl = "http://crm.52iuh.com:8088/zex-mgr";
-export const downloadUrl = "http://crm.52iuh.com:8088/zex-mgr";
+// export const baseUrl = "http://crm.52iuh.com:8088/zex-mgr";
+// export const downloadUrl = "http://crm.52iuh.com:8088/zex-mgr";
+
 
 // dev1.5.5
 // export const baseUrl = "http://192.168.31.206:8088/zex-mgr";
 // export const downloadUrl = "http://192.168.31.206:8088/zex-mgr";
+
+
 
 
 //上传图片地址

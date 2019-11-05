@@ -272,14 +272,14 @@ export default {
 
     // 查询
     queryTableData(pageNum) {
-        if(this.searchData.creatBy){
-            var r = /^\+?[1-9][0-9]*$/;　　//正整数
-            var flag=r.test(this.searchData.creatBy);
-            if(!flag){
-                this.$Message.error('请输入正确格式的创建人ID');
-                return
-            }
+      if (this.searchData.creatBy) {
+        var r = /^\+?[1-9][0-9]*$/; //正整数
+        var flag = r.test(this.searchData.creatBy);
+        if (!flag) {
+          this.$Message.error("请输入正确格式的创建人ID");
+          return;
         }
+      }
       this.page.pageNum = pageNum || 1;
       this.loading = true;
       const url = "/content/list";
