@@ -187,6 +187,20 @@
                 <Button type="text" size="small" style="color:#2db7f5" @click="setTag(row)">打标签</Button>
                 <Button type="text" size="small" style="color:#2d8cf0" @click="detailInfo(row.templateId)">查看详情</Button>
               </template>
+              <template slot-scope="{ row }" slot="templateStatus">
+                <Tooltip max-width="300" placement="left-start">
+                  <Button>{{row.templateStatus}}</Button>
+                  <div slot="content">
+                    <div v-if="row.couponOperationLogList">
+                      <div v-for="item in row.couponOperationLogList">
+                        <p>操作人：{{item.operator}}</p>
+                        <p>操作时间:{{item.operationTime}}</p>
+                        <p>下架原因：{{item.afterOperation}}</p>
+                      </div>
+                    </div>
+                  </div>
+                </Tooltip>
+              </template>
             </Table>
           </Row>
           <Row type="flex" justify="end" class="page">
@@ -551,7 +565,7 @@ export default {
         },
         {
           title: "状态",
-          key: "templateStatus",
+          slot: "templateStatus",
           align: "center",
           width: 150
         },
@@ -859,7 +873,7 @@ export default {
     //新增
     addInfo() {
       this.setStore("camp_pageStatus", "add");
-
+        this.couponEdit_info = {};
       this.couponEdit_info.merchantId = this.merchantId;
       this.couponEditPage = true;
     },

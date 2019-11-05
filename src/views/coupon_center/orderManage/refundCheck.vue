@@ -102,7 +102,7 @@
                 @on-ok="check"
                 :styles="{top: '20px'}">
             <Form>
-                <RadioGroup v-model="checkData.auditStatus" @on-change="changeRadio" style="width: 100%;margin: 10px;">
+                <RadioGroup v-model="checkData.auditStatus" style="width: 100%;margin: 10px;">
                     <Radio label="2">
                         <span>通过</span>
                     </Radio>

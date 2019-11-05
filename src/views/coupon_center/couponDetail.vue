@@ -340,6 +340,7 @@
               {{edit_info.remark}}
             </Col>
           </Row>
+
           <Row
             style="border-top: 1px solid #666;margin-top: 20px"
             v-if="formShareModal.shareData.length"
@@ -362,9 +363,19 @@
               </FormItem>
             </Form>
           </Row>
+          <Row class="box">
+            <Col span="16">
+              <Button @click="showLog">操作日志</Button>
+            </Col>
+          </Row>
         </Row>
       </Card>
     </div>
+    <logModal
+            ref="logModal"
+            :viewDialogVisible="logDialogModal"
+            @setViewDialogVisible="colseModal"
+    ></logModal>
   </div>
 </template>
 
@@ -373,13 +384,16 @@ import {
     postJson
 } from "@/libs/axios";
 import { baseUrl } from "@/api/index";
+import logModal from "./logInfo"
 export default {
   name: "BasicSet",
   props: {
     couponEdit_info: String
   },
+    components:{logModal},
   data() {
     return {
+        logDialogModal:false,
       //乐刻需求新增begin--------------------------
       // 优惠券来源 0-平台自营券 1-第三方券
       // couponSource: "0",
@@ -564,6 +578,15 @@ export default {
       this.camp_pageStatus = this.getStore("camp_pageStatus");
       this.editInfo();
     },
+      showLog(){
+        this.logDialogModal = true;
+          this.$nextTick(() => {
+              this.$refs["logModal"].resetRow(this.couponEdit_info);
+          });
+      },
+      colseModal(){
+          this.logDialogModal = false;
+      },
     //编辑
     editInfo() {
         postJson(baseUrl + "/merchantCouponTemplate/selectByTemplateId?templateId="+this.couponEdit_info,{}).then(res => {
