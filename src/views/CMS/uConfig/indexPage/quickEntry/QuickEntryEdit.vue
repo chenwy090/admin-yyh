@@ -223,7 +223,12 @@ export default {
     getIndustryMaindList() {
       postRequest("/merchant/industryMain/all").then(res => {
         if (res.code == 200) {
-          this.mainIndustryList = res.data.map(item=>{
+          this.mainIndustryList = res.data;
+          this.mainIndustryList.unshift({
+            name: "全部",
+            id: "0"
+          });
+          this.mainIndustryList = this.mainIndustryList.map(item=>{
             item.id = `${item.id}`;
             return item;
           });
@@ -238,18 +243,14 @@ export default {
       if (this.formData.value && this.formData.value != null) {
         getRequest("/merchant/industrySecond/all/" + this.formData.value).then(res => {
           if (res.code == 200) {
-            this.secendIndustryList.push({
+            this.secendIndustryList = res.data;
+            this.secendIndustryList.unshift({
               name: "全部",
               id: "0"
             });
-            this.secendIndustryList.push(res.data);
-            this.secendIndustryList = res.data.map(item=>{
+            this.secendIndustryList = this.secendIndustryList.map(item=>{
               item.id = `${item.id}`;
               return item;
-            });
-            this.secendIndustryList.push({
-              name: "全部",
-              id: "0"
             });
           } else {
             this.$Message.error(res.msg);
