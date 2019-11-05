@@ -8,12 +8,8 @@
           </FormItem>
           <FormItem label="状态：" :label-width="60" style="width: 200px">
             <!-- <Input style="width:100%" v-model="searchData.status" placeholder="请输入" clearable /> -->
-            <Select v-model="searchData.status" clearable>
-              <Option
-                v-for="item in statusOptions"
-                :value="item.value"
-                :key="item.value"
-              >{{ item.label }}</Option>
+            <Select v-model="searchData.statusFlag" clearable>
+              <Option v-for="(v,k) in statusList" :value="k" :key="k">{{ v }}</Option>
             </Select>
           </FormItem>
           <FormItem label="发放的类型：" :label-width="100" style="width: 300px">
@@ -62,7 +58,7 @@
           <Button type="primary" icon="md-add" @click="addStaff">发券</Button>
           <Button icon="md-refresh" @click="search">刷新</Button>
           <Button type="primary" @click="checkSend">确认发送</Button>
-          <Button type="success" class="marginLeft20" @click="download">下载</Button>
+          <Button type="primary" @click="downExcl">下载</Button>
         </Row>
         <div>
           <!-- 推送列表 -->
@@ -390,20 +386,11 @@ export default {
   data() {
     return {
       // 状态：待审核，成功,失败
-      statusOptions: [
-        {
-          value: 0,
-          label: "待审核"
-        },
-        {
-          value: "1",
-          label: "成功"
-        },
-        {
-          value: "2",
-          label: "失败"
-        }
-      ],
+      statusList: {
+        2: "失败",
+        1: "成功",
+        0: "待审核"
+      },
       userId: "",
       upLoadUrl: "",
       fileList: [],
@@ -414,9 +401,13 @@ export default {
       dropDownIcon: "ios-arrow-down",
       // 活动列表
       columns8,
+      // 优惠活动列表
       columns4,
+      // 新增/编辑 周边券列表
       columns9,
+      // 超市券
       columns10,
+      // 错误数据
       columns11,
       selectDataList: [],
       materiaValidate: [],
@@ -431,6 +422,7 @@ export default {
         // campId: null,
         userId: "",
         status: "",
+        statusFlag: "",
         pushType: "",
         sendTimeStart: "",
         sendTimeEnd: "",
@@ -524,30 +516,6 @@ export default {
   methods: {
     init() {},
 
-    async download() {
-      const url = "/campaginGrabInfoSet/download/barcodeToMoney";
-
-      const res = await downloadSteam(url);
-      const content = res.data;
-      const { filename } = res.headers;
-
-      const blob = new Blob([content], { type: "application/vnd.ms-excel" });
-      const oA = document.createElement("a");
-      if ("download" in oA) {
-        // 非IE下载
-        oA.download = decodeURI(filename);
-        oA.style.display = "none";
-        oA.href = URL.createObjectURL(blob);
-        document.body.appendChild(oA);
-        oA.click();
-        URL.revokeObjectURL(oA.href); // 释放URL 对象
-        document.body.removeChild(oA);
-      } else {
-        // IE10+下载
-        navigator.msSaveBlob(blob, filename);
-      }
-    },
-
     // 搜索
     search() {
       this.current = 1;
@@ -561,6 +529,7 @@ export default {
     reset() {
       this.searchData.userId = "";
       this.searchData.status = "";
+      this.searchData.statusFlag = "";
       this.searchData.sendTimeStart = "";
       this.searchData.sendTimeEnd = "";
       this.searchData.putTimeStart = "";
@@ -749,6 +718,28 @@ export default {
           }
         }
       );
+    },
+    downExcl(list) {
+      // /compensate/demo/download
+      downloadSteam("/compensate/data/download", this.searchData).then(res => {
+        const content = res.data;
+        let fileName = res.headers["filename"];
+        const blob = new Blob([content], { type: "application/vnd.ms-excel" });
+        if ("download" in document.createElement("a")) {
+          // 非IE下载
+          const elink = document.createElement("a");
+          elink.download = decodeURI(fileName);
+          elink.style.display = "none";
+          elink.href = URL.createObjectURL(blob);
+          document.body.appendChild(elink);
+          elink.click();
+          URL.revokeObjectURL(elink.href); // 释放URL 对象
+          document.body.removeChild(elink);
+        } else {
+          // IE10+下载
+          navigator.msSaveBlob(blob, fileName);
+        }
+      });
     },
     // 优惠券搜索
     search1() {
@@ -1025,6 +1016,10 @@ export default {
       if (!this.ruleValidate()) {
         return;
       }
+      if (this.formValidate.userId.length == 0 && this.userId) {
+        console.log(1123);
+        this.formValidate.userId = [this.userId];
+      }
       if (!this.formValidate.userId.length) {
         this.msgErr("请上传用户Id");
         return;
@@ -1071,6 +1066,7 @@ export default {
       this.formValidate.welfareType = "";
       this.formValidate.amount = "";
       this.formValidate.userId = [];
+      this.userId = "";
       this.formValidate.failUserIdlist = [];
       this.formValidate.title = "";
       this.formValidate.reason = "";

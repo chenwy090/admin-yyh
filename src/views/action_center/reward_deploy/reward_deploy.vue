@@ -26,6 +26,7 @@
             </div>
             <div v-else-if="row.code == '15'">{{row.value}}天</div>
             <div v-else-if="row.code == '20'">{{row.value}}%</div>
+            <div v-else-if="row.code == '36'">{{row.value}}分钟</div>
             <div v-else>{{row.value}}U贝</div>
           </div>
         </template>
@@ -305,6 +306,24 @@
           </Col>
           <Col span="4" offset="1">
             <span class="ivu-form-item-label">%</span>
+          </Col>
+        </Row>
+        <Row v-else-if="modal1.code == '36'">
+          <Col span="18">
+            <FormItem label="分钟">
+              <InputNumber
+                :min="0"
+                :step="1"
+                type="text"
+                :precision="0"
+                v-model="modal1.value"
+                placeholder="请输入"
+                style="width: 100%"
+              ></InputNumber>
+            </FormItem>
+          </Col>
+          <Col span="4" offset="1">
+            <span class="ivu-form-item-label">分钟</span>
           </Col>
         </Row>
         <Row v-else>
