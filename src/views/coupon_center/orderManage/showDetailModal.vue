@@ -143,8 +143,20 @@
                 <h3>券码信息</h3>
                 <Row class="padding-left-12">
                     <Col span="18">
-                    <div>
-                        <!--优惠券所属商户：{{dataInfo}}-->
+                    <div v-for="item in dataInfo.coupon">
+                        <p>券码：{{item.barCode}}</p>
+                        <p>状态：{{item.status}}</p>
+                        <p v-if="item.endUseTime">过期时间：{{item.endUseTime}}</p>
+                        <p v-if="item.useTime">核销时间：{{item.useTime}}</p>
+                        <p v-if="item.pplyRefundTime">申请退款时间：{{item.pplyRefundTime}}</p>
+                        <p v-if="item.refundReason">退款原因：{{item.refundReason}}</p>
+                        <p v-if="item.transactionNo">交易流水号：{{item.transactionNo}}</p>
+                        <p v-if="item.auditUser">操作人：{{item.auditUser}}</p>
+                        <p v-if="item.nickName">核销人：{{item.nickName}}</p>
+                        <p v-if="item.phoneNumber">手机号：{{item.phoneNumber}}</p>
+                        <p v-if="item.merchantName">核销门店：{{item.merchantName}}</p>
+                        <p v-if="item.auditTime">操作时间：{{item.auditTime}}</p>
+                        <p v-if="item.remark">备注：{{item.remark}}</p>
                     </div>
                     </Col>
                 </Row>
@@ -180,8 +192,8 @@
                         if (res.code === "200") {
                             this.dataInfo = res.data.retData;
                             this.dataInfo.merchantName = res.data.merchantName;
-                            this.dataInfo.sale = res.data.sale;
-                            this.dataInfo.coupon = res.data.coupon;
+                            this.dataInfo.sale = res.sale;
+                            this.dataInfo.coupon = res.coupon;
                         } else {
                             this.$Message.error('获取数据失败');
                         }
