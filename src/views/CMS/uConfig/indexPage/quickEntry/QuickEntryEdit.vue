@@ -183,7 +183,10 @@ export default {
     },
     ["formData.type"]() {
       console.log("formData.type", this.formData.type);
-
+        if (this.formData.type == 6){
+            this.getIndustryMaindList();
+            this.getIndustrySecendList();
+        }
       this.contentLabel = this.typeOption[this.formData.type];
       this.formData.content = "";
       this.formData.value = "";

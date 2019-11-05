@@ -42,12 +42,12 @@ export const downloadUrl = "http://47.103.117.70:8088/zex-mgr";
 // export const baseUrl = "http://crm.52iuh.com:8088/zex-mgr";
 // export const downloadUrl = "http://crm.52iuh.com:8088/zex-mgr";
 
+// export const baseUrl = "http://localhost:8088/zex-mgr";
+// export const downloadUrl = "http://localhost:8088/zex-mgr";
 
 // dev1.5.5
 // export const baseUrl = "http://192.168.31.206:8088/zex-mgr";
 // export const downloadUrl = "http://192.168.31.206:8088/zex-mgr";
-
-
 
 
 //上传图片地址
