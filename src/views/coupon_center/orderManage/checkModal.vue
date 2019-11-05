@@ -1,14 +1,7 @@
 <template>
-    <!--查看详情-->
-    <!--<Modal width="800"-->
-           <!--v-model="viewDialogVisible"-->
-           <!--title="查看详情"-->
-           <!--:closable="false"-->
-           <!--:mask-closable="false"-->
-           <!--footer-hide>-->
     <div v-if="viewDialogVisible" class="modal" @click.stop>
         <Card>
-            <p slot="title">查看详情</p>
+            <p slot="title">审核</p>
             <a href="#" slot="extra">
                 <Button type="dashed" icon="md-arrow-round-back" @click="close()">返回上一层</Button>
             </a>
@@ -148,7 +141,33 @@
                     </div>
                     </Col>
                 </Row>
+
+                <Row class="padding-left-12">
+                    <Col span="18">
+                    <FormItem label="审核：" span="24" :labelWidth="80">
+                        <RadioGroup v-model="auditStatus" style="width: 100%;margin: 10px;">
+                            <Radio label="2">
+                                <span>通过</span>
+                            </Radio>
+                            <Radio label="3">
+                                <span>不通过</span>
+                            </Radio>
+                        </RadioGroup>
+                    </FormItem>
+                    </Col>
+                </Row>
+                <Row class="padding-left-12">
+                    <Col span="18">
+                    <FormItem label="备注：" span="24" :labelWidth="80">
+                        <Input v-model="remark" type="textarea" :rows="4" placeholder="请输入备注" />
+                    </FormItem>
+                    </Col>
+                </Row>
+
+
+
                 <FormItem>
+                    <Button type="primary" style="margin-left: 8px;float: right;" @click="check">确定</Button>
                     <Button style="margin-left: 8px;float: right;" @click="close">关闭</Button>
                 </FormItem>
             </Form>
@@ -166,17 +185,19 @@
         },
         data(){
             return{
-                titleName:'',
+                auditStatus:'2',
+                remark:'',
                 statusList:[{value:1,label:'未开始'},{value:2,label:'进行中'},{value:3,label:'已结束'},{value:4,label:'已终止'}],
                 dataInfo:{},
             }
         },
         methods:{
             resetRow(row){
-                this.dataInfo={};
+                this.orderRefundId = row.id;
                 if(row){
                     // /merchant/activity/award/activity/{id}
-                    getRequest(`/trade/fund/account/order/details/${row.id}`).then(res => {
+                    // /trade/fund/account/order/refundOrderDetails/{id}
+                    getRequest(`/trade/fund/account/order/refundOrderDetails/${row.id}`).then(res => {
                         if (res.code === "200") {
                             this.dataInfo = res.data.retData;
                             this.dataInfo.merchantName = res.data.merchantName;
@@ -190,6 +211,22 @@
             },
             close() {
                 this.$emit('setViewDialogVisible', false)
+            },
+            check(){
+                var params = {
+                    auditStatus:this.auditStatus,
+                    remark:this.remark,
+                    orderRefundId:this.orderRefundId
+                }
+                postRequest(`/trade/fund/account/order/leafletRefundAudit`,params
+                ).then(res => {
+                    this.TableLoading = false;
+                    if (res.code === "200") {
+                        this.$emit('setViewDialogVisible', false)
+                    } else {
+                        this.$Message.error("获取数据失败");
+                    }
+                });
             }
         }
     }

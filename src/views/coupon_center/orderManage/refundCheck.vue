@@ -79,6 +79,14 @@
                                             @click="oneCheck(row)"
                                     >审核</Button>
                                 </template>
+                                <template slot-scope="{ row }" slot="log">
+                                    <Button
+                                            type="info"
+                                            style="margin-right: 5px"
+                                            size="small"
+                                            @click="showLog(row)"
+                                    >审核日志</Button>
+                                </template>
                             </Table>
                         </Row>
                         <!-- 分页 -->
@@ -115,20 +123,37 @@
                 </FormItem>
             </Form>
         </Modal>
-        <!--<TokerModal ref="TokerModal" :viewDialogVisible="TokerViewDialogVisible" @setViewDialogVisible="closeTab" @search="search"></TokerModal>-->
-        <!--<DownModal ref="DownModal" :viewDialogVisible="DownViewDialogVisible" @setViewDialogVisible="closeTab"></DownModal>-->
-        <showDetailModal ref="showDetailModal" :viewDialogVisible="showViewDialogVisible" @setViewDialogVisible="closeTab"></showDetailModal>
+       <checkModal ref="showDetailModal" :viewDialogVisible="showViewDialogVisible" @setViewDialogVisible="closeTab"></checkModal>
+        <Modal v-model="showLogModal" width="360">
+            <p slot="header" style="color:#f60;text-align:center">
+                审核日志
+            </p>
+            <div style="text-align:center">
+                <Table
+                        :loading="TableLoading"
+                        border
+                        :columns="tableColumnsLog"
+                        :data="logData"
+                        ref="tableLog"
+                >
+                </Table>
+            </div>
+            <div slot="footer">
+                <Button type="error" @click="showLogModal=false">关闭</Button>
+            </div>
+        </Modal>
     </div>
 </template>
 
 <script>
-    import showDetailModal from './showDetailModal';
+    import checkModal from './checkModal';
     import { postRequest, getRequest,getSyncRequest } from "@/libs/axios";
     export default {
         name: "refundCheck",
-        components:{showDetailModal},
+        components:{checkModal},
         data(){
             return{
+                showLogModal:false,
                 showCheck:false,
                 // mini: 微信小程序 IOS: 苹果app Android: 安卓app
                 // 1: 待付款 2:已取消 3: 已付款 4: 退款 5: 已完成
@@ -137,11 +162,34 @@
                 TableLoading: false,
                 totalSize: 0,
                 listData: [],
+                logData:[],
                 addressValue:[],
                 selectDataList: [],
                 checkData:{
                     auditStatus:'2'
                 },
+                tableColumnsLog:[
+                    {
+                        title: "审核人",
+                        width: 200,
+                        key: "auditUser"
+                    },
+                    {
+                        title: "审核时间",
+                        width: 200,
+                        key: "auditTime"
+                    },
+                    {
+                        title: "审核结果",
+                        width: 200,
+                        key: "auditResult"
+                    },
+                    {
+                        title: "审核备注",
+                        width: 200,
+                        key: "remark"
+                    },
+                ],
                 tableColumns: [
                     {
                         type: 'selection',
@@ -221,6 +269,11 @@
                         title: "渠道",
                         minWidth: 150,
                         key: "source"
+                    },
+                    {
+                        title: "审核日志",
+                        minWidth: 150,
+                        slot: "log"
                     }
                 ],
                 selectDataList:[],
@@ -308,6 +361,17 @@
                 }
                 this.showCheck = true;
             },
+            showLog(row){
+                postRequest(`/trade/fund/account/order/batchAudit`,{orderRefundId:row.id}
+                ).then(res => {
+                    this.TableLoading = false;
+                    if (res.code === "200") {
+                        this.logData= res.data||[];
+                    } else {
+                        this.$Message.error("获取数据失败");
+                    }
+                });
+            },
             check(){
                 var arr = [];
                 this.selectDataList.forEach(function (v,i) {
@@ -325,26 +389,12 @@
                     }
                 });
             },
-            oneCheck(){
+            oneCheck(row){
                 this.showViewDialogVisible = true;
                 this.$nextTick(() => {
                     this.$refs['showDetailModal'].resetRow(row)
                 })
-                // var arr = [];
-                // this.selectDataList.forEach(function (v,i) {
-                //     arr.push({orderRefundId:v.id});
-                // })
-                // // /trade/fund/account/order/batchAudit
-                // this.checkData.data = arr;
-                // postRequest(`leafletRefundAudit`,this.checkData
-                // ).then(res => {
-                //     this.TableLoading = false;
-                //     if (res.code === "200") {
-                //         this.search();
-                //     } else {
-                //         this.$Message.error("获取数据失败");
-                //     }
-                // });
+
             },
             changeCurrent(current) {
                 if (this.searchForm.current != current) {
@@ -353,9 +403,8 @@
                 }
             },
             closeTab(e){
-                this.TokerViewDialogVisible = false;
-                this.DownViewDialogVisible=false;
                 this.showViewDialogVisible=false;
+                this.loadTableData();
             },
             close(){
                 this.$emit("close",false);
