@@ -130,7 +130,7 @@
             <span style="color:red">*</span>收费类型
             </Col>
             <Col span="20">
-            <RadioGroup v-model="edit_info.couponKind">
+            <RadioGroup v-model="edit_info.couponKind" :disabled="this.camp_pageStatus == 'edit'">
               <Radio
                       v-for="item in couponKindList"
                       :key="item.value"
@@ -159,6 +159,7 @@
             </Col>
             <Col span="16">
               <Select
+                :disabled="this.camp_pageStatus == 'edit'"
                 v-model="edit_info.couponType"
                 style="width:300px"
                 @on-change="statusCheckChange"
@@ -178,6 +179,7 @@
             </Col>
             <Col span="16">
             <Select
+                    :disabled="this.camp_pageStatus == 'edit'"
                     v-model="edit_info.couponType"
                     style="width:300px"
                     @on-change="statusCheckChange"

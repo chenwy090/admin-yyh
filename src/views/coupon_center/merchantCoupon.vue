@@ -180,7 +180,7 @@
                         v-if="row.templateStatus == '待发布'||row.templateStatus == '已结束'"
                 >上架</Button>
                 <!--<Button type="text" size="small" style="color:blue" @click="" v-if="row.templateStatus == '进行中' || row.templateStatus == '已结束' ">查看明细</Button>-->
-                <!--<Button type="text" size="small" style="color:red" @click="inputAppendStockCountStatus(row)" v-if="row.templateStatus == '进行中' ">追加</Button>-->
+                <Button type="text" size="small" style="color:red" @click="inputAppendStockCountStatus(row)" v-if="row.templateStatus == '进行中' ">追加</Button>
                 <Button type="text" size="small" style="color:green" @click="editInfo(row,'copy')" >复制</Button>
                 <!--changeStatus(row)-->
                 <Button type="text" size="small" style="color:red" @click="share(row)">分享奖励</Button>

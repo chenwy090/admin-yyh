@@ -47,7 +47,7 @@
                 <Col span="12">
                   <!-- 周边劵管理导入模板 -->
                   <a v-if="upType==1" href="/template/coupon_demo.xlsx">模板文件</a>
-                  <a v-if="upType==2" href="/template/coupon_demo.xlsx">模板文件</a>
+                  <a v-if="upType==2" href="/template/share_reward_template.xlsx">模板文件</a>
                 </Col>
               </Row>
               <div v-if="file !== null">

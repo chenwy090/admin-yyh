@@ -1,15 +1,15 @@
 <template>
     <div style="height: 100%">
-        <div style="min-height: 100%">
+        <div v-if="!showViewDialogVisible" style="min-height: 100%">
             <Card style="height: 100%">
                 <div>
                     <Card :bordered="false" style="margin-bottom:2px">
                         <Form ref="searchForm" label-position="right" :label-width="75" :model="searchForm" inline>
                             <FormItem label="领取人手机：" span="24" style="width:30%">
-                                <Input v-model="searchForm.phoneNumber" placeholder="请填写领取人手机" :disabled="!searchForm.merchantType" />
+                                <Input v-model="searchForm.phoneNumber" placeholder="请填写领取人手机"/>
                             </FormItem>
                             <FormItem label="订单号：" span="24" style="width:30%">
-                                <Input v-model="searchForm.orderNo" placeholder="请填写订单号" :disabled="!searchForm.merchantType" />
+                                <Input v-model="searchForm.orderNo" placeholder="请填写订单号"/>
                             </FormItem>
                             <FormItem label="状态：" span="24" style="width:30%">
                                 <Select v-model="searchForm.status" placeholder="请选择状态">
@@ -56,7 +56,8 @@
                     </Card>
                     <Card>
                         <Row class="operation">
-                            <Button type="primary" icon="md-add" @click="tokerFn">刷新</Button>
+                            <Button type="primary" icon="md-refresh" @click="refech">刷新</Button>
+                            <span v-if="refreshData&&refreshData.allOrderCount">总共{{refreshData.allOrderCount}}单，待付款{{refreshData.pendingPaymentOrderCount}}单，已付款{{refreshData.paidOrderCount}}单，已取消{{refreshData.cancelledOrderCount}}单，退款{{refreshData.refundOrderCount}}单</span>
                             <!--<Button type="primary" icon="ios-download-outline" @click="downFn">下载</Button>-->
                         </Row>
                         <Row>
@@ -67,7 +68,6 @@
                                     :data="listData"
                                     sortable="custom"
                                     ref="table"
-                                    @on-selection-change="handleSelect"
                             >
                                 <template slot-scope="{ row }" slot="action">
                                     <Button
@@ -75,17 +75,7 @@
                                             style="margin-right: 5px"
                                             size="small"
                                             @click="showDetail(row)"
-                                    >查看</Button>
-                                    <Button
-                                            type="error"
-                                            style="margin-right: 5px"
-                                            size="small"
-                                            @click="del(row)"
-                                            v-if="row.status==1"
-                                    >删除</Button>
-                                </template>
-                                <template slot-scope="{ row }" slot="address">
-                                    <div>{{row.provinceName+'/'+row.cityName}}</div>
+                                    >查看详情</Button>
                                 </template>
                             </Table>
                         </Row>
@@ -106,14 +96,16 @@
         </div>
         <!--<TokerModal ref="TokerModal" :viewDialogVisible="TokerViewDialogVisible" @setViewDialogVisible="closeTab" @search="search"></TokerModal>-->
         <!--<DownModal ref="DownModal" :viewDialogVisible="DownViewDialogVisible" @setViewDialogVisible="closeTab"></DownModal>-->
-        <!--<showDetailModal ref="showDetailModal" :viewDialogVisible="showViewDialogVisible" @setViewDialogVisible="closeTab"></showDetailModal>-->
+        <showDetailModal ref="showDetailModal" :viewDialogVisible="showViewDialogVisible" @setViewDialogVisible="closeTab"></showDetailModal>
     </div>
 </template>
 
 <script>
+    import showDetailModal from './showDetailModal';
     import { postRequest, getRequest,getSyncRequest } from "@/libs/axios";
     export default {
         name: "allOrder",
+        components:{showDetailModal},
         data(){
             return{
                 // mini: 微信小程序 IOS: 苹果app Android: 安卓app
@@ -128,7 +120,7 @@
                 tableColumns: [
                     {
                         title: "操作",
-                        width: 150,
+                        width: 200,
                         align: "center",
                         slot: "action",
                         fixed: "left"
@@ -136,78 +128,79 @@
                     {
                         title: "订单编号",
                         width: 200,
-                        key: "merchantName"
+                        key: "orderNo"
                     },
                     {
                         title: "状态",
                         width: 220,
                         align: "center",
-                        slot: "address",
+                        key: "statusStr",
                     },
                     {
                         title: "优惠券ID",
-                        width: 100,
+                        width: 200,
                         align: "center",
-                        key: "maxPushCount",
+                        key: "couponId",
                     },
                     {
                         title: "优惠券标题",
-                        width: 100,
-                        key: "statusName"
+                        width: 200,
+                        key: "couponTitle"
                     },
                     {
                         title: "所属商户",
                         minWidth: 250,
-                        key: "expandTime"
+                        key: "merchantName"
                     },
                     {
                         title: "数量",
                         minWidth: 150,
-                        key: "operatorBy"
+                        key: "amount"
                     },
                     {
                         title: "单价",
                         width: 100,
                         align: "center",
-                        key: "maxPushCount",
+                        key: "price",
                     },
                     {
                         title: "总价",
                         width: 100,
-                        key: "statusName"
+                        key: "totalPrice"
                     },
                     {
                         title: "U贝抵扣",
                         minWidth: 250,
-                        key: "expandTime"
+                        key: "ubayDiscount"
                     },
                     {
                         title: "红包抵扣",
                         minWidth: 150,
-                        key: "operatorBy"
+                        key: "redEnvelopeDiscount"
                     },
                     {
                         title: "实付款",
                         width: 100,
                         align: "center",
-                        key: "maxPushCount",
+                        key: "realPay",
                     },
                     {
                         title: "买家",
                         width: 100,
-                        key: "statusName"
+                        key: "phoneNumber"
                     },
                     {
                         title: "付款时间",
                         minWidth: 250,
-                        key: "expandTime"
+                        key: "payTime"
                     },
                     {
                         title: "渠道",
                         minWidth: 150,
-                        key: "operatorBy"
+                        key: "source"
                     }
                 ],
+                refreshData:{},
                 searchForm: {
                     "gmtCreateEnd":'',
                     "gmtCreateStart": '',
@@ -263,6 +256,7 @@
                 this.searchForm.current = 1;
                 this.current= 1;
                 this.loadTableData();
+                this.refech();
             },
             loadTableData(page) {
                 this.searchForm.current = page||1;
@@ -281,30 +275,16 @@
                     }
                 });
             },
-            tokerFn(){
-                this.TokerViewDialogVisible = true;
-                this.$nextTick(() => {
-                    this.$refs['TokerModal'].resetRow()
-                })
-            },
-            del(row){
-                this.$Modal.confirm({
-                    title: '确认删除',
-                    content: '<p>您确定要删除该平台拓客记录吗？</p>',
-                    onOk: () => {
-                        postRequest(`/merchant/platform/expand/delete?id=${row.id}`,{"id": row.id}
-                        ).then(res => {
-                            this.TableLoading = false;
-                            if (res.code === "200") {
-                                this.$Message.success("删除成功");
-                                this.searchForm.current = 1;
-                                this.loadTableData();
-                            } else {
-                                this.$Message.error(res.msg);
-                            }
-                        });
-                    },
-                    onCancel: () => {
+            refech() {
+                this.refreshData = {};
+                getRequest(`/trade/fund/account/order/status`,null
+                ).then(res => {
+                    console.log(1111);
+                    // this.TableLoading = false;
+                    if (res.code === "200") {
+                        this.refreshData = res.data.retData;
+                    } else {
+                        this.$Message.error("获取数据失败");
                     }
                 });
             },
@@ -313,12 +293,6 @@
                 this.$nextTick(() => {
                     this.$refs['showDetailModal'].resetRow(row)
                 })
-            },
-            handleSelect(selection, index) {
-                this.selectDataList = selection;
-            },
-            batchAudit(){
-
             },
             changeCurrent(current) {
                 if (this.searchForm.current != current) {
