@@ -7,20 +7,23 @@
           <Radio :value="true" disabled>{{formData.merchantTypeName}}</Radio>
         </FormItem>
         <!-- label="商户名称：" -->
-        <FormItem :label="`${formData.businessTypeLabel}名称：`">{{formData.merchantName}}</FormItem>
+        <FormItem :label="`${formData.businessTypeLabel}名称：`">{{formData.businessName}}</FormItem>
 
         <FormItem label="提现手续费：">
-          <span>企业对公账户：10元/每笔（银行8元/每笔、平台2元/每笔）</span>
-          <span>个人账户：1元/每笔（银行1元/每笔）</span>
+          <span>企业对公账户：{{info.obj.corporateWithdrawFee.total}}元/每笔（银行{{info.obj.corporateWithdrawFee.bank}}元/每笔、平台{{info.obj.corporateWithdrawFee.platform}}元/每笔）</span>
+          <span>个人账户：{{info.obj.individualWithdrawFee.total}}元/每笔（银行{{info.obj.individualWithdrawFee.bank}}元/每笔）</span>
         </FormItem>
         <FormItem label="支付通道费：">
-          <span>平台承担 0.6%/每笔（微信）</span>
-          <span>0.6%/每笔（支付宝）</span>
+          <span>
+            <Radio :value="true" disabled>平台承担</Radio>
+            {{info.obj.payPipelineFeeRate.wx}}%/每笔（微信）
+          </span>
+          <span>{{info.obj.payPipelineFeeRate.aliPay}}%/每笔（支付宝）</span>
         </FormItem>
 
         <FormItem label="润模板：">
-          <span>商户分润：97%/每笔 &nbsp;</span>
-          <span>平台分润：3%/每笔</span>
+          <span>商户分润： {{info.obj.shareProfitRate.merchant}}%/每笔</span>
+          <span>平台分润： {{info.obj.shareProfitRate.platform}}%/每笔</span>
           <span>（未分润部分归平台所有；分润金额四舍五入，保留至小数点两位）</span>
         </FormItem>
 
@@ -42,7 +45,7 @@
       <Log :id="action.id"></Log>
     </template>
     <template v-else-if="action.type=='audit'">
-      <Audit :action="action" @refresh="closeDialog"></Audit>
+      <Audit :id="action.id" @refresh="closeDialog"></Audit>
     </template>
     <div class="demo-drawer-footer">
       <Button style="margin-right: 8px" @click="closeDialog">关闭</Button>
@@ -60,6 +63,20 @@ import Audit from "./Audit";
 export default {
   name: "detail",
   components: { Log, Audit },
+  inject: {
+    info: {
+      default: () => {
+        return {
+          obj: {
+            corporateWithdrawFee: { total: 10, bank: 8, platform: 2 },
+            individualWithdrawFee: { total: 1, bank: 1 },
+            payPipelineFeeRate: { wx: 0.6, aliPay: 0.6 },
+            shareProfitRate: { merchant: 97, platform: 3 }
+          }
+        };
+      }
+    }
+  },
   props: {
     action: {
       type: Object,
@@ -69,7 +86,7 @@ export default {
           _id: Math.random(),
           id: "",
           type: "", //add/edit/detail/audit
-          data: null
+          data: {}
         };
       }
     },
@@ -84,24 +101,28 @@ export default {
       }
     }
   },
-  created() {
-    let data = JSON.parse(JSON.stringify(this.detailData));
-    const { merchantType: type, merchantId, brandId } = data;
-    let id = null;
-    if (type == 0) {
-      id = merchantId;
-    } else {
-      id = brandId;
+  watch: {
+    action: {
+      handler(val, oldVal) {
+        let { type, data } = this.action;
+        data = JSON.parse(JSON.stringify(data));
+        this.formData = data;
+        this.withdrawUserTableData = data.withdrawUserId;
+        console.log("mounte detail", this.formData);
+
+        if (type == "detail") {
+        } else if (type == "audit") {
+        }
+      },
+      deep: true,
+      immediate: true
     }
-
-    this.formData = data;
-
-    console.log("mounte detail", this.formData);
   },
+  // created() {
+  mounted() {},
   data() {
     return {
       // 新增、修改 任务抽奖banner
-      isShow: false,
       title: "扣款信息",
       // merchantType 商户/品牌
       // businessTypeLabel: "商户",
@@ -123,8 +144,8 @@ export default {
         }
       ],
       formData: {
-        changeType: 0, //充值0 扣款1 写死
         merchantType: 0,
+        merchantTypeName: "",
         businessId: "",
         businessName: "",
         merchantId: "",

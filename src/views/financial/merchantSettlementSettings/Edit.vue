@@ -51,17 +51,20 @@
         </Row>
 
         <FormItem label="提现手续费：">
-          <span>企业对公账户：{{info.obj.xxx.xxx}}元/每笔（银行{{info.obj.xxx.xxx}}元/每笔、平台{{info.obj.xxx.xxx}}元/每笔）</span>
-          <span>个人账户：{{info.obj.xxx.xxx}}元/每笔（银行{{info.obj.xxx.xxx}}元/每笔）</span>
+          <span>企业对公账户：{{info.obj.corporateWithdrawFee.total}}元/每笔（银行{{info.obj.corporateWithdrawFee.bank}}元/每笔、平台{{info.obj.corporateWithdrawFee.platform}}元/每笔）</span>
+          <span>个人账户：{{info.obj.individualWithdrawFee.total}}元/每笔（银行{{info.obj.individualWithdrawFee.bank}}元/每笔）</span>
         </FormItem>
         <FormItem label="支付通道费：">
-          <span>平台承担 {{xxx.xxx.xxx.xxx}}%/每笔（微信）</span>
-          <span>{{xxx.xxx.xxx.xxx}}%/每笔（支付宝）</span>
+          <span>
+            <Radio :value="true">平台承担</Radio>
+            {{info.obj.payPipelineFeeRate.wx}}%/每笔（微信）
+          </span>
+          <span>{{info.obj.payPipelineFeeRate.aliPay}}%/每笔（支付宝）</span>
         </FormItem>
 
         <FormItem label="润模板：">
-          <span>商户分润： {{xxx.xxx.xxx.xxx}}%/每笔</span>
-          <span>平台分润： {{xxx.xxx.xxx.xxx}}%/每笔</span>
+          <span>商户分润： {{info.obj.shareProfitRate.merchant}}%/每笔</span>
+          <span>平台分润： {{info.obj.shareProfitRate.platform}}%/每笔</span>
           <span>（未分润部分归平台所有；分润金额四舍五入，保留至小数点两位）</span>
         </FormItem>
 
@@ -84,17 +87,17 @@
         <FormItem
           label="关联提现账号："
           prop="withdrawUserId"
-          :rules="{ required: true, validator: validateContractNumber }"
+          :rules="{ required: true, validator: validateAccountList }"
         >
           <Button type="primary" class="marginLeft20" @click="handleChooseAccount">选择商户账号</Button>（只有关联账号才可以提现，提现余额为结算商户所有余额）
         </FormItem>
         <Row class="box" style="margin-bottom:20px; ">
           <Table size="small" border :columns="withdrawUserColumns" :data="withdrawUserTableData">
-            <template slot-scope="{ row }" slot="action">
+            <template slot-scope="{ row, index }" slot="action">
               <Button
                 size="small"
                 style="color:#2db7f5"
-                @click="remove(row)"
+                @click="removeAccount(row,index)"
                 icon="ios-trash-outline"
               >移除</Button>
             </template>
@@ -102,7 +105,7 @@
         </Row>
 
         <FormItem label="生效时间：">
-          <Radio :value="true" disabled>保存即生效</Radio>
+          <Radio :value="true">保存即生效</Radio>
         </FormItem>
       </Form>
     </div>
@@ -123,8 +126,8 @@
     ></BrandList>
     <MerchantAccountList
       v-if="showMerchantAccountList"
-      :showBrandList.sync="showMerchantAccountList"
-      :id="merchantId"
+      :showMerchantAccountList.sync="showMerchantAccountList"
+      :id="formData.businessId"
       @seclectedTr-event="selectedAccount"
     ></MerchantAccountList>
   </div>
@@ -145,19 +148,30 @@ import BrandList from "./BrandList";
 import MerchantAccountList from "./MerchantAccountList";
 
 import createTypeDate from "./typeData";
+let typeData = createTypeDate();
 
 import { withdrawUserColumns } from "./columns";
 
 export default {
   name: "edit",
-  created() {
-    this.typeData = createTypeDate();
-    this.dynamicColumns = this.typeData.type0.columns;
-  },
+  // created() {
+  //   console.log("created", this.typeData);
+  //   console.log("created", this.action);
+  // },
+  // mounted() {
+  //   console.log("mounted", this.info);
+  // },
   inject: {
     info: {
       default: () => {
-        return { obj: {} };
+        return {
+          obj: {
+            corporateWithdrawFee: { total: 10, bank: 8, platform: 2 },
+            individualWithdrawFee: { total: 1, bank: 1 },
+            payPipelineFeeRate: { wx: 0.6, aliPay: 0.6 },
+            shareProfitRate: { merchant: 97, platform: 3 }
+          }
+        };
       }
     }
   },
@@ -170,12 +184,46 @@ export default {
     showEdit: {
       type: Boolean,
       default: true
+    },
+    action: {
+      type: Object,
+      default: function() {
+        return {
+          title: "",
+          _id: Math.random(),
+          id: "",
+          type: "", //add/edit/detail/audit
+          data: {}
+        };
+      }
     }
   },
   computed: {},
   watch: {
+    action: {
+      handler(val, oldVal) {
+        let { type, data } = this.action;
+        data = JSON.parse(JSON.stringify(data));
+        this.formData = data;
+        this.withdrawUserTableData = data.withdrawUserId;
+
+        if (type == "add") {
+        } else if (type == "edit") {
+          const { merchantType, businessId: id, tableData = [] } = data;
+
+          let typeData = this.typeData[`type${merchantType}`];
+          typeData.id = id;
+          this.dynamicColumns = typeData.columns;
+          this.dynamicTableData = typeData.tableData = tableData;
+        }
+      },
+      deep: true,
+      immediate: true
+    },
     ["formData.merchantType"]() {
       const { merchantType: type } = this.formData;
+
+      console.log(11111, type);
 
       const { id, name, label, desc, columns, tableData } = this.typeData[
         `type${type}`
@@ -219,23 +267,23 @@ export default {
       businessTypePlaceholder: "商户",
       money: 0, // 商户余额 moneyBalance
       ubay: 0, // U贝余额  ubayBalance
-      typeData: {},
+      typeData,
       formData: {
-        requiredWithdrawMin: false,
-        withdrawMin: "",
-        changeType: 0, //充值0 扣款1 写死
+        id: "",
         merchantType: 0,
+        fundAccountId: "",
+        withdrawMin: "",
+        requiredWithdrawMin: false,
+
+        pipelineFeeType: 1, //支付通道费类型
+
         businessId: "",
         businessName: "",
         merchantId: "",
         merchantName: "",
         brandId: "", //
         brandName: "", //
-        receivables: "", //应收款
-        contractNumber: "", //合同号
-        biller: "", //签单销售 销售名字 salesName
-        // 签单销售
-        remark: "" //备注 必填
+        withdrawUserId: []
       },
       ruleValidate: {},
       showBusinessList: false,
@@ -267,25 +315,27 @@ export default {
       withdrawUserTableData: []
     };
   },
-  created() {
-    console.log("created", this.info);
-  },
-  mounted() {
-    console.log("mounted", this.info);
-  },
+
   methods: {
     selectedAccount(arr) {
-      console.log("selectedTrCallBack----", data);
+      console.log("selectedTrCallBack----", arr);
 
-      this.withdrawUserTableData = arr.map(item => {
-        return item.row;
-      });
+      this.withdrawUserTableData = arr;
+
+      if (arr.length) {
+        this.formData.withdrawUserId = arr.map(item => {
+          return item.userId;
+        });
+      }
+
+      console.log(this.withdrawUserTableData);
     },
     selectedTrCallBack(data) {
       console.log("selectedTrCallBack----", data);
       const { merchantType: type, id, name, row } = data;
 
       let typeData = this.typeData[`type${type}`];
+      this.formData.fundAccountId = row.basicId;
       this.formData.businessId = typeData.id = id;
       this.formData.businessName = typeData.name = name;
       this.dynamicTableData = typeData.tableData = [row];
@@ -299,6 +349,10 @@ export default {
     },
     handleChooseAccount() {
       this.showMerchantAccountList = true;
+      console.log(this.formData.businessId);
+    },
+    removeAccount(row, index) {
+      this.withdrawUserTableData.splice(index, 1);
     },
     remove() {
       const type = this.formData.merchantType;
@@ -322,30 +376,17 @@ export default {
 
           let oForm = JSON.parse(JSON.stringify(this.formData));
 
-          // 提交的时候清理数据
-          const {
-            merchantType: type,
-            businessId: id,
-            businessName: name
-          } = oForm;
+          // // 提交的时候清理数据
+          // const { withdrawUserId } = oForm;
 
-          if (type == 0) {
-            oForm.merchantId = id;
-            oForm.merchantName = name;
-
-            oForm.brandId = "";
-            oForm.brandName = "";
-          } else {
-            oForm.brandId = id;
-            oForm.brandName = name;
-
-            oForm.merchantId = "";
-            oForm.merchantName = "";
-          }
+          // oForm.withdrawUserId = this.withdrawUserTableData.map(item => {
+          //   return item.merchantId;
+          // });
 
           console.log("submit oForm", oForm);
-
-          let { code, msg } = await rechargeAndDeduction(oForm);
+          // 新增/编辑
+          const url = "/trade/merchant/account/setting/save";
+          let { code, msg } = await postRequest(url, oForm);
 
           if (code == 200) {
             this.msgOk("保存成功");
@@ -405,16 +446,12 @@ export default {
 
       callback();
     },
-    validateContractNumber(rule, value, callback) {
-      value += "";
-      value = value.trim();
-      if (value == "") {
-        callback(new Error("合同号不能为空,且最多支持30个字"));
-      } else if (value.length > 30) {
-        callback(new Error("合同号最多支持30个字"));
-      } else {
-        callback();
+    validateAccountList(rule, value, callback) {
+      console.log("validateAccountList", rule, value);
+      if (!value.length) {
+        return callback("请选择商户账号");
       }
+      callback();
     },
     validateSalesName(rule, value, callback) {
       value += "";

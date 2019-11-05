@@ -142,7 +142,9 @@ export default {
           align: "center",
           render: (h, params) => {
             // params: {index, column, row;}
-            const { id, name } = params.row;
+            const { merchantId: id, merchantName: name } = params.row;
+            params.row.id = id;
+            params.row.name = name;
             let flag = false;
             if (this.choice.id == id) {
               flag = true;
@@ -154,7 +156,12 @@ export default {
                 <Radio
                   value={flag}
                   onOn-change={checked => {
-                    this.choice = { id, name, row: params.row };
+                    this.choice = {
+                      merchantType: 0,
+                      id,
+                      name,
+                      row: params.row
+                    };
                   }}
                 ></Radio>
               </div>
@@ -171,7 +178,7 @@ export default {
           title: "商户名称",
           align: "center",
           width: 230,
-          key: "name"
+          key: "merchantName"
         },
         {
           title: "所属地区",
@@ -179,8 +186,8 @@ export default {
           width: 340,
           key: "address",
           render: (h, params) => {
-            let { province, city } = params.row;
-            return <span>{`${province}${city}%`}</span>;
+            let { provinceName, cityName } = params.row;
+            return <span>{`${provinceName}${cityName}`}</span>;
           }
         }
       ],

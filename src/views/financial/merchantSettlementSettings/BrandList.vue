@@ -80,7 +80,9 @@ export default {
           align: "center",
           render: (h, params) => {
             // params: {index, column, row;}
-            const { id, name } = params.row;
+            const { brandId: id, merchantName: name } = params.row;
+            params.row.id = id;
+            params.row.name = name;
             let flag = false;
             if (this.choice.id == id) {
               flag = true;
@@ -93,7 +95,12 @@ export default {
                 <Radio
                   value={flag}
                   onOn-change={checked => {
-                    this.choice = { id, name, row: params.row };
+                    this.choice = {
+                      merchantType: 1,
+                      id,
+                      name,
+                      row: params.row
+                    };
                   }}
                 ></Radio>
               </div>
@@ -104,20 +111,13 @@ export default {
           title: "品牌编号",
           align: "center",
           minWidth: 130,
-          key: "id"
+          key: "brandId"
         },
-
         {
           title: "品牌名称",
           align: "center",
           width: 230,
-          key: "name"
-        },
-        {
-          title: "关联店铺数",
-          align: "center",
-          minWidth: 120,
-          key: "relationMerchantCount"
+          key: "merchantName"
         }
       ],
       searchData: {
@@ -149,7 +149,8 @@ export default {
     async queryTableData(pageNum) {
       this.page.pageNum = pageNum || 1;
       this.tableLoading = true;
-      const url = "/merchant/brandMain/selectByBrandName";
+      // 获取成功开户的商户信息,type=0 商户;type = 1 品牌
+      const url = "/trade/merchant/fund/account/basic/success";
 
       const {
         code,

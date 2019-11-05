@@ -22,13 +22,13 @@ export default [
         title: "商户类型",
         key: "merchantTypeDesc",
         align: "center",
-        minWidth: 80
+        minWidth: 100
     },
     {
         title: "提现账号",
         key: "withdrawAccountNumber",
         align: "center",
-        minWidth: 80
+        minWidth: 120
     },
     {
         title: "最低提现金额",
@@ -70,7 +70,7 @@ export default [
     // status
     {
         title: "审核状态",
-        key: "auditDesc",
+        key: "auditStatusDesc",
         align: "center",
         minWidth: 100
     },
@@ -89,7 +89,7 @@ export default [
     {
         title: "审核日志",
         align: "center",
-        minWidth: 160,
+        minWidth: 130,
         slot: "auditLog",
     },
 ];

@@ -11,7 +11,7 @@
         <FormItem
           label="原因："
           prop="auditDesc"
-          :rules="{ required: formData.auditResult == 2?true:false,validator:formData.auditResult == 2?validateReason:null }"
+          :rules="{ required: formData.auditResult == 3?true:false,validator:formData.auditResult == 3?validateReason:null }"
         >
           <Row>
             <Col span="16">
@@ -42,34 +42,10 @@ import { postRequest } from "@/libs/axios";
 export default {
   name: "audit",
   props: {
-    action: {
-      type: Object,
-      default: function() {
-        return {
-          title: "",
-          _id: Math.random(),
-          id: "",
-          type: "", //add/edit/detail/audit
-          data: null
-        };
-      }
+    id: {
+      type: [String, Number],
+      default: ""
     }
-  },
-  watch: {
-    ["formData.auditResult"]() {
-      const { auditResult } = this.formData;
-      //通过清空验证 审核结果2:通过、3：拒绝
-      if (auditResult == 2) {
-        this.$refs.form.resetFields();
-        this.reasonPlaceholder = "请输入通过原因";
-      } else {
-        this.reasonPlaceholder = "请输入100字以内未通过原因";
-      }
-    }
-  },
-  created() {
-    this.id = this.action.id;
-    this.formData = this.action.data;
   },
   data() {
     return {
@@ -82,7 +58,7 @@ export default {
       reasonPlaceholder: "请输入通过原因",
       formData: {
         id: "",
-        auditResult: "1",
+        auditResult: "2",
         auditDesc: ""
       }
     };
@@ -105,8 +81,8 @@ export default {
           // 审核
           const url = "/trade/merchant/account/setting/audit";
           const { code, msg } = await postRequest(url, {
-            id: this.id,
-            ...this.formData
+            ...this.formData,
+            id: this.id
           });
 
           if (code == 200) {

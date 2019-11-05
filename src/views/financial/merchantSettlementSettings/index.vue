@@ -37,7 +37,15 @@
             style="margin-right: 5px"
             @click="addOrEdit('edit',row.id)"
           >编辑</Button>
-          <Button type="primary" size="small" style="margin-right: 5px" @click="audit(row.id)">审核</Button>
+
+          <!-- 待审核才允许审核 auditStatus: 1 -->
+          <Button
+            v-if="row.auditStatus==1"
+            type="primary"
+            size="small"
+            style="margin-right: 5px"
+            @click="audit(row.id)"
+          >审核</Button>
         </template>
         <template slot-scope="{ row }" slot="auditLog">
           <Button type="text" size="small" @click="queryAuditList(row.id)">查看日志</Button>
@@ -64,9 +72,9 @@
     <Drawer v-model="showEdit" :closable="true" :mask-closable="false" width="820" :styles="styles">
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="ios-information-circle"></Icon>
-        <span>新增/编辑</span>
+        <span>{{action.title}}</span>
       </p>
-      <Edit v-if="showEdit" :showEdit.sync="showEdit" @refresh="queryTableData"></Edit>
+      <Edit v-if="showEdit" :showEdit.sync="showEdit" :action="action" @refresh="queryTableData"></Edit>
     </Drawer>
 
     <Drawer
@@ -120,12 +128,15 @@ export default {
     return {
       info: { obj: this.obj }
       // 提示：provide 和 inject 绑定并不是可响应的。这是刻意为之的。然而，如果你传入了一个可监听的对象，那么其对象的属性还是可响应的。
-    }
+    };
   },
   data() {
     return {
-      obj:{
-        
+      obj: {
+        corporateWithdrawFee: { total: 10, bank: 8, platform: 2 },
+        individualWithdrawFee: { total: 1, bank: 1 },
+        payPipelineFeeRate: { wx: 0.6, aliPay: 0.6 },
+        shareProfitRate: { merchant: 97, platform: 3 }
       },
       showAuditLogList: false,
       showEdit: false,
@@ -136,7 +147,7 @@ export default {
         _id: Math.random(),
         id: "",
         type: "", //add/edit/detail/audit
-        data: null
+        data: {}
       },
       styles: {
         height: "calc(100% - 55px)",
@@ -172,9 +183,25 @@ export default {
   },
   created() {
     this.queryTableData();
+    this.getXxx();
   },
   methods: {
-    addOrEdit() {
+    async addOrEdit(type, id) {
+      let data = {};
+      let title = "新增";
+      // 新增/编辑
+      if (type == "edit") {
+        title = "编辑";
+        data = await this.queryDataById(id);
+      }
+
+      this.action = {
+        title,
+        _id: Math.random(),
+        id,
+        type, //add/edit/detail/audit
+        data
+      };
       this.showEdit = true;
     },
     queryAuditList(id) {
@@ -185,32 +212,44 @@ export default {
       });
     },
     async getXxx() {
-      const url = "/trade/merchant/account/setting/audit";
-      const { code, msg } = await postRequest(ur);
-
+      // 查询提现配置
+      const url = "/trade/merchant/account/setting/withdraw/config";
+      const { code, msg, data } = await getRequest(url);
+      let a = {
+        corporateWithdrawFee: { total: 10, bank: 8, platform: 2 },
+        individualWithdrawFee: { total: 1, bank: 1 },
+        payPipelineFeeRate: { wx: 0.6, aliPay: 0.6 },
+        shareProfitRate: { merchant: 97, platform: 3 }
+      };
       if (code == 200) {
-        this.$emit("refresh");
+        console.log("xxxx", data);
+
+        this.obj = data;
       } else {
         this.msgErr(msg);
       }
     },
-    audit(id) {
+    async audit(id) {
+      const data = await this.queryDataById(id);
+      const type = "audit"; //add/edit/detail/audit
       this.action = {
         title: "审核",
         _id: Math.random(),
         id,
-        type: "audit", //add/edit/detail/audit
-        data: null
+        type,
+        data
       };
       this.showDetail = true;
     },
     async detail(id) {
+      const data = await this.queryDataById(id);
+      const type = "detail"; //add/edit/detail/audit
       this.action = {
         title: "详情",
         _id: Math.random(),
         id,
-        type: "detail", //add/edit/detail/audit
-        data: null
+        type,
+        data
       };
       this.showDetail = true;
     },
@@ -221,28 +260,57 @@ export default {
       if (code == 200) {
         const {
           merchantType: type, //0/1/2/3
+          merchantId, //商户
+          brandId, //品牌
           merchantName,
-          brandName,
-          changeType,
-          // 充值
-          receivables,
-          merchantMoneyChargesRecords: arr,
-          // 扣款
-          anticipatedDeduction,
-          actualDeduction
+          withdrawMin,
+          withdrawUserId
         } = data;
 
         let { label, desc } = typeData[`type${type}`];
         data.businessTypeLabel = label;
         data.merchantTypeName = desc;
+
+        console.log("merchantTypeName:", data.merchantTypeName);
+
+        let tableData = [];
         if (type == 0) {
-          data.businessName = merchantName;
+          data.businessId = merchantId;
+          tableData.push({ merchantId, merchantName });
         } else {
-          data.businessName = brandName;
+          data.businessId = brandId;
+          tableData.push({ brandId, merchantName });
         }
+        data.businessName = merchantName;
+        data.tableData = tableData;
+        data.withdrawMin = withdrawMin || "不限制";
+
+        let accountList = await this.queryAccountList(data.businessId);
+        let choices = [];
+        if (accountList) {
+          choices = accountList.filter(item => {
+            for (let i = 0; i < withdrawUserId.length; i++) {
+              if (item.userId == withdrawUserId[i]) {
+                return true;
+              }
+            }
+          });
+        }
+        data.withdrawUserId = choices;
 
         this.detailData = data;
-        this.showDetail = true;
+        return data;
+      } else {
+        this.msgErr(msg);
+      }
+    },
+
+    // 获取用户数据
+    async queryAccountList(id) {
+      const url = "/merchant/merchantEmployee/merchant";
+      console.log("queryTableData", this.id);
+      const { code, data, msg } = await getRequest(url, { id });
+      if (code == 200) {
         return data;
       } else {
         this.msgErr(msg);

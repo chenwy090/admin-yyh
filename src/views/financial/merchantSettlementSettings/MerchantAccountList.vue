@@ -24,16 +24,6 @@
           @on-selection-change="handleSelectChange"
           @on-row-dblclick="handleOnRowDbclick"
         ></Table>
-        <Row type="flex" justify="end" class="page">
-          <Page
-            show-total
-            show-elevator
-            :current="page.pageNum"
-            :page-size="page.pageSize"
-            :total="page.total"
-            @on-change="changeCurrent"
-          ></Page>
-        </Row>
       </div>
 
       <Row style="margin-left:350px; margin-top: 30px">
@@ -44,14 +34,14 @@
   </div>
 </template>
 <script>
-import { postRequest } from "@/libs/axios";
+import { getRequest, postRequest } from "@/libs/axios";
 
 export default {
   name: "brand-list",
   props: {
     id: {
-      type: [Number, Object],
-      default: null
+      type: [Number, String],
+      default: ""
     }
   },
   data() {
@@ -61,6 +51,9 @@ export default {
       choices: [
         /*{ id: "", name: "", row: {} } */
       ],
+      created() {
+        console.log("created this.id:", this.id);
+      },
       tableColumns: [
         {
           type: "selection",
@@ -115,16 +108,16 @@ export default {
   },
   methods: {
     handleSelectChange(selection) {
-      // console.log("handleSelectChange:", this.$refs.refTable.$refs.tbody);
-      let { objData } = this.$refs.refTable.$refs.tbody;
-      var choices = [];
-      for (let index in objData) {
-        let item = objData[index];
-        if (item._isChecked) {
-          choices.push(item);
-        }
-      }
-      console.log(1, JSON.stringify(choices));
+      console.log("handleSelectChange:", this.$refs.refTable.$refs.tbody);
+      // let { objData } = this.$refs.refTable.$refs.tbody;
+      // var choices = [];
+      // for (let index in objData) {
+      //   let item = objData[index];
+      //   if (item._isChecked) {
+      //     choices.push(item);
+      //   }
+      // }
+      // console.log(1, JSON.stringify(choices));
 
       var choices = this.tableData.filter(item => {
         for (let i = 0; i < selection.length; i++) {
@@ -136,11 +129,11 @@ export default {
       });
       console.log(2, JSON.stringify(choices));
 
-      // this.choices = choices;
+      this.choices = choices;
     },
     handleOnRowDbclick(row, index) {
-      // let { _isChecked } = this.$refs.refTable.$refs.tbody.objData[index];
-      // this.$refs.refTable.$refs.tbody.objData[index]._isChecked = !_isChecked;
+      let { _isChecked } = this.$refs.refTable.$refs.tbody.objData[index];
+      this.$refs.refTable.$refs.tbody.objData[index]._isChecked = !_isChecked;
       let { id, _checked } = row;
 
       _checked = !_checked;
@@ -149,34 +142,30 @@ export default {
 
       console.log(this.$refs.refTable.$refs.tbody.objData[index]._isChecked);
     },
-    // 关闭商户选择框
-    cancel() {
-      this.closeDialog();
-    },
+
     // 获取列表数据
     async queryTableData() {
       this.tableLoading = true;
       const url = "/merchant/merchantEmployee/merchant";
-
-      const {
-        code,
-        data: { current, total, size, records },
-        msg
-      } = await postRequest(url, { id: this.id });
+      console.log("queryTableData", this.id);
+      const { code, data, msg } = await getRequest(url, { id: this.id });
       if (code == 200) {
-        this.tableData = records;
+        this.tableData = data;
       } else {
         this.msgErr(msg);
       }
       this.tableLoading = false;
     },
-
+    // 关闭商户选择框
+    cancel() {
+      this.closeDialog();
+    },
     closeDialog() {
       //关闭对话框清除表单数据
       // this.$refs.formValidate.resetFields();
-      this.$emit(`update:showMerchantAccountList`, false);
+      this.$emit("update:showMerchantAccountList", false);
     },
-    //确定选择商户
+    // //确定选择商户
     selectMerchant() {
       if (this.choices.length) {
         this.$emit("seclectedTr-event", this.choices);
