@@ -105,7 +105,7 @@
             <Button type="success" class="marginLeft20" @click="upload(1)">排序导入</Button>
             <Button type="success" class="marginLeft20" @click="download(1)">排序导出</Button>
             <Button type="success" class="marginLeft20" @click="upload(2)">分享奖励导入</Button>
-            <!--<Button type="success" class="marginLeft20" @click="download(2)">分享奖励导出</Button>-->
+            <Button type="success" class="marginLeft20" @click="download(2)">分享奖励导出</Button>
           </Row>
 
           <Row>
@@ -637,8 +637,13 @@ export default {
       this.showFileImport = true;
       this.upType = type;
     },
-    async download() {
-      const url = "/template/sort/excel/download";
+    async download(type) {
+        let url
+        if(type==1){
+            url = "/template/sort/excel/download";
+        }else{
+            url = "/merchantCouponTemplate/exportShareRewardExcel";
+        }
 
       const res = await downloadSteam(url);
 
