@@ -40,13 +40,13 @@
     <template v-if="action.type=='detail'">
       <div>审核日志</div>
       <Log :id="action.id"></Log>
-      <div class="demo-drawer-footer">
-        <Button style="margin-right: 8px" @click="closeDialog">关闭</Button>
-      </div>
     </template>
     <template v-else-if="action.type=='audit'">
-      <Audit :id="action.id"></Audit>
+      <Audit :action="action" @refresh="closeDialog"></Audit>
     </template>
+    <div class="demo-drawer-footer">
+      <Button style="margin-right: 8px" @click="closeDialog">关闭</Button>
+    </div>
   </div>
 </template>
 <script>

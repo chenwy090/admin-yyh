@@ -51,17 +51,17 @@
         </Row>
 
         <FormItem label="提现手续费：">
-          <span>企业对公账户：10元/每笔（银行8元/每笔、平台2元/每笔）</span>
-          <span>个人账户：1元/每笔（银行1元/每笔）</span>
+          <span>企业对公账户：{{info.obj.xxx.xxx}}元/每笔（银行{{info.obj.xxx.xxx}}元/每笔、平台{{info.obj.xxx.xxx}}元/每笔）</span>
+          <span>个人账户：{{info.obj.xxx.xxx}}元/每笔（银行{{info.obj.xxx.xxx}}元/每笔）</span>
         </FormItem>
         <FormItem label="支付通道费：">
-          <span>平台承担 0.6%/每笔（微信）</span>
-          <span>0.6%/每笔（支付宝）</span>
+          <span>平台承担 {{xxx.xxx.xxx.xxx}}%/每笔（微信）</span>
+          <span>{{xxx.xxx.xxx.xxx}}%/每笔（支付宝）</span>
         </FormItem>
 
         <FormItem label="润模板：">
-          <span>商户分润： 97%/每笔</span>
-          <span>平台分润： 3%/每笔</span>
+          <span>商户分润： {{xxx.xxx.xxx.xxx}}%/每笔</span>
+          <span>平台分润： {{xxx.xxx.xxx.xxx}}%/每笔</span>
           <span>（未分润部分归平台所有；分润金额四舍五入，保留至小数点两位）</span>
         </FormItem>
 
@@ -124,6 +124,7 @@
     <MerchantAccountList
       v-if="showMerchantAccountList"
       :showBrandList.sync="showMerchantAccountList"
+      :id="merchantId"
       @seclectedTr-event="selectedAccount"
     ></MerchantAccountList>
   </div>
@@ -152,6 +153,13 @@ export default {
   created() {
     this.typeData = createTypeDate();
     this.dynamicColumns = this.typeData.type0.columns;
+  },
+  inject: {
+    info: {
+      default: () => {
+        return { obj: {} };
+      }
+    }
   },
   components: {
     BusinessList,
@@ -201,6 +209,7 @@ export default {
   },
   data() {
     return {
+      merchantId: "",
       // 新增、修改 任务抽奖banner
       isShow: false,
       title: "扣款信息",
@@ -257,6 +266,12 @@ export default {
       ],
       withdrawUserTableData: []
     };
+  },
+  created() {
+    console.log("created", this.info);
+  },
+  mounted() {
+    console.log("mounted", this.info);
   },
   methods: {
     selectedAccount(arr) {

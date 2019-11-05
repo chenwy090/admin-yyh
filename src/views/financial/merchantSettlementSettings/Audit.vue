@@ -2,28 +2,22 @@
   <div class="xxx">
     <!-- 审核 audit     -->
     <div class="audit">
-      <Form
-        label-position="right"
-        ref="form"
-        :model="formData"
-        :rules="ruleValidate"
-        :label-width="120"
-      >
+      <Form label-position="right" ref="form" :model="formData" :label-width="120">
         <FormItem label="审核结果：" prop="status">
-          <RadioGroup v-model="formData.status">
+          <RadioGroup v-model="formData.auditResult">
             <Radio v-for="(v,k) in examineStatusOption" :key="k" :label="k">{{ v }}</Radio>
           </RadioGroup>
         </FormItem>
         <FormItem
           label="原因："
-          prop="reason"
-          :rules="{ required: formData.status == 2?true:false,validator:formData.status == 2?validateReason:null }"
+          prop="auditDesc"
+          :rules="{ required: formData.auditResult == 2?true:false,validator:formData.auditResult == 2?validateReason:null }"
         >
           <Row>
             <Col span="16">
               <Tooltip trigger="focus" title="提醒" content="最多100个汉字" placement="right">
                 <Input
-                  v-model="formData.reason"
+                  v-model="formData.auditDesc"
                   type="textarea"
                   style="width:300px"
                   :autosize="{minRows: 4,maxRows: 8}"
@@ -47,73 +41,63 @@ import { postRequest } from "@/libs/axios";
 
 export default {
   name: "audit",
-  components: {},
-  watch: {
-    ["formData.status"]() {
-      const status = this.formData.status;
-      const arr = ["", "请输入通过原因", "请输入100字以内未通过原因"];
-      this.reasonPlaceholder = arr[status];
-      //清空验证
-      if (status == 1) {
-        this.$refs.form.resetFields();
+  props: {
+    action: {
+      type: Object,
+      default: function() {
+        return {
+          title: "",
+          _id: Math.random(),
+          id: "",
+          type: "", //add/edit/detail/audit
+          data: null
+        };
       }
-
-      console.log("reasonPlaceholder", status, this.reasonPlaceholder);
     }
+  },
+  watch: {
+    ["formData.auditResult"]() {
+      const { auditResult } = this.formData;
+      //通过清空验证 审核结果2:通过、3：拒绝
+      if (auditResult == 2) {
+        this.$refs.form.resetFields();
+        this.reasonPlaceholder = "请输入通过原因";
+      } else {
+        this.reasonPlaceholder = "请输入100字以内未通过原因";
+      }
+    }
+  },
+  created() {
+    this.id = this.action.id;
+    this.formData = this.action.data;
   },
   data() {
     return {
-      //审核
-      examineModal: false,
-      // 审核状态 1-审核通过 2-审核不通过
+      // 审核状态 2-审核通过 3-审核不通过 审核结果2:通过、3：拒绝
       examineStatusOption: {
-        "1": "通过",
-        "2": "未通过"
+        "2": "通过",
+        "3": "拒绝"
       },
       // 请输入50字以内未通过原因
       reasonPlaceholder: "请输入通过原因",
       formData: {
-        status: "1",
-        reason: ""
-      },
-      ruleValidate: {},
-      //审核 status examineType ： “待审核、已通过、未通过” 默认显示“请选择”。  审核状态status 0-待审核 1-审核通过 2-审核失败
-      statusOption: {
-        "0": "待审核",
-        "1": "已通过",
-        "2": "未通过"
+        id: "",
+        auditResult: "1",
+        auditDesc: ""
       }
     };
   },
-  created() {
-    // console.log("okkk", this.msgOk);
-  },
   methods: {
-    formModalChange(flag) {
-      if (!flag) {
-        //清空form表单数据
-        this.formData = {
-          status: "1",
-          reason: ""
-        };
-      }
-    },
     validateReason(rule, value, callback) {
       value += "";
       value = value.trim();
       if (value == "") {
         callback(new Error("审核原因不能为空"));
       } else if (value.length >= 50) {
-        callback(new Error("请输入50字以内的字符"));
+        callback(new Error("请输入100字以内的字符"));
       } else {
         callback();
       }
-    },
-
-    examine(row) {
-      this.examineModal = true;
-      this.id = row.id;
-      // 审核状态 1-审核通过 2-审核不通过
     },
     check(name) {
       this.$refs[name].validate(async valid => {
@@ -129,6 +113,7 @@ export default {
             this.msgOk("审核成功");
             this.queryTableData();
             this.cancelHandleReset(name);
+            this.$emit("refresh");
           } else {
             this.msgErr(msg);
           }
@@ -138,7 +123,6 @@ export default {
 
     // 审核-------------------------------------
     cancelHandleReset(name) {
-      this.examineModal = false;
       this.$nextTick(() => {
         this.$refs[name].resetFields();
       });

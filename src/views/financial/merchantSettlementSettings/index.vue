@@ -94,7 +94,7 @@
       </p>
       <Audit v-if="showAudit" :showAudit.sync="showAudit" :id="id" :detailData="detailData"></Audit>
     </Drawer>-->
-  </div> 
+  </div>
 </template>
 <script>
 import { getRequest, postRequest } from "@/libs/axios";
@@ -116,9 +116,17 @@ export default {
     Detail,
     Audit
   },
-  watch: {},
+  provide() {
+    return {
+      info: { obj: this.obj }
+      // 提示：provide 和 inject 绑定并不是可响应的。这是刻意为之的。然而，如果你传入了一个可监听的对象，那么其对象的属性还是可响应的。
+    }
+  },
   data() {
     return {
+      obj:{
+        
+      },
       showAuditLogList: false,
       showEdit: false,
       showDetail: false,
@@ -175,6 +183,16 @@ export default {
       this.$nextTick(_ => {
         this.showAuditLogList = true;
       });
+    },
+    async getXxx() {
+      const url = "/trade/merchant/account/setting/audit";
+      const { code, msg } = await postRequest(ur);
+
+      if (code == 200) {
+        this.$emit("refresh");
+      } else {
+        this.msgErr(msg);
+      }
     },
     audit(id) {
       this.action = {

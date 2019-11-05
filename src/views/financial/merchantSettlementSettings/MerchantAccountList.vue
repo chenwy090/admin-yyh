@@ -12,24 +12,6 @@
       :styles="{top: '20px'}"
     >
       <div>
-        <row>
-          <Form ref="searchItem" :model="searchData" inline :label-width="70" class="search-form">
-            <FormItem label="用户ID:">
-              <Input
-                type="text"
-                v-model="searchData.id"
-                clearable
-                placeholder="请输入用户id"
-                style="width: 150px"
-              />
-            </FormItem>
-            <FormItem style="margin-left:-35px;" class="br">
-              <Button @click="search" type="primary" icon="ios-search">搜索</Button>
-              <Button @click="reset">重置</Button>
-            </FormItem>
-          </Form>
-        </row>
-
         <!-- 列表 -->
         <Table
           border
@@ -66,6 +48,12 @@ import { postRequest } from "@/libs/axios";
 
 export default {
   name: "brand-list",
+  props: {
+    id: {
+      type: [Number, Object],
+      default: null
+    }
+  },
   data() {
     return {
       isShow: true,
@@ -118,17 +106,12 @@ export default {
           key: "merchantRoleName"
         }
       ],
-      searchData: {
-        id: 1
-      },
-      page: {
-        pageNum: 1, //页码
-        pageSize: 10, //每页数量
-        total: 0 //数据总数
-      },
       tableLoading: false,
       tableData: []
     };
+  },
+  mounted() {
+    this.queryTableData();
   },
   methods: {
     handleSelectChange(selection) {
@@ -158,7 +141,6 @@ export default {
     handleOnRowDbclick(row, index) {
       // let { _isChecked } = this.$refs.refTable.$refs.tbody.objData[index];
       // this.$refs.refTable.$refs.tbody.objData[index]._isChecked = !_isChecked;
-
       let { id, _checked } = row;
 
       _checked = !_checked;
@@ -171,36 +153,21 @@ export default {
     cancel() {
       this.closeDialog();
     },
-    search() {
-      this.queryTableData();
-    },
-    // 分页（点击第几页）
-    changeCurrent(pageNum) {
-      this.queryTableData(pageNum);
-    },
     // 获取列表数据
-    async queryTableData(pageNum) {
-      this.page.pageNum = pageNum || 1;
+    async queryTableData() {
       this.tableLoading = true;
-      const url = "/merchant/brandMain/selectByBrandName";
+      const url = "/merchant/merchantEmployee/merchant";
 
       const {
         code,
         data: { current, total, size, records },
         msg
-      } = await postRequest(url, {
-        ...this.searchData,
-        ...this.page
-      });
+      } = await postRequest(url, { id: this.id });
       if (code == 200) {
         this.tableData = records;
-        this.page.pageNum = current; //分页查询起始记录
-        this.page.total = total; //列表总数
-        this.page.pageSize = size; //每页数据
       } else {
         this.msgErr(msg);
       }
-
       this.tableLoading = false;
     },
 
@@ -218,19 +185,6 @@ export default {
         this.msgErr("至少选一个品牌");
       }
     },
-    reset() {
-      // 重置查询参数
-      this.searchData = {
-        id: 1
-      };
-      this.page = {
-        pageNum: 1, //页码
-        pageSize: 10, //每页数量
-        total: 0 //数据总数
-      };
-      //重新查询一遍
-      this.queryTableData();
-    },
     // 全局提示
     msgOk(txt) {
       this.$Message.info({
@@ -244,9 +198,6 @@ export default {
         duration: 3
       });
     }
-  },
-  mounted() {
-    this.queryTableData();
   }
 };
 </script>
