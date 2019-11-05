@@ -129,8 +129,8 @@ export default {
         file.imgUrl = imgUrl;
           console.log(this.width);
           this.$emit("uploadSuccess", {
-           coverImgHeight: this.width,
-           coverImgWight: this.height,
+           coverImgHeight: this.height,
+           coverImgWidth: this.width,
           fileUploadType: this.fileUploadType,
           imgUrl
         });

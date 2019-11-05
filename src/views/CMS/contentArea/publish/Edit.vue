@@ -534,7 +534,8 @@ export default {
       console.log("removeImages", images);
     },
     imagesUploadSuccess({ images }) {
-      this.formData.images = images;
+        console.log(1);
+        this.formData.images = images;
       console.log("imagesUploadSuccess", this.formData.images);
     },
 
@@ -546,12 +547,17 @@ export default {
       this.formData.smallImg = "";
       this.formData.defaultSmallImgList = [];
     },
-    coverImgUploadSuccess({ imgUrl }) {
+    coverImgUploadSuccess({ imgUrl,coverImgHeight,coverImgWidth }) {
       this.formData.coverImg = imgUrl;
+        // this.formData.coverImgHeight = coverImgHeight;
+        // this.formData.coverImgWidth = coverImgWidth;
       this.formData.defaultCoverImgList = [{ imgUrl }];
     },
-    smallImgUploadSuccess({ imgUrl }) {
-      this.formData.smallImg = imgUrl;
+    smallImgUploadSuccess({ imgUrl,coverImgHeight,coverImgWidth }) {
+        console.log(1);
+        this.formData.smallImg = imgUrl;
+        this.formData.coverImgHeight = coverImgHeight;
+        this.formData.coverImgWidth = coverImgWidth;
       this.formData.defaultSmallImgList = [{ imgUrl }];
     },
     updateTagList(data) {
