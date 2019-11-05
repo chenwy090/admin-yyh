@@ -66,7 +66,36 @@ export function checkImageWH(file, width, height, fmt) {
 //图片尺寸
 
 
+export function getImageWH(file, fmt) {
+    let self = this;
+    return new Promise(function (resolve, reject) {
+        if (file.type != "image/gif" && file.type != "image/png" && file.type != "image/jpeg" && file.type != "image/jpg" && file.type != "image/bmp") {
+
+            Message.error("图片格式只能选择png/jpeg/jpg/bmp");
+            reject();
+        }
+
+        let filereader = new FileReader();
+        filereader.onload = e => {
+
+            let src = e.target.result;
+            const image = new Image();
+            image.onload = function () {
+                resolve({w:this.width,h:this.height});
+            };
+            image.onerror = reject;
+            image.src = src;
+        };
+        filereader.readAsDataURL(file);
+    });
+    return fmt
+}
+
+//图片尺寸
+
+
 export function checkImage(file, fmt) {
+    console.log(111);
     let self = this;
     return new Promise(function (resolve, reject) {
         if (file.type != "image/gif" && file.type != "image/png" && file.type != "image/jpeg" && file.type != "image/jpg" && file.type != "image/bmp") {
@@ -131,7 +160,7 @@ export function checkTwoDecimal(text, value, fmt) {
 }
 
 
-//数据去重复 
+//数据去重复
 export function uniqueArray(array, id) {
     var result = [array[0]];
     for (var i = 1; i < array.length; i++) {
