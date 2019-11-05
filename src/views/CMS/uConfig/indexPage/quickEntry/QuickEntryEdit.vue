@@ -171,10 +171,10 @@ export default {
       handler(val, oldVal) {
         let { data } = this.action;
         this.formData = JSON.parse(JSON.stringify(data));
-
-        this.getIndustryMaindList();
-        this.getIndustrySecendList()
-
+        if (this.formData.type == 6){
+          this.getIndustryMaindList();
+          this.getIndustrySecendList()
+        }
         console.log("this.formData:", JSON.stringify(this.formData));
         console.log("typeOption:", JSON.stringify(this.typeOption));
       },
