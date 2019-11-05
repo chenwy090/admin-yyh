@@ -86,17 +86,11 @@
           prop="withdrawUserId"
           :rules="{ required: true, validator: validateContractNumber }"
         >
-          <Button type="primary" class="marginLeft20" @click="handleChoose">选择商户账号</Button>（只有关联账号才可以提现，提现余额为结算商户所有余额）
+          <Button type="primary" class="marginLeft20" @click="handleChooseAccount">选择商户账号</Button>（只有关联账号才可以提现，提现余额为结算商户所有余额）
         </FormItem>
         <Row class="box" style="margin-bottom:20px; ">
-          <Table
-            size="small"
-            border
-            width="540"
-            :columns="withdrawUserColumns"
-            :data="withdrawUserTableData"
-          >
-            <template slot-scope="{ row }" slot="operate">
+          <Table size="small" border :columns="withdrawUserColumns" :data="withdrawUserTableData">
+            <template slot-scope="{ row }" slot="action">
               <Button
                 size="small"
                 style="color:#2db7f5"
@@ -109,35 +103,6 @@
 
         <FormItem label="生效时间：">
           <Radio :value="true" disabled>保存即生效</Radio>
-        </FormItem>
-        <FormItem label="审核结果：">
-          <Radio :value="true" disabled>保存即生效</Radio>
-        </FormItem>
-
-        <FormItem label="审核结果：" prop="status">
-          <RadioGroup v-model="formData.status">
-            <Radio v-for="item in merchantTypeOption" :label="item.value" :key="item.value">
-              <span>{{item.label}}</span>
-            </Radio>
-          </RadioGroup>
-        </FormItem>
-
-        <!-- 必填项 -->
-        <FormItem label="原因：">
-          <Row>
-            <Col span="10">
-              <Tooltip trigger="focus" title="提醒" content="最多100个汉字" placement="right">
-                <Input
-                  v-model="formData.remark"
-                  type="textarea"
-                  style="width:300px"
-                  :autosize="{minRows: 4,maxRows: 8}"
-                  placeholder="请输入100字以内未通过原因"
-                  :maxlength="500"
-                />
-              </Tooltip>
-            </Col>
-          </Row>
         </FormItem>
       </Form>
     </div>
@@ -156,6 +121,11 @@
       :showBrandList.sync="showBrandList"
       @seclectedTr-event="selectedTrCallBack"
     ></BrandList>
+    <MerchantAccountList
+      v-if="showMerchantAccountList"
+      :showBrandList.sync="showMerchantAccountList"
+      @seclectedTr-event="selectedAccount"
+    ></MerchantAccountList>
   </div>
 </template>
 <script>
@@ -166,8 +136,12 @@ import { postRequest } from "@/libs/axios";
 import { formatDate } from "@/libs/dataUtil";
 import { rechargeAndDeduction } from "@/api/sys";
 
+// 商户列表
 import BusinessList from "./BusinessList";
+// 品牌列表
 import BrandList from "./BrandList";
+// 关联提现商户 商户账号列表
+import MerchantAccountList from "./MerchantAccountList";
 
 import createTypeDate from "./typeData";
 
@@ -181,7 +155,8 @@ export default {
   },
   components: {
     BusinessList,
-    BrandList
+    BrandList,
+    MerchantAccountList
   },
   props: {
     showEdit: {
@@ -229,6 +204,7 @@ export default {
       // 新增、修改 任务抽奖banner
       isShow: false,
       title: "扣款信息",
+      showMerchantAccountList: false,
       // merchantType 商户/品牌/商超/零售商名称
       businessTypeLabel: "商户",
       businessTypePlaceholder: "商户",
@@ -269,11 +245,27 @@ export default {
       // dynamicColumns: typeData.type0.columns,
       dynamicColumns: [],
       dynamicTableData: [],
-      withdrawUserColumns,
+      withdrawUserColumns: [
+        ...withdrawUserColumns,
+        {
+          title: "操作",
+          align: "center",
+          width: 100,
+          fixed: "right",
+          slot: "action"
+        }
+      ],
       withdrawUserTableData: []
     };
   },
   methods: {
+    selectedAccount(arr) {
+      console.log("selectedTrCallBack----", data);
+
+      this.withdrawUserTableData = arr.map(item => {
+        return item.row;
+      });
+    },
     selectedTrCallBack(data) {
       console.log("selectedTrCallBack----", data);
       const { merchantType: type, id, name, row } = data;
@@ -289,6 +281,9 @@ export default {
       const arr = ["showBusinessList", "showBrandList"];
       const type = this.formData.merchantType;
       this[arr[type]] = true;
+    },
+    handleChooseAccount() {
+      this.showMerchantAccountList = true;
     },
     remove() {
       const type = this.formData.merchantType;

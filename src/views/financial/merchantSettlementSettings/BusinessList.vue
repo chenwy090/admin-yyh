@@ -12,11 +12,11 @@
     >
       <div>
         <row>
-          <Form ref="searchItem" :model="searchItem" inline :label-width="70" class="search-form">
+          <Form ref="searchItem" :model="searchData" inline :label-width="70" class="search-form">
             <FormItem label="商户编号">
               <Input
                 type="text"
-                v-model="searchItem.merchantId"
+                v-model="searchData.merchantId"
                 clearable
                 placeholder="请输入商户编号"
                 style="width: 150px"
@@ -25,7 +25,7 @@
             <FormItem label="商户名称">
               <Input
                 type="text"
-                v-model="searchItem.merchantName"
+                v-model="searchData.merchantName"
                 clearable
                 placeholder="请输入商户名称"
                 style="width: 150px"
@@ -33,7 +33,7 @@
             </FormItem>
             <FormItem style label="所在地区">
               <Select
-                v-model="searchItem.provinceCode"
+                v-model="searchData.provinceCode"
                 style="width:150px"
                 clearable
                 @on-change="getcitylist"
@@ -45,7 +45,7 @@
                 >{{item.provinceName}}</Option>
               </Select>
               <Select
-                v-model="searchItem.cityId"
+                v-model="searchData.cityCode"
                 style="width:150px"
                 clearable
                 @on-change="getarealist"
@@ -56,7 +56,7 @@
                   :value="item.cityCode"
                 >{{item.cityName}}</Option>
               </Select>
-              <Select v-model="searchItem.areaId" style="width:150px" clearable>
+              <Select v-model="searchData.areaId" style="width:150px" clearable>
                 <Option
                   v-for="(item,index) in arealist"
                   :key="index"
@@ -66,7 +66,7 @@
             </FormItem>
             <FormItem style="margin-left:-35px;" class="br">
               <Button @click="search" type="primary" icon="ios-search">搜索</Button>
-              <Button @click="refresh">重置</Button>
+              <Button @click="reset">重置</Button>
             </FormItem>
           </Form>
         </row>
@@ -74,7 +74,7 @@
         <!-- 商户列表 -->
         <Table
           border
-          ref="selection"
+          ref="refTable"
           size="small"
           :columns="tableColumns"
           :data="tableData"
@@ -89,6 +89,15 @@
             @on-change="changeCurrent"
             style="float: right"
             :current.sync="current"
+          ></Page>
+          <div></div>
+          <Page
+            show-total
+            show-elevator
+            :current="page.pageNum"
+            :page-size="page.pageSize"
+            :total="page.total"
+            @on-change="changeCurrent"
           ></Page>
         </Row>
       </div>
@@ -113,57 +122,43 @@ import { uniqueArray } from "@/libs/date";
 
 export default {
   name: "business-list",
-  props: {
-    employeeId: String
-  },
   data() {
     return {
       isShow: true,
+      //选中的数据
       choice: {
         id: "",
-        name: ""
+        name: "",
+        row: {}
       },
-      edit_loading: false,
-      isCheckDisabled: false,
-      checkResult: 0,
+      provincelist: [],
+      citylist: [],
+      arealist: [],
       tableColumns: [
-        // {
-        //   title: "序号",
-        //   type: "index",
-        //   width: 80,
-        //   align: "center"
-        // },
         {
           title: "选择",
           key: "merchantId",
           width: 70,
           align: "center",
           render: (h, params) => {
-            let id = params.row.merchantId;
-            let name = params.row.name;
+            // params: {index, column, row;}
+            const { id, name } = params.row;
             let flag = false;
             if (this.choice.id == id) {
               flag = true;
             } else {
               flag = false;
             }
-            let self = this;
-            return h("div", [
-              h("Radio", {
-                props: {
-                  value: flag
-                },
-                on: {
-                  "on-change": () => {
-                    console.log("change", params.row);
-                    self.choice.merchantType = 0;
-                    self.choice.id = id;
-                    self.choice.name = name;
-                    self.choice.row = params.row;
-                  }
-                }
-              })
-            ]);
+            return (
+              <div>
+                <Radio
+                  value={flag}
+                  onOn-change={checked => {
+                    this.choice = { id, name, row: params.row };
+                  }}
+                ></Radio>
+              </div>
+            );
           }
         },
         {
@@ -184,26 +179,17 @@ export default {
           width: 340,
           key: "address",
           render: (h, params) => {
-            let address =
-              params.row.province +
-              params.row.city +
-              params.row.district +
-              params.row.address;
-            return h("span", address);
+            let { province, city } = params.row;
+            return <span>{`${province}${city}%`}</span>;
           }
         }
       ],
-      tableData: [],
-      current: 1,
-      totalSize: 0, //总条数
-      pageNum: 1, //开始条数
-      tableLoading: false,
-      searchItem: {
-        type: 1,
+      searchData: {
+        type: 0,
         merchantId: "",
         merchantName: "",
         provinceCode: "",
-        cityId: "",
+        cityCode: "",
         areaId: ""
       },
       page: {
@@ -211,85 +197,86 @@ export default {
         pageSize: 10, //每页数量
         total: 0 //数据总数
       },
-      provincelist: [],
-      citylist: [],
-      arealist: [],
-      selectedMerchantList: [], //选中的商户列表
-      removeAlert: false
+      tableLoading: false,
+      tableData: [],
+      current: 1,
+      totalSize: 0, //总条数
+      pageNum: 1 //开始条数
     };
   },
 
   methods: {
     //获取省份信息数据
     getprovincelist() {
-      postRequest("/system/area/province/list").then(res => {
+      const url = "/system/area/province/list";
+      postRequest(url).then(res => {
         if (res.code == 200) {
           this.provincelist = res.data;
         } else {
-          this.$Message.error(res.msg);
+          this.msgErr(res.msg);
         }
       });
     },
     //根据省份code获取城市信息数据
     getcitylist() {
-      getRequest("/system/area/city/" + this.searchItem.provinceCode).then(
-        res => {
-          if (res.code == 200) {
-            this.citylist = res.data;
-            this.searchItem.areaId = "";
-          } else {
-            this.$Message.error(res.msg);
-          }
+      const url = "/system/area/city/" + this.searchData.provinceCode;
+      getRequest(url).then(res => {
+        if (res.code == 200) {
+          this.citylist = res.data;
+          this.searchData.areaId = "";
+        } else {
+          this.msgErr(res.msg);
         }
-      );
+      });
     },
     //根据城市code获取区县信息数据
     getarealist() {
-      getRequest("/system/area/district/" + this.searchItem.cityId).then(
-        res => {
-          if (res.code == 200) {
-            this.arealist = res.data;
-          } else {
-            this.$Message.error(res.msg);
-          }
+      const url = "/system/area/district/" + this.searchData.cityCode;
+      getRequest(url).then(res => {
+        if (res.code == 200) {
+          this.arealist = res.data;
+        } else {
+          this.msgErr(res.msg);
         }
-      );
+      });
     },
     // 关闭商户选择框
     cancel() {
       this.closeDialog();
     },
     search() {
-      this.current = 1;
-      this.totalSize = 0; //总条数
-      this.pageNum = 1; //开始条数
       this.queryTableData();
     },
+    // 分页（点击第几页）
+    changeCurrent(pageNum) {
+      this.queryTableData(pageNum);
+    },
     // 获取商户列表
-    queryTableData() {
-      this.tableLoading = false;
-      const reqParams = {
-        ...this.searchItem,
-        merchantId: this.searchItem.merchantId,
-        merchantName: this.searchItem.merchantName,
-        provinceCode: this.searchItem.provinceCode,
-        cityCode: this.searchItem.cityId,
-        areaCode: this.searchItem.areaId
-      };
-      // 获取成功开户的商户信息,type=1 商户;type = 2 品牌
+    async queryTableData(pageNum) {
+      this.page.pageNum = pageNum || 1;
+      this.tableLoading = true;
+
+      // 获取成功开户的商户信息,type=0 商户;type = 1 品牌
       const url = "/trade/merchant/fund/account/basic/success";
 
-      postRequest(url, reqParams).then(res => {
-        if (res.code == 200) {
-          this.totalSize = res.data.total;
-          this.tableData = res.data.records;
-        } else {
-          this.msgErr(res.msg);
-        }
-        this.tableLoading = false;
+      let {
+        code,
+        data: { records, current, total, size }
+      } = await postRequest(url, {
+        ...this.searchData,
+        ...this.page
       });
+      if (code == 200) {
+        this.totalSize = total;
+        this.tableData = records;
+        this.page.pageNum = current; //分页查询起始记录
+        this.page.total = total; //列表总数
+        this.page.pageSize = size; //每页数据
+      } else {
+        this.msgErr(res.msg);
+      }
+      this.tableLoading = false;
     },
-
     closeDialog() {
       //关闭对话框清除表单数据
       // this.$refs.formValidate.resetFields();
@@ -305,20 +292,23 @@ export default {
         this.msgErr("至少选一个商户");
       }
     },
-    //重置商户搜索条件
-    refresh() {
-      // this.updateTableList(this.params);
-      this.searchItem.merchantId = "";
-      this.searchItem.name = "";
-      this.searchItem.provinceCode = "";
-      this.searchItem.cityId = "";
-      this.searchItem.areaId = "";
-      this.queryTableData();
-    },
-
-    //分页
-    changeCurrent(current) {
-      this.pageNum = current;
+    //重置搜索条件
+    reset() {
+      // 重置查询参数
+      this.searchData = {
+        type: 0,
+        merchantId: "",
+        merchantName: "",
+        provinceCode: "",
+        cityCode: "",
+        areaId: ""
+      };
+      this.page = {
+        pageNum: 1, //页码
+        pageSize: 10, //每页数量
+        total: 0 //数据总数
+      };
+      //重新查询一遍
       this.queryTableData();
     },
     // 全局提示

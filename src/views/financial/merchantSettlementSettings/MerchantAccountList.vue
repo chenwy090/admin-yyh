@@ -1,8 +1,9 @@
 <template>
-  <div class="brand-list-box">
+  <!-- MerchantAccountList 商户账号 -->
+  <div class="merchant-account-list-box">
     <Modal
       v-model="isShow"
-      title="品牌列表"
+      title="关联提现商户"
       width="900"
       footer-hide
       :closable="true"
@@ -13,12 +14,12 @@
       <div>
         <row>
           <Form ref="searchItem" :model="searchData" inline :label-width="70" class="search-form">
-            <FormItem label="品牌名称">
+            <FormItem label="用户ID:">
               <Input
                 type="text"
-                v-model="searchData.merchantName"
+                v-model="searchData.id"
                 clearable
-                placeholder="请输入品牌名称"
+                placeholder="请输入用户id"
                 style="width: 150px"
               />
             </FormItem>
@@ -29,7 +30,7 @@
           </Form>
         </row>
 
-        <!-- 商户列表 -->
+        <!-- 列表 -->
         <Table
           border
           ref="refTable"
@@ -38,6 +39,8 @@
           :data="tableData"
           :loading="tableLoading"
           class="bussiness-list"
+          @on-selection-change="handleSelectChange"
+          @on-row-dblclick="handleOnRowDbclick"
         ></Table>
         <Row type="flex" justify="end" class="page">
           <Page
@@ -67,62 +70,56 @@ export default {
     return {
       isShow: true,
       //选中的数据
-      choice: {
-        id: "",
-        name: "",
-        row: {}
-      },
+      choices: [
+        /*{ id: "", name: "", row: {} } */
+      ],
       tableColumns: [
         {
-          title: "选择",
-          key: "brandId",
-          width: 70,
+          type: "selection",
+          width: 60,
+          align: "center"
+        },
+        {
+          title: "用户ID",
           align: "center",
+          minWidth: 130,
+          key: "userId"
+        },
+        {
+          title: "手机号",
+          align: "center",
+          width: 230,
+          key: "phone"
+        },
+        {
+          title: "微信昵称",
+          align: "center",
+          minWidth: 120,
+          key: "nickName"
+        },
+        {
+          title: "头像",
+          align: "center",
+          minWidth: 120,
+          key: "avatarUrl",
           render: (h, params) => {
-            // params: {index, column, row;}
-            const { id, name } = params.row;
-            let flag = false;
-            if (this.choice.id == id) {
-              flag = true;
-            } else {
-              flag = false;
-            }
-            let self = this;
+            let { avatarUrl } = params.row;
             return (
               <div>
-                <Radio
-                  value={flag}
-                  onOn-change={checked => {
-                    this.choice = { id, name, row: params.row };
-                  }}
-                ></Radio>
+                <img width="50" src={avatarUrl} />
               </div>
             );
           }
         },
         {
-          title: "品牌编号",
-          align: "center",
-          minWidth: 130,
-          key: "id"
-        },
-
-        {
-          title: "品牌名称",
-          align: "center",
-          width: 230,
-          key: "name"
-        },
-        {
-          title: "关联店铺数",
+          title: "商户角色",
           align: "center",
           minWidth: 120,
-          key: "relationMerchantCount"
+          key: "merchantRoleName"
         }
       ],
       searchData: {
-        type: 1,
-        merchantName: ""
+        id: 1
       },
       page: {
         pageNum: 1, //页码
@@ -134,6 +131,42 @@ export default {
     };
   },
   methods: {
+    handleSelectChange(selection) {
+      // console.log("handleSelectChange:", this.$refs.refTable.$refs.tbody);
+      let { objData } = this.$refs.refTable.$refs.tbody;
+      var choices = [];
+      for (let index in objData) {
+        let item = objData[index];
+        if (item._isChecked) {
+          choices.push(item);
+        }
+      }
+      console.log(1, JSON.stringify(choices));
+
+      var choices = this.tableData.filter(item => {
+        for (let i = 0; i < selection.length; i++) {
+          if (item.id == selection[i].id) {
+            item._checked = true;
+            return true;
+          }
+        }
+      });
+      console.log(2, JSON.stringify(choices));
+
+      // this.choices = choices;
+    },
+    handleOnRowDbclick(row, index) {
+      // let { _isChecked } = this.$refs.refTable.$refs.tbody.objData[index];
+      // this.$refs.refTable.$refs.tbody.objData[index]._isChecked = !_isChecked;
+
+      let { id, _checked } = row;
+
+      _checked = !_checked;
+      row._checked = _checked;
+      this.tableData.splice(index, 1, row);
+
+      console.log(this.$refs.refTable.$refs.tbody.objData[index]._isChecked);
+    },
     // 关闭商户选择框
     cancel() {
       this.closeDialog();
@@ -145,7 +178,7 @@ export default {
     changeCurrent(pageNum) {
       this.queryTableData(pageNum);
     },
-    // 获取商户列表
+    // 获取列表数据
     async queryTableData(pageNum) {
       this.page.pageNum = pageNum || 1;
       this.tableLoading = true;
@@ -174,12 +207,12 @@ export default {
     closeDialog() {
       //关闭对话框清除表单数据
       // this.$refs.formValidate.resetFields();
-      this.$emit(`update:showBrandList`, false);
+      this.$emit(`update:showMerchantAccountList`, false);
     },
     //确定选择商户
     selectMerchant() {
-      if (this.choice.id) {
-        this.$emit("seclectedTr-event", this.choice);
+      if (this.choices.length) {
+        this.$emit("seclectedTr-event", this.choices);
         this.closeDialog();
       } else {
         this.msgErr("至少选一个品牌");
@@ -188,8 +221,7 @@ export default {
     reset() {
       // 重置查询参数
       this.searchData = {
-        type: 1,
-        merchantName: ""
+        id: 1
       };
       this.page = {
         pageNum: 1, //页码
@@ -226,7 +258,7 @@ export default {
 </style>
 
 <style lang="less">
-.brand-list-box {
+.merchant-account-list-box {
   /*调整table cell间隔和行高*/
   .ivu-table-cell {
     padding-left: 1px;

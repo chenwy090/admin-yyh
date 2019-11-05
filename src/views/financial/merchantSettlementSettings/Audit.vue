@@ -34,11 +34,11 @@
             </Col>
           </Row>
         </FormItem>
+        <FormItem>
+          <Button type="error" size="large" @click="check('form')">确认</Button>
+          <Button @click="cancelHandleReset('form')" style="margin-left: 8px">取消</Button>
+        </FormItem>
       </Form>
-    </div>
-    <div>
-      <Button type="error" size="large" @click="check('form')">确认</Button>
-      <Button @click="cancelHandleReset('form')" style="margin-left: 8px">取消</Button>
     </div>
   </div>
 </template>
@@ -46,7 +46,7 @@
 import { postRequest } from "@/libs/axios";
 
 export default {
-  name: "reward-u",
+  name: "audit",
   components: {},
   watch: {
     ["formData.status"]() {

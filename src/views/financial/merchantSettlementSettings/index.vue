@@ -22,17 +22,22 @@
         <Row type="flex" justify="start">
           <Button icon="md-refresh" class="marginLeft20" @click="refresh">刷新</Button>
           <Button type="primary" class="marginLeft20" @click="addOrEdit('add')">新增</Button>
-          <Button type="primary" class="marginLeft20" @click="showAudit=true">审核</Button>
-          <Button type="primary" class="marginLeft20" @click="showDetail=true">详情</Button>
+          <!-- <Button type="primary" class="marginLeft20" @click="showAudit=true">审核</Button>
+          <Button type="primary" class="marginLeft20" @click="showDetail=true">详情</Button>-->
         </Row>
       </Card>
     </div>
     <Card :bordered="false">
       <Table border :show-index="true" :loading="loading" :columns="columns" :data="tableData">
         <template slot-scope="{ row }" slot="action">
-          <Button type="text" size="small" @click="detail(row.id)">查看</Button>
-          <Button type="text" size="small" @click="addOrEdit('edit',row.id)">编辑</Button>
-          <Button type="text" size="small" @click="audit(row.id)">审核</Button>
+          <Button type="primary" size="small" style="margin-right: 5px" @click="detail(row.id)">查看</Button>
+          <Button
+            type="primary"
+            size="small"
+            style="margin-right: 5px"
+            @click="addOrEdit('edit',row.id)"
+          >编辑</Button>
+          <Button type="primary" size="small" style="margin-right: 5px" @click="audit(row.id)">审核</Button>
         </template>
         <template slot-scope="{ row }" slot="auditLog">
           <Button type="text" size="small" @click="queryAuditList(row.id)">查看日志</Button>
@@ -73,21 +78,26 @@
     >
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="ios-information-circle"></Icon>
-        <span>详情</span>
+        <span>{{action.title}}</span>
       </p>
-      <Detail v-if="showDetail" :showDetail.sync="showDetail" :id="id" :detailData="detailData"></Detail>
+      <Detail
+        v-if="showDetail"
+        :showDetail.sync="showDetail"
+        :action="action"
+        :detailData="detailData"
+      ></Detail>
     </Drawer>
-    <Drawer v-model="showAudit" :closable="true" :mask-closable="true" width="820" :styles="styles">
+    <!-- <Drawer v-model="showAudit" :closable="true" :mask-closable="true" width="820" :styles="styles">
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="ios-information-circle"></Icon>
         <span>审核</span>
       </p>
       <Audit v-if="showAudit" :showAudit.sync="showAudit" :id="id" :detailData="detailData"></Audit>
-    </Drawer>
-  </div>
+    </Drawer>-->
+  </div> 
 </template>
 <script>
-import { postRequest } from "@/libs/axios";
+import { getRequest, postRequest } from "@/libs/axios";
 import columns from "./columns";
 
 import Edit from "./Edit";
@@ -113,6 +123,13 @@ export default {
       showEdit: false,
       showDetail: false,
       showAudit: false,
+      action: {
+        title: "",
+        _id: Math.random(),
+        id: "",
+        type: "", //add/edit/detail/audit
+        data: null
+      },
       styles: {
         height: "calc(100% - 55px)",
         overflow: "auto",
@@ -159,9 +176,30 @@ export default {
         this.showAuditLogList = true;
       });
     },
+    audit(id) {
+      this.action = {
+        title: "审核",
+        _id: Math.random(),
+        id,
+        type: "audit", //add/edit/detail/audit
+        data: null
+      };
+      this.showDetail = true;
+    },
     async detail(id) {
-      // id = 14;
-      const { code, data, msg } = await queyMoneyDetailById(id);
+      this.action = {
+        title: "详情",
+        _id: Math.random(),
+        id,
+        type: "detail", //add/edit/detail/audit
+        data: null
+      };
+      this.showDetail = true;
+    },
+    async queryDataById(id) {
+      // 查询单个详情
+      const url = "/trade/merchant/account/setting";
+      const { code, data, msg } = await getRequest(url, { id });
       if (code == 200) {
         const {
           merchantType: type, //0/1/2/3
@@ -187,6 +225,7 @@ export default {
 
         this.detailData = data;
         this.showDetail = true;
+        return data;
       } else {
         this.msgErr(msg);
       }

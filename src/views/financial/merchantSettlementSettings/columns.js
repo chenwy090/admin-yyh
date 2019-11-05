@@ -122,35 +122,42 @@ export const auditLogColoumns = [
 ];
 export const withdrawUserColumns = [
     {
-        title: "userID",
-        key: "userID",
-        align: "center"
+        title: "用户ID",
+        align: "center",
+        minWidth: 130,
+        key: "userId"
     },
     {
         title: "手机号",
-        key: "shopName",
-        align: "center"
+        align: "center",
+        width: 130,
+        key: "phone"
     },
     {
         title: "微信昵称",
-        key: "venderName",
-        align: "center"
+        align: "center",
+        minWidth: 120,
+        key: "nickName"
     },
     {
         title: "头像",
-        key: "venderName",
-        align: "center"
+        align: "center",
+        minWidth: 120,
+        key: "avatarUrl",
+        render: (h, params) => {
+            let { avatarUrl } = params.row;
+            return (
+                <div>
+                    <img width="50" src={avatarUrl} />
+                </div>
+            );
+        }
     },
     {
         title: "商户角色",
-        key: "venderName",
-        align: "center"
-    },
-    {
-        title: "操作",
         align: "center",
-        key: "action",
-        slot: "operate"
+        minWidth: 120,
+        key: "merchantRoleName"
     }
 ];
 

@@ -7,7 +7,7 @@
           <Radio :value="true" disabled>{{formData.merchantTypeName}}</Radio>
         </FormItem>
         <!-- label="商户名称：" -->
-        <FormItem :label="`${formData.businessTypeLabel}名称：`">{{formData.businessName}}</FormItem>
+        <FormItem :label="`${formData.businessTypeLabel}名称：`">{{formData.merchantName}}</FormItem>
 
         <FormItem label="提现手续费：">
           <span>企业对公账户：10元/每笔（银行8元/每笔、平台2元/每笔）</span>
@@ -19,8 +19,8 @@
         </FormItem>
 
         <FormItem label="润模板：">
-          <span>商户分润： 97%/每笔</span>
-          <span>平台分润： 3%/每笔</span>
+          <span>商户分润：97%/每笔 &nbsp;</span>
+          <span>平台分润：3%/每笔</span>
           <span>（未分润部分归平台所有；分润金额四舍五入，保留至小数点两位）</span>
         </FormItem>
 
@@ -28,26 +28,51 @@
         <FormItem label="关联提现账号："></FormItem>
 
         <Row class="box" style="margin-bottom:20px; ">
-          <Table
-            size="small"
-            border
-            width="540"
-            :columns="withdrawUserColumns"
-            :data="withdrawUserTableData"
-          ></Table>
+          <Table size="small" border :columns="withdrawUserColumns" :data="withdrawUserTableData"></Table>
         </Row>
+
+        <FormItem label="生效时间：">
+          <Radio :value="true" disabled>保存即生效</Radio>
+        </FormItem>
       </Form>
     </div>
-    <div class="demo-drawer-footer">
-      <Button style="margin-right: 8px" @click="closeDialog">关闭</Button>
-    </div>
+
+    <template v-if="action.type=='detail'">
+      <div>审核日志</div>
+      <Log :id="action.id"></Log>
+      <div class="demo-drawer-footer">
+        <Button style="margin-right: 8px" @click="closeDialog">关闭</Button>
+      </div>
+    </template>
+    <template v-else-if="action.type=='audit'">
+      <Audit :id="action.id"></Audit>
+    </template>
   </div>
 </template>
 <script>
 import { withdrawUserColumns } from "./columns";
+
+// 日志表格
+import Log from "./Log";
+// 审核
+import Audit from "./Audit";
+
 export default {
   name: "detail",
+  components: { Log, Audit },
   props: {
+    action: {
+      type: Object,
+      default: function() {
+        return {
+          title: "",
+          _id: Math.random(),
+          id: "",
+          type: "", //add/edit/detail/audit
+          data: null
+        };
+      }
+    },
     showDetail: {
       type: Boolean,
       default: true
@@ -59,8 +84,6 @@ export default {
       }
     }
   },
-  components: {},
-  // mounted() {
   created() {
     let data = JSON.parse(JSON.stringify(this.detailData));
     const { merchantType: type, merchantId, brandId } = data;
@@ -80,8 +103,6 @@ export default {
       // 新增、修改 任务抽奖banner
       isShow: false,
       title: "扣款信息",
-      money: 0, // 商户余额 moneyBalance
-      ubay: 0, // U贝余额  ubayBalance
       // merchantType 商户/品牌
       // businessTypeLabel: "商户",
       // merchantTypeOption: {
@@ -90,6 +111,17 @@ export default {
       //   2: "商超门店",
       //   3: "零售商"
       // },
+      //  '商户类型 0-本地商户（单店），1-本地商户（多店）' 2 商超门店、3 零售商
+      merchantTypeOption: [
+        {
+          value: 0,
+          label: "本地商户（单店）"
+        },
+        {
+          value: 1,
+          label: "本地商户（多店）"
+        }
+      ],
       formData: {
         changeType: 0, //充值0 扣款1 写死
         merchantType: 0,
