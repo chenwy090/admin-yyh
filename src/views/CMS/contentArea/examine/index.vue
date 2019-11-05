@@ -10,7 +10,7 @@
               <!-- <Option v-for="(item,k) in statusOption" :value="item.value" :key="k">{{ item.label }}</Option> -->
             </Select>
           </FormItem>
-          <FormItem label="创建人：" :label-width="85">
+          <FormItem label="创建人ID：" :label-width="85">
             <Input style="width:200px" type="text" v-model="searchData.creatBy" placeholder="请输入"></Input>
           </FormItem>
           <FormItem label="搜索标题：" :label-width="85">
@@ -67,7 +67,7 @@
     <Card :bordered="false">
       <Table border :show-index="true" :loading="loading" :columns="columns" :data="tableData">
         <!-- action -->
-        <!-- @click="addOrEdit('edit',row)" 
+        <!-- @click="addOrEdit('edit',row)"
          //审核 status 0-创建，1-待审核(创建完成），2-审核成功（上架），3-审核失败（下架）',
           "1": "待审核",     审核 下架
           "2": "审核成功"    下架
@@ -272,6 +272,14 @@ export default {
 
     // 查询
     queryTableData(pageNum) {
+        if(this.searchData.creatBy){
+            var r = /^\+?[1-9][0-9]*$/;　　//正整数
+            var flag=r.test(this.searchData.creatBy);
+            if(!flag){
+                this.$Message.error('请输入正确格式的创建人ID');
+                return
+            }
+        }
       this.page.pageNum = pageNum || 1;
       this.loading = true;
       const url = "/content/list";

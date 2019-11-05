@@ -86,7 +86,17 @@
       <Alert type="warning">选择图片（不大2M,GIF/JPG/JPEG/PNG）</Alert>
       <Row type="flex" justify="start">
         <Col span="8">
-          <FormItem label="U社区封面：" prop="coverImg" :rules="{ required: true, message: '请上传图片' }">
+        <FormItem label="U社区封面：" prop="smallImg" :rules="{ required: true, message: '请上传图片' }">
+          <UploadImage
+                  :fileUploadType="'smallImg'"
+                  :defaultList="formData.defaultSmallImgList"
+                  @remove="removeSmallImg"
+                  @uploadSuccess="smallImgUploadSuccess"
+          ></UploadImage>
+        </FormItem>
+        </Col>
+        <Col span="8">
+          <FormItem label="列表封面：" prop="coverImg" :rules="{ required: true, message: '请上传图片' }">
             <UploadImage
               :fileUploadType="'coverImg'"
               :defaultList="formData.defaultCoverImgList"
@@ -95,16 +105,7 @@
             ></UploadImage>
           </FormItem>
         </Col>
-        <Col span="8">
-          <FormItem label="列表封面：" prop="smallImg" :rules="{ required: true, message: '请上传图片' }">
-            <UploadImage
-              :fileUploadType="'smallImg'"
-              :defaultList="formData.defaultSmallImgList"
-              @remove="removeSmallImg"
-              @uploadSuccess="smallImgUploadSuccess"
-            ></UploadImage>
-          </FormItem>
-        </Col>
+
       </Row>
 
       <FormItem label="内容时长：" prop="duration" :rules="{ required: true, message: '请输入内容时长' }">
@@ -549,15 +550,15 @@ export default {
     },
     coverImgUploadSuccess({ imgUrl,coverImgHeight,coverImgWidth }) {
       this.formData.coverImg = imgUrl;
-        // this.formData.coverImgHeight = coverImgHeight;
-        // this.formData.coverImgWidth = coverImgWidth;
+        this.formData.coverImgHeight = coverImgHeight;
+        this.formData.coverImgWidth = coverImgWidth;
       this.formData.defaultCoverImgList = [{ imgUrl }];
     },
     smallImgUploadSuccess({ imgUrl,coverImgHeight,coverImgWidth }) {
         console.log(1);
         this.formData.smallImg = imgUrl;
-        this.formData.coverImgHeight = coverImgHeight;
-        this.formData.coverImgWidth = coverImgWidth;
+        // this.formData.coverImgHeight = coverImgHeight;
+        // this.formData.coverImgWidth = coverImgWidth;
       this.formData.defaultSmallImgList = [{ imgUrl }];
     },
     updateTagList(data) {
