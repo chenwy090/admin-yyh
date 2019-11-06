@@ -149,6 +149,7 @@
                         <p v-if="item.endUseTime">过期时间：{{item.endUseTime}}</p>
                         <p v-if="item.useTime">核销时间：{{item.useTime}}</p>
                         <p v-if="item.pplyRefundTime">申请退款时间：{{item.pplyRefundTime}}</p>
+                        <p v-if="item.refundTime">退款时间：{{item.refundTime}}</p>
                         <p v-if="item.refundReason">退款原因：{{item.refundReason}}</p>
                         <p v-if="item.transactionNo">交易流水号：{{item.transactionNo}}</p>
                         <p v-if="item.auditUser">操作人：{{item.auditUser}}</p>
