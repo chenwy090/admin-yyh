@@ -45,7 +45,7 @@
 </template>
 <script>
 import { uploadOperationImage2AliOssURl } from "@/api/index";
-import { checkImage } from "@/libs/date";
+import { checkImage, getImageWH } from "@/libs/date";
 export default {
   name: "upload-image",
   props: {
@@ -89,6 +89,8 @@ export default {
   },
   data() {
     return {
+      width: 0,
+      height: 0,
       userToken: {}, //用户token
       // 文件上传
       url: uploadOperationImage2AliOssURl,
@@ -125,6 +127,8 @@ export default {
         let imgUrl = res.image_url;
         file.imgUrl = imgUrl;
         this.$emit("uploadSuccess", {
+          coverImgHeight: this.height,
+          coverImgWidth: this.width,
           fileUploadType: this.fileUploadType,
           imgUrl
         });
@@ -143,6 +147,12 @@ export default {
       this.msgErr("只能上传gif,jpg,jpeg,png,bmp格式,请重新上传");
     },
     handleBeforeUpload(file) {
+      console.log(file);
+      getImageWH(file).then(res => {
+        console.log(res);
+        this.width = res.w;
+        this.height = res.h;
+      });
       return checkImage(file);
     },
     // 全局提示

@@ -62,6 +62,33 @@
                     <Button @click="handleChoose" slot="append">选择</Button>
                   </Input>
                 </template>
+                <template v-else-if="formData.type==6">
+                  <Row>
+                    <Col span="7">
+                      <Select
+                        v-model="formData.value"
+                        style="width:120px"
+                        placeholder="请选择主行业"
+                        @on-change="getIndustrySecendList()"
+                      >
+                        <Option
+                          v-for="item in mainIndustryList"
+                          :value="item.id"
+                          :key="item.id"
+                        >{{ item.name }}</Option>
+                      </Select>
+                    </Col>
+                    <Col span="7">
+                      <Select v-model="formData.value1" style="width:120px" placeholder="请选择二级行业">
+                        <Option
+                          v-for="item in secendIndustryList"
+                          :value="item.id"
+                          :key="item.id"
+                        >{{ item.name }}</Option>
+                      </Select>
+                    </Col>
+                  </Row>
+                </template>
                 <template v-else>
                   <Input
                     style="width:80%"
@@ -89,7 +116,7 @@
   </div>
 </template>
 <script>
-import { postRequest } from "@/libs/axios";
+import { postRequest, getRequest } from "@/libs/axios";
 
 import UploadImage from "../UploadImage";
 import ThematicActivities from "./ThematicActivities";
@@ -129,7 +156,7 @@ export default {
   computed: {
     showContent() {
       const { type } = this.formData;
-      if (type == 1 || type == 3 || type == 4) {
+      if (type == 1 || type == 3 || type == 4 || type == 6) {
         return true;
       }
       return false;
@@ -140,7 +167,10 @@ export default {
       handler(val, oldVal) {
         let { data } = this.action;
         this.formData = JSON.parse(JSON.stringify(data));
-
+        if (this.formData.type == 6) {
+          this.getIndustryMaindList();
+          this.getIndustrySecendList();
+        }
         console.log("this.formData:", JSON.stringify(this.formData));
         console.log("typeOption:", JSON.stringify(this.typeOption));
       },
@@ -149,10 +179,14 @@ export default {
     },
     ["formData.type"]() {
       console.log("formData.type", this.formData.type);
-
+      if (this.formData.type == 6) {
+        this.getIndustryMaindList();
+        this.getIndustrySecendList();
+      }
       this.contentLabel = this.typeOption[this.formData.type];
       this.formData.content = "";
       this.formData.value = "";
+      this.formData.value1 = "";
     }
   },
   data() {
@@ -169,13 +203,59 @@ export default {
         iconUrl: "",
         defaultIconUrlList: [],
         hotUrl: "",
-        defaultHotUrlList: []
+        defaultHotUrlList: [],
+        value: "",
+        value1: ""
       },
       ruleValidate: {},
-      showThematicActivities: false
+      showThematicActivities: false,
+      mainIndustryList: [],
+      secendIndustryList: [],
+      mainIndustryId: ""
     };
   },
   methods: {
+    //查询所有一级行业列表
+    getIndustryMaindList() {
+      postRequest("/merchant/industryMain/all").then(res => {
+        if (res.code == 200) {
+          this.mainIndustryList = res.data;
+          this.mainIndustryList.unshift({
+            name: "全部",
+            id: "0"
+          });
+          this.mainIndustryList = this.mainIndustryList.map(item => {
+            item.id = `${item.id}`;
+            return item;
+          });
+        } else {
+          this.$Message.error(res.msg);
+        }
+      });
+    },
+    //查询所有二级列表，根据一级行业id
+    getIndustrySecendList() {
+      //this.formData.value1 = '0';
+      if (this.formData.value && this.formData.value != null) {
+        getRequest("/merchant/industrySecond/all/" + this.formData.value).then(
+          res => {
+            if (res.code == 200) {
+              this.secendIndustryList = res.data;
+              this.secendIndustryList.unshift({
+                name: "全部",
+                id: "0"
+              });
+              this.secendIndustryList = this.secendIndustryList.map(item => {
+                item.id = `${item.id}`;
+                return item;
+              });
+            } else {
+              this.$Message.error(res.msg);
+            }
+          }
+        );
+      }
+    },
     handleChoose() {
       this.showThematicActivities = true;
     },
@@ -260,7 +340,11 @@ export default {
       }
     },
     validateContent(rule, value, callback) {
-      value = this.formData.content;
+      if (this.formData.type == 6) {
+        value = this.formData.value;
+      } else {
+        value = this.formData.content;
+      }
       value += "";
       value = value.trim();
 
