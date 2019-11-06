@@ -3,48 +3,48 @@
     <div>
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
-          <FormItem label="用户id" :label-width="100" style="width: 25%">
+          <FormItem label="用户id：" :label-width="100" style="width: 300px">
             <Input style="width:100%" v-model="searchData.userId" placeholder="请输入" clearable />
           </FormItem>
-          <FormItem label="状态" :label-width="100" style="width: 25%">
-            <!--<Input style="width:100%" v-model="searchData.status" placeholder="请输入" clearable />-->
+          <FormItem label="状态：" :label-width="60" style="width: 200px">
+            <!-- <Input style="width:100%" v-model="searchData.status" placeholder="请输入" clearable /> -->
             <Select v-model="searchData.statusFlag" clearable>
               <Option v-for="(v,k) in statusList" :value="k" :key="k">{{ v }}</Option>
             </Select>
           </FormItem>
-          <FormItem label="发放的类型" :label-width="100" style="width: 25%">
+          <FormItem label="发放的类型：" :label-width="100" style="width: 300px">
             <Input style="width:100%" v-model="searchData.pushType" placeholder="请输入" clearable />
           </FormItem>
-          <FormItem label="提交时间" :label-width="100" style="width: 45%">
+          <FormItem label="提交时间：" :label-width="100" style="width: 500px">
             <DatePicker
-                    :value="searchData.sendTimeStart"
-                    type="date"
-                    placeholder
-                    style="width: 40%"
-                    @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
-            ></DatePicker> -
-              <DatePicker
-                      :value="searchData.sendTimeEnd"
-                      type="date"
-                      placeholder
-                      style="width: 40%"
-                      @on-change="(datetime) =>{ changeDateTime(datetime, 2)}"
-              ></DatePicker>
+              :value="searchData.sendTimeStart"
+              type="date"
+              placeholder
+              style="width: 40%"
+              @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
+            ></DatePicker>-
+            <DatePicker
+              :value="searchData.sendTimeEnd"
+              type="date"
+              placeholder
+              style="width: 40%"
+              @on-change="(datetime) =>{ changeDateTime(datetime, 2)}"
+            ></DatePicker>
           </FormItem>
-          <FormItem label="发送时间" :label-width="120" style="width: 45%">
+          <FormItem label="发送时间：" :label-width="120" style="width: 500px">
             <DatePicker
-                    :value="searchData.putTimeStart"
-                    type="date"
-                    placeholder
-                    style="width: 40%"
-                    @on-change="(datetime) =>{ changeDateTime(datetime, 3)}"
-            ></DatePicker> -
+              :value="searchData.putTimeStart"
+              type="date"
+              placeholder
+              style="width: 40%"
+              @on-change="(datetime) =>{ changeDateTime(datetime, 3)}"
+            ></DatePicker>-
             <DatePicker
-                    :value="searchData.putTimeEnd"
-                    type="date"
-                    placeholder
-                    style="width: 40%"
-                    @on-change="(datetime) =>{ changeDateTime(datetime, 4)}"
+              :value="searchData.putTimeEnd"
+              type="date"
+              placeholder
+              style="width: 40%"
+              @on-change="(datetime) =>{ changeDateTime(datetime, 4)}"
             ></DatePicker>
           </FormItem>
           <FormItem style="margin-left:35px;" class="br">
@@ -81,7 +81,6 @@
             <template slot-scope="{ row }" slot="statusFlag">
               <div>{{["待审核","成功","失败"][row.statusFlag]}}</div>
             </template>
-
           </Table>
           <!-- 推送列表 -->
         </div>
@@ -183,25 +182,26 @@
         </FormItem>
         <FormItem label="请输入用户ID:">
           <Input
-                  style="width:250px"
-                  v-model="userId"
-                  placeholder="请输入用户ID"
-                  clearable
-                  type="number"
+            style="width:250px"
+            v-model="userId"
+            placeholder="请输入用户ID"
+            clearable
+            type="number"
           />
           <Button type="primary" style="margin-left: 20px" @click="checkUserId">搜索</Button>
-          <Upload :disabled = "upLoading"
-                  ref="upload"
-                  :format="['xlsx']"
-                  :on-success="handleSuccess"
-                  :on-progress="handleProgress"
-                  :action="upLoadUrl"
-                  accept="file"
-                  :on-exceeded-size="handleMaxSize"
-                  :on-format-error="formatError"
-                  :headers="userToken"
-                  :show-upload-list="false"
-                  style="display: inline-block;margin-left: 20px"
+          <Upload
+            :disabled="upLoading"
+            ref="upload"
+            :format="['xlsx']"
+            :on-success="handleSuccess"
+            :on-progress="handleProgress"
+            :action="upLoadUrl"
+            accept="file"
+            :on-exceeded-size="handleMaxSize"
+            :on-format-error="formatError"
+            :headers="userToken"
+            :show-upload-list="false"
+            style="display: inline-block;margin-left: 20px"
           >
             <Button icon="ios-cloud-upload-outline">导入</Button>
           </Upload>
@@ -214,23 +214,23 @@
           </p>
         </div>
         <!--<FormItem-->
-          <!--label="用户id"-->
-          <!--prop="userId"-->
-          <!--:rules="{ required: true, message: '必须按行输入userId集' }"-->
+        <!--label="用户id"-->
+        <!--prop="userId"-->
+        <!--:rules="{ required: true, message: '必须按行输入userId集' }"-->
         <!--&gt;-->
-          <!--<Row>-->
-            <!--<Col span="8">-->
-              <!--<Input-->
-                <!--v-model="formValidate.userId"-->
-                <!--type="textarea"-->
-                <!--:rows="10"-->
-                <!--placeholder="userId集"-->
-              <!--/>-->
-            <!--</Col>-->
-          <!--</Row>-->
+        <!--<Row>-->
+        <!--<Col span="8">-->
+        <!--<Input-->
+        <!--v-model="formValidate.userId"-->
+        <!--type="textarea"-->
+        <!--:rows="10"-->
+        <!--placeholder="userId集"-->
+        <!--/>-->
+        <!--</Col>-->
+        <!--</Row>-->
         <!--</FormItem>-->
         <FormItem label="发放原因:" required>
-          <RadioGroup v-model="formValidate.reason" vertical  @on-change="changeReason">
+          <RadioGroup v-model="formValidate.reason" vertical @on-change="changeReason">
             <Radio label="客诉补偿" value="1">
               <span>客诉补偿</span>
             </Radio>
@@ -252,11 +252,21 @@
           <Input style="width:250px" v-model="formValidate.remark" placeholder="请输入" clearable />
         </FormItem>
         <FormItem label="用户领取方式:" required v-if="formValidate.welfareType==1">
-          <RadioGroup v-model="formValidate.reveiveType" vertical >
-            <Radio label="1" value="1" style="display: inline-block" :disabled="formValidate.reason=='客诉补偿'">
+          <RadioGroup v-model="formValidate.reveiveType" vertical>
+            <Radio
+              label="1"
+              value="1"
+              style="display: inline-block"
+              :disabled="formValidate.reason=='客诉补偿'"
+            >
               <span>手动领取</span>
             </Radio>
-            <Radio label="0" value="0" style="display: inline-block" :disabled="formValidate.reason=='客诉补偿'">
+            <Radio
+              label="0"
+              value="0"
+              style="display: inline-block"
+              :disabled="formValidate.reason=='客诉补偿'"
+            >
               <span>到“我的券”</span>
             </Radio>
           </RadioGroup>
@@ -360,10 +370,12 @@ import {
   addMateria,
   editMateria,
   selectmateriaById,
-    userFailDownload
+  userFailDownload
 } from "@/api/sys";
-import { uploadOperationImage2AliOssURl,baseUrl } from "@/api/index";
-import { postRequest, getRequest,downloadSteam } from "@/libs/axios";
+import { uploadOperationImage2AliOssURl, baseUrl } from "@/api/index";
+import { postRequest, getRequest, downloadSteam } from "@/libs/axios";
+
+import { columns8, columns4, columns9, columns10, columns11 } from "./columns";
 
 //import chooseCouponListView from "./chooseCouponList";
 export default {
@@ -373,184 +385,31 @@ export default {
   name: "compensate",
   data() {
     return {
-        statusList:{
-            2:'失败',
-            1: "成功",
-            0: "待审核"
-        },
-      userId:'',
-      upLoadUrl:'',
-        fileList:[],
-        upLoading:false,
+      // 状态：待审核，成功,失败
+      statusList: {
+        2: "失败",
+        1: "成功",
+        0: "待审核"
+      },
+      userId: "",
+      upLoadUrl: "",
+      fileList: [],
+      upLoading: false,
       curItem: "",
       drop: false,
       dropDownContent: "展开",
       dropDownIcon: "ios-arrow-down",
       // 活动列表
-      columns8: [
-          {
-              type: 'selection',
-              width: 60,
-              align: 'center'
-          },
-        {
-          title: "昵称",
-          align: "center",
-          minWidth: 100,
-          key: "userName"
-        },
-        {
-          title: "用户ID",
-          align: "center",
-          minWidth: 160,
-          key: "userId"
-        },
-        {
-          title: "券ID",
-          align: "center",
-          minWidth: 160,
-          key: "templateId"
-        },
-        {
-          title: "发放福利",
-          align: "center",
-          minWidth: 100,
-          key: "welfareInfo"
-        },
-          {
-              title: "发放原因",
-              align: "center",
-              minWidth: 160,
-              key: "reason"
-          },
-          {
-              title: "发放的类型",
-              align: "center",
-              minWidth: 160,
-              key: "pushType"
-          },
-          {
-              title: "状态标志",
-              align: "center",
-              minWidth: 160,
-              slot: "statusFlag"
-          },
-          {
-              title: "状态",
-              align: "center",
-              minWidth: 160,
-              key: "status"
-          },
-          {
-              title: "操作人员",
-              align: "center",
-              minWidth: 120,
-              key: "createBy"
-          },
-        {
-          title: "提交时间",
-          align: "center",
-          minWidth: 160,
-          key: "createTime"
-        },
-          {
-              title: "发送时间",
-              align: "center",
-              minWidth: 160,
-              key: "sendTime"
-          },
-        {
-          title: "备注",
-          align: "center",
-          minWidth: 120,
-          key: "remark"
-        }
-      ],
+      columns8,
       // 优惠活动列表
-      columns4: [
-        {
-          title: "操作",
-          align: "center",
-          width: 100,
-          fixed: "left",
-          slot: "action"
-        },
-        {
-          title: "类型",
-          align: "center",
-          minWidth: 140,
-          key: "couponKind",
-          slot: "couponKind"
-        },
-        {
-          title: "优惠券ID",
-          align: "center",
-          minWidth: 140,
-          key: "templateId"
-        }
-      ],
+      columns4,
       // 新增/编辑 周边券列表
-      columns9: [
-        {
-          type: "selection",
-          width: 60,
-          align: "center"
-        },
-        {
-          title: "优惠券ID",
-          align: "center",
-          minWidth: 140,
-          key: "templateId"
-        },
-        {
-          title: "优惠券名称",
-          align: "center",
-          minWidth: 140,
-          key: "title"
-        },
-        {
-          title: "所属商户",
-          align: "center",
-          minWidth: 140,
-          key: "merchantName"
-        }
-      ],
+      columns9,
       // 超市券
-      columns10: [
-        {
-          type: "selection",
-          width: 60,
-          align: "center"
-        },
-        {
-          title: "优惠券ID",
-          align: "center",
-          minWidth: 140,
-          key: "campId"
-        },
-        {
-          title: "优惠券名称",
-          align: "center",
-          minWidth: 140,
-          key: "name"
-        }
-      ],
+      columns10,
       // 错误数据
-      columns11: [
-        {
-          title: "用户id",
-          align: "center",
-          minWidth: 140,
-          key: "userId"
-        },
-        {
-          title: "券id",
-          align: "center",
-          minWidth: 140,
-          key: "templateId"
-        }
-      ],
-        selectDataList:[],
+      columns11,
+      selectDataList: [],
       materiaValidate: [],
       failList: [],
       personGiftList: [], //红包冠名活动列表数据
@@ -561,14 +420,14 @@ export default {
       searchData: {
         // 查询参数
         // campId: null,
-          userId: "",
+        userId: "",
         status: "",
-          statusFlag:'',
+        statusFlag: "",
         pushType: "",
-          sendTimeStart:'',
-          sendTimeEnd:'',
-          putTimeStart:'',
-          putTimeEnd:''
+        sendTimeStart: "",
+        sendTimeEnd: "",
+        putTimeStart: "",
+        putTimeEnd: ""
       },
       couponModalShow: false,
       // 优惠券搜索
@@ -599,9 +458,9 @@ export default {
         reason: "",
         specialTopicCouponList: [],
         remark: "", // 备注
-           userId:[],
-        failUserIdlist:[],
-        reveiveType:'',
+        userId: [],
+        failUserIdlist: [],
+        reveiveType: ""
       },
       // 新增链路素材表单
       materiaformValidate: {
@@ -663,9 +522,9 @@ export default {
       this.getStaffListFn(this.searchData);
       this.pagingType = "2";
     },
-      handleSelect(selection, index) {
-          this.selectDataList = selection;
-      },
+    handleSelect(selection, index) {
+      this.selectDataList = selection;
+    },
     // 重置
     reset() {
       this.searchData.userId = "";
@@ -689,12 +548,12 @@ export default {
           this.current = res.data.current;
           this.totalSize = res.data.total;
           this.TableLoading = false;
-            console.log(1);
-            this.personGiftList.forEach(function(v){
-                if(v.statusFlag=='1'||v.statusFlag=='2'){
-                    v._disabled=true;
-                }
-            })
+          console.log(1);
+          this.personGiftList.forEach(function(v) {
+            if (v.statusFlag == "1" || v.statusFlag == "2") {
+              v._disabled = true;
+            }
+          });
         } else {
           this.msgErr(res.msg);
         }
@@ -706,8 +565,8 @@ export default {
       this.add_edit = 1;
       this.modalTitle = "新增维权补偿";
       this.addStaffDisplay = true;
-      this.fileList = [] ;
-      this.formValidate.reveiveType = '';
+      this.fileList = [];
+      this.formValidate.reveiveType = "";
       //this.formValidate=null;
     },
     //选择优惠券
@@ -728,157 +587,160 @@ export default {
       this.couponSearchData.name = "";
       this.current1 = 1;
     },
-      changeWelfareType(){
-          // console.log(112);
-          // this.fileList = [];
-      },
-      changeReason(){
-          if(this.formValidate.reason=='客诉补偿'){
-            this.formValidate.reveiveType='0';
-        }else{
-            this.formValidate.reveiveType='';
+    changeWelfareType() {
+      // console.log(112);
+      // this.fileList = [];
+    },
+    changeReason() {
+      if (this.formValidate.reason == "客诉补偿") {
+        this.formValidate.reveiveType = "0";
+      } else {
+        this.formValidate.reveiveType = "";
+      }
+    },
+    // /compensate/checkSend
+    checkSend() {
+      var params = [];
+      if (!this.selectDataList.length) {
+        return;
+      }
+      this.selectDataList.forEach(function(v) {
+        params.push(v.id);
+      });
+      postRequest(`/compensate/checkSend`, { id: params }).then(res => {
+        if (res.code == 200) {
+          this.getStaffListFn({});
+          // this.list2.forEach(function(v){
+          //     if(v.level == that.modal2.level){
+          //         v.verifyQuantityMin = that.modal2.verifyQuantityMin;
+          //     }
+          // })
+          // this.getData1();
+          // setTimeout(() => {
+          //     that.modal1.isopen = false;
+          // }, 500);
+          // this.$Message.info('用户存在');
+          this.selectDataList = [];
+        } else {
+          this.$Message.error(res.msg);
         }
-      },
-// /compensate/checkSend
-      checkSend(){
-        var params = [];
-        if(!this.selectDataList.length){
-            return;
-        }
-        this.selectDataList.forEach(function(v){
-            params.push(v.id)
-        });
-          postRequest(`/compensate/checkSend`, {id:params}).then(res => {
-              if (res.code == 200) {
-                  this.getStaffListFn({});
-                  // this.list2.forEach(function(v){
-                  //     if(v.level == that.modal2.level){
-                  //         v.verifyQuantityMin = that.modal2.verifyQuantityMin;
-                  //     }
-                  // })
-                  // this.getData1();
-                  // setTimeout(() => {
-                  //     that.modal1.isopen = false;
-                  // }, 500);
-                  // this.$Message.info('用户存在');
-                  this.selectDataList = [];
-              } else {
-                  this.$Message.error(res.msg);
-              }
-          });
-      },
-      //校验userId
-      checkUserId(){
-        if(!this.userId){
-            this.msgErr("请输入用户Id");
-            return;
-        }
-        let params = {
-            userId:Number(this.userId)
-        }
-        postRequest(`/compensate/user?userId=${this.userId}`, params).then(res => {
-              if (res.code == 200) {
-                  // this.list2.forEach(function(v){
-                  //     if(v.level == that.modal2.level){
-                  //         v.verifyQuantityMin = that.modal2.verifyQuantityMin;
-                  //     }
-                  // })
-                  // this.getData1();
-                  // setTimeout(() => {
-                  //     that.modal1.isopen = false;
-                  // }, 500);
-                  this.$Message.info('用户存在');
-              } else {
-                  this.$Message.error(res.msg);
-              }
-          });
-
-      },
-      handleSuccess(res, file) {
-        this.upLoading = false;
+      });
+    },
+    //校验userId
+    checkUserId() {
+      if (!this.userId) {
+        this.msgErr("请输入用户Id");
+        return;
+      }
+      let params = {
+        userId: Number(this.userId)
+      };
+      postRequest(`/compensate/user?userId=${this.userId}`, params).then(
+        res => {
           if (res.code == 200) {
-              this.msgOk("上传成功");
-              this.fileList = [{name:file.name}];
-              this.formValidate.userId = res.successUserIdlist;
-              this.formValidate.failUserIdlist = res.failUserIdlist;
-              if(res.failUserIdlist.length){
-                  this.downLoad(res.failUserIdlist);
-              }
+            // this.list2.forEach(function(v){
+            //     if(v.level == that.modal2.level){
+            //         v.verifyQuantityMin = that.modal2.verifyQuantityMin;
+            //     }
+            // })
+            // this.getData1();
+            // setTimeout(() => {
+            //     that.modal1.isopen = false;
+            // }, 500);
+            this.$Message.info("用户存在");
           } else {
-              this.msgErr(res.msg);
+            this.$Message.error(res.msg);
           }
-      },
-      formatError() {
-          this.msgErr("只能上传xlsx格式,请重新上传");
-      },
-      handleMaxSize(file) {
-          // this.$Notice.warning({
-          //     title: "超出文件大小限制",
-          //     desc: "文件 " + file.name + " 太大，不能超过 2M。"
-          // });
-      },
-      handleProgress(){
-        this.upLoading = true;
-      },
-      handleBeforeUpload() {
-          // const check = this.uploadList.length < 5;
-          // if (!check) {
-          //     this.$Notice.warning({
-          //         title: '最多只能上传 1 张图片。'
-          //     });
-          // }
-          // return check;
-      },
-      reduce(){
-        this.fileList = [];
-        this.formValidate.userId = [];
-      },
-      downLoad(list){
-          // /compensate/demo/download
-          downloadSteam('/compensate/fail/download',{failUserIdlist:list}).then(res => {
-              const content = res.data;
-              let fileName = res.headers["filename"];
-              const blob = new Blob([content], { type: "application/vnd.ms-excel" });
-              if ("download" in document.createElement("a")) {
-                  // 非IE下载
-                  const elink = document.createElement("a");
-                  elink.download = decodeURI(fileName);
-                  elink.style.display = "none";
-                  elink.href = URL.createObjectURL(blob);
-                  document.body.appendChild(elink);
-                  elink.click();
-                  URL.revokeObjectURL(elink.href); // 释放URL 对象
-                  document.body.removeChild(elink);
-              } else {
-                  // IE10+下载
-                  navigator.msSaveBlob(blob, fileName);
-              }
+        }
+      );
+    },
+    handleSuccess(res, file) {
+      this.upLoading = false;
+      if (res.code == 200) {
+        this.msgOk("上传成功");
+        this.fileList = [{ name: file.name }];
+        this.formValidate.userId = res.successUserIdlist;
+        this.formValidate.failUserIdlist = res.failUserIdlist;
+        if (res.failUserIdlist.length) {
+          this.downLoad(res.failUserIdlist);
+        }
+      } else {
+        this.msgErr(res.msg);
+      }
+    },
+    formatError() {
+      this.msgErr("只能上传xlsx格式,请重新上传");
+    },
+    handleMaxSize(file) {
+      // this.$Notice.warning({
+      //     title: "超出文件大小限制",
+      //     desc: "文件 " + file.name + " 太大，不能超过 2M。"
+      // });
+    },
+    handleProgress() {
+      this.upLoading = true;
+    },
+    handleBeforeUpload() {
+      // const check = this.uploadList.length < 5;
+      // if (!check) {
+      //     this.$Notice.warning({
+      //         title: '最多只能上传 1 张图片。'
+      //     });
+      // }
+      // return check;
+    },
+    reduce() {
+      this.fileList = [];
+      this.formValidate.userId = [];
+    },
+    downLoad(list) {
+      // /compensate/demo/download
+      downloadSteam("/compensate/fail/download", { failUserIdlist: list }).then(
+        res => {
+          const content = res.data;
+          let fileName = res.headers["filename"];
+          const blob = new Blob([content], {
+            type: "application/vnd.ms-excel"
           });
-
-      },
-      downExcl(list){
-          // /compensate/demo/download
-          downloadSteam('/compensate/data/download',this.searchData).then(res => {
-              const content = res.data;
-              let fileName = res.headers["filename"];
-              const blob = new Blob([content], { type: "application/vnd.ms-excel" });
-              if ("download" in document.createElement("a")) {
-                  // 非IE下载
-                  const elink = document.createElement("a");
-                  elink.download = decodeURI(fileName);
-                  elink.style.display = "none";
-                  elink.href = URL.createObjectURL(blob);
-                  document.body.appendChild(elink);
-                  elink.click();
-                  URL.revokeObjectURL(elink.href); // 释放URL 对象
-                  document.body.removeChild(elink);
-              } else {
-                  // IE10+下载
-                  navigator.msSaveBlob(blob, fileName);
-              }
-          });
-
-      },
+          if ("download" in document.createElement("a")) {
+            // 非IE下载
+            const elink = document.createElement("a");
+            elink.download = decodeURI(fileName);
+            elink.style.display = "none";
+            elink.href = URL.createObjectURL(blob);
+            document.body.appendChild(elink);
+            elink.click();
+            URL.revokeObjectURL(elink.href); // 释放URL 对象
+            document.body.removeChild(elink);
+          } else {
+            // IE10+下载
+            navigator.msSaveBlob(blob, fileName);
+          }
+        }
+      );
+    },
+    downExcl(list) {
+      // /compensate/demo/download
+      downloadSteam("/compensate/data/download", this.searchData).then(res => {
+        const content = res.data;
+        let fileName = res.headers["filename"];
+        const blob = new Blob([content], { type: "application/vnd.ms-excel" });
+        if ("download" in document.createElement("a")) {
+          // 非IE下载
+          const elink = document.createElement("a");
+          elink.download = decodeURI(fileName);
+          elink.style.display = "none";
+          elink.href = URL.createObjectURL(blob);
+          document.body.appendChild(elink);
+          elink.click();
+          URL.revokeObjectURL(elink.href); // 释放URL 对象
+          document.body.removeChild(elink);
+        } else {
+          // IE10+下载
+          navigator.msSaveBlob(blob, fileName);
+        }
+      });
+    },
     // 优惠券搜索
     search1() {
       if (this.couponSearchData.couponType == "") {
@@ -949,38 +811,38 @@ export default {
         }
       });
     },
-      changeDateTime(datetime, index) {
-          switch (index) {
-          case 1:
-              if(datetime){
-                  this.searchData.sendTimeStart = datetime+' 00:00:00';
-              }else{
-                  this.searchData.sendTimeStart = '';
-              }
-              break;
-          case 2:
-              if(datetime){
-                  this.searchData.sendTimeEnd = datetime+' 23:59:59';
-              }else{
-                  this.searchData.sendTimeEnd = '';
-              }
-              break;
-          case 3:
-              if(datetime){
-                  this.searchData.putTimeStart = datetime+' 00:00:00';
-              }else{
-                  this.searchData.putTimeStart = '';
-              }
-              break;
-          case 4:
-              if(datetime){
-                  this.searchData.putTimeEnd = datetime+' 23:59:59';
-              }else{
-                  this.searchData.putTimeEnd = '';
-              }
-              break;
+    changeDateTime(datetime, index) {
+      switch (index) {
+        case 1:
+          if (datetime) {
+            this.searchData.sendTimeStart = datetime + " 00:00:00";
+          } else {
+            this.searchData.sendTimeStart = "";
           }
-      },
+          break;
+        case 2:
+          if (datetime) {
+            this.searchData.sendTimeEnd = datetime + " 23:59:59";
+          } else {
+            this.searchData.sendTimeEnd = "";
+          }
+          break;
+        case 3:
+          if (datetime) {
+            this.searchData.putTimeStart = datetime + " 00:00:00";
+          } else {
+            this.searchData.putTimeStart = "";
+          }
+          break;
+        case 4:
+          if (datetime) {
+            this.searchData.putTimeEnd = datetime + " 23:59:59";
+          } else {
+            this.searchData.putTimeEnd = "";
+          }
+          break;
+      }
+    },
     // 选中优惠活动
     selectionCampagin(selection, row) {
       let obj = {};
@@ -1154,13 +1016,13 @@ export default {
       if (!this.ruleValidate()) {
         return;
       }
-      if(this.formValidate.userId.length==0&&this.userId){
-          console.log(1123);
-          this.formValidate.userId=[this.userId];
+      if (this.formValidate.userId.length == 0 && this.userId) {
+        console.log(1123);
+        this.formValidate.userId = [this.userId];
       }
-      if(!this.formValidate.userId.length){
-          this.msgErr('请上传用户Id');
-          return
+      if (!this.formValidate.userId.length) {
+        this.msgErr("请上传用户Id");
+        return;
       }
       // if(this.addLuckyDrawFn)
       if (this.add_edit == 1) {
@@ -1176,8 +1038,6 @@ export default {
                    this.formValidate.templateIdList.push(this.formValidate.specialTopicCouponList[j].templateId)
                 }*/
         //this.formValidate.templateIdList=this.formValidate.specialTopicCouponList
-
-
 
         addCompensate(this.formValidate).then(res => {
           if (res.code == 200) {
@@ -1206,7 +1066,7 @@ export default {
       this.formValidate.welfareType = "";
       this.formValidate.amount = "";
       this.formValidate.userId = [];
-      this.userId = '';
+      this.userId = "";
       this.formValidate.failUserIdlist = [];
       this.formValidate.title = "";
       this.formValidate.reason = "";
@@ -1291,9 +1151,12 @@ export default {
         this.msgErr("请选择发放原因");
         return;
       }
-      if(this.formValidate.welfareType == 1&&!this.formValidate.reveiveType){
-          this.msgErr('请选择用户领取方式');
-          return
+      if (
+        this.formValidate.welfareType == 1 &&
+        !this.formValidate.reveiveType
+      ) {
+        this.msgErr("请选择用户领取方式");
+        return;
       }
       return true;
     },
@@ -1343,7 +1206,7 @@ export default {
   },
   mounted() {
     this.init();
-    this.upLoadUrl = baseUrl+'/compensate/importUserId';
+    this.upLoadUrl = baseUrl + "/compensate/importUserId";
   }
 };
 </script>
