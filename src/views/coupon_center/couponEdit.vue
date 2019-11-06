@@ -392,6 +392,7 @@
               <Select
                 v-model="edit_info.useDateType"
                 style="width:300px"
+                :disabled="camp_pageStatus == 'edit'"
                 @on-change="statusCheckChange"
               >
                 <Option value="1">固定时间范围</Option>
