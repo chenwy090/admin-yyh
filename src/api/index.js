@@ -10,7 +10,8 @@ import {
 
 // 本地访问地址
 
-// export const baseUrl = "http://192.168.34.145:8088/zex-mgr";
+// export const baseUrl = "http://192.168.0.19:8088//zex-mgr";
+// export const baseUrl = "http://192.168.34.109:8088//zex-mgr";
 // export const baseUrl = "http://192.168.0.25:8088/zex-mgr";
 
 // export const baseUrl = "http://192.168.0.47:8088/zex-mgr";
@@ -34,8 +35,8 @@ import {
 
 // dev开发环境 http://47.102.126.157:8088/zex-mgr/
 // http://crmdev.52iuh.cn:8088/zex-mgr
-// export const baseUrl = "http://192.168.31.206:8088/zex-mgr";
-// export const downloadUrl = "http://192.168.31.206:8088/zex-mgr";
+export const baseUrl = "http://192.168.31.206:8088/zex-mgr";
+export const downloadUrl = "http://192.168.31.206:8088/zex-mgr";
 
 // 预发环境地址
 // export const baseUrl = "http://review.52iuh.com:8088/zex-mgr";

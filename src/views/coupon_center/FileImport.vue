@@ -26,7 +26,7 @@
               <Upload
                 ref="upload"
                 :headers="userToken"
-                :action="`${url}/template/sort/excel/upload`"
+                :action="url"
                 :show-upload-list="false"
                 :before-upload="handleBeforeUpload"
                 :multiple="false"
@@ -46,7 +46,8 @@
                 <Col span="12">仅支持xlsx文件</Col>
                 <Col span="12">
                   <!-- 周边劵管理导入模板 -->
-                  <a href="/template/coupon_demo.xlsx">模板文件</a>
+                  <a v-if="upType==1" href="/template/coupon_demo.xlsx">模板文件</a>
+                  <a v-if="upType==2" href="/template/share_reward_template.xlsx">模板文件</a>
                 </Col>
               </Row>
               <div v-if="file !== null">
@@ -76,7 +77,11 @@ export default {
     showFileImport: {
       type: Boolean,
       default: true
-    }
+    },
+      upType: {
+          type: Number,
+          default: 1
+      },
   },
   watch: {
     ["formData.isNew"]() {
@@ -124,7 +129,12 @@ export default {
 
       this.loadingStatus = true;
       // 优惠券上传
-      const url = "/template/sort/excel/upload";
+      var url = ''
+        if(this.upType ==1){
+            url = `${url}/template/sort/excel/upload`;
+        }else{
+            url = `${url}/merchantCouponTemplate/importShareReward`;
+        }
       let fd = new FormData();
       fd.append("file", this.file); //append方法传入formData中
 
