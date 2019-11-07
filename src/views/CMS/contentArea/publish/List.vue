@@ -8,9 +8,12 @@
           <FormItem label="创建人ID：" :label-width="85">
             <Input style="width:200px" type="text" v-model="searchData.creatBy" placeholder="请输入"></Input>
           </FormItem>
-          <FormItem label="发布内容：" :label-width="85">
-            <Input style="width:200px" type="text" v-model="searchData.content" placeholder="请输入"></Input>
+          <FormItem label="搜索标题：" :label-width="85">
+            <Input style="width:200px" type="text" v-model="searchData.title" placeholder="请输入"></Input>
           </FormItem>
+          <!-- <FormItem label="发布内容：" :label-width="85">
+            <Input style="width:200px" type="text" v-model="searchData.content" placeholder="请输入"></Input>
+          </FormItem> -->
 
           <FormItem label="发布时间：" :label-width="100">
             <DatePicker
