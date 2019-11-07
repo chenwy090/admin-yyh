@@ -1333,6 +1333,7 @@ export default {
               if (res.code == 200) {
                   var that = this;
                   this.edit_info = res.data;
+                  this.edit_info.couponType = String(res.data.couponType);
                   this.edit_info.couponSaleAfterList = [];
                   res.data.couponSaleAfterVOList.forEach(function (v,i) {
                       that.edit_info.couponSaleAfterList.push(v.code);
@@ -1361,18 +1362,18 @@ export default {
 
                   this.edit_info.ticketDiscount = this.edit_info.ticketDiscount / 10;
                   this.edit_info.couponKind = this.edit_info.couponKind-0;
-                  this.edit_info.couponType =
-                      this.edit_info.couponType == 1
-                          ? "1"
-                          : this.edit_info.couponType == 2
-                          ? "2"
-                          : this.edit_info.couponType == 3
-                              ? "3"
-                              : this.edit_info.couponType == 4
-                                  ? "4"
-                                  : this.edit_info.couponType == 5
-                                      ? "5"
-                                      : "6";
+                  // this.edit_info.couponType =
+                  //     this.edit_info.couponType == 1
+                  //         ? "1"
+                  //         : this.edit_info.couponType == 2
+                  //         ? "2"
+                  //         : this.edit_info.couponType == 3
+                  //             ? "3"
+                  //             : this.edit_info.couponType == 4
+                  //                 ? "4"
+                  //                 : this.edit_info.couponType == 5
+                  //                     ? "5"
+                  //                     : "6";
                   this.edit_info.useDateType =
                       this.edit_info.useDateType == 1 ? "1" : "2";
                   if (this.camp_pageStatus == "copy") {

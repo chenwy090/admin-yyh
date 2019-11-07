@@ -286,9 +286,9 @@ export default {
         data.withdrawMin = withdrawMin || "不限制";
 
         let accountList = await this.queryAccountList(data.businessId);
-        let choices = [];
+        let withdrawUserTableData = [];
         if (accountList) {
-          choices = accountList.filter(item => {
+          withdrawUserTableData = accountList.filter(item => {
             for (let i = 0; i < withdrawUserId.length; i++) {
               if (item.userId == withdrawUserId[i]) {
                 return true;
@@ -296,8 +296,8 @@ export default {
             }
           });
         }
-        data.withdrawUserId = choices;
-
+        // data.withdrawUserId = choices;
+        data.withdrawUserTableData = withdrawUserTableData;
         this.detailData = data;
         return data;
       } else {

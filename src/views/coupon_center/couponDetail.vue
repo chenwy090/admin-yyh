@@ -596,7 +596,7 @@ export default {
                 this.uploadList = [{ url: this.edit_info.couponSmallImg }];
                 this.uploadList1 = [{ url: this.edit_info.couponBigImg }];
                 this.edit_info.merchantList = this.edit_info.merchantList;
-
+                this.edit_info.couponType = String(res.data.couponType);
                 this.imgSrc1 = this.edit_info.couponSmallImg;
                 this.imgSrc2 = this.edit_info.couponBigImg;
                 this.imgSrc3 = this.edit_info.couponSimpleImg;
@@ -613,18 +613,18 @@ export default {
 
                 this.edit_info.ticketDiscount = this.edit_info.ticketDiscount / 10;
                 this.edit_info.couponKind = this.edit_info.couponKind-0;
-                this.edit_info.couponType =
-                    this.edit_info.couponType == 1
-                        ? "1"
-                        : this.edit_info.couponType == 2
-                        ? "2"
-                        : this.edit_info.couponType == 3
-                            ? "3"
-                            : this.edit_info.couponType == 4
-                                ? "4"
-                                : this.edit_info.couponType == 5
-                                    ? "5"
-                                    : "6";
+                // this.edit_info.couponType =
+                //     this.edit_info.couponType == 1
+                //         ? "1"
+                //         : this.edit_info.couponType == 2
+                //         ? "2"
+                //         : this.edit_info.couponType == 3
+                //             ? "3"
+                //             : this.edit_info.couponType == 4
+                //                 ? "4"
+                //                 : this.edit_info.couponType == 5
+                //                     ? "5"
+                //                     : "6";
                 this.edit_info.couponKind =
                     this.edit_info.couponKind == 1 ? "1" : "2";
                 this.edit_info.useDateType =

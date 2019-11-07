@@ -37,8 +37,9 @@ export default [
         width: 150,
         render: (h, params) => {
             let { withdrawMin } = params.row;
+            withdrawMin = withdrawMin === null ? "不限制" : `${withdrawMin}￥`;
             return (
-                <span>{`${withdrawMin}￥`}</span>
+                <span>{withdrawMin}</span>
             );
         }
     },

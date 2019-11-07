@@ -87,7 +87,6 @@ export default {
 
           if (code == 200) {
             this.msgOk("审核成功");
-            this.queryTableData();
             this.cancelHandleReset(name);
             this.$emit("refresh");
           } else {
