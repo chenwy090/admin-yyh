@@ -42,6 +42,10 @@ export default {
     id: {
       type: [Number, String],
       default: ""
+    },
+    checked: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -108,39 +112,32 @@ export default {
   },
   methods: {
     handleSelectChange(selection) {
-      console.log("handleSelectChange:", this.$refs.refTable.$refs.tbody);
-      // let { objData } = this.$refs.refTable.$refs.tbody;
-      // var choices = [];
-      // for (let index in objData) {
-      //   let item = objData[index];
-      //   if (item._isChecked) {
-      //     choices.push(item);
-      //   }
-      // }
-      // console.log(1, JSON.stringify(choices));
-
-      var choices = this.tableData.filter(item => {
+      this.tableData = this.tableData.map(item => {
+        item._checked = false;
         for (let i = 0; i < selection.length; i++) {
-          if (item.id == selection[i].id) {
+          if (item.userId == selection[i].userId) {
             item._checked = true;
-            return true;
           }
         }
+        return item;
       });
-      console.log(2, JSON.stringify(choices));
-
-      this.choices = choices;
+      console.log(
+        this.tableData.map(item =>
+          JSON.stringify({ userId: item.userId, _checked: item._checked })
+        )
+      );
     },
     handleOnRowDbclick(row, index) {
-      let { _isChecked } = this.$refs.refTable.$refs.tbody.objData[index];
-      this.$refs.refTable.$refs.tbody.objData[index]._isChecked = !_isChecked;
-      let { id, _checked } = row;
+      let { userId, _checked } = row;
 
       _checked = !_checked;
       row._checked = _checked;
       this.tableData.splice(index, 1, row);
-
-      console.log(this.$refs.refTable.$refs.tbody.objData[index]._isChecked);
+      console.log(
+        this.tableData.map(item =>
+          JSON.stringify({ userId: item.userId, _checked: item._checked })
+        )
+      );
     },
 
     // 获取列表数据
@@ -150,7 +147,22 @@ export default {
       console.log("queryTableData", this.id);
       const { code, data, msg } = await getRequest(url, { id: this.id });
       if (code == 200) {
-        this.tableData = data;
+        this.tableData = data.map(item => {
+          item._checked = false;
+          for (let i = 0; i < this.checked.length; i++) {
+            let r = item.userId == this.checked[i];
+            if (r) {
+              item._checked = true;
+            }
+          }
+          return item;
+        });
+
+        console.log(
+          this.tableData.map(item =>
+            JSON.stringify({ userId: item.userId, _checked: item._checked })
+          )
+        );
       } else {
         this.msgErr(msg);
       }
@@ -167,11 +179,19 @@ export default {
     },
     // //确定选择商户
     selectMerchant() {
+      this.choices = this.tableData.filter(item => item._checked);
+
+      console.log(
+        this.choices.map(item =>
+          JSON.stringify({ userId: item.userId, _checked: item._checked })
+        )
+      );
+
       if (this.choices.length) {
         this.$emit("seclectedTr-event", this.choices);
         this.closeDialog();
       } else {
-        this.msgErr("至少选一个品牌");
+        this.msgErr("至少选一项");
       }
     },
     // 全局提示

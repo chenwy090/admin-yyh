@@ -80,7 +80,7 @@
                 v-model.trim="formData.withdrawMin"
                 placeholder="请输入最低提现金额"
                 clearable
-              />不填，则不限制
+              />&nbsp;不填，则不限制
             </Col>
           </Row>
         </FormItem>
@@ -128,6 +128,7 @@
       v-if="showMerchantAccountList"
       :showMerchantAccountList.sync="showMerchantAccountList"
       :id="formData.businessId"
+      :checked="formData.withdrawUserId"
       @seclectedTr-event="selectedAccount"
     ></MerchantAccountList>
   </div>
@@ -154,10 +155,12 @@ import { withdrawUserColumns } from "./columns";
 
 export default {
   name: "edit",
-  // created() {
-  //   console.log("created", this.typeData);
-  //   console.log("created", this.action);
-  // },
+  created() {
+    // console.log("data:",this.data);
+    // console.log("created typeData", this.typeData);
+    // console.log("created", this.action);
+    this.dynamicColumns = this.typeData.type0.columns;
+  },
   // mounted() {
   //   console.log("mounted", this.info);
   // },
@@ -166,10 +169,10 @@ export default {
       default: () => {
         return {
           obj: {
-            corporateWithdrawFee: { total: 10, bank: 8, platform: 2 },
-            individualWithdrawFee: { total: 1, bank: 1 },
-            payPipelineFeeRate: { wx: 0.6, aliPay: 0.6 },
-            shareProfitRate: { merchant: 97, platform: 3 }
+            // corporateWithdrawFee: { total: 10, bank: 8, platform: 2 },
+            // individualWithdrawFee: { total: 1, bank: 1 },
+            // payPipelineFeeRate: { wx: 0.6, aliPay: 0.6 },
+            // shareProfitRate: { merchant: 97, platform: 3 }
           }
         };
       }
@@ -205,14 +208,20 @@ export default {
         let { type, data } = this.action;
         data = JSON.parse(JSON.stringify(data));
         this.formData = data;
-        this.withdrawUserTableData = data.withdrawUserId;
+        this.withdrawUserTableData = data.withdrawUserTableData;
 
         if (type == "add") {
         } else if (type == "edit") {
-          const { merchantType, businessId: id, tableData = [] } = data;
+          const {
+            merchantType,
+            businessId: id,
+            businessName,
+            tableData = []
+          } = data;
 
           let typeData = this.typeData[`type${merchantType}`];
           typeData.id = id;
+          typeData.name = businessName;
           this.dynamicColumns = typeData.columns;
           this.dynamicTableData = typeData.tableData = tableData;
         }
@@ -237,20 +246,33 @@ export default {
       this.dynamicTableData = tableData;
 
       this.$refs.form.validateField("businessName");
+      console.log("businessName", this.formData.businessName);
     },
     ["formData.withdrawMin"]() {
       const { withdrawMin } = this.formData;
       this.formData.requiredWithdrawMin = !!withdrawMin.length;
-      console.log(this.formData.requiredWithdrawMin);
+      console.log(
+        "withdrawMin:",
+        withdrawMin,
+        withdrawMin.length,
+        this.formData.requiredWithdrawMin
+      );
 
       if (this.formData.requiredWithdrawMin) {
         this.$refs.form.validateField("withdrawMin");
       } else {
         // this.$refs.form.resetFields();
-        this.$refs.form.fields.some(function(e) {
-          let r = e.prop == "withdrawMin";
-          r && e.resetField();
-          return r;
+        // this.formData.withdrawMin = "";
+        this.$nextTick(_ => {
+          this.$refs.form.fields.some(field => {
+            let r = field.prop == "withdrawMin";
+            if (r) {
+              console.log(field);
+              field.validateState = "success";
+              // field.resetField();
+            }
+            return r;
+          });
         });
       }
     }
@@ -283,7 +305,8 @@ export default {
         merchantName: "",
         brandId: "", //
         brandName: "", //
-        withdrawUserId: []
+        withdrawUserId: [],
+        withdrawUserTableData: []
       },
       ruleValidate: {},
       showBusinessList: false,
@@ -319,16 +342,7 @@ export default {
   methods: {
     selectedAccount(arr) {
       console.log("selectedTrCallBack----", arr);
-
       this.withdrawUserTableData = arr;
-
-      if (arr.length) {
-        this.formData.withdrawUserId = arr.map(item => {
-          return item.userId;
-        });
-      }
-
-      console.log(this.withdrawUserTableData);
     },
     selectedTrCallBack(data) {
       console.log("selectedTrCallBack----", data);
@@ -340,7 +354,6 @@ export default {
       this.formData.businessName = typeData.name = name;
       this.dynamicTableData = typeData.tableData = [row];
     },
-
     handleChoose() {
       //  '商户类型 0-本地商户（单店），1-本地商户（多店）' 2 商超门店、3 零售商
       const arr = ["showBusinessList", "showBrandList"];
@@ -378,10 +391,9 @@ export default {
 
           // // 提交的时候清理数据
           // const { withdrawUserId } = oForm;
-
-          // oForm.withdrawUserId = this.withdrawUserTableData.map(item => {
-          //   return item.merchantId;
-          // });
+          oForm.withdrawUserId = this.withdrawUserTableData.map(item => {
+            return item.userId;
+          });
 
           console.log("submit oForm", oForm);
           // 新增/编辑

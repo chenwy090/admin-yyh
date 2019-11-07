@@ -68,10 +68,10 @@ export default {
       default: () => {
         return {
           obj: {
-            corporateWithdrawFee: { total: 10, bank: 8, platform: 2 },
-            individualWithdrawFee: { total: 1, bank: 1 },
-            payPipelineFeeRate: { wx: 0.6, aliPay: 0.6 },
-            shareProfitRate: { merchant: 97, platform: 3 }
+            // corporateWithdrawFee: { total: 10, bank: 8, platform: 2 },
+            // individualWithdrawFee: { total: 1, bank: 1 },
+            // payPipelineFeeRate: { wx: 0.6, aliPay: 0.6 },
+            // shareProfitRate: { merchant: 97, platform: 3 }
           }
         };
       }
@@ -107,7 +107,7 @@ export default {
         let { type, data } = this.action;
         data = JSON.parse(JSON.stringify(data));
         this.formData = data;
-        this.withdrawUserTableData = data.withdrawUserId;
+        this.withdrawUserTableData = data.withdrawUserTableData;
         console.log("mounte detail", this.formData);
 
         if (type == "detail") {
