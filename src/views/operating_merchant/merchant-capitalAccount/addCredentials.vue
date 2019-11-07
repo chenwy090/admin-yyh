@@ -320,6 +320,8 @@
             data[1].modifiedBy = this.userInfo.username;
             data[0].id = this.id2;
             data[1].id = this.id3;
+            data[0].operateType = "update";
+            data[1].operateType = "update";
           }
         } else {
           // 企业
@@ -360,6 +362,9 @@
             data[0].id = this.id1;
             data[1].id = this.id2;
             data[2].id = this.id3;
+            data[0].operateType = "update";
+            data[1].operateType = "update";
+            data[2].operateType = "update";
           }
         }
         // let data = {
