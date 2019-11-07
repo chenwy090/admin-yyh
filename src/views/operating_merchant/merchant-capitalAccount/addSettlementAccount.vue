@@ -7,25 +7,25 @@
       </Divider>
       <Form :label-width="100" label-position="left" style="margin:10px 3%;">
         <!-- 关联结算账号 -->
-        <FormItem label="银行账号: ">
+        <FormItem label="银行账号: " required>
           <Input type="number" style="width:200px" placeholder="请输入" v-model="form.account"></Input>
         </FormItem>
-        <FormItem label="开户名: ">
+        <FormItem label="开户名: " required>
           <Input type="text" style="width:200px" placeholder="请输入" v-model="form.name"></Input>
         </FormItem>
-        <FormItem label="银行预留手机: ">
+        <FormItem label="银行预留手机: " required>
           <Input type="number" style="width:200px" placeholder="请输入" v-model="form.mobile"></Input>
         </FormItem>
-        <FormItem label="开户行名称: ">
+        <FormItem label="开户行名称: " required>
           <Input type="text" style="width:200px" placeholder="请输入" v-model="form.openBank"></Input>
         </FormItem>
-        <FormItem label="转账类型: ">
+        <FormItem label="转账类型: " required>
           <RadioGroup v-model="form.type">
             <Radio v-if="businessCustomer == 'customer'" label="b2c">个人账号</Radio>
             <Radio v-else style="margin-left:20px" label="b2b">企业对公户</Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem label="银行卡号类型: ">
+        <FormItem label="银行卡号类型: " required>
           <!-- 个人 -->
           <RadioGroup v-if="businessCustomer == 'customer'" v-model="form.cardType">
             <Radio :label="0">银行卡借记卡</Radio>
@@ -116,6 +116,11 @@
 
       // 新增编辑
       editSettlementAccountFn() {
+        // 验证
+        if (!this.ruleValidate()) {
+          return;
+        }
+
         if (this.addEdit == 1) {
           this.form.createBy = this.userInfo.username;
           this.form.modifiedBy = this.userInfo.username;
@@ -132,6 +137,35 @@
             this.msgErr(res.msg);
           }
         })
+      },
+
+      // 验证
+      ruleValidate() {
+        if (!this.form.account) {
+          this.msgErr("请输入银行账号");
+          return;
+        }
+        if (!this.form.name) {
+          this.msgErr("请输入开户名");
+          return;
+        }
+        if (!this.form.mobile) {
+          this.msgErr("请输入手机号");
+          return;
+        }
+        if (!this.form.openBank) {
+          this.msgErr("请输入开户行名称");
+          return;
+        }
+        if (!this.form.type) {
+          this.msgErr("请输入转账类型");
+          return;
+        }
+        if (!this.form.cardType) {
+          this.msgErr("请输入银行卡号类型");
+          return;
+        }
+        return true;
       },
 
       // 返回

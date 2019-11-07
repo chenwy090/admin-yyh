@@ -75,19 +75,19 @@
         <h3>商户信息</h3>
       </Divider>
       <Form style="margin:30px 3%;">
-        <FormItem>
+        <FormItem required>
           <RadioGroup v-model="form.type">
             <Radio label="customer">个人用户</Radio>
             <Radio label="business" style="margin-left:100px">企业对公用户</Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem label="商户类型: ">
+        <FormItem label="商户类型: " required>
           <RadioGroup v-model="form.merchantType" @on-change="changeRadio()">
             <Radio :label="0">本地商户（单店）</Radio>
             <Radio :label="1" style="margin-left:20px">本地商户（多店）</Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem :label="form.merchantType == 0?'选择商户: ':'选择品牌: '">
+        <FormItem :label="form.merchantType == 0?'选择商户: ':'选择品牌: '" required>
           <Button @click="openMerchantModal()">请选择</Button>
         </FormItem>
         <!-- 商户列表 -->
@@ -174,8 +174,8 @@
         merchantListTemp: [], //已选中临时商户
         addMerchantList: [], //已选中商户列表
         form: {
-          type: "customer",
-          merchantType: 0
+          type: "",
+          merchantType: null
         },
         // 个人
         columns1: [
@@ -415,6 +415,15 @@
       },
 
       judge() {
+        // 验证
+        if(!this.form.type) {
+          this.msgErr('请选择 个人用 或 企业对公用户')
+          return
+        }
+        if(!this.form.merchantType) {
+          this.msgErr('请选择商户类型')
+          return
+        }
         if(this.addMerchantList == []) {
           let msg
           if(this.form.merchantType == 0) {

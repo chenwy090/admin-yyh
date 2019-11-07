@@ -109,10 +109,9 @@
               <span v-else-if="row.type == 'customer'">个人</span>
             </template>
             <template slot-scope="{ row }" slot="openAccountStatus">
-              <span v-if="row.openAccountStatus == 'submitted'">已提交待激活</span>
+              <!-- <span v-if="row.openAccountStatus == 'submitted'">已提交待激活</span>
               <span v-else-if="row.openAccountStatus == 'pending'">处理审核中</span>
               <span v-else-if="row.openAccountStatus == 'succeeded'">开户成功</span>
-              <!-- <span v-else-if="row.openAccountStatus == 'failed'">开户失败</span> -->
               <span v-else-if="row.openAccountStatus == 'failed'">
                 开户失败
                 <Tooltip v-if="row.failureReason" :content="row.failureReason" placement="bottom">
@@ -121,6 +120,48 @@
                 </Tooltip>
               </span>
               <span v-else-if="row.openAccountStatus == 'frozen'">
+                账户冻结
+                <Tooltip v-if="row.failureReason" :content="row.failureReason" placement="bottom">
+                  （
+                  <a>查看原因</a>）
+                </Tooltip>
+              </span>-->
+              <span v-if="row.progress == 1 || row.progress == 2 || row.progress == 3">创建</span>
+              <span v-else-if="row.progress == 4">开户成功</span>
+              <span v-else-if="row.progress == 6">开户成功--结算审核通过</span>
+              <span v-else-if="row.progress == 7">开户成功--结算其他</span>
+              <span v-else-if="row.progress == 5">
+                <span v-if="row.openAccountStatus == 'submitted'">已提交待激活</span>
+                <span v-else-if="row.openAccountStatus == 'pending'">处理审核中</span>
+                <span v-else-if="row.openAccountStatus == 'succeeded'">开户成功</span>
+                <span v-else-if="row.openAccountStatus == 'failed'">
+                  开户失败
+                  <Tooltip v-if="row.failureReason" :content="row.failureReason" placement="bottom">
+                    （
+                    <a>查看原因</a>）
+                  </Tooltip>
+                </span>
+                <span v-else-if="row.openAccountStatus == 'frozen'">
+                  账户冻结
+                  <Tooltip v-if="row.failureReason" :content="row.failureReason" placement="bottom">
+                    （
+                    <a>查看原因</a>）
+                  </Tooltip>
+                </span>
+              </span>
+            </template>
+            <template slot-scope="{ row }" slot="bankCardStatus">
+              <span v-if="row.bankCardStatus == 'submitted'">已提交待激活</span>
+              <span v-else-if="row.bankCardStatus == 'pending'">处理审核中</span>
+              <span v-else-if="row.bankCardStatus == 'succeeded'">开户成功</span>
+              <span v-else-if="row.bankCardStatus == 'failed'">
+                开户失败
+                <Tooltip v-if="row.failureReason" :content="row.failureReason" placement="bottom">
+                  （
+                  <a>查看原因</a>）
+                </Tooltip>
+              </span>
+              <span v-else-if="row.bankCardStatus == 'frozen'">
                 账户冻结
                 <Tooltip v-if="row.failureReason" :content="row.failureReason" placement="bottom">
                   （
@@ -276,6 +317,13 @@ export default {
           minWidth: 120,
           key: 'openAccountStatus',
           slot: "openAccountStatus",
+        },
+        {
+          title: '商户结算信息状态',
+          align: 'center',
+          minWidth: 120,
+          key: 'bankCardStatus',
+          slot: "bankCardStatus",
         },
         {
           title: '操作人',
