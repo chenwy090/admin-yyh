@@ -854,9 +854,7 @@ export default {
         type: this.formCustom.type
       };
       postRequest(
-        "/merchantCouponTemplate/updStatus/?templateId=" +
-          this.formCustom.templateId +
-          "&status="+this.formCustom.status,
+        "/merchantCouponTemplate/updStatus/",
         reqParams
       ).then(res => {
         if (res.code == 200) {
