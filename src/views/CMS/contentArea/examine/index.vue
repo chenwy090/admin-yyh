@@ -67,7 +67,7 @@
     <Card :bordered="false">
       <Table border :show-index="true" :loading="loading" :columns="columns" :data="tableData">
         <!-- action -->
-        <!-- @click="addOrEdit('edit',row)" 
+        <!-- @click="addOrEdit('edit',row)"
          //审核 status 0-创建，1-待审核(创建完成），2-审核成功（上架），3-审核失败（下架）',
           "1": "待审核",     审核 下架
           "2": "审核成功"    下架

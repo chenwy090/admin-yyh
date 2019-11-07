@@ -81,7 +81,7 @@ export function getImageWH(file, fmt) {
             let src = e.target.result;
             const image = new Image();
             image.onload = function () {
-                resolve({w:this.width,h:this.height});
+                resolve({ w: this.width, h: this.height });
             };
             image.onerror = reject;
             image.src = src;

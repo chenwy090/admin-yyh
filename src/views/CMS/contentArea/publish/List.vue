@@ -8,9 +8,12 @@
           <FormItem label="创建人ID：" :label-width="85">
             <Input style="width:200px" type="text" v-model="searchData.creatBy" placeholder="请输入"></Input>
           </FormItem>
-          <FormItem label="发布内容：" :label-width="85">
-            <Input style="width:200px" type="text" v-model="searchData.content" placeholder="请输入"></Input>
+          <FormItem label="搜索标题：" :label-width="85">
+            <Input style="width:200px" type="text" v-model="searchData.title" placeholder="请输入"></Input>
           </FormItem>
+          <!-- <FormItem label="发布内容：" :label-width="85">
+            <Input style="width:200px" type="text" v-model="searchData.content" placeholder="请输入"></Input>
+          </FormItem> -->
 
           <FormItem label="发布时间：" :label-width="100">
             <DatePicker
@@ -43,7 +46,7 @@
     <Card :bordered="false">
       <Table border :show-index="true" :loading="loading" :columns="columns" :data="tableData">
         <!-- action -->
-        <!-- 
+        <!--
            "1": "待审核",  //不能操作
            "2": "审核成功", //编辑
            "3": "已下架"    //编辑
