@@ -50,6 +50,8 @@ import {
 // dev1.5.5
 // export const baseUrl = "http://192.168.31.206:8088/zex-mgr";
 // export const downloadUrl = "http://192.168.31.206:8088/zex-mgr";
+export const baseUrl = "http://192.168.31.114:8088/zex-mgr";
+export const downloadUrl = "http://192.168.31.114:8088/zex-mgr";
 
 
 

@@ -22,7 +22,7 @@
       <Card :bordered="false">
         <Row class="operation">
           <Button type="primary" icon="md-add" @click="addInfo()">新增</Button>
-          <Button icon="md-refresh" @click="search">刷新</Button>
+          <Button icon="md-refresh" @click="refreshFn()">刷新开户状态</Button>
         </Row>
         <div>
           <!-- 用户列表 -->
@@ -224,7 +224,7 @@
 </template>
 
 <<script>
-import { getMerchantFundList, getMerchantList, addStaff, editStaff, bind, delStaff } from '@/api/sys';
+import { getMerchantFundList, getMerchantList, addStaff, editStaff, bind, delStaff,refresh } from '@/api/sys';
 import {
     getRequest,
     postRequest,
@@ -452,6 +452,20 @@ export default {
     // 子商户应用返回数据
     showAddSubordinateMerchants (e) {
       this.addSubordinateMerchantsDispaly = e;
+    },
+
+    // 刷新
+    refreshFn() {
+      refresh().then(res => {
+        if(res.code == 200) {
+          this.search()
+        }else {
+          this.$Modal.warning({
+            title: '刷新失败',
+            content: '请稍后再试'
+          });
+        }
+      })
     },
 
 // 搜索

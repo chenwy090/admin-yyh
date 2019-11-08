@@ -50,72 +50,6 @@
         </FormItem>
         <!-- 证件信息 -->
 
-        <!-- 联系人信息 -->
-        <h3 style="margin-bottom:10px">联系人信息</h3>
-        <FormItem label="联系人类型: ">
-          <Select v-model="form.aaa" style="width:200px" disabled>
-            <Option value="1">财务</Option>
-            <Option value="2">法人</Option>
-          </Select>
-        </FormItem>
-        <!-- 财务 -->
-        <div v-if="form.aaa == 1">
-          <FormItem label="姓名: ">
-            <Input
-              type="text"
-              style="width:200px"
-              placeholder="请输入"
-              v-model="form.ccc"
-              :maxlength="32"
-              disabled
-            ></Input>
-          </FormItem>
-          <FormItem label="联系人手机号: ">
-            <Input type="number" style="width:200px" placeholder="请输入" v-model="form.ddd" disabled></Input>
-          </FormItem>
-          <FormItem label="证件类型: ">
-            <Select v-model="form.aaa" style="width:200px" disabled>
-              <Option value="1">身份证</Option>
-            </Select>
-          </FormItem>
-          <FormItem label="证件号码: ">
-            <Input type="number" style="width:200px" placeholder="请输入" v-model="form.ddd" disabled></Input>
-          </FormItem>
-          <FormItem label="证件号码: ">
-            <Input type="number" style="width:230px" placeholder="请输入" v-model="form.ddd" disabled></Input>&nbsp;至&nbsp;
-            <Input type="number" style="width:230px" placeholder="请输入" v-model="form.ddd" disabled></Input>
-          </FormItem>
-        </div>
-        <!-- 法人 -->
-        <div v-else>
-          <FormItem label="姓名: ">
-            <Input
-              type="text"
-              style="width:200px"
-              placeholder="请输入"
-              v-model="form.ccc"
-              :maxlength="32"
-              disabled
-            ></Input>
-          </FormItem>
-          <FormItem label="联系人手机号: ">
-            <Input type="number" style="width:200px" placeholder="请输入" v-model="form.ddd" disabled></Input>
-          </FormItem>
-          <FormItem label="证件类型: ">
-            <Select v-model="form.aaa" style="width:200px" disabled>
-              <Option value="1">身份证</Option>
-            </Select>
-          </FormItem>
-          <FormItem label="证件号码: ">
-            <Input type="number" style="width:200px" placeholder="请输入" v-model="form.ddd" disabled></Input>
-          </FormItem>
-          <FormItem label="证件有效期: ">
-            <Input type="number" style="width:230px" placeholder="请输入" v-model="form.ddd" disabled></Input>&nbsp;至&nbsp;
-            <Input type="number" style="width:230px" placeholder="请输入" v-model="form.ddd" disabled></Input>
-          </FormItem>
-        </div>
-        <!-- 联系人信息 -->
-
         <!-- 关联结算账号 -->
         <h3 style="margin-bottom:10px">关联结算账号</h3>
         <FormItem label="银行账号: ">
@@ -155,13 +89,13 @@
             disabled
           ></Input>
         </FormItem>
-        <FormItem label="转账类型: " required>
+        <FormItem label="转账类型: ">
           <RadioGroup v-model="form.settleResponse.type">
             <Radio label="b2c" disabled>个人账号</Radio>
             <Radio style="margin-left:20px" label="b2b" disabled>企业对公户</Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem label="银行卡号类型: " required>
+        <FormItem label="银行卡号类型: ">
           <!-- 个人 -->
           <RadioGroup>
             <Radio disabled :label="0">银行卡借记卡</Radio>
@@ -177,38 +111,182 @@
         </FormItem>
         <!-- 关联结算账号 -->
 
+        <!-- 联系人信息 -->
+        <div v-if="type2">
+          <h3 style="margin-bottom:10px">{{form.basicResponse.type == 'business'?'联系人信息':'用户信息'}}</h3>
+          <!-- 法人 -->
+          <h5 v-if="form.basicResponse.type == 'business'">企业法人信息</h5>
+          <div>
+            <FormItem label="姓名: ">
+              <Input
+                type="text"
+                style="width:200px"
+                placeholder="请输入"
+                v-model="type2.name"
+                :maxlength="32"
+                disabled
+              ></Input>
+            </FormItem>
+            <FormItem label="联系人手机号: ">
+              <Input
+                type="number"
+                style="width:200px"
+                placeholder="请输入"
+                v-model="type2.mobile"
+                disabled
+              ></Input>
+            </FormItem>
+            <FormItem label="证件类型: ">
+              <Select v-model="type2.identityType" style="width:200px" disabled>
+                <Option value="01">身份证</Option>
+                <Option value="02">企业营业执照</Option>
+              </Select>
+            </FormItem>
+            <FormItem label="证件号码: ">
+              <Input
+                type="text"
+                style="width:200px"
+                placeholder="请输入"
+                v-model="type2.identityNumber"
+                disabled
+              ></Input>
+            </FormItem>
+            <FormItem label="证件有效期: ">
+              <DatePicker
+                type="date"
+                placeholder="请选择"
+                style="width: 200px"
+                :value="type2.validFrom"
+                format="yyyy-MM-dd"
+                disabled
+              ></DatePicker>&nbsp;至&nbsp;
+              <DatePicker
+                type="date"
+                placeholder="请选择"
+                style="width: 200px"
+                :value="type2.validUntil"
+                format="yyyy-MM-dd"
+                disabled
+              ></DatePicker>
+            </FormItem>
+          </div>
+          <!-- 财务 -->
+          <h5 v-if="form.basicResponse.type == 'business'">企业财务信息</h5>
+          <div v-if="form.basicResponse.type == 'business'">
+            <FormItem label="姓名: ">
+              <Input
+                type="text"
+                style="width:200px"
+                placeholder="请输入"
+                v-model="type3.name"
+                :maxlength="32"
+                disabled
+              ></Input>
+            </FormItem>
+            <FormItem label="联系人手机号: ">
+              <Input
+                type="number"
+                style="width:200px"
+                placeholder="请输入"
+                v-model="type3.mobile"
+                disabled
+              ></Input>
+            </FormItem>
+            <FormItem label="证件类型: ">
+              <Select v-model="type3.identityType" style="width:200px" disabled>
+                <Option value="01">身份证</Option>
+                <Option value="02">企业营业执照</Option>
+              </Select>
+            </FormItem>
+            <FormItem label="证件号码: ">
+              <Input
+                type="text"
+                style="width:200px"
+                placeholder="请输入"
+                v-model="type3.identityNumber"
+                disabled
+              ></Input>
+            </FormItem>
+            <FormItem label="证件有效期: ">
+              <DatePicker
+                type="date"
+                placeholder="请选择"
+                style="width: 200px"
+                :value="type3.validFrom"
+                format="yyyy-MM-dd"
+                disabled
+              ></DatePicker>&nbsp;至&nbsp;
+              <DatePicker
+                type="date"
+                placeholder="请选择"
+                style="width: 200px"
+                :value="type3.validUntil"
+                format="yyyy-MM-dd"
+                disabled
+              ></DatePicker>
+            </FormItem>
+          </div>
+        </div>
+
+        <!-- 联系人信息 -->
+
         <!-- 子商户应用 -->
-        <h3 style="margin-bottom:10px">子商户应用</h3>
-        <FormItem label="子商户应用名称: ">
-          <Input
-            type="text"
-            style="width:200px"
-            placeholder="请输入"
-            v-model="form.ccc"
-            :maxlength="50"
-            disabled
-          ></Input>
-        </FormItem>
-        <FormItem label="公司名称: ">
-          <Input
-            type="text"
-            style="width:200px"
-            placeholder="请输入"
-            v-model="form.ddd"
-            :maxlength="32"
-            disabled
-          ></Input>
-        </FormItem>
-        <FormItem label="法人手机号: ">
-          <Input type="number" style="width:200px" placeholder="请输入" v-model="form.ddd" disabled></Input>
-        </FormItem>
-        <FormItem label="证件号码: ">
-          <Input type="text" style="width:200px" placeholder="请输入" v-model="form.ddd" disabled></Input>
-        </FormItem>
-        <FormItem label="证件有效期: ">
-          <Input type="number" style="width:230px" placeholder="请输入" v-model="form.ddd" disabled></Input>&nbsp;至&nbsp;
-          <Input type="number" style="width:230px" placeholder="请输入" v-model="form.ddd" disabled></Input>
-        </FormItem>
+        <div v-if="type4">
+          <h3 style="margin-bottom:10px">子商户应用</h3>
+          <FormItem label="姓名: ">
+            <Input
+              type="text"
+              style="width:200px"
+              placeholder="请输入"
+              v-model="type4.name"
+              :maxlength="32"
+              disabled
+            ></Input>
+          </FormItem>
+          <FormItem label="联系人手机号: ">
+            <Input
+              type="number"
+              style="width:200px"
+              placeholder="请输入"
+              v-model="type4.mobile"
+              disabled
+            ></Input>
+          </FormItem>
+          <FormItem label="证件类型: ">
+            <Select v-model="type4.identityType" style="width:200px" disabled>
+              <Option value="01">身份证</Option>
+              <Option value="02">企业营业执照</Option>
+            </Select>
+          </FormItem>
+          <FormItem label="证件号码: ">
+            <Input
+              type="text"
+              style="width:200px"
+              placeholder="请输入"
+              v-model="type4.identityNumber"
+              disabled
+            ></Input>
+          </FormItem>
+          <FormItem label="证件有效期: ">
+            <DatePicker
+              type="date"
+              placeholder="请选择"
+              style="width: 200px"
+              :value="type4.validFrom"
+              format="yyyy-MM-dd"
+              disabled
+            ></DatePicker>&nbsp;至&nbsp;
+            <DatePicker
+              type="date"
+              placeholder="请选择"
+              style="width: 200px"
+              :value="type4.validUntil"
+              format="yyyy-MM-dd"
+              disabled
+            ></DatePicker>
+          </FormItem>
+        </div>
+
         <!-- 子商户应用 -->
       </Form>
       <Divider></Divider>
@@ -235,64 +313,34 @@
     },
     data() {
       return {
+        type2: "",
+        type3: "",
+        type4: "",
         bsUploadList1: "",
         bsUploadList2: "",
         bsUploadList3: "",
         addMerchantList: [], //已选中商户列表
         form: {
           basicResponse: {
-            merchantName: "英孚教育-武林中心",
+            merchantName: "",
             openAccountStatus: null,
             failureReason: null,
             progress: null,
             bankCardStatus: null,
-            id: 1,
-            type: "customer",
-            merchantType: 0,
-            merchantId: "2019061342261",
-            brandId: 0,
+            type: "",
+            merchantType: null,
+            merchantId: "",
+            brandId: null,
             modifiedBy: "",
-            gmtModified: "2019-11-07T16:24:55.000+0000"
+            gmtModified: ""
           },
-          picListResponse: [
-            {
-              id: 2,
-              basicId: 1,
-              picUrl: "www.12345.com111",
-              picType: "101"
-            },
-            {
-              id: 3,
-              basicId: 1,
-              picUrl: "www.12345.com1111",
-              picType: "102"
-            }
-          ],
-          userListResponse: [
-            {
-              id: 1,
-              basicId: 1,
-              type: 1,
-              name: "李东帅11111",
-              displayName: null,
-              description: null,
-              mobile: "18068295311",
-              identityType: "01",
-              identityNumber: "34122419930616051X",
-              validFrom: "2019-12-12",
-              validUntil: "2020-12-12",
-              openAccountStatus: "submitted"
-            }
-          ],
           settleResponse: {
-            id: 10,
-            basicId: 1,
-            account: "4732947238946234",
-            name: "xxx科技有限公司",
-            type: "b2b",
-            mobile: "18068295311",
-            openBank: "中国银行",
-            cardType: 6,
+            account: "",
+            name: "",
+            type: "",
+            mobile: "",
+            openBank: "",
+            cardType: null,
             bankCardStatus: ""
           }
         },
@@ -345,7 +393,7 @@
               this.addMerchantList = [
                 {
                   name: res.data.basicResponse.merchantName,
-                  merchantId: res.basicResponse.data.merchantId
+                  merchantId: res.data.basicResponse.merchantId
                 }
               ];
             } else if (res.data.basicResponse.merchantType == 1) {
@@ -358,28 +406,57 @@
               ];
             }
 
-            // 证件信息
             if (res.data.basicResponse.type == "business") {
-              let list = res.data.picListResponse;
-              for (let i = 0; i < list.length; i++) {
-                if (list[i].picType == "201") {
-                  this.bsUploadList1 = list[i].picUrl;
+              // 证件信息
+              if (res.data.picListResponse) {
+                let list = res.data.picListResponse;
+                for (let i = 0; i < list.length; i++) {
+                  if (list[i].picType == "201") {
+                    this.bsUploadList1 = list[i].picUrl;
+                  }
+                  if (list[i].picType == "202") {
+                    this.bsUploadList2 = list[i].picUrl;
+                  }
+                  if (list[i].picType == "203") {
+                    this.bsUploadList3 = list[i].picUrl;
+                  }
                 }
-                if (list[i].picType == "202") {
-                  this.bsUploadList2 = list[i].picUrl;
-                }
-                if (list[i].picType == "203") {
-                  this.bsUploadList3 = list[i].picUrl;
+              }
+              if (res.data.userListResponse) {
+                // 联系人、子商户
+                let list1 = res.data.userListResponse;
+                for (let j = 0; j < list1.length; j++) {
+                  if (list1[j].type == 3) {
+                    this.type2 = list1[j];
+                  }
+                  if (list1[j].type == 4) {
+                    this.type3 = list1[j];
+                  }
+                  if (list1[j].type == 2) {
+                    this.type4 = list1[j];
+                  }
                 }
               }
             } else {
-              let list = res.data.picListResponse;
-              for (let i = 0; i < list.length; i++) {
-                if (list[i].picType == "101") {
-                  this.bsUploadList2 = list[i].picUrl;
+              // 证件信息
+              if (res.data.picListResponse) {
+                let list = res.data.picListResponse;
+                for (let i = 0; i < list.length; i++) {
+                  if (list[i].picType == "101") {
+                    this.bsUploadList2 = list[i].picUrl;
+                  }
+                  if (list[i].picType == "102") {
+                    this.bsUploadList3 = list[i].picUrl;
+                  }
                 }
-                if (list[i].picType == "102") {
-                  this.bsUploadList3 = list[i].picUrl;
+              }
+              if (res.data.userListResponse) {
+                // 用户信息
+                let list1 = res.data.userListResponse;
+                for (let j = 0; j < list1.length; j++) {
+                  if (list1[j].type == 1) {
+                    this.type2 = list1[j];
+                  }
                 }
               }
             }

@@ -837,3 +837,8 @@ export const editSettlementAccount = (params) => {
 export const getAllInfo = (id) => {
     return postRequest(`/trade/merchant/fund/account/detail/${id}`)
 }
+
+// 刷新
+export const refresh = (id) => {
+    return postRequest(`/trade/merchant/fund/account/user/refresh`)
+}
