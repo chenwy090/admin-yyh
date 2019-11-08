@@ -129,7 +129,12 @@
   </div>
 </template>
 <script>
-  import { addMerchantInfo, judgeMerchant, getMerchantInfo, editMerchantInfo } from "@/api/sys";
+  import {
+    addMerchantInfo,
+    judgeMerchant,
+    getMerchantInfo,
+    editMerchantInfo
+  } from "@/api/sys";
   import {
     getRequest,
     postRequest,
@@ -256,8 +261,8 @@
     created: function() {
       this.getprovincelist();
       this.userInfo = JSON.parse(localStorage.getItem("userInfo"));
-      if(this.addEdit == 2) {
-        this.getMerchantInfoFn()
+      if (this.addEdit == 2) {
+        this.getMerchantInfoFn();
       }
     },
     mounted() {},
@@ -265,27 +270,31 @@
       // 根据id获取信息
       getMerchantInfoFn() {
         getMerchantInfo(this.id).then(res => {
-          if(res.code == 200){
-            this.form.id = res.data.id
-            this.form.type = res.data.type
-            this.form.merchantType = res.data.merchantType
-            if(res.data.merchantType == 0) {
+          if (res.code == 200) {
+            this.form.id = res.data.id;
+            this.form.type = res.data.type;
+            this.form.merchantType = res.data.merchantType;
+            if (res.data.merchantType == 0) {
               // 单店
-              this.addMerchantList = [{
-                name:res.data.merchantName,
-                merchantId:res.data.merchantId
-              }]
-            }else if (res.data.merchantType == 1) {
+              this.addMerchantList = [
+                {
+                  name: res.data.merchantName,
+                  merchantId: res.data.merchantId
+                }
+              ];
+            } else if (res.data.merchantType == 1) {
               // 多店
-              this.addMerchantList = [{
-                name:res.data.merchantName,
-                id:res.data.brandId
-              }]
+              this.addMerchantList = [
+                {
+                  name: res.data.merchantName,
+                  id: res.data.brandId
+                }
+              ];
             }
-          }else {
-            this.msgErr(res.msg)
+          } else {
+            this.msgErr(res.msg);
           }
-        })
+        });
       },
 
       // 改变商户类型状态
@@ -416,45 +425,49 @@
 
       judge() {
         // 验证
-        if(!this.form.type) {
-          this.msgErr('请选择 个人用 或 企业对公用户')
-          return
+        if (!this.form.type) {
+          this.msgErr("请选择 个人用 或 企业对公用户");
+          return;
         }
-        if(this.form.merchantType == null) {
-          this.msgErr('请选择商户类型')
-          return
+        if (this.form.merchantType == null) {
+          this.msgErr("请选择商户类型");
+          return;
         }
-        if(this.addMerchantList.length == 0) {
-          let msg
-          if(this.form.merchantType == 0) {
-            msg = '商户'
-          }else {
-            msg = '品牌'
+        if (this.addMerchantList.length == 0) {
+          let msg;
+          if (this.form.merchantType == 0) {
+            msg = "商户";
+          } else {
+            msg = "品牌";
           }
-          this.msgErr('请选择' + msg)
-          return
+          this.msgErr("请选择" + msg);
+          return;
         }
-        let data = {};
-        if (this.form.merchantType == 0) {
-          data.type = 0;
-          data.merchantId = this.addMerchantList[0].merchantId;
-        } else {
-          data.type = 1;
-          data.brandId = this.addMerchantList[0].id;
-        }
+        if (this.merchantListTemp) {
+          let data = {};
+          if (this.form.merchantType == 0) {
+            data.type = 0;
+            data.merchantId = this.addMerchantList[0].merchantId;
+          } else {
+            data.type = 1;
+            data.brandId = this.addMerchantList[0].id;
+          }
 
-        judgeMerchant(data).then(res => {
-          if (res.code == 200) {
-            this.submit()
-          } else if (res.code == 300) {
-            this.$Modal.warning({
-              title: '资金账号冲突提示',
-              content: res.msg
-            });
-          }else {
-            this.msgErr(res.msg)
-          }
-        });
+          judgeMerchant(data).then(res => {
+            if (res.code == 200) {
+              this.submit();
+            } else if (res.code == 300) {
+              this.$Modal.warning({
+                title: "资金账号冲突提示",
+                content: res.msg
+              });
+            } else {
+              this.msgErr(res.msg);
+            }
+          });
+        }else {
+          this.submit();
+        }
       },
 
       submit() {
@@ -471,15 +484,15 @@
           // console.log(data);
           // return
           addMerchantInfo(data).then(res => {
-            if(res.code == 200) {
-              this.msgOk('新增成功')
-              this.goback()
-            }else {
-              this.msgErr(res.msg)
+            if (res.code == 200) {
+              this.msgOk("新增成功");
+              this.goback();
+            } else {
+              this.msgErr(res.msg);
             }
           });
         } else {
-          let data = this.form
+          let data = this.form;
           if (this.form.merchantType == 0) {
             data.merchantId = this.addMerchantList[0].merchantId;
           } else {
@@ -488,13 +501,13 @@
           data.modifiedBy = this.userInfo.username;
           // 编辑
           editMerchantInfo(data).then(res => {
-            if(res.code == 200) {
-              this.msgOk('编辑成功')
-              this.goback()
-            }else {
-              this.msgErr(res.msg)
+            if (res.code == 200) {
+              this.msgOk("编辑成功");
+              this.goback();
+            } else {
+              this.msgErr(res.msg);
             }
-          })
+          });
         }
       },
 

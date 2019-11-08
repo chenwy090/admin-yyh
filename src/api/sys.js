@@ -842,3 +842,17 @@ export const getAllInfo = (id) => {
 export const refresh = (id) => {
     return postRequest(`/trade/merchant/fund/account/user/refresh`)
 }
+
+//--------------------------------------商户打款 --------------------------
+
+// 打款列表
+export const getMerchantPayment = (params) => {
+    let obj = JSON.stringify(params)
+    return postRequest(`/trade/merchant/remit/page`, obj)
+}
+
+// 异常列表
+export const getAbnormalPayment = (params) => {
+    let obj = JSON.stringify(params)
+    return postRequest(`/trade/merchant/remit/page`, obj)
+}
