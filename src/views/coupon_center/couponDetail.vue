@@ -18,7 +18,7 @@
     </div>
     <div style="padding-top: 50px">
       <Card>
-        <p slot="title">查看详情</p>
+        <p slot="title">{{camp_pageStatus}}</p>
 
         <a href="#" slot="extra">
           <Button type="dashed" icon="md-arrow-round-back" @click="goback()">返回列表</Button>
@@ -368,6 +368,11 @@
               <Button @click="showLog">操作日志</Button>
             </Col>
           </Row>
+          <Row class="box" v-if="camp_pageStatus=='上架'">
+            <Col span="16">
+            <Button type="primary" @click="upStatus">上架</Button>
+            </Col>
+          </Row>
         </Row>
       </Card>
     </div>
@@ -381,7 +386,7 @@
 
 <script>
 import {
-    postJson
+    postJson,postRequest
 } from "@/libs/axios";
 import { baseUrl } from "@/api/index";
 import logModal from "./logInfo"
@@ -575,7 +580,8 @@ export default {
   },
   methods: {
     init() {
-      this.camp_pageStatus = this.getStore("camp_pageStatus");
+        console.log(11);
+        this.camp_pageStatus = this.getStore("camp_pageStatus");
       this.editInfo();
     },
       showLog(){
@@ -637,6 +643,37 @@ export default {
         });
 
     },
+      upStatus(item) {
+          const reqParams = {
+              templateId: this.couponEdit_info,
+              status: '1',
+              type:'优惠券管理'
+          };
+          postRequest(
+              "/merchantCouponTemplate/updStatus",
+              reqParams
+          ).then(res => {
+              if (res.code == 200) {
+                  this.msgOk("更新成功");
+                  this.updateTemplateStatusDisplay = false;
+                  //this.getList({});
+                  // 清空输入框
+                  this.formCustom.templateId = "";
+                  this.formCustom.type = "";
+                  this.formCustom.status = "";
+                  this.formCustom.remark = "";
+                  this.goback();
+              } else {
+                  this.msgErr(res.msg);
+              }
+          });
+      },
+      msgErr(txt) {
+          this.$Message.error({
+              content: txt,
+              duration: 3
+          });
+      },
       goback() {
           this.$emit("changeStatus", false);
       },
