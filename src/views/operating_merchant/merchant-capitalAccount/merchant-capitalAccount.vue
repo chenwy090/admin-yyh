@@ -22,13 +22,13 @@
       <Card :bordered="false">
         <Row class="operation">
           <Button type="primary" icon="md-add" @click="addInfo()">新增</Button>
-          <Button icon="md-refresh" @click="search">刷新</Button>
+          <Button icon="md-refresh" @click="refreshFn()">刷新开户状态</Button>
         </Row>
         <div>
           <!-- 用户列表 -->
           <Table border width="100%" :columns="columns8" :data="staffList" :loading="TableLoading">
             <template slot-scope="{ row }" slot="action">
-              <div v-if="row.type == 'business1'">
+              <div v-if="row.type == 'business'">
                 <!-- 企业 -->
                 <Button type="text" size="small" @click="editInfo(row)">编辑商户</Button>
                 <Button
@@ -63,7 +63,7 @@
                 >打款验证</Button>
                 <Button type="text" size="small" @click="viewDetailsFn(row)">查看详情</Button>
               </div>
-              <div v-else-if="row.type == 'customer1'">
+              <div v-else-if="row.type == 'customer'">
                 <!-- 个人 -->
                 <Button type="text" size="small" @click="editInfo(row)">编辑商户</Button>
                 <Button
@@ -87,7 +87,7 @@
                 <Button type="text" size="small" @click="viewDetailsFn(row)">查看详情</Button>
               </div>
               <!-- 测试用 -->
-              <div v-else>
+              <!-- <div v-else>
                 <Button type="text" size="small" @click="editInfo(row)">编辑商户</Button>
                 <Button type="text" size="small" @click="addCredentialsFn(row)">编辑证件</Button>
                 <Button type="text" size="small" @click="addContactInformationFn(row)">编辑用户（联系人）信息</Button>
@@ -95,7 +95,7 @@
                 <Button type="text" size="small" @click="addSubordinateMerchantsFn(row,1)">子应用</Button>
                 <Button type="text" size="small" @click="addSubordinateMerchantsFn(row,2)">打款验证</Button>
                 <Button type="text" size="small" @click="viewDetailsFn(row)">查看详情</Button>
-              </div>
+              </div> -->
             </template>
             <template slot-scope="{ row }" slot="gmtModified">
               <span>{{ row.gmtModified | time}}</span>
@@ -109,10 +109,9 @@
               <span v-else-if="row.type == 'customer'">个人</span>
             </template>
             <template slot-scope="{ row }" slot="openAccountStatus">
-              <span v-if="row.openAccountStatus == 'submitted'">已提交待激活</span>
+              <!-- <span v-if="row.openAccountStatus == 'submitted'">已提交待激活</span>
               <span v-else-if="row.openAccountStatus == 'pending'">处理审核中</span>
               <span v-else-if="row.openAccountStatus == 'succeeded'">开户成功</span>
-              <!-- <span v-else-if="row.openAccountStatus == 'failed'">开户失败</span> -->
               <span v-else-if="row.openAccountStatus == 'failed'">
                 开户失败
                 <Tooltip v-if="row.failureReason" :content="row.failureReason" placement="bottom">
@@ -121,6 +120,48 @@
                 </Tooltip>
               </span>
               <span v-else-if="row.openAccountStatus == 'frozen'">
+                账户冻结
+                <Tooltip v-if="row.failureReason" :content="row.failureReason" placement="bottom">
+                  （
+                  <a>查看原因</a>）
+                </Tooltip>
+              </span>-->
+              <span v-if="row.progress == 1 || row.progress == 2 || row.progress == 3">创建</span>
+              <span v-else-if="row.progress == 4">开户成功</span>
+              <span v-else-if="row.progress == 6">开户成功--结算审核通过</span>
+              <span v-else-if="row.progress == 7">开户成功--结算其他</span>
+              <span v-else-if="row.progress == 5">
+                <span v-if="row.openAccountStatus == 'submitted'">已提交待激活</span>
+                <span v-else-if="row.openAccountStatus == 'pending'">处理审核中</span>
+                <span v-else-if="row.openAccountStatus == 'succeeded'">开户成功</span>
+                <span v-else-if="row.openAccountStatus == 'failed'">
+                  开户失败
+                  <Tooltip v-if="row.failureReason" :content="row.failureReason" placement="bottom">
+                    （
+                    <a>查看原因</a>）
+                  </Tooltip>
+                </span>
+                <span v-else-if="row.openAccountStatus == 'frozen'">
+                  账户冻结
+                  <Tooltip v-if="row.failureReason" :content="row.failureReason" placement="bottom">
+                    （
+                    <a>查看原因</a>）
+                  </Tooltip>
+                </span>
+              </span>
+            </template>
+            <template slot-scope="{ row }" slot="bankCardStatus">
+              <span v-if="row.bankCardStatus == 'submitted'">已提交待激活</span>
+              <span v-else-if="row.bankCardStatus == 'pending'">处理审核中</span>
+              <span v-else-if="row.bankCardStatus == 'succeeded'">开户成功</span>
+              <span v-else-if="row.bankCardStatus == 'failed'">
+                开户失败
+                <Tooltip v-if="row.failureReason" :content="row.failureReason" placement="bottom">
+                  （
+                  <a>查看原因</a>）
+                </Tooltip>
+              </span>
+              <span v-else-if="row.bankCardStatus == 'frozen'">
                 账户冻结
                 <Tooltip v-if="row.failureReason" :content="row.failureReason" placement="bottom">
                   （
@@ -183,7 +224,7 @@
 </template>
 
 <<script>
-import { getMerchantFundList, getMerchantList, addStaff, editStaff, bind, delStaff } from '@/api/sys';
+import { getMerchantFundList, getMerchantList, addStaff, editStaff, bind, delStaff,refresh } from '@/api/sys';
 import {
     getRequest,
     postRequest,
@@ -276,6 +317,13 @@ export default {
           minWidth: 120,
           key: 'openAccountStatus',
           slot: "openAccountStatus",
+        },
+        {
+          title: '商户结算信息状态',
+          align: 'center',
+          minWidth: 120,
+          key: 'bankCardStatus',
+          slot: "bankCardStatus",
         },
         {
           title: '操作人',
@@ -404,6 +452,20 @@ export default {
     // 子商户应用返回数据
     showAddSubordinateMerchants (e) {
       this.addSubordinateMerchantsDispaly = e;
+    },
+
+    // 刷新
+    refreshFn() {
+      refresh().then(res => {
+        if(res.code == 200) {
+          this.search()
+        }else {
+          this.$Modal.warning({
+            title: '刷新失败',
+            content: '请稍后再试'
+          });
+        }
+      })
     },
 
 // 搜索

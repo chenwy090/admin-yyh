@@ -336,7 +336,7 @@
             {
               basicId: this.id,
               type: this.businessCustomer,
-              picUrl: this.bsUploadList3,
+              picUrl: this.bsUploadList2,
               picFmt: "jpg",
               picType: "202"
             },
