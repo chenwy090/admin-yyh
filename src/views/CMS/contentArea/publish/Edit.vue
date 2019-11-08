@@ -535,7 +535,8 @@ export default {
       console.log("removeImages", images);
     },
     imagesUploadSuccess({ images }) {
-      this.formData.images = images;
+        console.log(1);
+        this.formData.images = images;
       console.log("imagesUploadSuccess", this.formData.images);
     },
 

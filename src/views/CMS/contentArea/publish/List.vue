@@ -46,7 +46,7 @@
     <Card :bordered="false">
       <Table border :show-index="true" :loading="loading" :columns="columns" :data="tableData">
         <!-- action -->
-        <!-- 
+        <!--
            "1": "待审核",  //不能操作
            "2": "审核成功", //编辑
            "3": "已下架"    //编辑

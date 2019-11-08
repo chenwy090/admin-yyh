@@ -16,9 +16,7 @@
               v-else-if="row.code == '8'||row.code == '18'||row.code == '19'||row.code == '21'||row.code == '26'"
             >{{row.value}}元</div>
             <div v-else-if="row.code == '9'">{{row.value}}U贝=1元</div>
-            <div
-              v-else-if="row.code == '10'||row.code=='27'||row.code=='31'||row.code=='33'||row.code=='34'||row.code=='35'"
-            >{{row.value}}次</div>
+            <div v-else-if="row.code == '10'||row.code=='27'||row.code=='31'||row.code=='33'||row.code=='34'||row.code=='35'">{{row.value}}次</div>
             <div v-else-if="row.code == '11'||row.code == '12'||row.code == '13'||row.code == '14'">
               <p>第一名{{row.value.split(',')[0]}}U贝</p>
               <p>第二名{{row.value.split(',')[1]}}U贝</p>
@@ -79,8 +77,6 @@
 
     <!-- 提现-开关 -->
     <WithdrawalSwitch></WithdrawalSwitch>
-    <!-- 商户免审提现金额 -->
-    <WithdrawalFreeAmount></WithdrawalFreeAmount>
 
     <!--奖励配置-->
     <Modal v-model="modal1.isopen" :title="modal1.name" :mask-closable="false" footer-hide>
@@ -199,9 +195,7 @@
             <span class="ivu-form-item-label">U贝=1元</span>
           </Col>
         </Row>
-        <Row
-          v-else-if="modal1.code == '10'||modal1.code == '27'||modal1.code == '31'||modal1.code=='33'||modal1.code=='34'||modal1.code=='35'"
-        >
+        <Row v-else-if="modal1.code == '10'||modal1.code == '27'||modal1.code == '31'||modal1.code=='33'||modal1.code=='34'||modal1.code=='35'">
           <Col span="18">
             <FormItem label="次数">
               <InputNumber
@@ -312,13 +306,13 @@
           <Col span="18">
             <FormItem label="分钟">
               <InputNumber
-                :min="0"
-                :step="1"
-                type="text"
-                :precision="0"
-                v-model="modal1.value"
-                placeholder="请输入"
-                style="width: 100%"
+                      :min="0"
+                      :step="1"
+                      type="text"
+                      :precision="0"
+                      v-model="modal1.value"
+                      placeholder="请输入"
+                      style="width: 100%"
               ></InputNumber>
             </FormItem>
           </Col>
@@ -410,11 +404,9 @@ import { postRequest, getRequest } from "@/libs/axios";
 import { uploadOperationImage2AliOssURl } from "@/api/index";
 import EditorBar from "@/components/EditorBar";
 import WithdrawalSwitch from "./WithdrawalSwitch";
-import WithdrawalFreeAmount from "./WithdrawalFreeAmount";
-
 export default {
   name: "reward_deploy",
-  components: { EditorBar, WithdrawalSwitch, WithdrawalFreeAmount },
+  components: { EditorBar, WithdrawalSwitch },
   data() {
     return {
       userToken: {}, //用户token
@@ -692,9 +684,12 @@ export default {
       this.modal3.isopen = true;
       this.modal3.context = item.context;
       this.modal3.newcontext = item.context;
-      if (item.code == "12" || item.code == "13") {
+      if (
+          item.code == "12" ||
+          item.code == "13"
+      ){
         this.modal3.isEditor = false;
-      } else {
+      }else {
         this.modal3.isEditor = true;
       }
     },
@@ -741,7 +736,7 @@ export default {
       }
     },
     ok3(name) {
-      if (!this.modal3.isEditor) {
+      if (!this.modal3.isEditor){
         this.modal3.newcontext = this.modal3.context;
       }
       if (this.modal3.newcontext) {
