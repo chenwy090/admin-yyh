@@ -176,7 +176,7 @@
                         type="text"
                         size="small"
                         style="color:red"
-                        @click="upStatus(row)"
+                        @click="upStatus(row.templateId)"
                         v-if="row.templateStatus == '待发布'||row.templateStatus == '已结束'"
                 >上架</Button>
                 <!--<Button type="text" size="small" style="color:blue" @click="" v-if="row.templateStatus == '进行中' || row.templateStatus == '已结束' ">查看明细</Button>-->
@@ -838,11 +838,18 @@ export default {
       this.updateTemplateStatusDisplay = true;
     },
       // 传值到审核对话框
-      upStatus(row) {
-          this.formCustom.templateId = row.templateId;
-          this.formCustom.type = "优惠券管理";
-          this.formCustom.status = "1";
-          this.updateTemplateStatusDisplay = true;
+      upStatus(item) {
+          // this.formCustom.templateId = row.templateId;
+          // this.formCustom.type = "优惠券管理";
+          // this.formCustom.status = "1";
+          // this.updateTemplateStatusDisplay = true;
+
+
+
+          this.setStore("camp_pageStatus", "上架");
+          this.couponEdit_info = item;
+          this.couponDetailPage = true;
+          this.couponEditPage = false;
       },
 
     // 更新账户
@@ -854,7 +861,7 @@ export default {
         type: this.formCustom.type
       };
       postRequest(
-        "/merchantCouponTemplate/updStatus/",
+        "/merchantCouponTemplate/updStatus",
         reqParams
       ).then(res => {
         if (res.code == 200) {
@@ -895,7 +902,7 @@ export default {
 
       //查看详情
       detailInfo(item) {
-          this.setStore("camp_pageStatus", "detail");
+          this.setStore("camp_pageStatus","查看详情");
           this.couponEdit_info = item;
           this.couponDetailPage = true;
           this.couponEditPage = false;
