@@ -658,10 +658,6 @@ export default {
                   this.updateTemplateStatusDisplay = false;
                   //this.getList({});
                   // 清空输入框
-                  this.formCustom.templateId = "";
-                  this.formCustom.type = "";
-                  this.formCustom.status = "";
-                  this.formCustom.remark = "";
                   this.goback();
               } else {
                   this.msgErr(res.msg);
@@ -670,6 +666,13 @@ export default {
       },
       msgErr(txt) {
           this.$Message.error({
+              content: txt,
+              duration: 3
+          });
+      },
+      // 全局提示
+      msgOk(txt) {
+          this.$Message.info({
               content: txt,
               duration: 3
           });
