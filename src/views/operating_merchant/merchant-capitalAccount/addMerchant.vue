@@ -420,11 +420,11 @@
           this.msgErr('请选择 个人用 或 企业对公用户')
           return
         }
-        if(!this.form.merchantType) {
+        if(this.form.merchantType == null) {
           this.msgErr('请选择商户类型')
           return
         }
-        if(this.addMerchantList == []) {
+        if(this.addMerchantList.length == 0) {
           let msg
           if(this.form.merchantType == 0) {
             msg = '商户'
