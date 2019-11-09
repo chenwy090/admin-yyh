@@ -1,75 +1,58 @@
 <template>
   <!--  查看详情页  -->
   <div class="detail">
+    <h2>提现信息</h2>
+    <div>提现单号：{{formData.orderNo}}</div>
     <Row style="border:1px solid #ccc">
       <Col span="12">
         <Card>
           <Form label-position="right" :label-width="120">
-            <FormItem label="商户类型：">
-              <Radio :value="true" disabled>{{formData.merchantTypeName}}</Radio>
-            </FormItem>
-            <!-- label="商户名称：" -->
-            <FormItem :label="`${formData.businessTypeLabel}名称：`">{{formData.businessName}}</FormItem>
-
-            <FormItem label="最低提现金额：">{{formData.withdrawMin}}</FormItem>
-            <FormItem label="关联提现账号："></FormItem>
- 
-
-            <FormItem label="生效时间：">
-              <Radio :value="true" disabled>保存即生效</Radio>
-            </FormItem>
+            <FormItem label="商户名称：">{{formData.merchantName}}</FormItem>
+            <FormItem label="省市：">{{formData.provinceName}}/{{formData.cityName}}</FormItem>
+            <FormItem label="存款账号类型：">{{merchantTypeOption[formData.merchantType]}}</FormItem>
+            <FormItem label="银行账号：">{{formData.account}}</FormItem>
+            <FormItem label="开户名称：">{{formData.accountName}}</FormItem>
+            <FormItem label="开户行：">{{formData.openBank}}</FormItem>
           </Form>
         </Card>
       </Col>
       <Col span="12">
         <Card>
-          <p slot="title">Use a card with a shadow effect</p>
-          <p>Content of card</p>
-          <p>Content of card</p>
-          <p>Content of card</p>
+          <Form label-position="right" :label-width="120">
+            <FormItem label="提现前余额：">{{formData.accountBalance}}</FormItem>
+            <FormItem label="提现金额：">{{formData.applyAmount}}</FormItem>
+            <FormItem label="提现服务费：">{{formData.withdrawFee}}</FormItem>
+            <FormItem label="提现平台收取：">{{formData.platformFee}}</FormItem>
+            <FormItem label="提现时间：">{{formData.applyTime}}</FormItem>
+            <FormItem label="提现人姓名：">{{formData.bankUserName}}</FormItem>
+            <FormItem label="提现人手机：">{{formData.bankUserPhone}}</FormItem>
+          </Form>
         </Card>
       </Col>
     </Row>
-    <div>
-      <Form label-position="right" :label-width="120">
-        <FormItem label="商户类型：">
-          <Radio :value="true" disabled>{{formData.merchantTypeName}}</Radio>
-        </FormItem>
-        <!-- label="商户名称：" -->
-        <FormItem :label="`${formData.businessTypeLabel}名称：`">{{formData.businessName}}</FormItem>
 
-        <FormItem label="提现手续费：">
-          <span>企业对公账户：{{info.obj.corporateWithdrawFee.total}}元/每笔（银行{{info.obj.corporateWithdrawFee.bank}}元/每笔、平台{{info.obj.corporateWithdrawFee.platform}}元/每笔）</span>
-          <span>个人账户：{{info.obj.individualWithdrawFee.total}}元/每笔（银行{{info.obj.individualWithdrawFee.bank}}元/每笔）</span>
-        </FormItem>
-        <FormItem label="支付通道费：">
-          <span>
-            <Radio :value="true" disabled>平台承担</Radio>
-            {{info.obj.payPipelineFeeRate.wx}}%/每笔（微信）
-          </span>
-          <span>{{info.obj.payPipelineFeeRate.aliPay}}%/每笔（支付宝）</span>
-        </FormItem>
-
-        <FormItem label="润模板：">
-          <span>商户分润： {{info.obj.shareProfitRate.merchant}}%/每笔</span>
-          <span>平台分润： {{info.obj.shareProfitRate.platform}}%/每笔</span>
-          <span>（未分润部分归平台所有；分润金额四舍五入，保留至小数点两位）</span>
-        </FormItem>
-
-        <FormItem label="最低提现金额：">{{formData.withdrawMin}}</FormItem>
-        <FormItem label="关联提现账号："></FormItem>
-
-        
-
-        <FormItem label="生效时间：">
-          <Radio :value="true" disabled>保存即生效</Radio>
-        </FormItem>
-      </Form>
-    </div>
-
+    <h2>审核结果</h2>
     <template v-if="action.type=='detail'">
       <div>审核日志</div>
-      <Log :id="action.id"></Log>
+      <Form label-position="right" :label-width="120">
+        <FormItem label="审核结果：">{{statusOption[formData.auditStatus]}}</FormItem>
+        <FormItem label="原因：" v-if="formData.auditStatus!=1">
+          <Row>
+            <Col span="16">
+              <Input
+                v-model="formData.remarks"
+                type="textarea"
+                style="width:300px;resize: none;"
+                :autosize="{minRows: 8,maxRows: 8}"
+                :maxlength="100"
+                disabled
+              />
+            </Col>
+          </Row>
+        </FormItem>
+      </Form>
+
+      <!-- <Log :id="action.id"></Log> -->
     </template>
     <template v-else-if="action.type=='audit'">
       <Audit :id="action.id" @refresh="closeDialog"></Audit>
@@ -80,15 +63,14 @@
   </div>
 </template>
 <script>
-
 // // 日志表格
 // import Log from "./Log";
 // // 审核
-// import Audit from "./Audit";
+import Audit from "./Audit";
 
 export default {
   name: "detail",
-  // components: { Log, Audit },
+  components: { Audit },
   inject: {
     info: {
       default: () => {
@@ -159,16 +141,22 @@ export default {
       //   3: "零售商"
       // },
       //  '商户类型 0-本地商户（单店），1-本地商户（多店）' 2 商超门店、3 零售商
-      merchantTypeOption: [
-        {
-          value: 0,
-          label: "本地商户（单店）"
-        },
-        {
-          value: 1,
-          label: "本地商户（多店）"
-        }
-      ],
+      merchantTypeOption: { 0: "本地商户（单店）", 1: "本地商户（多店）" },
+      statusOption: {
+        "1": "待审核",
+        "2": "审核通过",
+        "3": "审核失败"
+      },
+      // merchantTypeOption: [
+      //   {
+      //     value: 0,
+      //     label: "本地商户（单店）"
+      //   },
+      //   {
+      //     value: 1,
+      //     label: "本地商户（多店）"
+      //   }
+      // ],
       formData: {
         merchantType: 0,
         merchantTypeName: "",
@@ -195,6 +183,9 @@ export default {
 };
 </script>
 <style scoped>
+.ivu-form-item {
+  margin-bottom: 0;
+}
 .demo-drawer-footer {
   width: 100%;
   position: fixed;

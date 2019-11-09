@@ -43,7 +43,7 @@
             </Select>
           </FormItem>
 
-          <FormItem label="提现人姓名：" :label-width="90">
+          <FormItem label="提现人姓名：" :label-width="100">
             <Input
               style="width: 200px"
               type="text"
@@ -53,7 +53,7 @@
             />
           </FormItem>
 
-          <FormItem label="提现人手机：" :label-width="90">
+          <FormItem label="提现人手机：" :label-width="100">
             <Input
               style="width: 200px"
               type="text"
@@ -67,19 +67,19 @@
               type="daterange"
               placeholder="请选择日期"
               style="width: 200px"
-              :value="withdrawTime"
+              :value="daterange"
               @on-change="changeStartDate"
             ></DatePicker>
           </FormItem>
           <FormItem label="审核状态：" :label-width="80">
-            <Select v-model="searchData.auditStatus" style="width:100px">
+            <Select v-model="searchData.auditStatus" style="width:100px" clearable>
               <Option v-for="(v,k) in statusOption" :value="k" :key="v">{{ v }}</Option>
             </Select>
           </FormItem>
 
           <!-- 开票： -->
           <FormItem label="开票：" :label-width="80">
-            <Select v-model="searchData.invoiceStatus" style="width:100px">
+            <Select v-model="searchData.invoiceStatus" style="width:100px" clearable>
               <Option v-for="(v,k) in invoiceStatusOption" :value="k" :key="v">{{ v }}</Option>
             </Select>
           </FormItem>
@@ -137,7 +137,7 @@
       <Edit v-if="showEdit" :showEdit.sync="showEdit" :action="action" @refresh="queryTableData"></Edit>
     </Drawer>-->
 
-    <!-- <Drawer
+    <Drawer
       v-model="showDetail"
       :closable="true"
       :mask-closable="true"
@@ -154,15 +154,19 @@
         :action="action"
         :detailData="detailData"
       ></Detail>
-    </Drawer>-->
+    </Drawer>
   </div>
 </template>
 <script>
 import { getRequest, postRequest } from "@/libs/axios";
-import columns from "./columns";
+import createColumns from "./columns";
+
+const columns = createColumns();
+
+console.log("columns,", columns);
 
 // import Edit from "./Edit";
-// import Detail from "./Detail";
+import Detail from "./Detail";
 // import Audit from "./Audit";
 // import ModalAuditLogList from "./ModalAuditLogList";
 
@@ -172,7 +176,7 @@ export default {
   components: {
     // ModalAuditLogList,
     // Edit,
-    // Detail,
+    Detail
     // Audit
   },
 
@@ -198,26 +202,30 @@ export default {
       // 状态： 全部 、 待审核 、 已通过 、 审核失败 ；默认全部
       // '审核状态 0-待审核 1-审核通过 2-审核失败',
       statusOption: {
-        "": "全部",
-        "0": "待审核",
-        "1": "已通过",
-        "2": "审核失败"
+        "2": "通过",
+        "3": "拒绝"
       },
       // 开票状态
-      invoiceStatus: 0,
+      invoiceStatus: "",
       invoiceStatusOption: {
-        "0": "开票状态0",
-        "1": "开票状态1"
+        "1": "未开票",
+        "2": "已开票"
       },
       // 查询参数
       id: 4,
       daterange: [],
       searchData: {
-        type: 0, //1单商户 2品牌
-        name: "", //商户名称
-        withdrawTime: [],
-        withdrawStartTime: "", //开始时间
-        withdrawEndTime: "" //结束时间
+        merchantType: 0, //0单商户 1品牌
+        orderNo: "", //提现单号
+        merchantName: "", //商户名称
+        provinceCode: "", //提现单号
+        cityCode: "", //省
+        orderNo: "", //市
+        userName: "", //提现人姓名：
+        userPhone: "", //提现人手机
+        withdrawTime: [], //提现时间
+        auditStatus: "", //审核状态
+        invoiceStatus: "" //开票状态
       },
       loading: false, //列表加载动画
       page: {
@@ -264,7 +272,8 @@ export default {
     changeStartDate(arr) {
       // yyyy-MM-dd HH:mm:ss
       console.log(arr);
-      this.withdrawTime = arr;
+      // this.daterange = arr;
+      this.searchData.withdrawTime = arr;
       let [startTime, endTime] = arr;
       if (startTime) {
         startTime = `${arr[0]}:00`;
@@ -307,8 +316,9 @@ export default {
     },
     async queryDataById(id) {
       // 查询详情
-      const url = `/trade/merchant/withdraw/${id}`;
-      const { code, data, msg } = await getRequest(url, { id });
+      const url = `/trade/merchant/withdraw/detail/${id}`;
+      // const { code, data, msg } = await getRequest(url, { id });
+      const { code, data, msg } = await getRequest(url);
       if (code == 200) {
         return data;
       } else {
@@ -361,9 +371,19 @@ export default {
     },
     reset() {
       // 重置查询参数
-      this.withdrawTime = []; // 时间
+      this.daterange = []; // 时间
       this.searchData = {
-        name: "" //商户名称
+        merchantType: 0, //0单商户 1品牌
+        orderNo: "", //提现单号
+        merchantName: "", //商户名称
+        provinceCode: "", //提现单号
+        cityCode: "", //省
+        orderNo: "", //市
+        userName: "", //提现人姓名：
+        userPhone: "", //提现人手机
+        withdrawTime: [], //提现时间
+        auditStatus: "", //审核状态
+        invoiceStatus: "" //开票
       };
       this.page = {
         page: 1, //页码

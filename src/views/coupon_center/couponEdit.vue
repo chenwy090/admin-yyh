@@ -350,7 +350,7 @@
             </Col>
             <Col span="20">
             <CheckboxGroup v-model="edit_info.couponSaleAfterList">
-              <Checkbox v-for="item in couponSaleAfterList" :label="item.code">{{item.value}}</Checkbox>
+              <Checkbox v-for="(item,index) in couponSaleAfterList" :key="index" :label="item.code">{{item.value}}</Checkbox>
             </CheckboxGroup>
             </Col>
           </Row>
@@ -480,7 +480,7 @@
             </Col>
             <Col span="20">
             <CheckboxGroup v-model="edit_info.couponPutChannelList">
-              <Checkbox v-for="item in couponPutChannelList" :label="item.code">{{item.value}}</Checkbox>
+              <Checkbox v-for="(item,index) in couponPutChannelList" :key="index" :label="item.code">{{item.value}}</Checkbox>
             </CheckboxGroup>
             </Col>
           </Row>
@@ -1331,7 +1331,7 @@ export default {
           postJson(baseUrl + "/merchantCouponTemplate/selectByTemplateId?templateId="+this.couponEdit_info.templateId,{}).then(res => {
               // console.log(res);
               if (res.code == 200) {
-                  var that = this;
+                  var that = this;debugger
                   this.edit_info = res.data;
                   this.edit_info.couponType = String(res.data.couponType);
                   this.edit_info.couponSaleAfterList = [];
@@ -1351,7 +1351,7 @@ export default {
                   this.imgSrc3 = this.edit_info.couponSimpleImg;
 
                   if (this.edit_info.couponKind == 2) {
-                      this.edit_info.price = this.edit_info.price / 100;
+                      // this.edit_info.price = this.edit_info.price / 100;
                   } else {
                       this.edit_info.price = 0;
                   }

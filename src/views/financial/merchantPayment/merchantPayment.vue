@@ -72,6 +72,15 @@
             @on-change="time2"
           ></DatePicker>
         </FormItem>
+        <FormItem label="提现时间：" :label-width="80">
+          <DatePicker
+            type="daterange"
+            placeholder="请选择日期"
+            style="width: 200px"
+            :value="daterange"
+            @on-change="changeStartDate"
+          ></DatePicker>
+        </FormItem>
         <FormItem label="打款状态: " :label-width="85">
           <Select v-model="searchData.remitStatus" style="width:100px;margin-left:10px">
             <Option :value="1">处理中</Option>
@@ -90,7 +99,7 @@
       </Row>-->
       <div>
         <!-- 用户列表 -->
-        <Table border width="100%" :columns="columns1" :data="staffList" :loading="TableLoading">
+        <Table border width="100%" :columns="columns1" :data="tableData" :loading="tableLoading">
           <template slot-scope="{ row }" slot="gmtModified">
             <span>{{ row.gmtModified | time}}</span>
           </template>
@@ -129,7 +138,6 @@ import {
     deleteRequest,
     uploadFileRequest
 } from "@/libs/axios";
-import { uploadOperationImage2AliOssURl } from "@/api/index";
 
 export default {
   name: "merchant-capitalAccount",
@@ -215,7 +223,8 @@ export default {
           key: 'gmtModified',
         },
       ],
-      staffList: [],
+      tableData: [],
+      daterange: [],
       searchData: { // 查询参数
         cityCode: "",
         limit: 10,
@@ -230,14 +239,17 @@ export default {
         ],
         userName: "",
         userPhone: "",
-        withdrawTime: [
-          ""
-        ]
+        withdrawTime: ["",""]
+      },
+      page: {
+        pageNum: 1, //页码
+        pageSize: 10, //每页数量
+        total: 0 //数据总数
       },
       // pagingType:'1', // 分页类型 1：初始化，2为搜索
       current: 1,
       totalSize: 0, //总条数
-      TableLoading: false, //列表加载动画
+      tableLoading: false, //列表加载动画
     }
   },
 
@@ -255,7 +267,19 @@ export default {
     this.search()
   },
   methods: {
-
+    changeStartDate(arr) {
+      // yyyy-MM-dd HH:mm:ss
+      console.log(arr);
+      // this.daterange = arr;
+      this.searchData.withdrawTime = arr;
+      let [startTime, endTime] = arr;
+      if (startTime) {
+        startTime = `${arr[0]}:00`;
+        endTime = `${arr[1]}:00`;
+      }
+      console.log(startTime, endTime);
+      // this.searchData.withdrawTime = [startTime,endTime];
+    },
       //获取省份信息数据
       getprovincelist() {
         postRequest("/system/area/province/list").then(res => {
@@ -314,6 +338,7 @@ export default {
 
 // 重置
     reset() {
+      this.daterange = []; // 时间
       this.searchData.merchantName =  ''
       this.searchData.cityCode = "",
       this.searchData.limit = 10,
@@ -325,23 +350,33 @@ export default {
       this.searchData.remitTime = [""],
       this.searchData.userName = "",
       this.searchData.userPhone = "",
-      this.searchData.withdrawTime =[""],
+      this.searchData.withdrawTime =["",""],
+
+      this.page = {
+        page: 1, //页码
+        size: 10, //每页数量
+        total: 0 //数据总数
+      };
       this.search()
     },
 
 
 // 打款列表
     getMerchantPaymentFn(obj) {
-      this.TableLoading = true;
+      this.tableLoading = true;
       getMerchantPayment(obj).then(res => {
         if(res.code == 200){
           // console.log(res);
-          this.staffList = res.data.records
+          this.tableData = res.data.records
           this.current = res.data.current
           this.totalSize = res.data.total
-          this.TableLoading = false
+          this.tableLoading = false
+          // this.tableData = records;
+          // this.page.pageNum = current; //分页查询起始记录
+          // this.page.total = total; //列表总数
+          // this.page.pageSize = size; //每页数据
         }else {
-            this.TableLoading = false
+            this.tableLoading = false
           this.msgErr(res.msg)
         }
       })
@@ -349,16 +384,16 @@ export default {
 
 // 异常列表
     getAbnormalPaymentFn(obj) {
-      this.TableLoading = true;
+      this.tableLoading = true;
       getAbnormalPayment(obj).then(res => {
         if(res.code == 200){
           // console.log(res);
-          this.staffList = res.data.records
+          this.tableData = res.data.records
           this.current = res.data.current
           this.totalSize = res.data.total
-          this.TableLoading = false
+          this.tableLoading = false
         }else {
-            this.TableLoading = false
+            this.tableLoading = false
           this.msgErr(res.msg)
         }
       })
@@ -478,10 +513,10 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-  .operation {
-    margin-bottom: 2vh;
-  }
-  .ivu-table-wrapper {
-    overflow: visible;
-  }
+.operation {
+  margin-bottom: 2vh;
+}
+.ivu-table-wrapper {
+  overflow: visible;
+}
 </style>

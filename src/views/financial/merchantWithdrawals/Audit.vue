@@ -4,20 +4,20 @@
     <div class="audit">
       <Form label-position="right" ref="form" :model="formData" :label-width="120">
         <FormItem label="审核结果：" prop="status">
-          <RadioGroup v-model="formData.auditResult">
+          <RadioGroup v-model="formData.auditStatus">
             <Radio v-for="(v,k) in examineStatusOption" :key="k" :label="k">{{ v }}</Radio>
           </RadioGroup>
         </FormItem>
         <FormItem
           label="原因："
-          prop="auditDesc"
-          :rules="{ required: formData.auditResult == 3?true:false,validator:formData.auditResult == 3?validateReason:null }"
+          prop="remarks"
+          :rules="{ required: formData.auditStatus == 3?true:false,validator:formData.auditStatus == 3?validateReason:null }"
         >
           <Row>
             <Col span="16">
-              <Tooltip trigger="focus" title="提醒" content="最多100个汉字" placement="right">
+              <Tooltip trigger="focus" title="提醒" content="最多50个汉字" placement="right">
                 <Input
-                  v-model="formData.auditDesc"
+                  v-model="formData.remarks"
                   type="textarea"
                   style="width:300px"
                   :autosize="{minRows: 4,maxRows: 8}"
@@ -47,6 +47,20 @@ export default {
       default: ""
     }
   },
+  watch: {
+    ["formData.auditStatus"]() {
+      const { auditStatus } = this.formData;
+      console.log("auditStatus", auditStatus);
+
+      //清空验证
+      if (auditStatus == 2) {
+        this.$refs.form.resetFields();
+        this.reasonPlaceholder = "请输入通过原因";
+      } else {
+        this.reasonPlaceholder = "请输入50字以内未通过原因";
+      }
+    }
+  },
   data() {
     return {
       // 审核状态 2-审核通过 3-审核不通过 审核结果2:通过、3：拒绝
@@ -58,8 +72,8 @@ export default {
       reasonPlaceholder: "请输入通过原因",
       formData: {
         id: "",
-        auditResult: "2",
-        auditDesc: ""
+        auditStatus: "2",
+        remarks: ""
       }
     };
   },
@@ -70,7 +84,7 @@ export default {
       if (value == "") {
         callback(new Error("审核原因不能为空"));
       } else if (value.length >= 50) {
-        callback(new Error("请输入100字以内的字符"));
+        callback(new Error("请输入50字以内的字符"));
       } else {
         callback();
       }
@@ -79,7 +93,7 @@ export default {
       this.$refs[name].validate(async valid => {
         if (valid) {
           // 审核
-          const url = "/trade/merchant/account/setting/audit";
+          const url = "/trade/merchant/withdraw/audit";
           const { code, msg } = await postRequest(url, {
             ...this.formData,
             id: this.id

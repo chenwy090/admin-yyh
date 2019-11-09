@@ -11,11 +11,8 @@
 <script>
 import { getRequest, postRequest } from "@/libs/axios";
 
-import columns from "./columns";
-// 单店
-import SingleStore from "./SingleStore";
-// 多店
-import MultiStore from "./MultiStore";
+// 提现明细
+import WithdrawDetails from "./WithdrawDetails";
 
 export default {
   name: "merchant-withdrawals",
@@ -28,7 +25,7 @@ export default {
       msgErr: this.msgErr
     };
   },
-  components: { SingleStore, MultiStore },
+  components: { WithdrawDetails },
   watch: {
     compName() {
       console.log("watch:compName", this.compName);
@@ -36,29 +33,24 @@ export default {
   },
   data() {
     return {
-      compName: "single-store",
+      compName: "withdraw-details",
       tabs: [
         {
           id: Math.random(),
           name: "xxx",
           merchantType: 0,
           label: "商户(单店)",
-          compName: "single-store"
-        },
-        {
-          id: Math.random(),
-          name: "xxx",
-          merchantType: 1,
-          label: "商户(多店)",
-          compName: "multi-store"
+          compName: "withdraw-details"
         }
       ]
     };
   },
   methods: {
-    async download(url) {
+    async download(url, params) {
       // const res = await downloadSteam(url);
-      const res = await getRequest(url);
+
+      params = JSON.stringify(params);
+      const res = await postRequest(url, params);
 
       const content = res.data;
 

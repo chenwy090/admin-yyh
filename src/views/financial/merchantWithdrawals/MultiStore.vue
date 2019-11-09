@@ -3,28 +3,28 @@
     <div class="query-row">
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
-          <FormItem label="提现单号：" :label-width="120">
+          <FormItem label="提现单号：" :label-width="80">
             <Input
               style="width:200px"
               type="text"
-              v-model="searchData.name"
+              v-model="searchData.orderNo"
               placeholder="请填写提现单号"
               clearable
             ></Input>
           </FormItem>
-          <FormItem label="商户名称">
+          <FormItem label="品牌名称：" :label-width="80">
             <Input
-              style="width: 150px"
+              style="width: 200px"
               type="text"
               v-model="searchData.merchantName"
               clearable
-              placeholder="请填写商户名称"
+              placeholder="请填写品牌名称"
             />
           </FormItem>
-          <FormItem style label="所在地区">
+          <FormItem style label="所在地区：" :label-width="80">
             <Select
               v-model="searchData.provinceCode"
-              style="width:150px"
+              style="width:120px"
               clearable
               @on-change="getcitylist"
             >
@@ -34,12 +34,7 @@
                 :value="item.provinceCode"
               >{{item.provinceName}}</Option>
             </Select>
-            <Select
-              v-model="searchData.cityCode"
-              style="width:150px"
-              clearable
-              @on-change="getarealist"
-            >
+            <Select v-model="searchData.cityCode" style="width:120px" clearable>
               <Option
                 v-for="(item,index) in citylist"
                 :key="index"
@@ -48,21 +43,21 @@
             </Select>
           </FormItem>
 
-          <FormItem label="提现人姓名">
+          <FormItem label="提现人姓名：" :label-width="100">
             <Input
-              style="width: 150px"
+              style="width: 200px"
               type="text"
-              v-model="searchData.merchantName"
+              v-model="searchData.userName"
               clearable
               placeholder="请填写提现人姓名"
             />
           </FormItem>
 
-          <FormItem label="提现人手机">
+          <FormItem label="提现人手机：" :label-width="100">
             <Input
-              style="width: 150px"
+              style="width: 200px"
               type="text"
-              v-model="searchData.merchantName"
+              v-model="searchData.userPhone"
               clearable
               placeholder="请填写提现人手机"
             />
@@ -71,20 +66,20 @@
             <DatePicker
               type="daterange"
               placeholder="请选择日期"
-              style="display:inline-block;width: 200px"
+              style="width: 200px"
               :value="daterange"
               @on-change="changeStartDate"
             ></DatePicker>
           </FormItem>
           <FormItem label="审核状态：" :label-width="80">
-            <Select v-model="searchData.status" style="width:100px">
+            <Select v-model="searchData.auditStatus" style="width:100px" clearable>
               <Option v-for="(v,k) in statusOption" :value="k" :key="v">{{ v }}</Option>
             </Select>
           </FormItem>
 
           <!-- 开票： -->
           <FormItem label="开票：" :label-width="80">
-            <Select v-model="searchData.invoiceStatus" style="width:100px">
+            <Select v-model="searchData.invoiceStatus" style="width:100px" clearable>
               <Option v-for="(v,k) in invoiceStatusOption" :value="k" :key="v">{{ v }}</Option>
             </Select>
           </FormItem>
@@ -99,7 +94,7 @@
       </Card>
     </div>
     <Card :bordered="false">
-      <Table border :show-index="true" :loading="loading" :columns="columns" :data="tableData">
+      <Table border :show-index="true" :loading="loading" :columns="computeCol" :data="tableData">
         <template slot-scope="{ row }" slot="action">
           <Button type="primary" size="small" style="margin-right: 5px" @click="detail(row.id)">查看</Button>
 
@@ -142,7 +137,7 @@
       <Edit v-if="showEdit" :showEdit.sync="showEdit" :action="action" @refresh="queryTableData"></Edit>
     </Drawer>-->
 
-    <!-- <Drawer
+    <Drawer
       v-model="showDetail"
       :closable="true"
       :mask-closable="true"
@@ -159,18 +154,19 @@
         :action="action"
         :detailData="detailData"
       ></Detail>
-    </Drawer>-->
+    </Drawer>
   </div>
 </template>
 <script>
 import { getRequest, postRequest } from "@/libs/axios";
-import columns from "./columns";
+import createColumns from "./columns";
+
+const columns = createColumns();
 
 // import Edit from "./Edit";
-// import Detail from "./Detail";
+import Detail from "./Detail";
 // import Audit from "./Audit";
 // import ModalAuditLogList from "./ModalAuditLogList";
-
 
 export default {
   name: "multi-store",
@@ -178,8 +174,23 @@ export default {
   components: {
     // ModalAuditLogList,
     // Edit,
-    // Detail,
+    Detail
     // Audit
+  },
+  computed: {
+    computeCol() {
+      let columns = this.columns;
+      if (!this.isIndex) {
+        columns = columns.map(item => {
+          if (item.key == "merchantName") {
+            item.title = "品牌名称";
+          }
+          return item;
+        });
+      }
+
+      return columns;
+    }
   },
 
   data() {
@@ -204,25 +215,30 @@ export default {
       // 状态： 全部 、 待审核 、 已通过 、 审核失败 ；默认全部
       // '审核状态 0-待审核 1-审核通过 2-审核失败',
       statusOption: {
-        "": "全部",
-        "0": "待审核",
-        "1": "已通过",
-        "2": "审核失败"
+        "2": "通过",
+        "3": "拒绝"
       },
       // 开票状态
-      invoiceStatus: 0,
+      invoiceStatus: "",
       invoiceStatusOption: {
-        "0": "开票状态0",
-        "1": "开票状态1"
+        "1": "未开票",
+        "2": "已开票"
       },
       // 查询参数
       id: 4,
       daterange: [],
       searchData: {
-        type: 0, //1单商户 2品牌
-        name: "", //商户名称
-        withdrawStartTime: "", //开始时间
-        withdrawEndTime: "" //结束时间
+        merchantType: 1, //0单商户 1品牌
+        orderNo: "", //提现单号
+        merchantName: "", //品牌名称
+        provinceCode: "", //提现单号
+        cityCode: "", //省
+        orderNo: "", //市
+        userName: "", //提现人姓名：
+        userPhone: "", //提现人手机
+        withdrawTime: [], //提现时间
+        auditStatus: "", //审核状态
+        invoiceStatus: "" //开票状态
       },
       loading: false, //列表加载动画
       page: {
@@ -238,14 +254,39 @@ export default {
       citylist: []
     };
   },
-  created() {
+  mounted() {
     this.queryTableData();
-    this.getXxx();
+    this.getprovincelist();
   },
   methods: {
+    //获取省份信息数据
+    getprovincelist() {
+      const url = "/system/area/province/list";
+      postRequest(url).then(res => {
+        if (res.code == 200) {
+          this.provincelist = res.data;
+        } else {
+          this.msgErr(res.msg);
+        }
+      });
+    },
+    //根据省份code获取城市信息数据
+    getcitylist() {
+      const url = "/system/area/city/" + this.searchData.provinceCode;
+      getRequest(url).then(res => {
+        if (res.code == 200) {
+          this.citylist = res.data;
+          this.searchData.areaId = "";
+        } else {
+          this.msgErr(res.msg);
+        }
+      });
+    },
     changeStartDate(arr) {
       // yyyy-MM-dd HH:mm:ss
       console.log(arr);
+      // this.daterange = arr;
+      this.searchData.withdrawTime = arr;
       let [startTime, endTime] = arr;
       if (startTime) {
         startTime = `${arr[0]}:00`;
@@ -261,19 +302,6 @@ export default {
       this.$nextTick(_ => {
         this.showAuditLogList = true;
       });
-    },
-    async getXxx() {
-      // 查询提现配置
-      const url = "/trade/merchant/account/setting/withdraw/config";
-      const { code, msg, data } = await getRequest(url);
-     
-      if (code == 200) {
-        console.log("xxxx", data);
-
-        this.obj = data;
-      } else {
-        this.msgErr(msg);
-      }
     },
     async audit(id) {
       const data = await this.queryDataById(id);
@@ -300,9 +328,10 @@ export default {
       this.showDetail = true;
     },
     async queryDataById(id) {
-      // 查询单个详情
-      const url = "/trade/merchant/account/setting";
-      const { code, data, msg } = await getRequest(url, { id });
+      // 查询详情
+      const url = `/trade/merchant/withdraw/detail/${id}`;
+      // const { code, data, msg } = await getRequest(url, { id });
+      const { code, data, msg } = await getRequest(url);
       if (code == 200) {
         return data;
       } else {
@@ -333,8 +362,8 @@ export default {
     async queryTableData(pageNum) {
       this.page.pageNum = pageNum || 1;
       this.loading = true;
-
-      const url = "/trade/merchant/account/setting/list";
+      // 提现列表
+      const url = "/trade/merchant/withdraw/page";
 
       let {
         code,
@@ -357,7 +386,17 @@ export default {
       // 重置查询参数
       this.daterange = []; // 时间
       this.searchData = {
-        name: "" //商户名称
+        merchantType: 1, //0单商户 1品牌
+        orderNo: "", //提现单号
+        merchantName: "", //商户名称
+        provinceCode: "", //提现单号
+        cityCode: "", //省
+        orderNo: "", //市
+        userName: "", //提现人姓名：
+        userPhone: "", //提现人手机
+        withdrawTime: [], //提现时间
+        auditStatus: "", //审核状态
+        invoiceStatus: "" //开票
       };
       this.page = {
         page: 1, //页码
@@ -366,19 +405,6 @@ export default {
       };
       //重新查询一遍
       this.queryTableData();
-    },
-    // 全局提示
-    msgOk(txt) {
-      this.$Message.info({
-        content: txt,
-        duration: 3
-      });
-    },
-    msgErr(txt) {
-      this.$Message.error({
-        content: txt,
-        duration: 3
-      });
     }
   }
 };

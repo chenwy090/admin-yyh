@@ -35,31 +35,31 @@
                   type="text"
                   size="small"
                   @click="addCredentialsFn(row)"
-                  :disabled="row.progress != 4"
+                  :disabled="row.progress == 4"
                 >编辑证件</Button>
                 <Button
                   type="text"
                   size="small"
                   @click="addContactInformationFn(row)"
-                  :disabled="row.progress != 1 || row.progress != 4"
+                  :disabled="row.progress == 1 || row.progress == 4"
                 >编辑联系人信息</Button>
                 <Button
                   type="text"
                   size="small"
                   @click="addSettlementAccountFn(row)"
-                  :disabled="row.progress != 1 || row.progress != 2 || row.progress != 3"
+                  :disabled="row.progress == 1 || row.progress == 2 || row.progress == 3"
                 >结算账号</Button>
                 <Button
                   type="text"
                   size="small"
                   @click="addSubordinateMerchantsFn(row,1)"
-                  :disabled="row.progress == 5 || row.progress == 6 || row.progress == 7"
+                  :disabled="row.progress != 3 ||row.progress != 5 || row.progress != 6 || row.progress != 7"
                 >子应用</Button>
                 <Button
                   type="text"
                   size="small"
                   @click="addSubordinateMerchantsFn(row,2)"
-                  :disabled="row.progress == 7"
+                  :disabled="row.progress != 7"
                 >打款验证</Button>
                 <Button type="text" size="small" @click="viewDetailsFn(row)">查看详情</Button>
               </div>
@@ -70,24 +70,26 @@
                   type="text"
                   size="small"
                   @click="addCredentialsFn(row)"
-                  :disabled="row.progress == 1 || row.progress == 2 || row.progress == 5"
+                  :disabled="row.progress != 1 || row.progress != 2 || row.progress != 5"
                 >编辑证件</Button>
                 <Button
                   type="text"
                   size="small"
                   @click="addContactInformationFn(row)"
-                  :disabled="row.progress == 2 || row.progress == 5"
+                  :disabled="row.progress != 2 || row.progress != 5"
                 >编辑用户信息</Button>
                 <Button
                   type="text"
                   size="small"
                   @click="addSettlementAccountFn(row)"
-                  :disabled="row.progress == 4 || row.progress == 5"
+                  :disabled="row.progress != 4 || row.progress != 5"
                 >结算账号</Button>
                 <Button type="text" size="small" @click="viewDetailsFn(row)">查看详情</Button>
               </div>
+
+              <hr />
               <!-- 测试用 -->
-              <!-- <div v-else>
+              <div>
                 <Button type="text" size="small" @click="editInfo(row)">编辑商户</Button>
                 <Button type="text" size="small" @click="addCredentialsFn(row)">编辑证件</Button>
                 <Button type="text" size="small" @click="addContactInformationFn(row)">编辑用户（联系人）信息</Button>
@@ -95,7 +97,7 @@
                 <Button type="text" size="small" @click="addSubordinateMerchantsFn(row,1)">子应用</Button>
                 <Button type="text" size="small" @click="addSubordinateMerchantsFn(row,2)">打款验证</Button>
                 <Button type="text" size="small" @click="viewDetailsFn(row)">查看详情</Button>
-              </div> -->
+              </div>
             </template>
             <template slot-scope="{ row }" slot="gmtModified">
               <span>{{ row.gmtModified | time}}</span>

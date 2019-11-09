@@ -47,6 +47,20 @@ export default {
       default: ""
     }
   },
+  watch: {
+    ["formData.auditResult"]() {
+      const { auditResult } = this.formData;
+      console.log("auditResult", auditResult);
+
+      //清空验证
+      if (auditResult == 2) {
+        this.$refs.form.resetFields();
+        this.reasonPlaceholder = "请输入通过原因";
+      } else {
+        this.reasonPlaceholder = "请输入100字以内未通过原因";
+      }
+    }
+  },
   data() {
     return {
       // 审核状态 2-审核通过 3-审核不通过 审核结果2:通过、3：拒绝
@@ -69,7 +83,7 @@ export default {
       value = value.trim();
       if (value == "") {
         callback(new Error("审核原因不能为空"));
-      } else if (value.length >= 50) {
+      } else if (value.length >= 100) {
         callback(new Error("请输入100字以内的字符"));
       } else {
         callback();

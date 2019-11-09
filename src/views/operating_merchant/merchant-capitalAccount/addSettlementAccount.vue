@@ -46,158 +46,164 @@
             style="width:240px;margin-right: 20px; float: left;"
             @click="goback()"
           >取&nbsp;&nbsp;&nbsp;消</Button>
-          <Button type="primary" style="width:240px; float: left;" @click="editSettlementAccountFn()">保&nbsp;&nbsp;&nbsp;存</Button>
+          <Button
+            type="primary"
+            style="width:240px; float: left;"
+            @click="editSettlementAccountFn()"
+          >保&nbsp;&nbsp;&nbsp;存</Button>
         </FormItem>
       </Form>
     </Card>
   </div>
 </template>
 <script>
-  import { getSettlementAccount, editSettlementAccount } from "@/api/sys";
-  import {
-    getRequest,
-    postRequest,
-    putRequest,
-    deleteRequest,
-    uploadFileRequest
-  } from "@/libs/axios";
-  import { baseUrl, uploadOperationImage2AliOssURl } from "@/api/index";
-  import { formatDate, checkImageWH, checkImage, uniqueArray } from "@/libs/date";
+import { getSettlementAccount, editSettlementAccount } from "@/api/sys";
+import {
+  getRequest,
+  postRequest,
+  putRequest,
+  deleteRequest,
+  uploadFileRequest
+} from "@/libs/axios";
+import { baseUrl, uploadOperationImage2AliOssURl } from "@/api/index";
+import { formatDate, checkImageWH, checkImage, uniqueArray } from "@/libs/date";
 
-  export default {
-    name: "addSettlementAccount",
-    props: {
-      id: null,
-      businessCustomer: null
-    },
-    data() {
-      return {
-        userInfo: "",
-        addEdit: null, // 1新增 2编辑
-        bsUploadList: [],
-        url: uploadOperationImage2AliOssURl,
-        form: {
-          basicId: "",
-          account: "",
-          name: "",
-          type: "",
-          mobile: "",
-          openBank: "",
-          cardType: null
-        }
-      };
-    },
-    created: function() {
-      this.userInfo = JSON.parse(localStorage.getItem("userInfo"));
-      this.getSettlementAccountFn();
-      if(this.businessCustomer == 'customer') {
-        this.form.type = 'b2c'
-      }else {
-        this.form.type = 'b2b'
+export default {
+  name: "addSettlementAccount",
+  props: {
+    id: null,
+    businessCustomer: null
+  },
+  data() {
+    return {
+      userInfo: "",
+      addEdit: null, // 1新增 2编辑
+      bsUploadList: [],
+      url: uploadOperationImage2AliOssURl,
+      form: {
+        basicId: "",
+        account: "",
+        name: "",
+        type: "",
+        mobile: "",
+        openBank: "",
+        cardType: null
       }
-    },
-    mounted() {},
-    methods: {
-      // 根据id获取信息
-      getSettlementAccountFn() {
-        getSettlementAccount(this.id).then(res => {
-          if (res.code == 200) {
-            if (res.data != null) {
-              this.addEdit = 2;
-              this.form = res.data
-            } else {
-              this.addEdit = 1;
-            }
-          }else {
-            this.msgErr(res.msg)
-          }
-        });
-      },
-
-      // 新增编辑
-      editSettlementAccountFn() {
-        // 验证
-        if (!this.ruleValidate()) {
-          return;
-        }
-
-        if (this.addEdit == 1) {
-          this.form.createBy = this.userInfo.username;
-          this.form.modifiedBy = this.userInfo.username;
-        } else {
-          this.form.modifiedBy = this.userInfo.username;
-          this.form.operateType = "update";
-        }
-        this.form.basicId = this.id
-        editSettlementAccount(this.form).then(res => {
-          if (res.code == 200) {
-            this.msgOk("保存成功");
-            this.goback();
-          } else {
-            this.msgErr(res.msg);
-          }
-        })
-      },
-
-      // 验证
-      ruleValidate() {
-        if (!this.form.account) {
-          this.msgErr("请输入银行账号");
-          return;
-        }
-        if (!this.form.name) {
-          this.msgErr("请输入开户名");
-          return;
-        }
-        if (!this.form.mobile) {
-          this.msgErr("请输入手机号");
-          return;
-        }
-        if (!this.form.openBank) {
-          this.msgErr("请输入开户行名称");
-          return;
-        }
-        if (!this.form.type) {
-          this.msgErr("请输入转账类型");
-          return;
-        }
-        if (!this.form.cardType) {
-          this.msgErr("请输入银行卡号类型");
-          return;
-        }
-        return true;
-      },
-
-      // 返回
-      goback() {
-        this.$emit("changeStatus", false);
-      },
-
-      // 全局提示
-      msgOk(txt) {
-        this.$Message.info({
-          content: txt,
-          duration: 3
-        });
-      },
-      msgErr(txt) {
-        this.$Message.error({
-          content: txt,
-          duration: 3
-        });
-      }
+    };
+  },
+  created: function() {
+    this.userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    this.getSettlementAccountFn();
+    if (this.businessCustomer == "customer") {
+      this.form.type = "b2c";
+    } else {
+      this.form.type = "b2b";
     }
-  };
+  },
+  mounted() {},
+  methods: {
+    // 根据id获取信息
+    getSettlementAccountFn() {
+      getSettlementAccount(this.id).then(res => {
+        if (res.code == 200) {
+          if (res.data != null) {
+            this.addEdit = 2;
+            this.form = res.data;
+          } else {
+            this.addEdit = 1;
+          }
+        } else {
+          this.msgErr(res.msg);
+        }
+      });
+    },
+
+    // 新增编辑
+    editSettlementAccountFn() {
+      // 验证
+      if (!this.ruleValidate()) {
+        return;
+      }
+
+      if (this.addEdit == 1) {
+        this.form.createBy = this.userInfo.username;
+        this.form.modifiedBy = this.userInfo.username;
+      } else {
+        this.form.modifiedBy = this.userInfo.username;
+        this.form.operateType = "update";
+      }
+      this.form.basicId = this.id;
+      editSettlementAccount(this.form).then(res => {
+        if (res.code == 200) {
+          this.msgOk("保存成功");
+          this.goback();
+        } else {
+          this.msgErr(res.msg);
+        }
+      });
+    },
+
+    // 验证
+    ruleValidate() {
+      if (!this.form.account) {
+        this.msgErr("请输入银行账号");
+        return;
+      }
+      if (!this.form.name) {
+        this.msgErr("请输入开户名");
+        return;
+      }
+      if (!this.form.mobile) {
+        this.msgErr("请输入手机号");
+        return;
+      }
+      if (!this.form.openBank) {
+        this.msgErr("请输入开户行名称");
+        return;
+      }
+      if (!this.form.type) {
+        this.msgErr("请输入转账类型");
+        return;
+      }
+
+      const cardTypes = [0, 2, 3, 5];
+      if (!cardTypes.includes(this.form.cardType)) {
+        this.msgErr("请输入银行卡号类型");
+        return;
+      }
+      return true;
+    },
+
+    // 返回
+    goback() {
+      this.$emit("changeStatus", false);
+    },
+
+    // 全局提示
+    msgOk(txt) {
+      this.$Message.info({
+        content: txt,
+        duration: 3
+      });
+    },
+    msgErr(txt) {
+      this.$Message.error({
+        content: txt,
+        duration: 3
+      });
+    }
+  }
+};
 </script>
 
 <style>
-  .box {
-    margin-bottom: 20px;
-  }
+.box {
+  margin-bottom: 20px;
+}
 
-  .CertificatesImg {
-    display: inline-block;
-    width: 130px;
-    height: 80px;
-  }
+.CertificatesImg {
+  display: inline-block;
+  width: 130px;
+  height: 80px;
+}
 </style>

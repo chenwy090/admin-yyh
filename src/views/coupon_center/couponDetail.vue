@@ -608,7 +608,7 @@ export default {
                 this.imgSrc3 = this.edit_info.couponSimpleImg;
 
                 if (this.edit_info.couponKind == 2) {
-                    this.edit_info.price = this.edit_info.price;
+                    // this.edit_info.price = this.edit_info.price;
                 } else {
                     this.edit_info.price = 0;
                 }
