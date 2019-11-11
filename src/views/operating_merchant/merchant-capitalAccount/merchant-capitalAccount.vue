@@ -36,28 +36,28 @@
                   type="text"
                   size="small"
                   @click="addCredentialsFn(row)"
-                  v-if="row.progress != 4"
+                  v-if="row.progress == 1 || row.progress == 2 || row.progress == 3 || row.progress == 5"
                 >编辑证件</Button>
                 <Button type="text" size="small" disabled v-else>编辑证件</Button>
                 <Button
                   type="text"
                   size="small"
                   @click="addContactInformationFn(row)"
-                  v-if="row.progress == 2 || row.progress == 3 || row.progress == 5 || row.progress == 6 || row.progress == 7"
+                  v-if="row.progress == 2 || row.progress == 3 || row.progress == 5"
                 >编辑联系人信息</Button>
                 <Button type="text" size="small" disabled v-else>编辑联系人信息</Button>
                 <Button
                   type="text"
                   size="small"
                   @click="addSettlementAccountFn(row)"
-                  v-if="row.progress == 4 || row.progress == 5 || row.progress == 6 || row.progress == 7"
+                  v-if="row.progress == 4 || row.progress == 6 || row.progress == 7"
                 >结算账号</Button>
                 <Button type="text" size="small" disabled v-else>结算账号</Button>
                 <Button
                   type="text"
                   size="small"
                   @click="addSubordinateMerchantsFn(row,1)"
-                  v-if="row.progress == 3 ||row.progress == 5 || row.progress == 6 || row.progress == 7"
+                  v-if="row.progress == 3 ||row.progress == 5"
                 >子应用</Button>
                 <Button type="text" size="small" disabled v-else>子应用</Button>
                 <Button
@@ -373,10 +373,6 @@ export default {
 　　　　}
 　　},
   created: function() {
-    // console.log(this.merchantId);
-    // this.searchData.merchantId = this.merchantId
-    // this.formValidate.merchantId = this.merchantId
-    // this.getMerchantListFn()
     this.search()
     this.userToken = {
         jwttoken: localStorage.getItem("jwttoken")
@@ -494,18 +490,6 @@ export default {
       // this.pagingType = '1'
       this.search()
     },
-
-
-// // 获取商户列表
-//     getMerchantListFn() {
-//       getMerchantList().then(res => {
-//         if(res.code == 200) {
-//           this.merchantList = res.data.records
-//         }else {
-//           this.msgErr(res.msg)
-//         }
-//       })
-//     },
 
 // 查询列表
     getMerchantFundListFn(obj) {
