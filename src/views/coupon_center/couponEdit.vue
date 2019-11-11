@@ -1331,7 +1331,7 @@ export default {
           postJson(baseUrl + "/merchantCouponTemplate/selectByTemplateId?templateId="+this.couponEdit_info.templateId,{}).then(res => {
               // console.log(res);
               if (res.code == 200) {
-                  var that = this;debugger
+                  var that = this;
                   this.edit_info = res.data;
                   this.edit_info.couponType = String(res.data.couponType);
                   this.edit_info.couponSaleAfterList = [];
