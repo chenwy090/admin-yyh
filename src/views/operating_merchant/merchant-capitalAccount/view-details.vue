@@ -51,64 +51,66 @@
         <!-- 证件信息 -->
 
         <!-- 关联结算账号 -->
-        <h3 style="margin-bottom:10px">关联结算账号</h3>
-        <FormItem label="银行账号: ">
-          <Input
-            type="text"
-            style="width:200px"
-            placeholder="请输入"
-            v-model="form.settleResponse.account"
-            :maxlength="32"
-            disabled
-          ></Input>
-        </FormItem>
-        <FormItem label="开户名: ">
-          <Input
-            type="text"
-            style="width:200px"
-            placeholder="请输入"
-            v-model="form.settleResponse.name"
-            disabled
-          ></Input>
-        </FormItem>
-        <FormItem label="银行预留手机: ">
-          <Input
-            type="number"
-            style="width:200px"
-            placeholder="请输入"
-            v-model="form.settleResponse.mobile"
-            disabled
-          ></Input>
-        </FormItem>
-        <FormItem label="开户行名称: ">
-          <Input
-            type="text"
-            style="width:200px"
-            placeholder="请输入"
-            v-model="form.settleResponse.openBank"
-            disabled
-          ></Input>
-        </FormItem>
-        <FormItem label="转账类型: ">
-          <RadioGroup v-model="form.settleResponse.type">
-            <Radio label="b2c" disabled>个人账号</Radio>
-            <Radio style="margin-left:20px" label="b2b" disabled>企业对公户</Radio>
-          </RadioGroup>
-        </FormItem>
-        <FormItem label="银行卡号类型: ">
-          <!-- 个人 -->
-          <RadioGroup>
-            <Radio disabled :label="0">银行卡借记卡</Radio>
-            <Radio disabled :label="2" style="margin-left:20px">信用卡</Radio>
-            <Radio disabled :label="3" style="margin-left:20px">准贷记卡</Radio>
-            <Radio disabled :label="5" style="margin-left:20px">虚拟卡</Radio>
-          </RadioGroup>
-          <!-- 企业 -->
-          <RadioGroup v-model="form.settleResponse.cardType">
-            <Radio disabled :label="6">基本户</Radio>
-            <Radio disabled :label="7" style="margin-left:20px">一般户</Radio>
-          </RadioGroup>
-        </FormItem>
+        <div v-if="form.settleResponse">
+          <h3 style="margin-bottom:10px">关联结算账号</h3>
+          <FormItem label="银行账号: ">
+            <Input
+              type="text"
+              style="width:200px"
+              placeholder="请输入"
+              v-model="form.settleResponse.account"
+              :maxlength="32"
+              disabled
+            ></Input>
+          </FormItem>
+          <FormItem label="开户名: ">
+            <Input
+              type="text"
+              style="width:200px"
+              placeholder="请输入"
+              v-model="form.settleResponse.name"
+              disabled
+            ></Input>
+          </FormItem>
+          <FormItem label="银行预留手机: ">
+            <Input
+              type="number"
+              style="width:200px"
+              placeholder="请输入"
+              v-model="form.settleResponse.mobile"
+              disabled
+            ></Input>
+          </FormItem>
+          <FormItem label="开户行名称: ">
+            <Input
+              type="text"
+              style="width:200px"
+              placeholder="请输入"
+              v-model="form.settleResponse.openBank"
+              disabled
+            ></Input>
+          </FormItem>
+          <FormItem label="转账类型: ">
+            <RadioGroup v-model="form.settleResponse.type">
+              <Radio label="b2c" disabled>个人账号</Radio>
+              <Radio style="margin-left:20px" label="b2b" disabled>企业对公户</Radio>
+            </RadioGroup>
+          </FormItem>
+          <FormItem label="银行卡号类型: ">
+            <!-- 个人 -->
+            <RadioGroup>
+              <Radio disabled :label="0">银行卡借记卡</Radio>
+              <Radio disabled :label="2" style="margin-left:20px">信用卡</Radio>
+              <Radio disabled :label="3" style="margin-left:20px">准贷记卡</Radio>
+              <Radio disabled :label="5" style="margin-left:20px">虚拟卡</Radio>
+            </RadioGroup>
+            <!-- 企业 -->
+            <RadioGroup v-model="form.settleResponse.cardType">
+              <Radio disabled :label="6">基本户</Radio>
+              <Radio disabled :label="7" style="margin-left:20px">一般户</Radio>
+            </RadioGroup>
+          </FormItem>
+        </div>
         <!-- 关联结算账号 -->
 
         <!-- 联系人信息 -->
@@ -334,15 +336,15 @@
             modifiedBy: "",
             gmtModified: ""
           },
-          settleResponse: {
-            account: "",
-            name: "",
-            type: "",
-            mobile: "",
-            openBank: "",
-            cardType: null,
-            bankCardStatus: ""
-          }
+          // settleResponse: {
+          //   account: "",
+          //   name: "",
+          //   type: "",
+          //   mobile: "",
+          //   openBank: "",
+          //   cardType: null,
+          //   bankCardStatus: ""
+          // }
         },
         // 个人
         columns1: [
@@ -385,7 +387,10 @@
       getAllInfoFn() {
         getAllInfo(this.id).then(res => {
           if (res.code == 200) {
-            this.form = res.data;
+            this.form.basicResponse = res.data.basicResponse;
+            // if(res.data.settleResponse) {
+            //   this.form.settleResponse = res.data.settleResponse;
+            // }
 
             // 基本信息商户列表
             if (res.data.basicResponse.merchantType == 0) {

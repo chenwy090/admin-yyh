@@ -121,7 +121,7 @@
           <Button
             type="primary"
             style="width:240px; float: left;"
-            @click="judge()"
+            @click="submit()"
           >保&nbsp;&nbsp;&nbsp;存</Button>
         </FormItem>
       </Form>
@@ -423,8 +423,36 @@
         this.addMerchantList = [];
       },
 
-      judge() {
-        // 验证
+      // judge() {
+        
+      //   if (this.merchantListTemp) {
+      //     let data = {};
+      //     if (this.form.merchantType == 0) {
+      //       data.type = 0;
+      //       data.merchantId = this.addMerchantList[0].merchantId;
+      //     } else {
+      //       data.type = 1;
+      //       data.brandId = this.addMerchantList[0].id;
+      //     }
+
+      //     judgeMerchant(data).then(res => {
+      //       if (res.code == 200) {
+      //         this.submit();
+      //       } else if (res.code == 300) {
+      //         this.$Modal.warning({
+      //           title: "资金账号冲突提示",
+      //           content: res.msg
+      //         });
+      //       } else {
+      //         this.msgErr(res.msg);
+      //       }
+      //     });
+      //   }else {
+      //     this.submit();
+      //   }
+      // },
+
+      submit() {// 验证
         if (!this.form.type) {
           this.msgErr("请选择 个人用 或 企业对公用户");
           return;
@@ -443,34 +471,7 @@
           this.msgErr("请选择" + msg);
           return;
         }
-        if (this.merchantListTemp) {
-          let data = {};
-          if (this.form.merchantType == 0) {
-            data.type = 0;
-            data.merchantId = this.addMerchantList[0].merchantId;
-          } else {
-            data.type = 1;
-            data.brandId = this.addMerchantList[0].id;
-          }
 
-          judgeMerchant(data).then(res => {
-            if (res.code == 200) {
-              this.submit();
-            } else if (res.code == 300) {
-              this.$Modal.warning({
-                title: "资金账号冲突提示",
-                content: res.msg
-              });
-            } else {
-              this.msgErr(res.msg);
-            }
-          });
-        }else {
-          this.submit();
-        }
-      },
-
-      submit() {
         if (this.addEdit == 1) {
           // 新增
           let data = this.form;
