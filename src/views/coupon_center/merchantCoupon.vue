@@ -51,6 +51,8 @@
                     <Option value="4">体验券</Option>
                     <Option value="5">换购券</Option>
                     <Option value="6">赠品券</Option>
+                    <Option value="7">代金券</Option>
+                    <Option value="8">团购券</Option>
                   </Select>
                 </FormItem>
                 <FormItem label="卡券状态">
@@ -61,6 +63,7 @@
                     style="width: 200px"
                   >
                     <Option value>所有</Option>
+                    <Option value="创建">创建</Option>
                     <Option value="待发布">待发布</Option>
                     <Option value="进行中">进行中</Option>
                     <Option value="已结束">已结束</Option>
@@ -505,20 +508,23 @@ export default {
           render: (h, params) => {
             const row = params.row;
             const color = "blue";
-            const text =
-              row.couponType == "1"
-                ? "立减券"
-                : row.couponType == "2"
-                ? "折扣券"
-                : row.couponType == "3"
-                ? "满减券"
-                : row.couponType == "4"
-                ? "体验券"
-                : row.couponType == "5"
-                ? "换购券"
-                : row.couponType == "6"
-                ? "赠品券"
-                : "未知类型";
+
+            var obj = {
+              1: "立减券",
+              2: "折扣券",
+              3: "满减券",
+              4: "体验券",
+              5: "换购券",
+              6: "赠品券",
+              7: "代金券",
+              8: "团购券",
+            };
+
+            let text = obj[row.couponType];
+
+            if (!text){
+              text = "未知类型"
+            }
 
             return h(
               "Tag",
