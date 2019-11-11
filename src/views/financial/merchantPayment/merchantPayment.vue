@@ -53,10 +53,10 @@
         </FormItem>
         <FormItem label="打款时间: " :label-width="85">
           <DatePicker
-            type="date"
+            type="daterange"
             placeholder="请选择"
             style="width: 200px"
-            :value="searchData.remitTime[0]"
+            :value="searchData.remitTime"
             format="yyyy-MM-dd"
             @on-change="time1"
           ></DatePicker>
@@ -64,15 +64,15 @@
         </FormItem>
         <FormItem label="提现时间: " :label-width="85">
           <DatePicker
-            type="date"
+            type="daterange"
             placeholder="请选择"
             style="width: 200px"
-            :value="searchData.withdrawTime[0]"
+            :value="searchData.withdrawTime"
             format="yyyy-MM-dd"
             @on-change="time2"
           ></DatePicker>
         </FormItem>
-        <FormItem label="提现时间：" :label-width="80">
+        <!-- <FormItem label="提现时间：" :label-width="80">
           <DatePicker
             type="daterange"
             placeholder="请选择日期"
@@ -80,7 +80,7 @@
             :value="daterange"
             @on-change="changeStartDate"
           ></DatePicker>
-        </FormItem>
+        </FormItem>-->
         <FormItem label="打款状态: " :label-width="85">
           <Select v-model="searchData.remitStatus" style="width:100px;margin-left:10px">
             <Option :value="1">处理中</Option>
@@ -100,17 +100,25 @@
       <div>
         <!-- 用户列表 -->
         <Table border width="100%" :columns="columns1" :data="tableData" :loading="tableLoading">
-          <template slot-scope="{ row }" slot="gmtModified">
-            <span>{{ row.gmtModified | time}}</span>
+          <!-- 提现时间 -->
+          <template slot-scope="{ row }" slot="applyTime">
+            <div>{{ row.applyTime | data}}</div>
+            <div>{{ row.applyTime | time}}</div>
           </template>
-          <template slot-scope="{ row }" slot="merchantType">
-            <span v-if="row.merchantType == 0">本地商户 (单店)</span>
-            <span v-else-if="row.merchantType == 1">本地商户 (多店)</span>
+          <!-- 打款时间 -->
+          <template slot-scope="{ row }" slot="remitTime">
+            <div>{{ row.remitTime | data}}</div>
+            <div>{{ row.remitTime | time}}</div>
           </template>
-          <template slot-scope="{ row }" slot="type">
+          <template slot-scope="{ row }" slot="status">
+            <span v-if="row.status == 1">处理中</span>
+            <span v-else-if="row.status == 2">已完成（打款成功）</span>
+            <span v-else-if="row.status == 3">提现到账失败</span>
+          </template>
+          <!-- <template slot-scope="{ row }" slot="type">
             <span v-if="row.type == 'business'">企业</span>
             <span v-else-if="row.type == 'customer'">个人</span>
-          </template>
+          </template>-->
         </Table>
         <!-- 用户列表 -->
       </div>
@@ -173,78 +181,238 @@ export default {
           align: 'center',
           minWidth: 120,
           key: 'provinceCode',
+          render: (h, params) => {
+            let name = params.row.provinceCode
+            for (let i = 0; i < this.provinceList.length; i++) {
+              if(this.provinceList[i].provinceCode == params.row.provinceCode) {
+                name = this.provinceList[i].shortName
+              }
+		        // 不能用else
+            }
+            return h("div",name);
+          }
         },
         {
           title: '提现人姓名',
           align: 'center',
           minWidth: 120,
-          key: 'gmtModified',
+          key: 'userName',
         },
         {
           title: '提现人手机',
           align: 'center',
           minWidth: 120,
-          key: 'gmtModified',
+          key: 'userPhone',
         },
         {
           title: '提现金额（元）',
           align: 'center',
           minWidth: 120,
-          key: 'gmtModified',
+          key: 'applyAmount',
         },
         {
           title: '提现服务费（元）',
           align: 'center',
-          minWidth: 120,
-          key: 'gmtModified',
+          minWidth: 140,
+          key: 'withdrawFee',
         },
         {
           title: '提现平台收取费（元）',
           align: 'center',
-          minWidth: 120,
-          key: 'gmtModified',
+          minWidth: 160,
+          key: 'platformFee',
         },
         {
           title: '提现时间',
           align: 'center',
           minWidth: 120,
-          key: 'gmtModified',
+          key: 'applyTime',
+          slot: 'applyTime',
         },
         {
           title: '打款时间',
           align: 'center',
           minWidth: 120,
-          key: 'gmtModified',
+          key: 'remitTime',
+          slot: 'remitTime',
         },
         {
           title: '打款状态',
           align: 'center',
           minWidth: 120,
-          key: 'gmtModified',
+          key: 'status',
+          slot: 'status',
+        },
+      ],
+      columns2: [
+        {
+          title: '提现单号',
+          align: 'center',
+          minWidth: 140,
+          key: 'orderNo',
+        },
+        {
+          title: 'ping++交易号',
+          align: 'center',
+          width: 140,
+          key: 'callbackOrder',
+        },
+        {
+          title: '品牌名称',
+          align: 'center',
+          minWidth: 120,
+          key: 'merchantName',
+        },
+        {
+          title: '提现人姓名',
+          align: 'center',
+          minWidth: 120,
+          key: 'userName',
+        },
+        {
+          title: '提现人手机',
+          align: 'center',
+          minWidth: 120,
+          key: 'userPhone',
+        },
+        {
+          title: '提现金额（元）',
+          align: 'center',
+          minWidth: 120,
+          key: 'applyAmount',
+        },
+        {
+          title: '提现服务费（元）',
+          align: 'center',
+          minWidth: 140,
+          key: 'withdrawFee',
+        },
+        {
+          title: '提现平台收取费（元）',
+          align: 'center',
+          minWidth: 160,
+          key: 'platformFee',
+        },
+        {
+          title: '提现时间',
+          align: 'center',
+          minWidth: 120,
+          key: 'applyTime',
+          slot: 'applyTime',
+        },
+        {
+          title: '打款时间',
+          align: 'center',
+          minWidth: 120,
+          key: 'remitTime',
+          slot: 'remitTime',
+        },
+        {
+          title: '打款状态',
+          align: 'center',
+          minWidth: 120,
+          key: 'status',
+          slot: 'status',
+        },
+      ],
+      columns3: [
+        {
+          title: '异常原因',
+          align: 'center',
+          minWidth: 140,
+          key: 'orderNo',
+        },
+        {
+          title: '提现单号',
+          align: 'center',
+          width: 140,
+          key: 'callbackOrder',
+        },
+        {
+          title: '商户名称',
+          align: 'center',
+          minWidth: 120,
+          key: 'merchantName',
+        },
+        {
+          title: '省/市',
+          align: 'center',
+          minWidth: 120,
+          key: 'provinceCode',
+          render: (h, params) => {
+            let name = params.row.provinceCode
+            for (let i = 0; i < this.provinceList.length; i++) {
+              if(this.provinceList[i].provinceCode == params.row.provinceCode) {
+                name = this.provinceList[i].shortName
+              }
+		        // 不能用else
+            }
+            return h("div",name);
+          }
+        },
+        {
+          title: '提现人姓名',
+          align: 'center',
+          minWidth: 120,
+          key: 'userName',
+        },
+        {
+          title: '提现人手机',
+          align: 'center',
+          minWidth: 120,
+          key: 'userPhone',
+        },
+        {
+          title: '提现金额（元）',
+          align: 'center',
+          minWidth: 120,
+          key: 'applyAmount',
+        },
+        {
+          title: '提现服务费（元）',
+          align: 'center',
+          minWidth: 140,
+          key: 'withdrawFee',
+        },
+        {
+          title: '提现平台收取费（元）',
+          align: 'center',
+          minWidth: 160,
+          key: 'platformFee',
+        },
+        {
+          title: '提现时间',
+          align: 'center',
+          minWidth: 120,
+          key: 'applyTime',
+          slot: 'applyTime',
         },
       ],
       tableData: [],
       daterange: [],
       searchData: { // 查询参数
         cityCode: "",
-        limit: 10,
+        pageSize: 10,
+        // limit: 10,
         merchantName: "",
         merchantType: 0,
         orderNo: "",
-        page: 1,
+        pageNum: 1,
+        // page: 1,
         provinceCode: "",
         remitStatus: '',
         remitTime: [
-          ""
+          "",""
         ],
         userName: "",
         userPhone: "",
         withdrawTime: ["",""]
       },
       page: {
+        merchantType: null,
         pageNum: 1, //页码
         pageSize: 10, //每页数量
-        total: 0 //数据总数
+        // total: 0 //数据总数
       },
       // pagingType:'1', // 分页类型 1：初始化，2为搜索
       current: 1,
@@ -254,11 +422,18 @@ export default {
   },
 
   filters: {
-　　　　time: function (value) {
+　　　　data: function (value) {
           if(value) {
             let time1 = value.slice(0,10)
+            // let time2 = value.slice(11,19)
+            return time1 // + ' ' + time2
+          }
+　　　　},
+　　　　time: function (value) {
+          if(value) {
+            // let time1 = value.slice(0,10)
             let time2 = value.slice(11,19)
-            return time1 + ' ' + time2
+            return time2
           }
 　　　　}
 　　},
@@ -267,19 +442,19 @@ export default {
     this.search()
   },
   methods: {
-    changeStartDate(arr) {
-      // yyyy-MM-dd HH:mm:ss
-      console.log(arr);
-      // this.daterange = arr;
-      this.searchData.withdrawTime = arr;
-      let [startTime, endTime] = arr;
-      if (startTime) {
-        startTime = `${arr[0]}:00`;
-        endTime = `${arr[1]}:00`;
-      }
-      console.log(startTime, endTime);
-      // this.searchData.withdrawTime = [startTime,endTime];
-    },
+    // changeStartDate(arr) {
+    //   // yyyy-MM-dd HH:mm:ss
+    //   console.log(arr);
+    //   // this.daterange = arr;
+    //   this.searchData.withdrawTime = arr;
+    //   let [startTime, endTime] = arr;
+    //   if (startTime) {
+    //     startTime = `${arr[0]}:00`;
+    //     endTime = `${arr[1]}:00`;
+    //   }
+    //   console.log(startTime, endTime);
+    //   // this.searchData.withdrawTime = [startTime,endTime];
+    // },
       //获取省份信息数据
       getprovincelist() {
         postRequest("/system/area/province/list").then(res => {
@@ -309,6 +484,7 @@ export default {
 
       tabsFn(name) {
         this.type = name
+        this.tableData = []
         this.reset()
       },
 
@@ -318,7 +494,13 @@ export default {
       this.totalSize = 0;//总条数
 
       // 页数
-      this.searchData.page = this.current
+      this.page.pageNum = this.current
+
+      // let data = {
+      //   "merchantType":this.page.merchantType,
+      //   "pageNum":this.current,
+      //   "pageSize":10
+      //   }
       
       if(this.type == 1) {
           this.searchData.merchantType = 0
@@ -341,22 +523,23 @@ export default {
       this.daterange = []; // 时间
       this.searchData.merchantName =  ''
       this.searchData.cityCode = "",
-      this.searchData.limit = 10,
+      this.searchData.pageSize = 10,
       this.searchData.merchantType = null,
       this.searchData.orderNo = "",
-      this.searchData.page = 1,
+      this.searchData.pageNum = 1,
       this.searchData.provinceCode = "",
       this.searchData.remitStatus = '',
-      this.searchData.remitTime = [""],
+      this.searchData.remitTime = ["",""],
       this.searchData.userName = "",
       this.searchData.userPhone = "",
       this.searchData.withdrawTime =["",""],
 
-      this.page = {
-        page: 1, //页码
-        size: 10, //每页数量
-        total: 0 //数据总数
-      };
+      // this.page = {
+      //   pageNum: 1, //页码
+      //   pageSize: 10, //每页数量
+      //   merchantType: null
+      //   // total: 0 //数据总数
+      // };
       this.search()
     },
 
@@ -393,7 +576,7 @@ export default {
           this.totalSize = res.data.total
           this.tableLoading = false
         }else {
-            this.tableLoading = false
+          this.tableLoading = false
           this.msgErr(res.msg)
         }
       })
@@ -427,7 +610,7 @@ export default {
 // 分页（点击第几页）
     changeCurrent: function (current) {
       this.current = current;
-      this.searchData.page = current
+      this.searchData.pageNum = current
       if(this.type == 1) {
           this.searchData.merchantType = 0
           this.getMerchantPaymentFn(this.searchData)
@@ -477,10 +660,10 @@ export default {
 
       // 时间
       time1(e) {
-        this.form1[0].validFrom = e;
+        this.searchData.remitTime = e;
       },
       time2(e) {
-        this.form1[0].validUntil = e;
+        this.searchData.withdrawTime = e;
       },
 
 // 全局提示
@@ -513,10 +696,10 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.operation {
-  margin-bottom: 2vh;
-}
-.ivu-table-wrapper {
-  overflow: visible;
-}
+  .operation {
+    margin-bottom: 2vh;
+  }
+  .ivu-table-wrapper {
+    overflow: visible;
+  }
 </style>
