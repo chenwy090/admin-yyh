@@ -31,65 +31,113 @@
               <div v-if="row.type == 'business'">
                 <!-- 企业 -->
                 <Button type="text" size="small" @click="editInfo(row)">编辑商户</Button>
+                <Button type="text" size="small" @click="viewDetailsFn(row)">查看详情</Button>
                 <Button
                   type="text"
                   size="small"
                   @click="addCredentialsFn(row)"
-                  :disabled="row.progress == 4"
+                  v-if="row.progress != 4"
+                >编辑证件</Button>
+                <Button
+                  type="text"
+                  size="small"
+                  disabled
+                  v-else
                 >编辑证件</Button>
                 <Button
                   type="text"
                   size="small"
                   @click="addContactInformationFn(row)"
-                  :disabled="row.progress == 1 || row.progress == 4"
+                  v-if="row.progress != 1 || row.progress != 4"
+                >编辑联系人信息</Button>
+                <Button
+                  type="text"
+                  size="small"
+                  disabled
+                  v-else
                 >编辑联系人信息</Button>
                 <Button
                   type="text"
                   size="small"
                   @click="addSettlementAccountFn(row)"
-                  :disabled="row.progress == 1 || row.progress == 2 || row.progress == 3"
+                  v-if="row.progress != 1 || row.progress != 2 || row.progress != 3"
+                >结算账号</Button>
+                <Button
+                  type="text"
+                  size="small"
+                  disabled
+                  v-else
                 >结算账号</Button>
                 <Button
                   type="text"
                   size="small"
                   @click="addSubordinateMerchantsFn(row,1)"
-                  :disabled="row.progress != 3 ||row.progress != 5 || row.progress != 6 || row.progress != 7"
+                  v-if="row.progress == 3 ||row.progress == 5 || row.progress == 6 || row.progress == 7"
+                >子应用</Button>
+                <Button
+                  type="text"
+                  size="small"
+                  disabled
+                  v-else
                 >子应用</Button>
                 <Button
                   type="text"
                   size="small"
                   @click="addSubordinateMerchantsFn(row,2)"
-                  :disabled="row.progress != 7"
+                  v-if="row.progress == 7"
                 >打款验证</Button>
-                <Button type="text" size="small" @click="viewDetailsFn(row)">查看详情</Button>
+                <Button
+                  type="text"
+                  size="small"
+                  disabled
+                  v-else
+                >打款验证</Button>
               </div>
               <div v-else-if="row.type == 'customer'">
                 <!-- 个人 -->
                 <Button type="text" size="small" @click="editInfo(row)">编辑商户</Button>
+                <Button type="text" size="small" @click="viewDetailsFn(row)">查看详情</Button>
                 <Button
                   type="text"
                   size="small"
                   @click="addCredentialsFn(row)"
-                  :disabled="row.progress != 1 || row.progress != 2 || row.progress != 5"
+                  v-if="row.progress == 1 || row.progress == 2 || row.progress == 5"
+                >编辑证件</Button>
+                <Button
+                  type="text"
+                  size="small"
+                  disabled
+                  v-else
                 >编辑证件</Button>
                 <Button
                   type="text"
                   size="small"
                   @click="addContactInformationFn(row)"
-                  :disabled="row.progress != 2 || row.progress != 5"
+                  v-if="row.progress == 2 || row.progress == 5"
+                >编辑用户信息</Button>
+                <Button
+                  type="text"
+                  size="small"
+                  disabled
+                  v-else
                 >编辑用户信息</Button>
                 <Button
                   type="text"
                   size="small"
                   @click="addSettlementAccountFn(row)"
-                  :disabled="row.progress != 4 || row.progress != 5"
+                  v-if="row.progress == 4 || row.progress == 5"
                 >结算账号</Button>
-                <Button type="text" size="small" @click="viewDetailsFn(row)">查看详情</Button>
+                <Button
+                  type="text"
+                  size="small"
+                  disabled
+                  v-else
+                >结算账号</Button>
               </div>
 
-              <hr />
+              <!-- <hr /> -->
               <!-- 测试用 -->
-              <div>
+              <!-- <div>
                 <Button type="text" size="small" @click="editInfo(row)">编辑商户</Button>
                 <Button type="text" size="small" @click="addCredentialsFn(row)">编辑证件</Button>
                 <Button type="text" size="small" @click="addContactInformationFn(row)">编辑用户（联系人）信息</Button>
@@ -97,7 +145,7 @@
                 <Button type="text" size="small" @click="addSubordinateMerchantsFn(row,1)">子应用</Button>
                 <Button type="text" size="small" @click="addSubordinateMerchantsFn(row,2)">打款验证</Button>
                 <Button type="text" size="small" @click="viewDetailsFn(row)">查看详情</Button>
-              </div>
+              </div> -->
             </template>
             <template slot-scope="{ row }" slot="gmtModified">
               <span>{{ row.gmtModified | time}}</span>
