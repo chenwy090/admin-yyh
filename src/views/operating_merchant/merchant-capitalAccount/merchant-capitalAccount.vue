@@ -138,8 +138,8 @@
               </span>-->
               <span v-if="row.progress == 1 || row.progress == 2 || row.progress == 3">创建</span>
               <span v-else-if="row.progress == 4">开户成功</span>
-              <span v-else-if="row.progress == 6">开户成功--结算审核通过</span>
-              <span v-else-if="row.progress == 7">开户成功--结算其他</span>
+              <span v-else-if="row.progress == 6">开户成功</span>
+              <span v-else-if="row.progress == 7">开户成功</span>
               <span v-else-if="row.progress == 5">
                 <span v-if="row.openAccountStatus == 'submitted'">已提交待激活</span>
                 <span v-else-if="row.openAccountStatus == 'pending'">处理审核中</span>

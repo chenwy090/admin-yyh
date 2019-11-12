@@ -189,7 +189,7 @@ export default {
         {
           title: '省/市',
           align: 'center',
-          minWidth: 120,
+          minWidth: 80,
           key: 'provinceCode',
           render: (h, params) => {
             let name = params.row.provinceCode
@@ -335,7 +335,7 @@ export default {
         {
           title: '提现单号',
           align: 'center',
-          width: 140,
+          width: 120,
           key: 'orderNo',
         },
         {
@@ -347,7 +347,7 @@ export default {
         {
           title: '省/市',
           align: 'center',
-          minWidth: 120,
+          minWidth: 80,
           key: 'provinceCode',
           render: (h, params) => {
             let name = params.row.provinceCode
