@@ -131,6 +131,15 @@
           :current="current"
           @on-change="changeCurrent"
         ></Page>
+
+        <Page
+          show-total
+          show-elevator
+          :current="page.pageNum"
+          :page-size="page.pageSize"
+          :total="page.total"
+          @on-change="changeCurrent"
+        ></Page>
       </Row>
       <!-- 分页器 -->
     </Card>
@@ -448,28 +457,21 @@ export default {
       tableData: [],
       daterange: [],
       searchData: { // 查询参数
-        cityCode: "",
-        pageSize: 10,
-        // limit: 10,
-        merchantName: "",
         merchantType: 0,
+        merchantName: "",
         orderNo: "",
-        pageNum: 1,
-        // page: 1,
         provinceCode: "",
+        cityCode: "",
         remitStatus: '',
-        remitTime: [
-          "",""
-        ],
+        remitTime: [ "",""],
         userName: "",
         userPhone: "",
         withdrawTime: ["",""]
       },
       page: {
-        merchantType: null,
         pageNum: 1, //页码
         pageSize: 10, //每页数量
-        // total: 0 //数据总数
+        total: 0 //数据总数
       },
       // pagingType:'1', // 分页类型 1：初始化，2为搜索
       current: 1,
@@ -547,18 +549,10 @@ export default {
 
 // 搜索
     search() {
-      this.current = 1;
-      this.totalSize = 0;//总条数
-
       // 页数
-      this.page.pageNum = this.current
+      this.page.pageNum = 1;
+      this.page.total = 0;//总条数
 
-      // let data = {
-      //   "merchantType":this.page.merchantType,
-      //   "pageNum":this.current,
-      //   "pageSize":10
-      //   }
-      
       if(this.type == 1) {
           this.searchData.merchantType = 0
           this.getMerchantPaymentFn(this.searchData)
@@ -578,68 +572,78 @@ export default {
 // 重置
     reset() {
       this.daterange = []; // 时间
-      this.searchData.merchantName =  ''
-      this.searchData.cityCode = "",
-      this.searchData.pageSize = 10,
-      this.searchData.merchantType = null,
-      this.searchData.orderNo = "",
-      this.searchData.pageNum = 1,
-      this.searchData.provinceCode = "",
-      this.searchData.remitStatus = '',
-      this.searchData.remitTime = ["",""],
-      this.searchData.userName = "",
-      this.searchData.userPhone = "",
-      this.searchData.withdrawTime =["",""],
 
-      // this.page = {
-      //   pageNum: 1, //页码
-      //   pageSize: 10, //每页数量
-      //   merchantType: null
-      //   // total: 0 //数据总数
-      // };
+      this.searchData = { // 查询参数
+        merchantType: 0,
+        merchantName: "",
+        orderNo: "",
+        provinceCode: "",
+        cityCode: "",
+        remitStatus: '',
+        remitTime: [ "",""],
+        userName: "",
+        userPhone: "",
+        withdrawTime: ["",""]
+      };
+
+      this.page = {
+        pageNum: 1, //页码
+        pageSize: 10, //每页数量
+        total: 0 //数据总数
+      };
       this.search()
     },
 
 
 // 打款列表
-    getMerchantPaymentFn(obj) {
+    async getMerchantPaymentFn(obj) {
       this.tableLoading = true;
-      getMerchantPayment(obj).then(res => {
+      let reqPrams = {
+        ...obj,...this.page
+      };
+      let {
+        code,
+        data: { records, current, total, size }
+      } = await getMerchantPayment(reqPrams)
         if(res.code == 200){
           // console.log(res);
-          this.tableData = res.data.records
-          this.current = res.data.current
-          this.totalSize = res.data.total
-          this.tableLoading = false
-          // this.tableData = records;
-          // this.page.pageNum = current; //分页查询起始记录
-          // this.page.total = total; //列表总数
-          // this.page.pageSize = size; //每页数据
+          // this.tableData = res.data.records
+          // this.current = res.data.current
+          // this.totalSize = res.data.total
+          this.tableData = records;
+          this.page.pageNum = current; //分页查询起始记录
+          this.page.total = total; //列表总数
+          this.page.pageSize = size; //每页数据
         }else {
-            this.tableLoading = false
           this.msgErr(res.msg)
         }
-      })
+        this.tableLoading = false;
     },
 
 // 异常列表
-    getAbnormalPaymentFn(obj) {
+   async getAbnormalPaymentFn(obj) {
       this.tableLoading = true;
-      getAbnormalPayment(obj).then(res => {
+       let reqPrams = {
+        ...obj,...this.page
+      };
+     let {
+        code,
+        data: { records, current, total, size }
+      } = await  getAbnormalPayment(reqPrams);
         if(res.code == 200){
           // console.log(res);
-          this.tableData = res.data.records
-          this.current = res.data.current
-          this.totalSize = res.data.total
-          this.tableLoading = false
+          // this.tableData = res.data.records
+          // this.current = res.data.current
+          // this.totalSize = res.data.total
+          this.tableData = records;
+          this.page.pageNum = current; //分页查询起始记录
+          this.page.total = total; //列表总数
+          this.page.pageSize = size; //每页数据
         }else {
-          this.tableLoading = false
           this.msgErr(res.msg)
         }
-      })
+        this.tableLoading = false;
     },
-
-
 // 删除
     delStaffFn(id) {
       // console.log(id);
@@ -667,7 +671,7 @@ export default {
 // 分页（点击第几页）
     changeCurrent: function (current) {
       this.current = current;
-      this.searchData.pageNum = current
+      this.page.pageNum = current
       if(this.type == 1) {
           this.searchData.merchantType = 0
           this.getMerchantPaymentFn(this.searchData)
@@ -753,10 +757,10 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-  .operation {
-    margin-bottom: 2vh;
-  }
-  .ivu-table-wrapper {
-    overflow: visible;
-  }
+.operation {
+  margin-bottom: 2vh;
+}
+.ivu-table-wrapper {
+  overflow: visible;
+}
 </style>

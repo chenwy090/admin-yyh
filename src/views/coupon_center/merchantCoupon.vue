@@ -51,6 +51,8 @@
                     <Option value="4">体验券</Option>
                     <Option value="5">换购券</Option>
                     <Option value="6">赠品券</Option>
+                    <Option value="7">代金券</Option>
+                    <Option value="8">团购券</Option>
                   </Select>
                 </FormItem>
                 <FormItem label="卡券状态">
@@ -61,6 +63,7 @@
                     style="width: 200px"
                   >
                     <Option value>所有</Option>
+                    <Option value="创建">创建</Option>
                     <Option value="待发布">待发布</Option>
                     <Option value="进行中">进行中</Option>
                     <Option value="已结束">已结束</Option>
@@ -157,45 +160,58 @@
               </template>
 
               <template slot-scope="{ row }" slot="operate">
+                <!-- 
+                  各状态对应操作：
+                    创建：上架、编辑、删除、复制、分享奖励、查看
+                    待发布：下架、追加、复制、分享奖励、查看
+                    进行中：下架、追加、复制、分享奖励、查看
+                已结束：上架、编辑（过期自动下架的无编辑操作 ，只有手动下架有编辑操作）、复制、分享奖励、查看-->
                 <Button
                   type="text"
                   size="small"
                   style="color:#2db7f5"
                   @click="editInfo(row)"
-                  v-if="row.templateStatus == '待发布' "
+                  v-if="row.templateStatus == '创建' ||row.templateStatus == '已结束(手动下架)'"
                 >编辑</Button>
-                <!--<Button type="text" size="small" style="color:#ed4014" @click="" v-if="row.templateStatus == '待发布' ">删除</Button>-->
                 <Button
                   type="text"
                   size="small"
-                  style="color:red"
-                  @click="inputUpdateAccountStatus(row)"
-                  v-if="row.templateStatus == '进行中' "
-                >下架</Button>
+                  style="color:#ed4014"
+                  @click="removeInfo(row.templateId)"
+                  v-if="row.templateStatus == '创建' "
+                >删除</Button>
                 <Button
                   type="text"
                   size="small"
                   style="color:red"
                   @click="upStatus(row.templateId)"
-                  v-if="row.templateStatus == '待发布'||row.templateStatus == '已结束'"
+                  v-if="row.templateStatus == '创建'||row.templateStatus == '已结束(手动下架)'"
                 >上架</Button>
+                <Button
+                  type="text"
+                  size="small"
+                  style="color:red"
+                  @click="inputUpdateAccountStatus(row)"
+                  v-if="row.templateStatus == '待发布'||row.templateStatus == '进行中'"
+                >下架</Button>
                 <!--<Button type="text" size="small" style="color:blue" @click="" v-if="row.templateStatus == '进行中' || row.templateStatus == '已结束' ">查看明细</Button>-->
                 <Button
                   type="text"
                   size="small"
                   style="color:red"
                   @click="inputAppendStockCountStatus(row)"
-                  v-if="row.templateStatus == '进行中' "
+                  v-if="row.templateStatus == '待发布'||row.templateStatus == '进行中'"
                 >追加</Button>
+                <Button type="text" size="small" style="color:#2db7f5" @click="setTag(row)">打标签</Button>
                 <Button
                   type="text"
                   size="small"
                   style="color:green"
                   @click="editInfo(row,'copy')"
                 >复制</Button>
+
                 <!--changeStatus(row)-->
                 <Button type="text" size="small" style="color:red" @click="share(row)">分享奖励</Button>
-                <Button type="text" size="small" style="color:#2db7f5" @click="setTag(row)">打标签</Button>
                 <Button
                   type="text"
                   size="small"
@@ -208,7 +224,7 @@
                   <Button>{{row.templateStatus}}</Button>
                   <div slot="content">
                     <div v-if="row.couponOperationLogList">
-                      <div v-for="item in row.couponOperationLogList">
+                      <div v-for="(item,index) in row.couponOperationLogList" :key="index">
                         <p>操作人：{{item.operator}}</p>
                         <p>操作时间:{{item.operationTime}}</p>
                         <p>下架原因：{{item.afterOperation}}</p>
@@ -505,20 +521,23 @@ export default {
           render: (h, params) => {
             const row = params.row;
             const color = "blue";
-            const text =
-              row.couponType == "1"
-                ? "立减券"
-                : row.couponType == "2"
-                ? "折扣券"
-                : row.couponType == "3"
-                ? "满减券"
-                : row.couponType == "4"
-                ? "体验券"
-                : row.couponType == "5"
-                ? "换购券"
-                : row.couponType == "6"
-                ? "赠品券"
-                : "未知类型";
+
+            var obj = {
+              1: "立减券",
+              2: "折扣券",
+              3: "满减券",
+              4: "体验券",
+              5: "换购券",
+              6: "赠品券",
+              7: "代金券",
+              8: "团购券",
+            };
+
+            let text = obj[row.couponType];
+
+            if (!text){
+              text = "未知类型"
+            }
 
             return h(
               "Tag",
@@ -997,7 +1016,7 @@ export default {
       });
     },
     //删除
-    removeInfo(item) {
+    removeInfo(templateId) {
       const self = this;
 
       this.$Modal.confirm({
@@ -1005,22 +1024,21 @@ export default {
         content: `删除后不可恢复，是否继续删除？`,
         onOk: function() {
           self.$Loading.start();
-          getRequest("/merchantCouponTemplate/edit/" + item.templateId).then(
-            res => {
-              self.loading = false;
+          const url = "/merchantCouponTemplate/delete";
+          getRequest(url, { templateId }).then(res => {
+            self.loading = false;
 
-              if (res.code == "200") {
-                self.$Message.info("删除成功！");
+            if (res.code == "200") {
+              self.$Message.info("删除成功！");
 
-                setTimeout(() => {
-                  self.pageNum = 1;
-                  self.queryTableData();
-                }, 1200);
-              } else {
-                self.$Message.error(res.msg);
-              }
+              setTimeout(() => {
+                self.pageNum = 1;
+                self.queryTableData();
+              }, 1200);
+            } else {
+              self.$Message.error(res.msg);
             }
-          );
+          });
         },
         onCancel: () => {
           self.$Message.info("点击了取消");

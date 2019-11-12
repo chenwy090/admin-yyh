@@ -207,8 +207,12 @@ export default {
       handler(val, oldVal) {
         let { type, data } = this.action;
         data = JSON.parse(JSON.stringify(data));
-        this.formData = data;
-        this.withdrawUserTableData = data.withdrawUserTableData;
+        console.log("watch action data:", data);
+
+        if (data.length) {
+          this.formData = data;
+          this.withdrawUserTableData = data.withdrawUserTableData;
+        }
 
         if (type == "add") {
         } else if (type == "edit") {
@@ -460,7 +464,8 @@ export default {
     },
     validateAccountList(rule, value, callback) {
       console.log("validateAccountList", rule, value);
-      if (!value.length) {
+      // if (!value.length) {
+      if (!this.withdrawUserTableData.length) {
         return callback("请选择商户账号");
       }
       callback();
