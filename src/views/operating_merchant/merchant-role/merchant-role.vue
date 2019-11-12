@@ -217,6 +217,25 @@
               </CheckboxGroup>
             </div>
             <Divider />
+            <div style="width: 400px; float: left; margin-bottom: 10px;">
+              <!-- indeterminateCheckAllMerchantFund: true,
+              checkAllMerchant: false,
+              checkAllMerchantFund: [/*"7001"*/]-->
+              <Checkbox
+                :indeterminate="indeterminateCheckAllMerchantFund"
+                :value="checkAllMerchant"
+                @click.prevent.native="handleCheckAllMerchantFund"
+                style="float: left; margin-top: 2px; margin-right: 50px"
+              >我的收入</Checkbox>
+              <CheckboxGroup
+                v-model="checkAllMerchantFund"
+                @on-change="checkAllMerchantFundChange"
+                style="float: left"
+              >
+                <Checkbox label="7001">查看</Checkbox>
+              </CheckboxGroup>
+            </div>
+            <Divider />
           </Row>
         </Col>
       </Row>
@@ -261,6 +280,11 @@
                 indeterminateReserveCenter: false,
                 checkAllReserveCenter: false,
                 checkAllGroupReserveCenter: [],
+                //我的收入 "我的收入", "查看", "7001"
+                indeterminateCheckAllMerchantFund: false,
+                checkAllMerchant: false,
+                checkAllMerchantFund: [/*"7001"*/],
+
                 stopRemark: {
                     roleId: '',
                     remark: '',
@@ -369,7 +393,13 @@
                     this.msgErr('名称不能为空')
                     return
                 }
-                if (this.checkAllGroupCoupon.length == 0 && this.checkAllGroupUse.length == 0 && this.checkAllGroupCustomer.length == 0 && this.checkAllGroupIm.length == 0 && this.checkAllGroupAssignment.length == 0 && this.checkAllGroupReserveCenter.length == 0){
+                if (this.checkAllGroupCoupon.length == 0 
+                    && this.checkAllGroupUse.length == 0 
+                    && this.checkAllGroupCustomer.length == 0 
+                    && this.checkAllGroupIm.length == 0 
+                    && this.checkAllGroupAssignment.length == 0 
+                    && this.checkAllGroupReserveCenter.length == 0
+                    && this.checkAllMerchantFund.length == 0){
                     this.msgErr('至少选择一个权限')
                     return
                 }
@@ -382,6 +412,7 @@
                     checkAllGroupIm: this.checkAllGroupIm,
                     checkAllGroupAssignment: this.checkAllGroupAssignment,
                     checkAllGroupReserveCenter: this.checkAllGroupReserveCenter,
+                    checkAllMerchantFund: this.checkAllMerchantFund,
                 };
                 console.info(JSON.stringify(reqParam))
                 postRequest('/merchant/MerchantRoleInfo/add', reqParam).then(res => {
@@ -551,6 +582,33 @@
                     this.checkAllReserveCenter = false;
                 }
             },
+
+            handleCheckAllMerchantFund () {
+                if (this.indeterminateCheckAllMerchantFund) {
+                    this.checkAllMerchant = false;
+                } else {
+                    this.checkAllMerchant = !this.checkAllMerchant;
+                }
+                this.indeterminateCheckAllMerchantFund = false;
+
+                if (this.checkAllMerchant) {
+                    this.checkAllMerchantFund = ['7001'];
+                } else {
+                    this.checkAllMerchantFund = [];
+                }
+            },
+             checkAllMerchantFundChange (data) {
+                if (data.length === 1) {
+                    this.indeterminateCheckAllMerchantFund = false;
+                    this.checkAllMerchant = true;
+                } else if (data.length > 0) {
+                    this.indeterminateCheckAllMerchantFund = true;
+                    this.checkAllMerchant = false;
+                } else {
+                    this.indeterminateCheckAllMerchantFund = false;
+                    this.checkAllMerchant = false;
+                }
+            },
             checkName() {
 
             },
@@ -653,6 +711,7 @@
                 this.checkAllGroupIm = [];
                 this.checkAllGroupAssignment = [];
                 this.checkAllGroupReserveCenter = [];
+                this.checkAllMerchantFund = [];//我的收入
                 this.addDisplay = true;
             },
             //编辑
@@ -677,6 +736,7 @@
                             this.checkAllGroupIm = res.data.checkAllGroupIm;
                             this.checkAllGroupAssignment = res.data.checkAllGroupAssignment;
                             this.checkAllGroupReserveCenter = res.data.checkAllGroupReserveCenter;
+                            this.checkAllMerchantFund = res.data.checkAllMerchantFund;
                         } else {
                             this.$Message.error(res.msg);
                         }
