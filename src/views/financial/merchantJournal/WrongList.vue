@@ -81,15 +81,15 @@
                     },
                     {
                         title: "优惠券名称",
-                        width: 200,
+                        minWidth: 150,
                         align: "center",
                         key: "couponName",
                     },
-                    // {
-                    //     title: "券码",
-                    //     width: 200,
-                    //     key: "freezeAmount"
-                    // },
+                    {
+                        title: "券码",
+                        width: 150,
+                        key: "barcode"
+                    },
                     // {
                     //     title: "核销时间",
                     //     minWidth: 250,
@@ -102,14 +102,14 @@
                         key: "merchantName"
                     },
                     {
-                        title: "交易金额",
-                        minWidth: 200,
+                        title: "核销金额",
+                        minWidth: 100,
                         align: "center",
-                        key: "orderAmount"
+                        key: "paidAmount"
                     },
                     {
                         title: "平台分润（%）",
-                        minWidth: 100,
+                        minWidth: 120,
                         align: "center",
                         key: "platformProfitRate"
                     },
@@ -156,10 +156,10 @@
                         key: "tradeTypeDesc"
                     },
                     {
-                        title: "审核时间",
-                        minWidth: 120,
+                        title: "交易时间",
+                        minWidth: 100,
                         align: "center",
-                        key: "auditTime"
+                        key: "tradeTime"
                     }
                   ],
                   [
@@ -260,7 +260,7 @@
                     },
                     {
                         title: "审核时间",
-                        minWidth: 120,
+                        minWidth: 100,
                         align: "center",
                         key: "auditTime"
                     }
@@ -311,18 +311,6 @@
                 this.current = current;
                 this.getData();
             }
-        },
-        created(){
-            console.log('something wrong')
-        },
-        mounted() {
-            console.log('mounted wrong')
-        },
-        activated() {
-            console.log('activated wrong')
-        },
-        updated() {
-            console.log('updated wrong')
         }
     }
 </script>
