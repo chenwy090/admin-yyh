@@ -466,7 +466,9 @@ export default {
         remitTime: [ "",""],
         userName: "",
         userPhone: "",
-        withdrawTime: ["",""]
+        withdrawTime: ["",""],
+        pageNum: 1, //页码
+        pageSize: 10, //每页数量
       },
       page: {
         pageNum: 1, //页码
@@ -583,7 +585,9 @@ export default {
         remitTime: [ "",""],
         userName: "",
         userPhone: "",
-        withdrawTime: ["",""]
+        withdrawTime: ["",""],
+        pageNum: 1, //页码
+        pageSize: 10, //每页数量
       };
 
       this.page = {
@@ -598,51 +602,57 @@ export default {
 // 打款列表
     async getMerchantPaymentFn(obj) {
       this.tableLoading = true;
-      let reqPrams = {
-        ...obj,...this.page
-      };
-      let {
-        code,
-        data: { records, current, total, size }
-      } = await getMerchantPayment(reqPrams)
+      // let reqPrams = {
+      //   ...obj,...this.page
+      // };
+      // let {
+      //   code,
+      //   data: { records, current, total, size }
+      // } = await 
+      getMerchantPayment(obj).then(res => {
         if(res.code == 200){
           // console.log(res);
           // this.tableData = res.data.records
           // this.current = res.data.current
           // this.totalSize = res.data.total
-          this.tableData = records;
-          this.page.pageNum = current; //分页查询起始记录
-          this.page.total = total; //列表总数
-          this.page.pageSize = size; //每页数据
+          this.tableData = res.data.records;
+          this.page.pageNum = res.data.current; //分页查询起始记录
+          this.page.total = res.data.total; //列表总数
+          // this.page.pageSize = size; //每页数据
+          this.tableLoading = false;
         }else {
           this.msgErr(res.msg)
+          this.tableLoading = false;
         }
-        this.tableLoading = false;
+      })
     },
 
 // 异常列表
    async getAbnormalPaymentFn(obj) {
-      this.tableLoading = true;
-       let reqPrams = {
-        ...obj,...this.page
-      };
-     let {
-        code,
-        data: { records, current, total, size }
-      } = await  getAbnormalPayment(reqPrams);
+    //   this.tableLoading = true;
+    //    let reqPrams = {
+    //     ...obj,...this.page
+    //   };
+    //  let {
+    //     code,
+    //     data: { records, current, total, size }
+    //   } = await  
+      getAbnormalPayment(obj).then(res => {
         if(res.code == 200){
           // console.log(res);
           // this.tableData = res.data.records
           // this.current = res.data.current
           // this.totalSize = res.data.total
-          this.tableData = records;
-          this.page.pageNum = current; //分页查询起始记录
-          this.page.total = total; //列表总数
-          this.page.pageSize = size; //每页数据
+          this.tableData = res.data.records;
+          this.page.pageNum = res.data.current; //分页查询起始记录
+          this.page.total = res.data.total; //列表总数
+          // this.page.pageSize = size; //每页数据
+          this.tableLoading = false;
         }else {
           this.msgErr(res.msg)
+          this.tableLoading = false;
         }
-        this.tableLoading = false;
+      })
     },
 // 删除
     delStaffFn(id) {
