@@ -172,13 +172,13 @@
                     },
                     {
                         title: "订单号",
-                        width: 200,
+                        width: 180,
                         align: "center",
                         key: "orderNo"
                     },
                     {
                         title: "交易单号",
-                        width: 220,
+                        width: 180,
                         align: "center",
                         key: "tradeNo",
                     },
@@ -200,57 +200,68 @@
                     // },
                     {
                         title: "商户名称",
-                        minWidth: 250,
+                        minWidth: 200,
+                        align: "center",
                         key: "merchantName"
                     },
                     {
                         title: "交易金额",
-                        minWidth: 250,
+                        minWidth: 200,
+                        align: "center",
                         key: "orderAmount"
                     },
                     {
                         title: "平台分润（%）",
-                        minWidth: 250,
+                        minWidth: 100,
+                        align: "center",
                         key: "platformProfitRate"
                     },
                     {
                         title: "平台分润费（含通道）",
-                        minWidth: 250,
+                        minWidth: 120,
+                        align: "center",
                         key: "totalFee"
                     },
                     {
                         title: "平台分润费（元）",
-                        minWidth: 250,
+                        minWidth: 120,
+                        align: "center",
                         key: "platformProfitFee"
                     },
                     {
                         title: "支付通道费（元）",
-                        minWidth: 250,
+                        minWidth: 120,
+                        align: "center",
                         key: "payChannelFee"
                     },
                     {
                         title: "结算金额（元）",
-                        minWidth: 250,
+                        minWidth: 120,
+                        align: "center",
                         key: "paidAmount"
                     },
                     {
                         title: "支付方式",
-                        minWidth: 250,
+                        minWidth: 100,
+                        align: "center",
                         key: "payTypeDesc"
                     },
                     {
                         title: "渠道流水号",
-                        minWidth: 250,
+                        minWidth: 120,
+                        align: "center",
                         key: "channelNo"
                     },
                     {
                         title: "交易类型",
-                        minWidth: 250,
+                        minWidth: 100,
+                        align: "center",
                         key: "tradeTypeDesc"
                     },
                     {
                         title: "审核时间",
-                        minWidth: 250,
+                        minWidth: 120,
+                        align: "center",
                         key: "auditTime"
                     }
                   ]
