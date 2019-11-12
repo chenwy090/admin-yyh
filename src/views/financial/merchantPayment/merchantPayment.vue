@@ -99,7 +99,7 @@
       </Row>-->
       <div>
         <!-- 用户列表 -->
-        <Table border width="100%" :columns="columns1" :data="tableData" :loading="tableLoading">
+        <Table border width="100%" :columns="type == 1?columns1:type == 2?columns2:type == 3?columns3:columns4" :data="tableData" :loading="tableLoading">
           <!-- 提现时间 -->
           <template slot-scope="{ row }" slot="applyTime">
             <div>{{ row.applyTime | data}}</div>
@@ -320,13 +320,13 @@ export default {
           title: '异常原因',
           align: 'center',
           minWidth: 140,
-          key: 'orderNo',
+          key: 'failureReason',
         },
         {
           title: '提现单号',
           align: 'center',
           width: 140,
-          key: 'callbackOrder',
+          key: 'orderNo',
         },
         {
           title: '商户名称',
@@ -349,6 +349,63 @@ export default {
             }
             return h("div",name);
           }
+        },
+        {
+          title: '提现人姓名',
+          align: 'center',
+          minWidth: 120,
+          key: 'userName',
+        },
+        {
+          title: '提现人手机',
+          align: 'center',
+          minWidth: 120,
+          key: 'userPhone',
+        },
+        {
+          title: '提现金额（元）',
+          align: 'center',
+          minWidth: 120,
+          key: 'applyAmount',
+        },
+        {
+          title: '提现服务费（元）',
+          align: 'center',
+          minWidth: 140,
+          key: 'withdrawFee',
+        },
+        {
+          title: '提现平台收取费（元）',
+          align: 'center',
+          minWidth: 160,
+          key: 'platformFee',
+        },
+        {
+          title: '提现时间',
+          align: 'center',
+          minWidth: 120,
+          key: 'applyTime',
+          slot: 'applyTime',
+        },
+      ],
+      columns4: [
+        {
+          title: '异常原因',
+          align: 'center',
+          minWidth: 140,
+          key: 'failureReason',
+        },
+        {
+          title: '提现单号',
+          align: 'center',
+          width: 140,
+          key: 'orderNo',
+        },
+        {
+          title: '品牌名称',
+          align: 'center',
+          minWidth: 120,
+          key: 'merchantName',
         },
         {
           title: '提现人姓名',
