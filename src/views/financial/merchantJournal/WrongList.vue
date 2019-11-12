@@ -90,11 +90,25 @@
                         width: 150,
                         key: "barcode"
                     },
+                    // 单店时出这个 index = 7
                     // {
-                    //     title: "核销时间",
-                    //     minWidth: 250,
-                    //     key: "modifiedTime"
+                    //     title: "省/市",
+                    //     minWidth: 200,
+                    //     align: "center",
+                    //     key: "city"
                     // },
+                    // 多店时出这个 index = 5
+                    // {
+                    //     title: "核销门店",
+                    //     minWidth: 200,
+                    //     align: "center",
+                    //     key: "verifiedShop"
+                    // },
+                    {
+                        title: "核销时间",
+                        minWidth: 250,
+                        key: "verifiedTime"
+                    },
                     {
                         title: "商户名称",
                         minWidth: 200,
@@ -177,7 +191,7 @@
                         key: "orderNo"
                     },
                     {
-                        title: "交易单号",
+                        title: "交易号",
                         width: 180,
                         align: "center",
                         key: "tradeNo",
@@ -188,15 +202,18 @@
                         align: "center",
                         key: "couponName",
                     },
+                    {
+                        title: "数量",
+                        width: 80,
+                        align: "center",
+                        key: "couponCount",
+                    },
+                    // 退款异常 多店 index=5
                     // {
-                    //     title: "券码",
-                    //     width: 200,
-                    //     key: "freezeAmount"
-                    // },
-                    // {
-                    //     title: "核销时间",
-                    //     minWidth: 250,
-                    //     key: "modifiedTime"
+                    //     title: "品牌名称",
+                    //     minWidth: 200,
+                    //     align: "center",
+                    //     key: "brandName"
                     // },
                     {
                         title: "商户名称",
@@ -204,6 +221,13 @@
                         align: "center",
                         key: "merchantName"
                     },
+                    // 退款异常 单店 index = 6
+                    // {
+                    //     title: "省/市",
+                    //     minWidth: 200,
+                    //     align: "center",
+                    //     key: "city"
+                    // },
                     {
                         title: "交易金额",
                         minWidth: 200,
@@ -274,7 +298,73 @@
               console.log(e, 124);
               this.parentData = e;
               this.current = 1;
-              this.tableColumns = this.columns[e.index];
+              let tableColumns = JSON.parse(JSON.stringify(this.columns[e.index]));
+
+              // 分账异常
+              if (e.index == 0) {
+                // 单店时出这个 index = 7
+                // {
+                //     title: "省/市",
+                //     minWidth: 200,
+                //     align: "center",
+                //     key: "city"
+                // },
+                // 多店时出这个 index = 5
+                // {
+                //     title: "核销门店",
+                //     minWidth: 200,
+                //     align: "center",
+                //     key: "verifiedShop"
+                // },
+                if (e.merchantType == 0) {
+                  tableColumns.splice(7, 0, {
+                      title: "省/市",
+                      minWidth: 200,
+                      align: "center",
+                      key: "city"
+                  });
+                } else {
+                  tableColumns.splice(5, 0, {
+                      title: "核销门店",
+                      minWidth: 200,
+                      align: "center",
+                      key: "verifiedShop"
+                  });
+                }
+              } else {
+                // 退款异常
+                // 退款异常 多店 index=5
+                    // {
+                    //     title: "品牌名称",
+                    //     minWidth: 200,
+                    //     align: "center",
+                    //     key: "brandName"
+                    // },
+                    
+                    // 退款异常 单店 index = 6
+                    // {
+                    //     title: "省/市",
+                    //     minWidth: 200,
+                    //     align: "center",
+                    //     key: "city"
+                    // },
+                    if (e.merchantType == 0) {
+                      tableColumns.splice(6, 0, {
+                        title: "省/市",
+                        minWidth: 200,
+                        align: "center",
+                        key: "city"
+                      });
+                    } else {
+                      tableColumns.splice(5, 0, {
+                        title: "品牌名称",
+                        minWidth: 200,
+                        align: "center",
+                        key: "brandName"
+                      });
+                    }
+              }
+              this.tableColumns = tableColumns;
               this.getData();
             },
             getData() {
