@@ -128,6 +128,7 @@
       v-if="showMerchantAccountList"
       :showMerchantAccountList.sync="showMerchantAccountList"
       :id="formData.businessId"
+      :type="formData.merchantType"
       :checked="formData.withdrawUserId"
       @seclectedTr-event="selectedAccount"
     ></MerchantAccountList>
@@ -156,6 +157,7 @@ import { withdrawUserColumns } from "./columns";
 export default {
   name: "edit",
   created() {
+     this.typeData = createTypeDate();
     // console.log("data:",this.data);
     // console.log("created typeData", this.typeData);
     // console.log("created", this.action);
@@ -206,10 +208,11 @@ export default {
     action: {
       handler(val, oldVal) {
         let { type, data } = this.action;
+        debugger
         data = JSON.parse(JSON.stringify(data));
         console.log("watch action data:", data);
 
-        if (data.length) {
+        if (data.id) {
           this.formData = data;
           this.withdrawUserTableData = data.withdrawUserTableData;
         }
@@ -293,7 +296,7 @@ export default {
       businessTypePlaceholder: "商户",
       money: 0, // 商户余额 moneyBalance
       ubay: 0, // U贝余额  ubayBalance
-      typeData,
+      typeData:{},
       formData: {
         id: "",
         merchantType: 0,
@@ -347,6 +350,9 @@ export default {
     selectedAccount(arr) {
       console.log("selectedTrCallBack----", arr);
       this.withdrawUserTableData = arr;
+      this.formData.withdrawUserId = arr.map(item => {
+        return item.userId;
+      });
     },
     selectedTrCallBack(data) {
       console.log("selectedTrCallBack----", data);
@@ -370,6 +376,7 @@ export default {
     },
     removeAccount(row, index) {
       this.withdrawUserTableData.splice(index, 1);
+      this.formData.withdrawUserId.splice(index, 1);
     },
     remove() {
       const type = this.formData.merchantType;

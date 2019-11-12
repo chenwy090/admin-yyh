@@ -43,6 +43,10 @@ export default {
       type: [Number, String],
       default: ""
     },
+    type: {
+      type: [Number, String],
+      default: "0"
+    },
     checked: {
       type: Array,
       default: () => []
@@ -111,6 +115,23 @@ export default {
     this.queryTableData();
   },
   methods: {
+    // 确定选择商户
+    selectMerchant() {
+      this.choices = this.tableData.filter(item => item._checked);
+
+      console.log(
+        this.choices.map(item =>
+          JSON.stringify({ userId: item.userId, _checked: item._checked })
+        )
+      );
+
+      if (this.choices.length) {
+        this.$emit("seclectedTr-event", this.choices);
+        this.closeDialog();
+      } else {
+        this.msgErr("至少选一项");
+      }
+    },
     handleSelectChange(selection) {
       this.tableData = this.tableData.map(item => {
         item._checked = false;
@@ -143,8 +164,12 @@ export default {
     // 获取列表数据
     async queryTableData() {
       this.tableLoading = true;
-      const url = "/merchant/merchantEmployee/merchant";
-      console.log("queryTableData", this.id);
+
+      let url = "/merchant/merchantEmployee/merchant";
+      if (this.type == 1) {
+        url = "/merchant/merchantEmployee/brand";
+      }
+      console.log("queryTableData", url, this.id);
       const { code, data, msg } = await getRequest(url, { id: this.id });
       if (code == 200) {
         this.tableData = data.map(item => {
@@ -177,23 +202,7 @@ export default {
       // this.$refs.formValidate.resetFields();
       this.$emit("update:showMerchantAccountList", false);
     },
-    // //确定选择商户
-    selectMerchant() {
-      this.choices = this.tableData.filter(item => item._checked);
 
-      console.log(
-        this.choices.map(item =>
-          JSON.stringify({ userId: item.userId, _checked: item._checked })
-        )
-      );
-
-      if (this.choices.length) {
-        this.$emit("seclectedTr-event", this.choices);
-        this.closeDialog();
-      } else {
-        this.msgErr("至少选一项");
-      }
-    },
     // 全局提示
     msgOk(txt) {
       this.$Message.info({

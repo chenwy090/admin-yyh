@@ -202,6 +202,7 @@ export default {
         type, //add/edit/detail/audit
         data
       };
+      
       this.showEdit = true;
     },
     queryAuditList(id) {
