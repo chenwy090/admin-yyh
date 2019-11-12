@@ -30,8 +30,8 @@
         data(){
             return{
                 currentSubtab: 0,
-                subtabItems: [{name: '交易流水', data: null},
-                    {name: '分润异常', data: {url: '/trade/merchant/bill/sharing-failure/list',
+                subtabItems: [{name: '资金总账', data: null},
+                    {name: '分账异常', data: {url: '/trade/merchant/bill/sharing-failure/list',
                       index: 0,
                     }},
                     {name: '退款异常', data: {url: '/trade/merchant/bill/refund-failure/list',
@@ -56,14 +56,14 @@
             async clickSubtab(i) {
               this.currentSubtab = i;
               if (i > 0) {
-                this.subtabItems[this.currentSubtab].data.merchantType = Number(this.tab_model);
+                this.subtabItems[this.currentSubtab].data.merchantType = Number(this.tab_model) - 1;
                 this.$refs.WrongList.renderData(this.subtabItems[this.currentSubtab].data);
               }
             },
             // 切换 一级tab
             changeTab(obj) {
                 if (this.currentSubtab > 0) {
-                  this.subtabItems[this.currentSubtab].data.merchantType = Number(this.tab_model);
+                  this.subtabItems[this.currentSubtab].data.merchantType = Number(this.tab_model) - 1;
                   this.$refs.WrongList.renderData(this.subtabItems[this.currentSubtab].data);
                 }
             },

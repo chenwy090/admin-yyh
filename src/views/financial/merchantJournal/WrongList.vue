@@ -308,10 +308,8 @@
             },
 
             changeCurrent(current) {
-                if (this.current != current) {
-                    this.current = current;
-                    this.getData();
-                }
+                this.current = current;
+                this.getData();
             }
         },
         created(){
