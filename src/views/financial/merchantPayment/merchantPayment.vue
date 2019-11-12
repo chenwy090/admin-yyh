@@ -129,17 +129,18 @@
           show-total
           show-elevator
           :current="current"
+          :page-size="10"
           @on-change="changeCurrent"
         ></Page>
 
-        <Page
+        <!-- <Page
           show-total
           show-elevator
-          :current="page.pageNum"
-          :page-size="page.pageSize"
+          :current="current"
+          :page-size="searchData.pageSize"
           :total="page.total"
           @on-change="changeCurrent"
-        ></Page>
+        ></Page> -->
       </Row>
       <!-- 分页器 -->
     </Card>
@@ -470,11 +471,11 @@ export default {
         pageNum: 1, //页码
         pageSize: 10, //每页数量
       },
-      page: {
-        pageNum: 1, //页码
-        pageSize: 10, //每页数量
-        total: 0 //数据总数
-      },
+      // page: {
+      //   pageNum: 1, //页码
+      //   pageSize: 10, //每页数量
+      //   total: 0 //数据总数
+      // },
       // pagingType:'1', // 分页类型 1：初始化，2为搜索
       current: 1,
       totalSize: 0, //总条数
@@ -552,8 +553,8 @@ export default {
 // 搜索
     search() {
       // 页数
-      this.page.pageNum = 1;
-      this.page.total = 0;//总条数
+      // this.page.pageNum = 1;
+      // this.page.total = 0;//总条数
 
       if(this.type == 1) {
           this.searchData.merchantType = 0
@@ -590,11 +591,11 @@ export default {
         pageSize: 10, //每页数量
       };
 
-      this.page = {
-        pageNum: 1, //页码
-        pageSize: 10, //每页数量
-        total: 0 //数据总数
-      };
+      // this.page = {
+      //   pageNum: 1, //页码
+      //   pageSize: 10, //每页数量
+      //   total: 0 //数据总数
+      // };
       this.search()
     },
 
@@ -616,8 +617,8 @@ export default {
           // this.current = res.data.current
           // this.totalSize = res.data.total
           this.tableData = res.data.records;
-          this.page.pageNum = res.data.current; //分页查询起始记录
-          this.page.total = res.data.total; //列表总数
+          this.current = res.data.current; //分页查询起始记录
+          this.totalSize = res.data.total; //列表总数
           // this.page.pageSize = size; //每页数据
           this.tableLoading = false;
         }else {
@@ -644,8 +645,8 @@ export default {
           // this.current = res.data.current
           // this.totalSize = res.data.total
           this.tableData = res.data.records;
-          this.page.pageNum = res.data.current; //分页查询起始记录
-          this.page.total = res.data.total; //列表总数
+          this.current = res.data.current; //分页查询起始记录
+          this.totalSize = res.data.total; //列表总数
           // this.page.pageSize = size; //每页数据
           this.tableLoading = false;
         }else {
@@ -681,7 +682,7 @@ export default {
 // 分页（点击第几页）
     changeCurrent: function (current) {
       this.current = current;
-      this.page.pageNum = current
+      // this.page.pageNum = current
       if(this.type == 1) {
           this.searchData.merchantType = 0
           this.getMerchantPaymentFn(this.searchData)
