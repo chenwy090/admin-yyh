@@ -401,7 +401,12 @@ export default {
 
           console.log("submit oForm", oForm);
           // 新增/编辑
-          const url = "/trade/merchant/account/setting/save";
+          let url = "/trade/merchant/account/setting/save";
+          if (oForm.id) {
+            //编辑
+            url = "/trade/merchant/account/setting/update";
+          }
+
           let { code, msg } = await postRequest(url, oForm);
 
           if (code == 200) {
