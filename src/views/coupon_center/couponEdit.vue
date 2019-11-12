@@ -1332,6 +1332,8 @@ export default {
               // console.log(res);
               if (res.code == 200) {
                   var that = this;
+                  let {thirdUrl} = res.data;
+                  res.data.thirdUrl = thirdUrl || "";
                   this.edit_info = res.data;
                   this.edit_info.couponType = String(res.data.couponType);
                   this.edit_info.couponSaleAfterList = [];
