@@ -487,13 +487,11 @@ export default {
 　　　　data: function (value) {
           if(value) {
             let time1 = value.slice(0,10)
-            // let time2 = value.slice(11,19)
-            return time1 // + ' ' + time2
+            return time1 
           }
 　　　　},
 　　　　time: function (value) {
           if(value) {
-            // let time1 = value.slice(0,10)
             let time2 = value.slice(11,19)
             return time2
           }
@@ -630,7 +628,7 @@ export default {
 
 // 异常列表
    async getAbnormalPaymentFn(obj) {
-    //   this.tableLoading = true;
+      this.tableLoading = true;
     //    let reqPrams = {
     //     ...obj,...this.page
     //   };
@@ -682,7 +680,7 @@ export default {
 // 分页（点击第几页）
     changeCurrent: function (current) {
       this.current = current;
-      // this.page.pageNum = current
+      this.searchData.pageNum = current
       if(this.type == 1) {
           this.searchData.merchantType = 0
           this.getMerchantPaymentFn(this.searchData)
@@ -699,36 +697,36 @@ export default {
     },
 
 //过滤小数点
-      changeNumber() {
-        let str = "" + this.formValidate.mobile;
-        if (str.indexOf(".") != -1) {
-          let arr = str.split("");
-          arr.splice(arr.length - 1);
-          let str2 = arr.join("");
-          this.formValidate.mobile = +str2;
-          this.msgErr('只能输入整数')
-        }
-      },
-      changeNumber1() {
-        let str = "" + this.searchData.mobile;
-        if (str.indexOf(".") != -1) {
-          let arr = str.split("");
-          arr.splice(arr.length - 1);
-          let str2 = arr.join("");
-          this.searchData.mobile = +str2;
-          this.msgErr('只能输入整数')
-        }
-      },
-      changeNumber2() {
-        let str = "" + this.bindData.mobile;
-        if (str.indexOf(".") != -1) {
-          let arr = str.split("");
-          arr.splice(arr.length - 1);
-          let str2 = arr.join("");
-          this.bindData.mobile = +str2;
-          this.msgErr('只能输入整数')
-        }
-      },
+      // changeNumber() {
+      //   let str = "" + this.formValidate.mobile;
+      //   if (str.indexOf(".") != -1) {
+      //     let arr = str.split("");
+      //     arr.splice(arr.length - 1);
+      //     let str2 = arr.join("");
+      //     this.formValidate.mobile = +str2;
+      //     this.msgErr('只能输入整数')
+      //   }
+      // },
+      // changeNumber1() {
+      //   let str = "" + this.searchData.mobile;
+      //   if (str.indexOf(".") != -1) {
+      //     let arr = str.split("");
+      //     arr.splice(arr.length - 1);
+      //     let str2 = arr.join("");
+      //     this.searchData.mobile = +str2;
+      //     this.msgErr('只能输入整数')
+      //   }
+      // },
+      // changeNumber2() {
+      //   let str = "" + this.bindData.mobile;
+      //   if (str.indexOf(".") != -1) {
+      //     let arr = str.split("");
+      //     arr.splice(arr.length - 1);
+      //     let str2 = arr.join("");
+      //     this.bindData.mobile = +str2;
+      //     this.msgErr('只能输入整数')
+      //   }
+      // },
 
       // 时间
       time1(e) {

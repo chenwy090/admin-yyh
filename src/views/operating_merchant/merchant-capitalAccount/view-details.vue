@@ -25,7 +25,7 @@
           <Table
             border
             width="600"
-            :columns="form.bbb == 1?columns1:columns2"
+            :columns="form.basicResponse.merchantType == 0?columns1:columns2"
             :data="addMerchantList"
           >
             <template slot-scope="{ row }" slot="operate"></template>
@@ -346,35 +346,35 @@
           //   bankCardStatus: ""
           // }
         },
-        // 个人
+        // 单店
         columns1: [
-          {
-            title: "商户名称",
-            align: "center",
-            minWidth: 200,
-            key: "merchantId"
-          },
           {
             title: "商户编号",
             align: "center",
             minWidth: 200,
+            key: "merchantId"
+          },
+          {
+            title: "商户名称",
+            align: "center",
+            minWidth: 200,
             key: "name"
-          }
+          },
         ],
-        // 企业
+        // 多店
         columns2: [
+          {
+            title: "品牌编号",
+            align: "center",
+            minWidth: 200,
+            key: "brandId"
+          },
           {
             title: "品牌名称",
             align: "center",
             minWidth: 200,
-            key: "merchantId"
-          },
-          {
-            title: "关联店数",
-            align: "center",
-            minWidth: 200,
             key: "name"
-          }
+          },
         ]
       };
     },
@@ -406,7 +406,7 @@
               this.addMerchantList = [
                 {
                   name: res.data.basicResponse.merchantName,
-                  id: res.data.basicResponse.brandId
+                  brandId: res.data.basicResponse.brandId
                 }
               ];
             }
