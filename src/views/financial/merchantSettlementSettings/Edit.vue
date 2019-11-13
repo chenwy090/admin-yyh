@@ -1,9 +1,9 @@
 <template>
   <!--  新建/编辑  -->
   <div class="edit">
-    foo:{{foo}}--chilrfoo:{{chilrfoo}}
-    <hr>
-    info:{{info}}
+    <!-- foo:{{foo}}--chilrfoo:{{chilrfoo}}
+    <hr />
+    info:{{info}}-->
     <div>
       <Form
         label-position="right"
@@ -53,7 +53,7 @@
           </Table>
         </Row>
 
-        <!-- <FormItem label="提现手续费：">
+        <FormItem label="提现手续费：">
           <span>企业对公账户：{{info.obj.corporateWithdrawFee.total}}元/每笔（银行{{info.obj.corporateWithdrawFee.bank}}元/每笔、平台{{info.obj.corporateWithdrawFee.platform}}元/每笔）</span>
           <span>个人账户：{{info.obj.individualWithdrawFee.total}}元/每笔（银行{{info.obj.individualWithdrawFee.bank}}元/每笔）</span>
         </FormItem>
@@ -69,7 +69,7 @@
           <span>商户分润： {{info.obj.shareProfitRate.merchant}}%/每笔</span>
           <span>平台分润： {{info.obj.shareProfitRate.platform}}%/每笔</span>
           <span>（未分润部分归平台所有；分润金额四舍五入，保留至小数点两位）</span>
-        </FormItem>-->
+        </FormItem>
 
         <FormItem
           label="最低提现金额："
@@ -79,8 +79,9 @@
           <Row>
             <Col span="20">
               <Input
+                type="text"
                 style="width:60%"
-                v-model.trim="formData.withdrawMin"
+                v-model="formData.withdrawMin"
                 placeholder="请输入最低提现金额"
                 clearable
               />&nbsp;不填，则不限制
@@ -180,18 +181,19 @@ export default {
     foo: {
       default: () => {
         // return "default";
-        return {a:"default"}
+        return { a: "default" };
       }
     },
     info: {
       default: () => {
         return {
-          // obj: {
+          // corporateWithdrawFee:{}
+          obj: {
             // corporateWithdrawFee: { total: 10, bank: 8, platform: 2 },
             // individualWithdrawFee: { total: 1, bank: 1 },
             // payPipelineFeeRate: { wx: 0.6, aliPay: 0.6 },
             // shareProfitRate: { merchant: 97, platform: 3 }
-          // }
+          }
         };
       }
     }

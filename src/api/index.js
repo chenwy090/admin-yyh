@@ -29,9 +29,14 @@ import {
 // export const baseUrl = "http://192.168.31.206:8088/zex-mgr"; //内容审核
 
 
-// 测试环境
-// export const baseUrl = "http://192.168.31.134:8088/zex-mgr";
-// export const downloadUrl = "http://192.168.31.134:8088/zex-mgr";
+// 老测试环境
+// export const baseUrl = "http://47.103.117.70:8088/zex-mgr";
+// export const downloadUrl = "http://47.103.117.70:8088/zex-mgr";
+
+
+// 新测试环境
+export const baseUrl = "http://192.168.31.134:8088/zex-mgr";
+export const downloadUrl = "http://192.168.31.134:8088/zex-mgr";
 
 // 开发环境 http://192.168.31.114:8088/
 // export const baseUrl = "http://192.168.31.114:8088/zex-mgr";
@@ -51,8 +56,8 @@ import {
 
 
 // dev1.5.5
-export const baseUrl = "http://192.168.31.114:8088/zex-mgr";
-export const downloadUrl = "http://192.168.31.114:8088/zex-mgr";
+// export const baseUrl = "http://192.168.31.114:8088/zex-mgr";
+// export const downloadUrl = "http://192.168.31.114:8088/zex-mgr";
 
 
 

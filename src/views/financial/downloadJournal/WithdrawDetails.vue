@@ -201,10 +201,10 @@ export default {
       },
 
       //交易明细:支付方式/交易类型
-      // 支付方式 payMethod  1 支付宝 2 微信
+      // 支付方式 payMethod  2 微信 3 支付宝
       payMethodOption: {
-        "1": "支付宝",
-        "2": "微信"
+        "2": "微信",
+        "3": "支付宝"
       },
 
       // 交易类型 payType 1 支付 2 退款
