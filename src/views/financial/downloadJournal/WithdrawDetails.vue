@@ -1,7 +1,7 @@
 <template>
   <div class="xxx">
     <div class="query-row">
-      <Card :bordered="false" style="margin-bottom:2px">
+     
         <Form label-position="right" ref="form" :model="searchData" :label-width="120">
           <FormItem label="类型：">
             <RadioGroup v-model="searchData.downType">
@@ -65,7 +65,7 @@
             </Col>
           </Row>
           <!-- 优惠券名称  v-if="searchData.downType!=3"-->
-          <template v-if="searchData.downType!=3">
+          <!-- <template v-if="searchData.downType!=3">
             <FormItem label="优惠券名称：">
               <Row>
                 <Col span="10">
@@ -84,7 +84,7 @@
                 </Col>
               </Row>
             </FormItem>
-          </template>
+          </template> -->
 
           <template v-if="searchData.downType==1">
             <FormItem label="支付方式：">
@@ -128,7 +128,7 @@
           </FormItem>
         </Form>
         <Row type="flex" justify="start"></Row>
-      </Card>
+    
     </div>
 
     <BusinessList

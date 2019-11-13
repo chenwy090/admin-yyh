@@ -1,8 +1,8 @@
 <template>
   <Card :bordered="false" style="margin-bottom:2px">
-    <Tabs type="card" v-model="compName">
+    <!-- <Tabs type="card" v-model="compName">
       <TabPane v-for="tab in tabs" :key="tab.id" :label="tab.label" :name="tab.compName"></TabPane>
-    </Tabs>
+    </Tabs> -->
     <keep-alive>
       <component :is="compName"></component>
     </keep-alive>
