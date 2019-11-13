@@ -63,8 +63,8 @@
           </span>
         </Col>
       </Row>
-      <Row style="margin: 20px 0 0 55px">
-        <Col span="8" class="left-text">
+      <div style="margin: 20px 0 0 55px;overflow: hidden;">
+        <div class="left-text">
           <Button
             type="info"
             style="width:240px;margin-right: 20px; float: left;"
@@ -75,8 +75,8 @@
             style="width:240px; float: left;"
             @click="editCredentialsFn()"
           >保&nbsp;&nbsp;&nbsp;存</Button>
-        </Col>
-      </Row>
+        </div>
+      </div>
     </Card>
   </div>
 </template>
