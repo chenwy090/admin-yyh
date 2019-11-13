@@ -109,8 +109,8 @@
         <!-- 商户列表 -->
         <div style="margin-top:20px">
           申请注册即表示同意
-          <a>《壹账通技术服务协议》</a>和
-          <a>《吉林亿联银行电子交易账簿管理协议》</a>
+          <a @click="downloadDoc1()">《壹账通技术服务协议》</a>和
+          <a @click="downloadDoc2()">《吉林亿联银行电子交易账簿管理协议》</a>
         </div>
         <FormItem style="margin-top:30px">
           <Button
@@ -142,7 +142,7 @@
     deleteRequest,
     uploadFileRequest
   } from "@/libs/axios";
-  import { baseUrl, uploadOperationImage2AliOssURl } from "@/api/index";
+  import { baseUrl, downloadUrl } from "@/api/index";
   import { formatDate, checkImageWH, checkImage, uniqueArray } from "@/libs/date";
 
   export default {
@@ -424,7 +424,7 @@
       },
 
       // judge() {
-        
+
       //   if (this.merchantListTemp) {
       //     let data = {};
       //     if (this.form.merchantType == 0) {
@@ -452,7 +452,8 @@
       //   }
       // },
 
-      submit() {// 验证
+      submit() {
+        // 验证
         if (!this.form.type) {
           this.msgErr("请选择 个人用 或 企业对公用户");
           return;
@@ -515,6 +516,19 @@
       // 返回
       goback() {
         this.$emit("changeStatus", false);
+      },
+
+      // 下载
+      downloadDoc1() {
+        // window.location.href = baseUrl+`/system/sys-shop-info/downloadTemplateShop`
+        window.location.href =
+          downloadUrl + "/document/2019-4-8壹账通技术服务协议.docx";
+      },
+      downloadDoc2() {
+        // window.location.href = baseUrl+`/system/sys-shop-info/downloadTemplateShop`
+        window.location.href =
+          downloadUrl +
+          "/document/《吉林亿联银行股份有限公司电子交易账簿管理协议》-用户协议.docx";
       },
 
       // 全局提示
