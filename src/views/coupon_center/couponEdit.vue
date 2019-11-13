@@ -104,7 +104,7 @@
               <span style="color:red">*</span>收费类型
             </Col>
             <Col span="20">
-              <RadioGroup v-model="edit_info.couponKind">
+              <RadioGroup v-model="edit_info.couponKind" @on-change="handleChangeCouponKind">
                 <Radio
                   v-for="item in couponKindList"
                   :disabled="camp_pageStatus == 'edit'"
@@ -865,11 +865,6 @@ export default {
   props: {
     couponEdit_info: Object
   },
-  watch: {
-    ["edit_info.couponKind"]() {
-      this.add_info.merchantList = [];
-    }
-  },
   data() {
     return {
       showBusinessList: false,
@@ -1111,8 +1106,13 @@ export default {
     this.init();
   },
   methods: {
+    handleChangeCouponKind() {
+      console.log("handleChangeCouponKind:", arguments);
+
+      //  this.add_info.merchantList = [];
+    },
     selectedTrCallBack(data) {
-      console.log("selectedTrCallBack----", data);
+      console.log("111selectedTrCallBack----", data);
       this.add_info.merchantList = data;
     },
     //确定选择商户
@@ -1562,7 +1562,10 @@ export default {
           this.$Message.error("请填写原价和售卖价");
           return;
         }
-        if (this.edit_info.originalPrice < this.edit_info.price) {
+        if (
+          parseFloat(this.edit_info.price) >
+          parseFloat(this.edit_info.originalPrice)
+        ) {
           this.$Message.error("您的优惠价高于原价，请重新输入");
           return;
         }
@@ -1572,7 +1575,7 @@ export default {
           0.3
         ) {
           this.$Message.error("您的优惠价设置偏低，请确认是否需要调整");
-          return;
+          // return;
         }
       } else {
         if (this.edit_info.couponType == "1") {
