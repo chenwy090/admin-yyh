@@ -88,14 +88,14 @@
 
           <template v-if="searchData.downType==1">
             <FormItem label="支付方式：">
-              <Select v-model="searchData.payMethod" style="width:100px" clearable>
-                <Option v-for="(v,k) in payMethodOption" :value="k" :key="v">{{ v }}</Option>
+              <Select v-model="searchData.payType" style="width:100px" clearable>
+                <Option v-for="(v,k) in payTypeOption" :value="k" :key="v">{{ v }}</Option>
               </Select>
             </FormItem>
 
             <FormItem label="交易类型：">
-              <Select v-model="searchData.payType" style="width:100px" clearable>
-                <Option v-for="(v,k) in payTypeOption" :value="k" :key="v">{{ v }}</Option>
+              <Select v-model="searchData.tradeType" style="width:100px" clearable>
+                <Option v-for="(v,k) in tradeTypeOption" :value="k" :key="v">{{ v }}</Option>
               </Select>
             </FormItem>
           </template>
@@ -201,14 +201,16 @@ export default {
       },
 
       //交易明细:支付方式/交易类型
-      // 支付方式 payMethod  2 微信 3 支付宝
-      payMethodOption: {
-        "2": "微信",
-        "3": "支付宝"
+      // 支付方式 payType  1 微信 2 支付宝
+      // payType
+      payTypeOption: {
+        "1": "微信",
+        "2": "支付宝"
       },
 
-      // 交易类型 payType 1 支付 2 退款
-      payTypeOption: {
+      // 交易类型 tradeType 1 支付 2 退款
+      // tradeType
+      tradeTypeOption: {
         "1": "支付",
         "2": "退款"
       },
@@ -232,8 +234,8 @@ export default {
         cuoponNames: "",
         cuoponIds: [],
 
-        payMethod: "", //支付方式
-        payType: "" //交易类型
+        payType: "", //支付方式
+        tradeType: "" //交易类型
       }
     };
   },
@@ -340,8 +342,8 @@ export default {
         cuoponNames: "",
         cuoponIds: [],
 
-        payMethod: "", //支付方式
-        payType: "" //交易类型
+        payType: "", //支付方式
+        tradeType: "" //交易类型
       };
     }
   }
