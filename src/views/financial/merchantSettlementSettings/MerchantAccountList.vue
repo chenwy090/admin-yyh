@@ -112,7 +112,6 @@ export default {
     };
   },
   mounted() {
-    alert(this.type);
     this.queryTableData();
   },
   methods: {
