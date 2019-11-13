@@ -166,7 +166,7 @@ export default {
         return;
       }
 
-      const cardTypes = [0, 2, 3, 5];
+      const cardTypes = [0, 2, 3, 5, 6, 7];
       if (!cardTypes.includes(this.form.cardType)) {
         this.msgErr("请输入银行卡号类型");
         return;
