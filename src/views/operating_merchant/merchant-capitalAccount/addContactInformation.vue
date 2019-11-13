@@ -22,8 +22,7 @@
           </FormItem>
           <FormItem label="证件类型: " required>
             <Select v-model="form[0].identityType" style="width:200px">
-              <Option value="01">身份证</Option>
-              <Option value="02">企业营业执照</Option>
+              <Option v-for="(item, index) in documentType" :key="index" :value="item.dictValue">{{item.dictLabel}}</Option>
             </Select>
           </FormItem>
           <FormItem label="证件号码: " required>
@@ -70,8 +69,8 @@
           </FormItem>
           <FormItem label="证件类型: " required>
             <Select v-model="form[1].identityType" style="width:200px">
-              <Option value="01">身份证</Option>
-              <Option value="02">企业营业执照</Option>
+              <Option v-for="(item, index) in documentType" :key="index" :value="item.dictValue">{{item.dictLabel}}</Option>
+              <!-- <Option value="02">企业营业执照</Option> -->
             </Select>
           </FormItem>
           <FormItem label="证件号码: " required>
@@ -120,7 +119,7 @@
   </div>
 </template>
 <script>
-  import { getContactInformation, editContactInformation } from "@/api/sys";
+  import { getContactInformation, editContactInformation, getDocumentType } from "@/api/sys";
   import {
     getRequest,
     postRequest,
@@ -139,6 +138,7 @@
     },
     data() {
       return {
+        documentType: [], // 证件类型
         userInfo: "",
         addEdit: null, // 1新增 2编辑
         bsUploadList: [],
@@ -170,6 +170,7 @@
     created: function() {
       this.userInfo = JSON.parse(localStorage.getItem("userInfo"));
       this.judge();
+      this.getDocumentTypeFn()
     },
     mounted() {},
     methods: {
@@ -188,6 +189,17 @@
           data.type = 1;
           this.getContactInformationFn(data);
         }
+      },
+
+      // 获取字典中证件信息
+      getDocumentTypeFn() {
+        getDocumentType().then(res => {
+          if(res.code == 200){
+            this.documentType = res.data
+          }else {
+            this.msgErr(res.msg)
+          }
+        })
       },
       // 根据id获取信息
       getContactInformationFn(data) {

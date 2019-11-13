@@ -843,6 +843,11 @@ export const refresh = (id) => {
     return postRequest(`/trade/merchant/fund/account/user/refresh`)
 }
 
+// 获取字典证件类型
+export const getDocumentType = (params) => {
+    return postRequest(`/system/sys-dict-data/selectDictDataDictCode?dictCode=certification_type`)
+}
+
 //--------------------------------------商户打款 --------------------------
 
 // 打款列表
