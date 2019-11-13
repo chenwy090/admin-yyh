@@ -9,7 +9,7 @@
   </Card>
 </template>
 <script>
-import { getRequest, postRequest } from "@/libs/axios";
+import { getRequest, postRequest, downloadSteam } from "@/libs/axios";
 
 // 提现明细
 import WithdrawDetails from "./WithdrawDetails";
@@ -47,11 +47,7 @@ export default {
   },
   methods: {
     async download(url, params) {
-      // const res = await downloadSteam(url);
-
-      params = JSON.stringify(params);
-      const res = await postRequest(url, params);
-
+      const res = await downloadSteam(url, params);
       const content = res.data;
 
       const { filename } = res.headers;

@@ -126,17 +126,26 @@ export default {
   },
   provide() {
     return {
-      info: { obj: this.obj }
+      foo: this.fonnB,
+      // foo: this.fonnB.a,
+      info: this.obj
       // 提示：provide 和 inject 绑定并不是可响应的。这是刻意为之的。然而，如果你传入了一个可监听的对象，那么其对象的属性还是可响应的。
     };
   },
   data() {
     return {
+      // fonnB: "old word",
+      fonnB: { a: "old word" },
+
       obj: {
-        corporateWithdrawFee: { total: 10, bank: 8, platform: 2 },
-        individualWithdrawFee: { total: 1, bank: 1 },
-        payPipelineFeeRate: { wx: 0.6, aliPay: 0.6 },
-        shareProfitRate: { merchant: 97, platform: 3 }
+        // corporateWithdrawFee: { total: 10, bank: 8, platform: 2 },
+        // individualWithdrawFee: { total: 1, bank: 1 },
+        // payPipelineFeeRate: { wx: 0.6, aliPay: 0.6 },
+        // shareProfitRate: { merchant: 97, platform: 3 }
+        corporateWithdrawFee: { total: 0, bank: 0, platform: 0 },
+        individualWithdrawFee: { total: 0, bank: 0 },
+        payPipelineFeeRate: { wx: 0, aliPay: 0 },
+        shareProfitRate: { merchant: 0, platform: 0 }
       },
       showAuditLogList: false,
       showEdit: false,
@@ -184,6 +193,15 @@ export default {
   created() {
     this.queryTableData();
     this.getXxx();
+    setInterval(() => {
+      this.fonnB.a = Math.random(); // 这里更新新，仅仅foonB变化了，foo没有变化
+      this.obj.corporateWithdrawFee = { total: Math.random() };
+      // this._provided.foo = "new words";
+      // this._provided.foo = this.fonnB;
+      //这里更新foo变化了，但子组件获得的foo 依旧是old words
+      // console.log(JSON.stringify(this._provided), this.fonnB);
+      console.log(JSON.stringify(this.fonnB));
+    }, 1000);
   },
   methods: {
     async addOrEdit(type, id) {
@@ -192,7 +210,7 @@ export default {
       // 新增/编辑
       if (type == "edit") {
         title = "编辑";
-        data = await this.queryDataById(id);
+        data = await this.queryDataById(id, type);
       }
 
       this.action = {
@@ -202,7 +220,7 @@ export default {
         type, //add/edit/detail/audit
         data
       };
-      
+
       this.showEdit = true;
     },
     queryAuditList(id) {
@@ -223,9 +241,8 @@ export default {
         shareProfitRate: { merchant: 97, platform: 3 }
       };
       if (code == 200) {
-        console.log("xxxx", data);
-
         this.obj = data;
+        console.log("this.obj", this.obj);
       } else {
         this.msgErr(msg);
       }
@@ -254,7 +271,7 @@ export default {
       };
       this.showDetail = true;
     },
-    async queryDataById(id) {
+    async queryDataById(id, actionType) {
       // 查询单个详情
       const url = "/trade/merchant/account/setting";
       const { code, data, msg } = await getRequest(url, { id });
@@ -282,11 +299,17 @@ export default {
           data.businessId = brandId;
           tableData.push({ brandId, merchantName });
         }
+        
         data.businessName = merchantName;
         data.tableData = tableData;
-        data.withdrawMin = withdrawMin || "不限制";
 
-        let accountList = await this.queryAccountList(data.businessId);
+        if (actionType == "edit") {
+          data.withdrawMin = withdrawMin || "";
+        } else {
+          data.withdrawMin = withdrawMin || "不限制";
+        }
+debugger
+        let accountList = await this.queryAccountList(data.businessId,type);
         let withdrawUserTableData = [];
         if (accountList) {
           withdrawUserTableData = accountList.filter(item => {
@@ -307,8 +330,12 @@ export default {
     },
 
     // 获取用户数据
-    async queryAccountList(id) {
-      const url = "/merchant/merchantEmployee/merchant";
+    async queryAccountList(id,type) {
+
+      let url = "/merchant/merchantEmployee/merchant";
+      if (type == 1) {
+        url = "/merchant/merchantEmployee/brand";
+      }
       console.log("queryTableData", this.id);
       const { code, data, msg } = await getRequest(url, { id });
       if (code == 200) {

@@ -13,7 +13,7 @@
           </FormItem>
           <!-- <FormItem label="发布内容：" :label-width="85">
             <Input style="width:200px" type="text" v-model="searchData.content" placeholder="请输入"></Input>
-          </FormItem> -->
+          </FormItem>-->
 
           <FormItem label="发布时间：" :label-width="100">
             <DatePicker
@@ -185,7 +185,6 @@ export default {
         this.action.data = data;
       }
       this.action.compName = compName;
-
     },
     upload() {
       this.showFileImport = true;
@@ -262,14 +261,14 @@ export default {
 
     // 查询
     queryTableData(pageNum) {
-        if(this.searchData.creatBy){
-            var r = /^\+?[1-9][0-9]*$/;　　//正整数
-            var flag=r.test(this.searchData.creatBy);
-            if(!flag){
-                this.$Message.error('请输入正确格式的创建人ID');
-                return
-            }
+      if (this.searchData.creatBy) {
+        var r = /^\+?[1-9][0-9]*$/; //正整数
+        var flag = r.test(this.searchData.creatBy);
+        if (!flag) {
+          this.$Message.error("请输入正确格式的创建人ID");
+          return;
         }
+      }
       this.page.pageNum = pageNum || 1;
       this.loading = true;
       const url = "/content/list";
@@ -286,15 +285,20 @@ export default {
         if (code == 200) {
           this.tableData = records.map(item => {
             // "userStatus": 0,//0-正常 1-封禁
+            console.log(item.tags, item.citys, item.coupons);
 
-            const {
+            let {
               status,
               userStatus,
               sourceType,
-              tags = [],
-              citys = [],
-              coupons = []
+              tags,
+              citys,
+              coupons
             } = item;
+            tags = tags || [];
+            citys = citys || [];
+            coupons = coupons || [];
+
             // 用户状态:userStatusName  类型:sourceTypeName  城市:cityNames 标签:tagNames 优惠券:couponNames
 
             // 审核状态 status
