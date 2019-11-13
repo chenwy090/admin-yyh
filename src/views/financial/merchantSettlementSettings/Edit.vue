@@ -1,6 +1,9 @@
 <template>
   <!--  新建/编辑  -->
   <div class="edit">
+    foo:{{foo}}--chilrfoo:{{chilrfoo}}
+    <hr>
+    info:{{info}}
     <div>
       <Form
         label-position="right"
@@ -50,7 +53,7 @@
           </Table>
         </Row>
 
-        <FormItem label="提现手续费：">
+        <!-- <FormItem label="提现手续费：">
           <span>企业对公账户：{{info.obj.corporateWithdrawFee.total}}元/每笔（银行{{info.obj.corporateWithdrawFee.bank}}元/每笔、平台{{info.obj.corporateWithdrawFee.platform}}元/每笔）</span>
           <span>个人账户：{{info.obj.individualWithdrawFee.total}}元/每笔（银行{{info.obj.individualWithdrawFee.bank}}元/每笔）</span>
         </FormItem>
@@ -66,7 +69,7 @@
           <span>商户分润： {{info.obj.shareProfitRate.merchant}}%/每笔</span>
           <span>平台分润： {{info.obj.shareProfitRate.platform}}%/每笔</span>
           <span>（未分润部分归平台所有；分润金额四舍五入，保留至小数点两位）</span>
-        </FormItem>
+        </FormItem>-->
 
         <FormItem
           label="最低提现金额："
@@ -150,32 +153,45 @@ import BrandList from "./BrandList";
 import MerchantAccountList from "./MerchantAccountList";
 
 import createTypeDate from "./typeData";
-let typeData = createTypeDate();
+// let typeData = createTypeDate();
+let typeData = {};
 
 import { withdrawUserColumns } from "./columns";
 
 export default {
   name: "edit",
+  beforeCreate() {
+    typeData = createTypeDate();
+    this.dynamicColumns = typeData.type0.columns;
+    console.log("beforeCreate", typeData);
+  },
   created() {
-     this.typeData = createTypeDate();
+    //  this.typeData = createTypeDate();
     // console.log("data:",this.data);
     // console.log("created typeData", this.typeData);
     // console.log("created", this.action);
-    this.dynamicColumns = this.typeData.type0.columns;
+    // this.dynamicColumns = this.typeData.type0.columns;
+    console.log("created");
   },
   // mounted() {
   //   console.log("mounted", this.info);
   // },
   inject: {
+    foo: {
+      default: () => {
+        // return "default";
+        return {a:"default"}
+      }
+    },
     info: {
       default: () => {
         return {
-          obj: {
+          // obj: {
             // corporateWithdrawFee: { total: 10, bank: 8, platform: 2 },
             // individualWithdrawFee: { total: 1, bank: 1 },
             // payPipelineFeeRate: { wx: 0.6, aliPay: 0.6 },
             // shareProfitRate: { merchant: 97, platform: 3 }
-          }
+          // }
         };
       }
     }
@@ -203,12 +219,18 @@ export default {
       }
     }
   },
-  computed: {},
+  computed: {
+    chilrfoo() {
+      return this.foo.a;
+      // return this.foo;
+      // return 1;
+    }
+  },
   watch: {
     action: {
       handler(val, oldVal) {
         let { type, data } = this.action;
-        debugger
+
         data = JSON.parse(JSON.stringify(data));
         console.log("watch action data:", data);
 
@@ -216,7 +238,6 @@ export default {
           this.formData = data;
           this.withdrawUserTableData = data.withdrawUserTableData;
         }
-
         if (type == "add") {
         } else if (type == "edit") {
           const {
@@ -225,8 +246,10 @@ export default {
             businessName,
             tableData = []
           } = data;
+          console.log("id", id, "this.typeData:", this.typeData);
 
           let typeData = this.typeData[`type${merchantType}`];
+          console.log("watchx  typeData ", typeData);
           typeData.id = id;
           typeData.name = businessName;
           this.dynamicColumns = typeData.columns;
@@ -286,6 +309,7 @@ export default {
   },
   data() {
     return {
+      childfooOld: this.foo,
       merchantId: "",
       // 新增、修改 任务抽奖banner
       isShow: false,
@@ -296,7 +320,8 @@ export default {
       businessTypePlaceholder: "商户",
       money: 0, // 商户余额 moneyBalance
       ubay: 0, // U贝余额  ubayBalance
-      typeData:{},
+      // typeData:{},
+      typeData,
       formData: {
         id: "",
         merchantType: 0,
@@ -379,6 +404,7 @@ export default {
       this.formData.withdrawUserId.splice(index, 1);
     },
     remove() {
+      this.formData.fundAccountId = "";
       const type = this.formData.merchantType;
       let typeData = this.typeData[`type${type}`];
 

@@ -112,6 +112,7 @@ export default {
     };
   },
   mounted() {
+    alert(this.type);
     this.queryTableData();
   },
   methods: {
@@ -164,7 +165,6 @@ export default {
     // 获取列表数据
     async queryTableData() {
       this.tableLoading = true;
-
       let url = "/merchant/merchantEmployee/merchant";
       if (this.type == 1) {
         url = "/merchant/merchantEmployee/brand";
