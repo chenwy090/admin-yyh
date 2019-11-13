@@ -181,7 +181,7 @@
                     {
                         title: "支付方式",
                         width: 100,
-                        key: "payType"
+                        key: "payTypeDesc"
                     },
                     {
                         title: "渠道流水号",
@@ -271,7 +271,7 @@
                     {
                         title: "支付方式",
                         width: 100,
-                        key: "payType"
+                        key: "payTypeDesc"
                     },
                     {
                         title: "渠道流水号",
