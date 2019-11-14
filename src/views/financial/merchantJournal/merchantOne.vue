@@ -209,13 +209,13 @@
             thawingFlowDialog(row){
                 this.thawingFlowDialogVisible = true;
                 this.$nextTick(() => {
-                    this.$refs['thawingFlowModal'].resetRow(0)
+                    this.$refs['thawingFlowModal'].resetRow(0, {merchantName: row.merchantName})
                 })
             },
             transactionFlowDialog(row){
                 this.transactionFlowDialogVisible = true;
                 this.$nextTick(() => {
-                    this.$refs['transactionFlowModal'].resetRow(0)
+                    this.$refs['transactionFlowModal'].resetRow(0, {merchantName: row.merchantName})
                 })
             },
             changeCurrent(current) {

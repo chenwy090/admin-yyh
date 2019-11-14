@@ -297,10 +297,12 @@
         },
         methods:{
 
-            resetRow(type){
+            resetRow(type, params){
                 this.reset();
+                if (Object.prototype.toString.call(params) === '[object Object]') {
+                  Object.assign(this.searchForm, params);
+                }
                 this.getProvinceList();
-                this.type = type;
                 this.searchForm.merchantType = type==0?0:1;
             },
             getProvinceList(formData) {
