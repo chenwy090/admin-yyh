@@ -54,8 +54,9 @@
         <!-- 子商户应用 -->
         <!-- 打款验证 -->
         <div v-if="smAndPv == 2">
-          <FormItem label="金额: ">
+          <FormItem :label-width="40" label="金额: ">
             <InputNumber style="width:200px" placeholder="请输入" v-model="form2.receiveAmount"></InputNumber>
+            金额单位：分
           </FormItem>
         </div>
         <!-- 打款验证 -->

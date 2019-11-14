@@ -35,8 +35,8 @@ import {
 
 
 // 新测试环境
-export const baseUrl = "http://192.168.31.134:8088/zex-mgr";
-export const downloadUrl = "http://192.168.31.134:8088/zex-mgr";
+// export const baseUrl = "http://192.168.31.134:8088/zex-mgr";
+// export const downloadUrl = "http://192.168.31.134:8088/zex-mgr";
 
 // 开发环境 http://192.168.31.114:8088/
 // export const baseUrl = "http://192.168.31.114:8088/zex-mgr";
@@ -56,8 +56,8 @@ export const downloadUrl = "http://192.168.31.134:8088/zex-mgr";
 
 
 // dev1.5.5
-// export const baseUrl = "http://192.168.31.114:8088/zex-mgr";
-// export const downloadUrl = "http://192.168.31.114:8088/zex-mgr";
+export const baseUrl = "http://192.168.31.114:8088/zex-mgr";
+export const downloadUrl = "http://192.168.31.114:8088/zex-mgr";
 
 
 
