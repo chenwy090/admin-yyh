@@ -99,7 +99,13 @@
       </Row>-->
       <div>
         <!-- 用户列表 -->
-        <Table border width="100%" :columns="type == 1?columns1:type == 2?columns2:type == 3?columns3:columns4" :data="tableData" :loading="tableLoading">
+        <Table
+          border
+          width="100%"
+          :columns="type == 1?columns1:type == 2?columns2:type == 3?columns3:columns4"
+          :data="tableData"
+          :loading="tableLoading"
+        >
           <!-- 提现时间 -->
           <template slot-scope="{ row }" slot="applyTime">
             <div>{{ row.applyTime | data}}</div>
@@ -140,7 +146,7 @@
           :page-size="searchData.pageSize"
           :total="page.total"
           @on-change="changeCurrent"
-        ></Page> -->
+        ></Page>-->
       </Row>
       <!-- 分页器 -->
     </Card>
@@ -729,11 +735,21 @@ export default {
       // },
 
       // 时间
-      time1(e) {
-        this.searchData.remitTime = e;
+      time1(arr) {
+        let [startTime, endTime] = arr;
+        if (startTime) {
+          startTime = `${arr[0]} 00:00:00`;
+          endTime = `${arr[1]} 23:59:59`;
+        }
+        this.searchData.remitTime = [startTime, endTime];
       },
-      time2(e) {
-        this.searchData.withdrawTime = e;
+      time2(arr) {
+        let [startTime, endTime] = arr;
+        if (startTime) {
+          startTime = `${arr[0]} 00:00:00`;
+          endTime = `${arr[1]} 23:59:59`;
+        }
+        this.searchData.withdrawTime = [startTime, endTime];
       },
 
 // 全局提示

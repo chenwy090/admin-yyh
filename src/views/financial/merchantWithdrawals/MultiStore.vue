@@ -285,16 +285,12 @@ export default {
     changeStartDate(arr) {
       // yyyy-MM-dd HH:mm:ss
       console.log(arr);
-      // this.daterange = arr;
-      this.searchData.withdrawTime = arr;
       let [startTime, endTime] = arr;
       if (startTime) {
-        startTime = `${arr[0]}:00`;
-        endTime = `${arr[1]}:00`;
+        startTime = `${arr[0]} 00:00:00`;
+        endTime = `${arr[1]} 23:59:59`;
       }
-      console.log(startTime, endTime);
-      this.searchData.startTime = startTime;
-      this.searchData.endTime = endTime;
+      this.searchData.withdrawTime = [startTime, endTime];
     },
     queryAuditList(id) {
       console.log("queryAuditList", id);
