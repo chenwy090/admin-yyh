@@ -6,7 +6,9 @@
   "private": true,
   "scripts": {
     "dev": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build",
+    "test": "vue-cli-service build --mode test",
+    "pro": "vue-cli-service build --mode production"
   },
   "dependencies": {
     "area-data": "^5.0.6",
