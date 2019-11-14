@@ -77,17 +77,23 @@
             </i-select>
           </Form-item>
 
-          <Form-item v-if="base_info.serviceType == 2 || base_info.serviceType == 3">
-            <Button @click="getMerchantCouponList">{{tempName}}</Button>
-          </Form-item>
-
+          <template v-if="base_info.serviceType==6">
+            <Form-item>
+              <Button @click="serviceType6">{{tempName}}</Button>
+            </Form-item>
+          </template>
+          <template v-else>
+            <Form-item v-if="base_info.serviceType == 2 || base_info.serviceType == 3">
+              <Button @click="getMerchantCouponList">{{tempName}}</Button>
+            </Form-item>
+          </template>
           <Form-item label="二维码参数：" required>
             <i-input
               type="text"
               placeholder="最大32个可见字符，只支持数字大小写英文以及部分特殊字符"
               v-model="base_info.scene"
               style="width:300px"
-              :disabled="base_info.serviceType == 2 || base_info.serviceType == 3 ?true:false"
+              :disabled="qrDisable"
             ></i-input>
           </Form-item>
 
@@ -265,493 +271,522 @@
       </Form>
     </Modal>
     <!-- 选择周边券对话框 -->
+
+    <CouponList
+      v-if="showCouponList"
+      :showCouponList.sync="showCouponList"
+      @seclectedTr-event="selectedCouponItem"
+    ></CouponList>
   </div>
 </template>
 
 <script>
-  import {
-    getMiniApp,
-    getServiceType,
-    addQrCodeManagement,
-    getCampaginListData
-  } from "@/api/sys";
-  export default {
-    props: {
-      qrcodeStatus: Number,
-      qrcodeItem: Object
-    },
-    data() {
-      return {
-        base_info: {
-          // appType: "wxminiapp",
-          // ticketTemplateId: "",
-          // category: "",
-          qrcodeType: null, // 二维码类型-
-          serviceType: null, // 服务类型-
-          shopId: "", // 门店id -
-          remark: "", // 备注 -
-          uid: "", // 邀请人 -
-          locationType: "", // 位置类型 -
-          location: "", // 位置描述 -
-          appid: "", // 微信小程序appid -
-          scene: "", // 二维码参数值 -
-          page: "pages/loading/loading", // 小程序页面值 -
-          width: 430, // 二维码的宽度 -
-          autoColor: 0, // 自动配置线条颜色
-          lineColor: "", // 使用 rgb 设置颜色 -
-          is_hyaline: "0", // is_hyaline 为true时，生成透明底色的小程序码 -
-          qrcodeServiceParams: [
-            {
-              param: "",
-              value: ""
-            }
-          ]
-          // oldUserTicketTemplateId: "",
-          // newUserTicketTemplateId: ""
-        },
-        lineColor_r: "", // 使用 r 设置颜色 -
-        lineColor_g: "", // 使用 g 设置颜色 -
-        lineColor_b: "", // 使用 b 设置颜色 -
-        lineColor_show: "",
-        appStoreList: [], // 小程序appid
+import CouponList from "./CouponList";
 
-        venderName: "",
-
-        ServiceTypeList: [], // 服务类型 （根据字典查询）
-        couponList: [],
-        oldUerTicketList: [],
-        newUerTicketList: [],
-        // 周边券详情页 / 列表
-        totalSize: 0,
-        current: 1,
-        tempName: "请选择列表",
-        MerchantCouponDisplay: false,
-        merchantCouponList: [],
-        // 周边券
-        columns1: [
+import {
+  getMiniApp,
+  getServiceType,
+  addQrCodeManagement,
+  getCampaginListData
+} from "@/api/sys";
+export default {
+  components: { CouponList },
+  props: {
+    qrcodeStatus: Number,
+    qrcodeItem: Object
+  },
+  data() {
+    return {
+      showCouponList: false,
+      base_info: {
+        // appType: "wxminiapp",
+        // ticketTemplateId: "",
+        // category: "",
+        qrcodeType: null, // 二维码类型-
+        serviceType: null, // 服务类型-
+        shopId: "", // 门店id -
+        remark: "", // 备注 -
+        uid: "", // 邀请人 -
+        locationType: "", // 位置类型 -
+        location: "", // 位置描述 -
+        appid: "", // 微信小程序appid -
+        scene: "", // 二维码参数值 -
+        page: "pages/loading/loading", // 小程序页面值 -
+        width: 430, // 二维码的宽度 -
+        autoColor: 0, // 自动配置线条颜色
+        lineColor: "", // 使用 rgb 设置颜色 -
+        is_hyaline: "0", // is_hyaline 为true时，生成透明底色的小程序码 -
+        qrcodeServiceParams: [
           {
-            title: "优惠券ID",
-            align: "center",
-            minWidth: 140,
-            key: "templateId"
-          },
-          {
-            title: "优惠券名称",
-            align: "center",
-            minWidth: 140,
-            key: "title"
-          },
-          {
-            title: "所属商户",
-            align: "center",
-            minWidth: 140,
-            key: "merchantName"
+            param: "",
+            value: ""
           }
-        ],
-        // 商户列表
-        columns2: [
-          {
-            title: "商户ID",
-            align: "center",
-            minWidth: 140,
-            key: "merchantId"
-          },
-          {
-            title: "商户名称",
-            align: "center",
-            minWidth: 140,
-            key: "name"
-          }
-          // {
-          //   title: "所属商户",
-          //   align: "center",
-          //   minWidth: 140,
-          //   key: "merchantName"
-          // }
         ]
-      };
-    },
-    computed: {
-      getLineColorR() {
-        return this.lineColor_r;
+        // oldUserTicketTemplateId: "",
+        // newUserTicketTemplateId: ""
       },
-      getLineColorG() {
-        return this.lineColor_g;
-      },
-      getLineColorB() {
-        return this.lineColor_b;
-      }
-    },
-    watch: {
-      getLineColorR(newValue, oldValue) {
-        this.lineColor_show =
-          "rgb(" +
-          newValue +
-          "," +
-          this.lineColor_g +
-          "," +
-          this.lineColor_b +
-          ")";
-      },
-      getLineColorG(newValue, oldValue) {
-        this.lineColor_show =
-          "rgb(" +
-          this.lineColor_r +
-          "," +
-          newValue +
-          "," +
-          this.lineColor_b +
-          ")";
-      },
-      getLineColorB(newValue, oldValue) {
-        this.lineColor_show =
-          "rgb(" +
-          this.lineColor_r +
-          "," +
-          this.lineColor_g +
-          "," +
-          newValue +
-          ")";
-      }
-      // "base_info.appType"(val) {
-      //   console.log(val);
-      //   this.base_info.appType = val;
-      //   this.getWebankAppStore(val);
-      // },
+      lineColor_r: "", // 使用 r 设置颜色 -
+      lineColor_g: "", // 使用 g 设置颜色 -
+      lineColor_b: "", // 使用 b 设置颜色 -
+      lineColor_show: "",
+      appStoreList: [], // 小程序appid
 
-      // "base_info.serviceType"(val) {
-      //   if (!this.base_info.appid) {
-      //     this.$Message.error("请选择小程序appid！", 3);
-      //     this.base_info.serviceType = "";
+      venderName: "",
+
+      ServiceTypeList: [], // 服务类型 （根据字典查询）
+      couponList: [],
+      oldUerTicketList: [],
+      newUerTicketList: [],
+      // 周边券详情页 / 列表
+      totalSize: 0,
+      current: 1,
+      tempName: "请选择列表",
+      MerchantCouponDisplay: false,
+      merchantCouponList: [],
+      // 周边券
+      columns1: [
+        {
+          title: "优惠券ID",
+          align: "center",
+          minWidth: 140,
+          key: "templateId"
+        },
+        {
+          title: "优惠券名称",
+          align: "center",
+          minWidth: 140,
+          key: "title"
+        },
+        {
+          title: "所属商户",
+          align: "center",
+          minWidth: 140,
+          key: "merchantName"
+        }
+      ],
+      // 商户列表
+      columns2: [
+        {
+          title: "商户ID",
+          align: "center",
+          minWidth: 140,
+          key: "merchantId"
+        },
+        {
+          title: "商户名称",
+          align: "center",
+          minWidth: 140,
+          key: "name"
+        }
+        // {
+        //   title: "所属商户",
+        //   align: "center",
+        //   minWidth: 140,
+        //   key: "merchantName"
+        // }
+      ]
+    };
+  },
+  computed: {
+    qrDisable() {
+      const { serviceType } = this.base_info;
+      return serviceType == 2 || serviceType == 3 || serviceType == 6
+        ? true
+        : false;
+    },
+    getLineColorR() {
+      return this.lineColor_r;
+    },
+    getLineColorG() {
+      return this.lineColor_g;
+    },
+    getLineColorB() {
+      return this.lineColor_b;
+    }
+  },
+  watch: {
+    getLineColorR(newValue, oldValue) {
+      this.lineColor_show =
+        "rgb(" +
+        newValue +
+        "," +
+        this.lineColor_g +
+        "," +
+        this.lineColor_b +
+        ")";
+    },
+    getLineColorG(newValue, oldValue) {
+      this.lineColor_show =
+        "rgb(" +
+        this.lineColor_r +
+        "," +
+        newValue +
+        "," +
+        this.lineColor_b +
+        ")";
+    },
+    getLineColorB(newValue, oldValue) {
+      this.lineColor_show =
+        "rgb(" +
+        this.lineColor_r +
+        "," +
+        this.lineColor_g +
+        "," +
+        newValue +
+        ")";
+    }
+    // "base_info.appType"(val) {
+    //   console.log(val);
+    //   this.base_info.appType = val;
+    //   this.getWebankAppStore(val);
+    // },
+
+    // "base_info.serviceType"(val) {
+    //   if (!this.base_info.appid) {
+    //     this.$Message.error("请选择小程序appid！", 3);
+    //     this.base_info.serviceType = "";
+    //     return;
+    //   }
+    // }
+  },
+  created: function() {
+    this.getWebankAppStore();
+    this.getServiceParams();
+  },
+  methods: {
+    serviceType6() {
+      this.showCouponList = true;
+    },
+    handleChooseCoupon() {
+      this.showCouponList = true;
+    },
+    // 获取小程序app
+    getWebankAppStore: function() {
+      getMiniApp().then(res => {
+        // console.log(res);
+        if (res.code == 200) {
+          this.appStoreList = res.data;
+        } else {
+          this.msgErr("小程序appId获取失败");
+        }
+      });
+    },
+
+    // 获取服务类型
+    getServiceParams: function(obj) {
+      getServiceType().then(res => {
+        if (res.code == 200) {
+          this.ServiceTypeList = res.data;
+        } else {
+          this.msgErr(res.msg);
+        }
+      });
+    },
+
+    //提交
+    submitData: function() {
+      // 提交新增/编辑
+      // console.log(this.base_info);
+
+      if (!this.formCheck()) {
+        return;
+      }
+
+      var color = {
+        r: this.lineColor_r,
+        g: this.lineColor_g,
+        b: this.lineColor_b
+      };
+
+      var color1 = JSON.stringify(color);
+
+      const data = {
+        appid: this.base_info.appid,
+        autoColor: this.base_info.autoColor == 0 ? true : false,
+        isHyaline: this.base_info.is_hyaline == 0 ? false : true,
+        lineColor: this.base_info.autoColor == 0 ? "" : color1,
+        location: this.base_info.location,
+        locationType: this.base_info.locationType,
+        page: this.base_info.page,
+        qrcodeServiceParams: JSON.stringify(this.base_info.qrcodeServiceParams),
+        qrcodeType: this.base_info.qrcodeType,
+        remark: this.base_info.remark,
+        scene: this.base_info.scene,
+        serviceType: Number(this.base_info.serviceType),
+        shopId: this.base_info.shopId,
+        uid: this.base_info.uid,
+        width: this.base_info.width
+      };
+
+      // console.log(data);
+      // return;
+
+      addQrCodeManagement(data).then(res => {
+        console.log(res);
+        if (res.code == 200) {
+          this.msgOk("保存成功");
+          this.returnActivityList();
+        } else {
+          this.msgErr(res.msg);
+        }
+      });
+    },
+
+    //返回列表
+    returnActivityList: function() {
+      // window.location.href = "qrCodeManagement.jsp";
+      console.log(this.base_info);
+      this.$emit("changeStatus", {
+        display: false,
+        qrcodeType: this.base_info.qrcodeType
+      });
+    },
+
+    // 获取周边券详情
+    getMerchantCouponList() {
+      let url, data;
+      if (this.base_info.serviceType == 2) {
+        // 跳转周边券详情页
+        data = {
+          isEffective: 1,
+          templateStatus: "进行中",
+          requestFrom: "qrcode"
+        };
+        url = "/merchantCouponTemplate/backList";
+      } else {
+        // 跳转周边券列表
+        data = {
+          operatingStatus: "0",
+          requestFrom: "qrcode"
+        };
+        url = "/merchant/merchantInfo/list";
+      }
+      getCampaginListData(url, data, this.current).then(res => {
+        if (res.code == 200) {
+          this.merchantCouponList = res.data.records;
+          this.current = res.data.current;
+          this.totalSize = res.data.total;
+          this.MerchantCouponDisplay = true;
+        }
+      });
+    },
+
+    // 分页
+    changeCurrent: function(current) {
+      this.current = current;
+      this.getMerchantCouponList();
+    },
+    selectedCouponItem(data) {
+      console.log("selectedCouponItem----", data);
+      let { id, name } = data;
+      // templateId 券模板id templateName 券模板名称
+      this.tempName = "已选择" + name;
+      this.base_info.scene = id;
+      console.log(id, name);
+    },
+    // 选中优惠活动
+    selectionCampagin(row, oldCurrentRow) {
+      if (this.base_info.serviceType == 2) {
+        this.tempName = "已选择" + row.title;
+        this.base_info.scene = row.templateId;
+      } else {
+        this.tempName = "已选择" + row.name;
+        this.base_info.scene = row.merchantId;
+      }
+      // this.operation_data.pagePath = row.id
+      // this.specialTopic = '已选择' + row.name
+      this.msgOk("选择成功");
+    },
+
+    //二维码类型触发
+    qrcodeTypeChange() {
+      this.base_info.serviceType = "";
+    },
+
+    //服务类型触发
+    serviceTypeChange() {
+      this.tempName = "请选择";
+      this.base_info.scene = "";
+    },
+
+    // 验证
+    formCheck: function() {
+      if (!this.base_info.appid) {
+        this.$Message.error("请选择小程序appid！", 3);
+        return;
+      }
+
+      if (!this.base_info.qrcodeType) {
+        this.$Message.error("请选择二维码类型！", 3);
+        return;
+      }
+
+      if (this.base_info.qrcodeType == "1") {
+        if (!this.base_info.uid) {
+          this.$Message.error("请输入邀请人！", 3);
+          return;
+        }
+      }
+
+      if (this.base_info.qrcodeType == "2") {
+        if (!this.base_info.locationType) {
+          this.$Message.error("请选择位置类型！", 3);
+          return;
+        }
+
+        if (!this.base_info.location) {
+          this.$Message.error("请输入位置描述！", 3);
+          return;
+        }
+      }
+
+      if (!this.base_info.serviceType) {
+        this.$Message.error("请选择服务类型！", 3);
+        return;
+      }
+      if (this.base_info.serviceType == 1 && !this.base_info.scene) {
+        this.$Message.error("请输入二维码参数！", 3);
+        return;
+      }
+
+      if (this.base_info.serviceType != 1 && !this.base_info.scene) {
+        this.$Message.error("二维码参数为空，请点击选择列表！", 4);
+        return;
+      }
+
+      //                if(!this.base_info.shopId){
+      //                    this.$Message.error('请输入指定门店号！', 3);
+      //                    return;
+      //                }
+
+      // if (this.base_info.serviceType == 2 && !this.base_info.ticketTemplateId) {
+      //   console.log(this.base_info.ticketTemplateId);
+      //   this.$Message.error("请选择优惠券模板号！", 3);
+      //   return;
+      // }
+
+      // if (this.base_info.serviceType == 3 && !this.base_info.category) {
+      //   this.$Message.error("请选择优惠券类别！", 3);
+      //   return;
+      // }
+
+      // if (this.base_info.serviceType == 4 && !this.base_info.category) {
+      //   if (!this.base_info.oldUserTicketTemplateId) {
+      //     this.$Message.error("请选择老用户推送优惠券！", 3);
+      //     return;
+      //   }
+      //   if (!this.base_info.newUserTicketTemplateId) {
+      //     this.$Message.error("请选择新用户推送优惠券！", 3);
       //     return;
       //   }
       // }
-    },
-    created: function() {
-      this.getWebankAppStore();
-      this.getServiceParams();
-    },
-    methods: {
-      // 获取小程序app
-      getWebankAppStore: function() {
-        getMiniApp().then(res => {
-          // console.log(res);
-          if (res.code == 200) {
-            this.appStoreList = res.data;
-          } else {
-            this.msgErr("小程序appId获取失败");
-          }
-        });
-      },
 
-      // 获取服务类型
-      getServiceParams: function(obj) {
-        getServiceType().then(res => {
-          if (res.code == 200) {
-            this.ServiceTypeList = res.data;
-          } else {
-            this.msgErr(res.msg);
-          }
-        });
-      },
-
-      //提交
-      submitData: function() {
-        // 提交新增/编辑
-        // console.log(this.base_info);
-
-        if (!this.formCheck()) {
-          return;
-        }
-
-        var color = {
-          r: this.lineColor_r,
-          g: this.lineColor_g,
-          b: this.lineColor_b
-        };
-
-        var color1 = JSON.stringify(color);
-
-        const data = {
-          appid: this.base_info.appid,
-          autoColor: this.base_info.autoColor == 0 ? true : false,
-          isHyaline: this.base_info.is_hyaline == 0 ? false : true,
-          lineColor: this.base_info.autoColor == 0 ? "" : color1,
-          location: this.base_info.location,
-          locationType: this.base_info.locationType,
-          page: this.base_info.page,
-          qrcodeServiceParams: JSON.stringify(this.base_info.qrcodeServiceParams),
-          qrcodeType: this.base_info.qrcodeType,
-          remark: this.base_info.remark,
-          scene: this.base_info.scene,
-          serviceType: Number(this.base_info.serviceType),
-          shopId: this.base_info.shopId,
-          uid: this.base_info.uid,
-          width: this.base_info.width
-        };
-
-        // console.log(data);
-        // return;
-
-        addQrCodeManagement(data).then(res => {
-          console.log(res);
-          if (res.code == 200) {
-            this.msgOk("保存成功");
-            this.returnActivityList();
-          } else {
-            this.msgErr(res.msg);
-          }
-        });
-      },
-
-      //返回列表
-      returnActivityList: function() {
-        // window.location.href = "qrCodeManagement.jsp";
-        console.log(this.base_info);
-        this.$emit("changeStatus", {
-          display: false,
-          qrcodeType: this.base_info.qrcodeType
-        });
-      },
-
-      // 获取周边券详情
-      getMerchantCouponList() {
-        let url, data;
-        if (this.base_info.serviceType == 2) {
-          // 跳转周边券详情页
-          data = {
-            isEffective: 1,
-            templateStatus: "进行中",
-            requestFrom: "qrcode"
-          };
-          url = "/merchantCouponTemplate/backList";
-        } else {
-          // 跳转周边券列表
-          data = {
-            operatingStatus: "0",
-            requestFrom: "qrcode"
-          };
-          url = "/merchant/merchantInfo/list";
-        }
-        getCampaginListData(url, data, this.current).then(res => {
-          if (res.code == 200) {
-            this.merchantCouponList = res.data.records;
-            this.current = res.data.current;
-            this.totalSize = res.data.total;
-            this.MerchantCouponDisplay = true;
-          }
-        });
-      },
-
-      // 分页
-      changeCurrent: function(current) {
-        this.current = current;
-        this.getMerchantCouponList();
-      },
-
-      // 选中优惠活动
-      selectionCampagin(row, oldCurrentRow) {
-        if (this.base_info.serviceType == 2) {
-          this.tempName = "已选择" + row.title;
-          this.base_info.scene = row.templateId;
-        } else {
-          this.tempName = "已选择" + row.name;
-          this.base_info.scene = row.merchantId;
-        }
-        // this.operation_data.pagePath = row.id
-        // this.specialTopic = '已选择' + row.name
-        this.msgOk("选择成功");
-      },
-
-      //二维码类型触发
-      qrcodeTypeChange() {
-        this.base_info.serviceType = "";
-      },
-
-      //服务类型触发
-      serviceTypeChange() {
-        this.tempName = "请选择";
-        this.base_info.scene = "";
-      },
-
-      // 验证
-      formCheck: function() {
-        if (!this.base_info.appid) {
-          this.$Message.error("请选择小程序appid！", 3);
-          return;
-        }
-
-        if (!this.base_info.qrcodeType) {
-          this.$Message.error("请选择二维码类型！", 3);
-          return;
-        }
-
-        if (this.base_info.qrcodeType == "1") {
-          if (!this.base_info.uid) {
-            this.$Message.error("请输入邀请人！", 3);
-            return;
-          }
-        }
-
-        if (this.base_info.qrcodeType == "2") {
-          if (!this.base_info.locationType) {
-            this.$Message.error("请选择位置类型！", 3);
-            return;
-          }
-
-          if (!this.base_info.location) {
-            this.$Message.error("请输入位置描述！", 3);
-            return;
-          }
-        }
-
-        if (!this.base_info.serviceType) {
-          this.$Message.error("请选择服务类型！", 3);
-          return;
-        }
-        if (this.base_info.serviceType == 1 && !this.base_info.scene) {
-          this.$Message.error("请输入二维码参数！", 3);
-          return;
-        }
-
-        if (this.base_info.serviceType != 1 && !this.base_info.scene) {
-          this.$Message.error("二维码参数为空，请点击选择列表！", 4);
-          return;
-        }
-
-        //                if(!this.base_info.shopId){
-        //                    this.$Message.error('请输入指定门店号！', 3);
-        //                    return;
-        //                }
-
-        // if (this.base_info.serviceType == 2 && !this.base_info.ticketTemplateId) {
-        //   console.log(this.base_info.ticketTemplateId);
-        //   this.$Message.error("请选择优惠券模板号！", 3);
+      // if (this.base_info.appType == "wxminiapp") {
+      if (!this.base_info.width) {
+        this.$Message.error("请输二维码宽度！", 3);
+        return;
+      } else {
+        // if (!zexUtil.isNumber(this.base_info.width)) {
+        //   this.$Message.error("二维码宽度必须要为数字！", 3);
         //   return;
         // }
-
-        // if (this.base_info.serviceType == 3 && !this.base_info.category) {
-        //   this.$Message.error("请选择优惠券类别！", 3);
-        //   return;
-        // }
-
-        // if (this.base_info.serviceType == 4 && !this.base_info.category) {
-        //   if (!this.base_info.oldUserTicketTemplateId) {
-        //     this.$Message.error("请选择老用户推送优惠券！", 3);
-        //     return;
-        //   }
-        //   if (!this.base_info.newUserTicketTemplateId) {
-        //     this.$Message.error("请选择新用户推送优惠券！", 3);
-        //     return;
-        //   }
-        // }
-
-        // if (this.base_info.appType == "wxminiapp") {
-        if (!this.base_info.width) {
-          this.$Message.error("请输二维码宽度！", 3);
-          return;
-        } else {
-          // if (!zexUtil.isNumber(this.base_info.width)) {
-          //   this.$Message.error("二维码宽度必须要为数字！", 3);
-          //   return;
-          // }
-        }
-
-        if (this.base_info.width < 280 || this.base_info.width > 1280) {
-          this.$Message.error("二维码宽度为280-1280px之间！", 3);
-          return;
-        }
-
-        if (this.base_info.autoColor == 1) {
-          if (!this.lineColor_r || !this.lineColor_g || !this.lineColor_b) {
-            this.$Message.error("需要配置的颜色！", 3);
-            return;
-          }
-        }
-
-        if (!this.base_info.remark) {
-          this.$Message.error("请输入备注！", 3);
-          return;
-        }
-        // }
-
-        // for (var i = 0; i < this.base_info.qrcodeServiceParams.length; i++) {
-        //   var resultIndex = i + 1;
-        //   if (
-        //     this.base_info.qrcodeServiceParams[i].param == "" ||
-        //     this.base_info.qrcodeServiceParams[i].param == " "
-        //   ) {
-        //     this.$Message.error("第 " + resultIndex + "条参数名为空！");
-        //     console.log(this.base_info.qrcodeServiceParams[i].param);
-        //     return;
-        //   }
-        //   if (
-        //     this.base_info.qrcodeServiceParams[i].value == "" ||
-        //     this.base_info.qrcodeServiceParams[i].value == " "
-        //   ) {
-        //     this.$Message.error("第 " + resultIndex + "条参数值为空！");
-        //     console.log(this.base_info.qrcodeServiceParams[i].value);
-        //     return;
-        //   }
-        // }
-
-        return true;
-      },
-
-      // 添加问题
-      handleAdd() {
-        if (this.base_info.qrcodeServiceParams.length >= 10) {
-          this.msgErr("不能超过10个");
-          return;
-        } else {
-          this.base_info.qrcodeServiceParams.push({ param: "", value: "" });
-        }
-      },
-
-      // 删除
-      handleRemove(index) {
-        if (this.base_info.qrcodeServiceParams.length == 1) {
-          this.msgErr("不能小于1个");
-          return;
-        }
-        this.base_info.qrcodeServiceParams.splice(index, 1);
-      },
-
-      // 全局提示
-      msgOk(txt) {
-        this.$Message.info({
-          content: txt,
-          duration: 3
-        });
-      },
-
-      msgErr(txt) {
-        this.$Message.error({
-          content: txt,
-          duration: 3
-        });
       }
-      // --------------------------------------------------
+
+      if (this.base_info.width < 280 || this.base_info.width > 1280) {
+        this.$Message.error("二维码宽度为280-1280px之间！", 3);
+        return;
+      }
+
+      if (this.base_info.autoColor == 1) {
+        if (!this.lineColor_r || !this.lineColor_g || !this.lineColor_b) {
+          this.$Message.error("需要配置的颜色！", 3);
+          return;
+        }
+      }
+
+      if (!this.base_info.remark) {
+        this.$Message.error("请输入备注！", 3);
+        return;
+      }
+      // }
+
+      // for (var i = 0; i < this.base_info.qrcodeServiceParams.length; i++) {
+      //   var resultIndex = i + 1;
+      //   if (
+      //     this.base_info.qrcodeServiceParams[i].param == "" ||
+      //     this.base_info.qrcodeServiceParams[i].param == " "
+      //   ) {
+      //     this.$Message.error("第 " + resultIndex + "条参数名为空！");
+      //     console.log(this.base_info.qrcodeServiceParams[i].param);
+      //     return;
+      //   }
+      //   if (
+      //     this.base_info.qrcodeServiceParams[i].value == "" ||
+      //     this.base_info.qrcodeServiceParams[i].value == " "
+      //   ) {
+      //     this.$Message.error("第 " + resultIndex + "条参数值为空！");
+      //     console.log(this.base_info.qrcodeServiceParams[i].value);
+      //     return;
+      //   }
+      // }
+
+      return true;
+    },
+
+    // 添加问题
+    handleAdd() {
+      if (this.base_info.qrcodeServiceParams.length >= 10) {
+        this.msgErr("不能超过10个");
+        return;
+      } else {
+        this.base_info.qrcodeServiceParams.push({ param: "", value: "" });
+      }
+    },
+
+    // 删除
+    handleRemove(index) {
+      if (this.base_info.qrcodeServiceParams.length == 1) {
+        this.msgErr("不能小于1个");
+        return;
+      }
+      this.base_info.qrcodeServiceParams.splice(index, 1);
+    },
+
+    // 全局提示
+    msgOk(txt) {
+      this.$Message.info({
+        content: txt,
+        duration: 3
+      });
+    },
+
+    msgErr(txt) {
+      this.$Message.error({
+        content: txt,
+        duration: 3
+      });
     }
-  };
+    // --------------------------------------------------
+  }
+};
 </script>
 <style lang="less" scoped>
-  .operation {
-    margin-bottom: 2vh;
-  }
-  .select-count {
-    font-size: 13px;
-    font-weight: 600;
-    color: #40a9ff;
-  }
-  .select-clear {
-    margin-left: 10px;
-  }
-  .page {
-    margin-top: 2vh;
-  }
-  .drop-down {
-    font-size: 13px;
-    margin-left: 5px;
-  }
+.operation {
+  margin-bottom: 2vh;
+}
+.select-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: #40a9ff;
+}
+.select-clear {
+  margin-left: 10px;
+}
+.page {
+  margin-top: 2vh;
+}
+.drop-down {
+  font-size: 13px;
+  margin-left: 5px;
+}
 </style>

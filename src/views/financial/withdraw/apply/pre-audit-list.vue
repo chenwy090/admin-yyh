@@ -101,6 +101,8 @@
         <Table border :columns="tableAuditRecordColumns" :data="listAuditRecordData"></Table>
       </Modal>
     </Row>
+
+    <ModelMoney v-if="showModelMoney" :showModelMoney.sync="showModelMoney" :moneyData="moneyData"></ModelMoney>
   </Row>
 </template>
 <script>
@@ -110,7 +112,14 @@ import {
   financialWithdrawApplyAuditRecordList,
   financialWithdrawApplyDownload
 } from "@/api/sys";
+
+import { getRequest } from "@/libs/axios";
+import ModelMoney from "./ModelMoney";
+
 export default {
+  components: {
+    ModelMoney
+  },
   data() {
     const auditFormRemarks = (rule, value, callback) => {
       if (value.length > 100) {
@@ -124,13 +133,15 @@ export default {
       callback();
     };
     return {
+      showModelMoney: false,
+      moneyData: [],
       TableLoading: false,
       auditing: 0,
       totalSize: 0,
       current: 1,
       listData: [],
       selectDataList: [],
-      auditData:{},
+      auditData: {},
       auditFlag: 0,
       tableColumns: [
         {
@@ -158,7 +169,8 @@ export default {
                     size: "small"
                   },
                   style: {
-                      display:(params.row.auditStep !='1')?"none":"inline-block",
+                    display:
+                      params.row.auditStep != "1" ? "none" : "inline-block"
                   },
                   on: {
                     click: () => {
@@ -206,7 +218,7 @@ export default {
         {
           title: "审核日志",
           key: "operate",
-          width: 150,
+          // width: 150,
           align: "center",
           render: (h, params) => {
             return h("div", [
@@ -224,6 +236,24 @@ export default {
                   }
                 },
                 "查看"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "error",
+                    size: "small"
+                  },
+                  style: {
+                    margin: "10px"
+                  },
+                  on: {
+                    click: () => {
+                      this.showUserDetail(params.row.userId);
+                    }
+                  }
+                },
+                "审核明细"
               )
             ]);
           }
@@ -305,6 +335,16 @@ export default {
         }
       });
     },
+    async showUserDetail(userId) {
+      const url = `/withdraw/apply/audit/record/ubayDetails/${userId}`;
+      const { code, data } = await getRequest(url);
+      if (code === "200") {
+        this.showModelMoney = true;
+        this.moneyData = [data];
+      } else {
+        this.msgErr("查询用户明细失败！");
+      }
+    },
     changeCurrent(current) {
       if (this.searchForm.current != current) {
         this.searchForm.current = current;
@@ -326,7 +366,7 @@ export default {
     },
     audit(raw) {
       this.auditData = raw;
-      this.auditFlag = '1';
+      this.auditFlag = "1";
       this.batchAuditModalShow = true;
     },
     batchAudit() {
@@ -335,28 +375,28 @@ export default {
         return;
       }
       this.batchAuditModalShow = true;
-      this.auditFlag = '2';
+      this.auditFlag = "2";
     },
     batchAuditOk(form) {
       this.batchAuditModalLoading = true;
       this.$refs[form].validate(valid => {
         if (valid) {
-           switch(this.auditFlag){
-            case '1':
+          switch (this.auditFlag) {
+            case "1":
               this.auditForm.applyIds.push(this.auditData.id);
               break;
-            case '2':
+            case "2":
               for (var i in this.selectDataList) {
                 this.auditForm.applyIds.push(this.selectDataList[i].id);
               }
               break;
           }
 
-          if(this.auditing != 0){
+          if (this.auditing != 0) {
             his.msgErr("请勿重复提交审核");
             return;
           }
-          if(this.auditing == 0){
+          if (this.auditing == 0) {
             this.auditing = 1;
           }
           financialWithdrawApplyAudit(this.auditForm).then(res => {
@@ -397,21 +437,21 @@ export default {
       this.auditFormModalChange();
     },
     auditFormModalChange(sta) {
-     this.auditForm.applyIds=[];
-     this.auditForm.result="";
-     this.auditForm.remarks="";
-     this.auditing=0;
+      this.auditForm.applyIds = [];
+      this.auditForm.result = "";
+      this.auditForm.remarks = "";
+      this.auditing = 0;
     },
     auditStepChange(val) {
       this.searchForm.status = null;
       switch (val) {
         case "1":
-           this.searchForm.status = '0';
-          this.batchAuditBtnShow=true;
+          this.searchForm.status = "0";
+          this.batchAuditBtnShow = true;
           break;
         default:
-          if(val === '2'){
-            this.searchForm.status = '5';
+          if (val === "2") {
+            this.searchForm.status = "5";
           }
           this.batchAuditBtnShow = false;
           break;

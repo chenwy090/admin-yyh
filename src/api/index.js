@@ -9,20 +9,30 @@ import {
 } from "@/libs/axios";
 
 // 本地访问地址
-// export const baseUrl = "http://192.168.31.6:8088/zex-mgr";
+
 // export const baseUrl = "http://192.168.31.102:8088/zex-mgr"; //姚军
-// export const baseUrl = "http://192.168.31.34:8088/zex-mgr"; //mingyuan
-// export const baseUrl = "http://192.168.31.173:8088/zex-mgr"; //建斌
+// export const baseUrl = "http://192.168.0.25:8088/zex-mgr"; //mingyuan
+// export const baseUrl = "http://192.168.34.109:8088/zex-mgr"; //建斌
+// export const baseUrl = "http://192.168.31.225:8088/zex-mgr"; //yz
+// export const baseUrl = "http://192.168.34.115:8088/zex-mgr"; //lubin
+// export const baseUrl = "http://192.168.34.119:8088/zex-mgr"; //张磊
 
-
-// 测试环境
+// 老测试环境
 // export const baseUrl = "http://47.103.117.70:8088/zex-mgr";
 // export const downloadUrl = "http://47.103.117.70:8088/zex-mgr";
 
+
+// 新测试环境
+// export const baseUrl = "http://192.168.31.134:8088/zex-mgr";
+// export const downloadUrl = "http://192.168.31.134:8088/zex-mgr";
+
+// 开发环境 http://192.168.31.114:8088/
+// export const baseUrl = "http://192.168.31.114:8088/zex-mgr";
+
 // dev开发环境 http://47.102.126.157:8088/zex-mgr/
 // http://crmdev.52iuh.cn:8088/zex-mgr
-// export const baseUrl = "http://47.102.126.157:8088/zex-mgr";
-// export const downloadUrl = "http://47.102.126.157:8088/zex-mgr";
+// export const baseUrl = "http://192.168.31.206:8088/zex-mgr";
+// export const downloadUrl = "http://192.168.31.206:8088/zex-mgr";
 
 // 预发环境地址
 // export const baseUrl = "http://review.52iuh.com:8088/zex-mgr";
@@ -39,6 +49,7 @@ export const downloadUrl = "http://crm.52iuh.com:8088/zex-mgr";
 
 
 
+export const baseUrl = process.env.VUE_APP_API;
 
 //上传图片地址
 export const uploadOperationImage2AliOssURl =

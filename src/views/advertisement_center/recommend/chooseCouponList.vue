@@ -71,11 +71,17 @@ export default {
     };
   },
   methods: {
+      resetRow(){
+          this.handleClearCurrentRow();
+      },
     search: function() {
       this.TableLoading = true;
       this.pageNum = 1;
       this.loadData();
     },
+      handleClearCurrentRow () {
+          this.$refs.table.clearCurrentRow();
+      },
     loadData: function() {
       postRequest(
         "/campagin/list?pageNum=" + this.pageNum + "&pageSize=" + this.pageSize,
@@ -91,7 +97,9 @@ export default {
       });
     },
     selectedTr: function(currentRow, oldCurrentRow) {
-      this.$emit("seclectedTr-event", currentRow.campId, currentRow.name);
+        if(currentRow){
+            this.$emit("seclectedTr-event", currentRow.campId, currentRow.name);
+        }
     },
     changeCurrent: function(current) {
       if (this.searchForm.pageNum != current) {

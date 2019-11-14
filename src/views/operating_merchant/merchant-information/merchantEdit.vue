@@ -1208,6 +1208,8 @@ export default {
           this.edit_info = res.data;
           console.info(JSON.stringify(res.data));
 
+          console.log("mounted:",this.edit_info.merchantProfileList);
+
           this.identification_info.merchantId = res.data.merchantId;
 
           this.edit_info.provinceCode = res.data.provinceCode;

@@ -759,3 +759,105 @@ export const delMerchant = id => postRequest(`/merchant/assignment/delete?id=${i
 
 //  /merchant/assignment/data 数据
 export const queryMerchantDataById = params => postRequest(`/merchant/assignment/data`, params);
+
+
+//--------------------------------------商户资金账号 --------------------------
+
+// 获取列表
+export const getMerchantFundList = (params) => {
+    let obj = JSON.stringify(params)
+    return postRequest(`/trade/merchant/fund/account/basic/page`, obj)
+}
+
+// 判断是否可以新增
+export const judgeMerchant = (params) => {
+    let obj = JSON.stringify(params)
+    return postRequest(`/trade/merchant/fund/account/basic/judge`, obj)
+}
+
+// 新增商户信息
+export const addMerchantInfo = (params) => {
+    let obj = JSON.stringify(params)
+    return postRequest(`/trade/merchant/fund/account/basic/add`, obj)
+}
+
+// 根据id查询基本信息
+export const getMerchantInfo = (id) => {
+    return postRequest(`/trade/merchant/fund/account/basic/get/${id}`)
+}
+
+// 编辑商户信息
+export const editMerchantInfo = (params) => {
+    let obj = JSON.stringify(params)
+    return postRequest(`/trade/merchant/fund/account/basic/update`, obj)
+}
+
+// 根据id证件信息
+export const getCredentialsInfo = (id) => {
+    return postRequest(`/trade/merchant/fund/account/pic/getOne?basicId=${id}`)
+}
+
+// 编辑证件信息
+export const editCredentials = (params) => {
+    let obj = JSON.stringify(params)
+    return postRequest(`/trade/merchant/fund/account/pic/addOrUpdate`, obj)
+}
+
+// 根据id获取用户联系人 子应用信息
+export const getContactInformation = (params) => {
+    let obj = JSON.stringify(params)
+    return postRequest(`/trade/merchant/fund/account/user/get`, obj)
+}
+
+// 新增编辑用户/联系人
+export const editContactInformation = (params) => {
+    let obj = JSON.stringify(params)
+    return postRequest(`/trade/merchant/fund/account/user/addOrUpdate`, obj)
+}
+
+// 打款验证
+export const editCheck = (params) => {
+    let obj = JSON.stringify(params)
+    return postRequest(`/trade/merchant/fund/account/settle/check`, obj)
+}
+
+// 根据id结算信息
+export const getSettlementAccount = (id) => {
+    return postRequest(`/trade/merchant/fund/account/settle/get?basicId=${id}`)
+}
+
+// 结算账户
+export const editSettlementAccount = (params) => {
+    let obj = JSON.stringify(params)
+    return postRequest(`/trade/merchant/fund/account/settle/addOrUpdate`, obj)
+}
+
+
+// 获取全部详情
+export const getAllInfo = (id) => {
+    return postRequest(`/trade/merchant/fund/account/detail/${id}`)
+}
+
+// 刷新
+export const refresh = (id) => {
+    return postRequest(`/trade/merchant/fund/account/user/refresh`)
+}
+
+// 获取字典证件类型
+export const getDocumentType = (params) => {
+    return postRequest(`/system/sys-dict-data/selectDictDataDictCode?dictCode=certification_type`)
+}
+
+//--------------------------------------商户打款 --------------------------
+
+// 打款列表
+export const getMerchantPayment = (params) => {
+    let obj = JSON.stringify(params)
+    return postRequest(`/trade/merchant/remit/page`, obj)
+}
+
+// 异常列表
+export const getAbnormalPayment = (params) => {
+    let obj = JSON.stringify(params)
+    return postRequest(`/trade/merchant/remit/page`, obj)
+}
