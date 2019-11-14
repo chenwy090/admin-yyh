@@ -42,13 +42,6 @@ Vue.prototype.setStore = setStore;
 Vue.prototype.getStore = getStore;
 Vue.prototype.removeStore = removeStore;
 
-
-console.log(process.env.NODE_ENV, 1);
-console.log(process.env, 2);
-console.log(process, 3);
-console.log(process.env.VUE_APP_API, 4);
-
-
 /* eslint-disable no-new */
 new Vue({
     el: '#app',
