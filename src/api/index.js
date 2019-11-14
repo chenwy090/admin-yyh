@@ -29,7 +29,7 @@ import {
 // 开发环境 http://192.168.31.114:8088/
 // export const baseUrl = "http://192.168.31.114:8088/zex-mgr";
 
-// dev开发环境 http://47.102.126.157:8088/zex-mgr/
+// dev开发环境
 // http://crmdev.52iuh.cn:8088/zex-mgr
 // export const baseUrl = "http://192.168.31.206:8088/zex-mgr";
 // export const downloadUrl = "http://192.168.31.206:8088/zex-mgr";
@@ -39,13 +39,9 @@ import {
 // export const downloadUrl = "http://review.52iuh.com:8088/zex-mgr";
 
 // 正式环境 http://crm.52iuh.com:8088/zex-mgr
-export const baseUrl = "http://crm.52iuh.com:8088/zex-mgr";
-export const downloadUrl = "http://crm.52iuh.com:8088/zex-mgr";
 
 // dev环境 http://crm.52iuh.com:8088/zex-mgr
 // http://crmdev.52iuh.cn/
-// export const baseUrl = "http://crmdev.52iuh.cn:8088/zex-mgr";
-// export const downloadUrl = "http://crmdev.52iuh.cn:8088/zex-mgr";
 
 
 
