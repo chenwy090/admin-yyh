@@ -399,8 +399,8 @@ export default {
         invoiceStatus: "" //开票
       };
       this.page = {
-        page: 1, //页码
-        size: 10, //每页数量
+        pageNum: 1, //页码
+        pageSize: 10, //每页数量
         total: 0 //数据总数
       };
       //重新查询一遍

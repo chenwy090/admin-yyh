@@ -61,7 +61,6 @@ import {
 
 
 export const baseUrl = process.env.VUE_APP_API;
-export const downloadUrl = process.env.VUE_APP_API;
 
 console.log(baseUrl, 'baseUrl');
 

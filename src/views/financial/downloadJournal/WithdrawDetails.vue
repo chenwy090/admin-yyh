@@ -1,71 +1,70 @@
 <template>
   <div class="xxx">
     <div class="query-row">
-     
-        <Form label-position="right" ref="form" :model="searchData" :label-width="120">
-          <FormItem label="类型：">
-            <RadioGroup v-model="searchData.downType">
-              <Radio v-for="(v,k) in downTypeOption" :label="k" :key="k">
-                <span>{{v}}明细</span>
-              </Radio>
-            </RadioGroup>
-          </FormItem>
+      <Form label-position="right" ref="form" :model="searchData" :label-width="120">
+        <FormItem label="类型：">
+          <RadioGroup v-model="searchData.downType">
+            <Radio v-for="(v,k) in downTypeOption" :label="k" :key="k">
+              <span>{{v}}明细</span>
+            </Radio>
+          </RadioGroup>
+        </FormItem>
 
-          <Row style="width:1000px;">
-            <Col span="12">
-              <FormItem label="商户(单店)：">
-                <Row>
-                  <Col span="16">
-                    <div>
-                      <RadioGroup
-                        v-model="searchData.merchantType"
-                        @on-change="handleChangeMerchantType"
-                      >
-                        <Radio v-for="(v,k) in merchantOption" :label="k" :key="k">
-                          <span @click="handleChangeMerchantType(k)">{{v}}</span>
-                        </Radio>
-                      </RadioGroup>
-                    </div>
-                    <div>
-                      <Input
-                        v-model="searchData.merchantNames"
-                        type="textarea"
-                        style="width:300px;resize: none;"
-                        :autosize="{minRows: 8,maxRows: 8}"
-                        disabled
-                      ></Input>
-                    </div>
-                  </Col>
-                </Row>
-              </FormItem>
-            </Col>
-            <Col span="12">
-              <FormItem label="商户(多店)：">
-                <Row>
-                  <Col span="16">
-                    <div>
-                      <RadioGroup v-model="searchData.brandType" @on-change="handleChangeBrandType">
-                        <Radio v-for="(v,k) in brandOption" :label="k" :key="k">
-                          <span>{{v}}</span>
-                        </Radio>
-                      </RadioGroup>
-                    </div>
-                    <div>
-                      <Input
-                        v-model="searchData.brandNames"
-                        type="textarea"
-                        style="width:300px;resize: none;"
-                        :autosize="{minRows: 8,maxRows: 8}"
-                        disabled
-                      ></Input>
-                    </div>
-                  </Col>
-                </Row>
-              </FormItem>
-            </Col>
-          </Row>
-          <!-- 优惠券名称  v-if="searchData.downType!=3"-->
-          <!-- <template v-if="searchData.downType!=3">
+        <Row style="width:1000px;">
+          <Col span="12">
+            <FormItem label="商户(单店)：">
+              <Row>
+                <Col span="16">
+                  <div>
+                    <RadioGroup
+                      v-model="searchData.merchantType"
+                      @on-change="handleChangeMerchantType"
+                    >
+                      <Radio v-for="(v,k) in merchantOption" :label="k" :key="k">
+                        <span @click="handleChangeMerchantType(k)">{{v}}</span>
+                      </Radio>
+                    </RadioGroup>
+                  </div>
+                  <div>
+                    <Input
+                      v-model="searchData.merchantNames"
+                      type="textarea"
+                      style="width:300px;resize: none;"
+                      :autosize="{minRows: 8,maxRows: 8}"
+                      disabled
+                    ></Input>
+                  </div>
+                </Col>
+              </Row>
+            </FormItem>
+          </Col>
+          <Col span="12">
+            <FormItem label="商户(多店)：">
+              <Row>
+                <Col span="16">
+                  <div>
+                    <RadioGroup v-model="searchData.brandType" @on-change="handleChangeBrandType">
+                      <Radio v-for="(v,k) in brandOption" :label="k" :key="k">
+                        <span>{{v}}</span>
+                      </Radio>
+                    </RadioGroup>
+                  </div>
+                  <div>
+                    <Input
+                      v-model="searchData.brandNames"
+                      type="textarea"
+                      style="width:300px;resize: none;"
+                      :autosize="{minRows: 8,maxRows: 8}"
+                      disabled
+                    ></Input>
+                  </div>
+                </Col>
+              </Row>
+            </FormItem>
+          </Col>
+        </Row>
+        <!-- 优惠券名称  v-if="searchData.downType!=3"-->
+        <!-- <template v-if="searchData.downType!=3">
             <FormItem label="优惠券名称：">
               <Row>
                 <Col span="10">
@@ -84,51 +83,50 @@
                 </Col>
               </Row>
             </FormItem>
-          </template> -->
+        </template>-->
 
-          <template v-if="searchData.downType==1">
-            <FormItem label="支付方式：">
-              <Select v-model="searchData.payType" style="width:100px" clearable>
-                <Option v-for="(v,k) in payTypeOption" :value="k" :key="v">{{ v }}</Option>
-              </Select>
-            </FormItem>
-
-            <FormItem label="交易类型：">
-              <Select v-model="searchData.tradeType" style="width:100px" clearable>
-                <Option v-for="(v,k) in tradeTypeOption" :value="k" :key="v">{{ v }}</Option>
-              </Select>
-            </FormItem>
-          </template>
-          <template v-else-if="searchData.downType==3">
-            <FormItem label="审核状态：">
-              <Select v-model="searchData.auditStatus" style="width:100px" clearable>
-                <Option v-for="(v,k) in auditStatusOption" :value="k" :key="v">{{ v }}</Option>
-              </Select>
-            </FormItem>
-          </template>
-
-          <FormItem :label="`${timeRangeLabel}时间：`">
-            <DatePicker
-              type="daterange"
-              placeholder="请选择日期"
-              style="width: 200px"
-              :value="timeRange"
-              @on-change="changeStartDate"
-            ></DatePicker>
+        <template v-if="searchData.downType==1">
+          <FormItem label="支付方式：">
+            <Select v-model="searchData.payType" style="width:100px" clearable>
+              <Option v-for="(v,k) in payTypeOption" :value="k" :key="v">{{ v }}</Option>
+            </Select>
           </FormItem>
 
-          <FormItem :label-width="0">
-            <Button icon="md-refresh" class="marginLeft20" @click="reset">重置</Button>
-            <Button
-              type="success"
-              icon="ios-download-outline"
-              class="marginLeft20"
-              @click="exports"
-            >导出</Button>
+          <FormItem label="交易类型：">
+            <Select v-model="searchData.tradeType" style="width:100px" clearable>
+              <Option v-for="(v,k) in tradeTypeOption" :value="k" :key="v">{{ v }}</Option>
+            </Select>
           </FormItem>
-        </Form>
-        <Row type="flex" justify="start"></Row>
-    
+        </template>
+        <template v-else-if="searchData.downType==3">
+          <FormItem label="审核状态：">
+            <Select v-model="searchData.auditStatus" style="width:100px" clearable>
+              <Option v-for="(v,k) in auditStatusOption" :value="k" :key="v">{{ v }}</Option>
+            </Select>
+          </FormItem>
+        </template>
+
+        <FormItem :label="`${timeRangeLabel}时间：`">
+          <DatePicker
+            type="daterange"
+            placeholder="请选择日期"
+            style="width: 200px"
+            :value="timeRange"
+            @on-change="changeStartDate"
+          ></DatePicker>
+        </FormItem>
+
+        <FormItem :label-width="0">
+          <Button icon="md-refresh" class="marginLeft20" @click="reset">重置</Button>
+          <Button
+            type="success"
+            icon="ios-download-outline"
+            class="marginLeft20"
+            @click="exports"
+          >导出</Button>
+        </FormItem>
+      </Form>
+      <Row type="flex" justify="start"></Row>
     </div>
 
     <BusinessList
@@ -218,7 +216,7 @@ export default {
       // 查询参数
       timeRange: [],
       searchData: {
-        downType: "3",
+        downType: "1",
         merchantType: "0", //商户
         merchantNames: "",
         merchantIds: [],
@@ -313,20 +311,21 @@ export default {
       // yyyy-MM-dd HH:mm:ss
       console.log(arr);
       // this.timeRange = arr;
-      this.searchData.timeRange = arr;
+      // this.searchData.timeRange = arr;
       let [startTime, endTime] = arr;
       if (startTime) {
-        startTime = `${arr[0]}:00`;
-        endTime = `${arr[1]}:00`;
+        startTime = `${arr[0]} 00:00:00`;
+        endTime = `${arr[1]} 23:59:59`;
       }
       console.log(startTime, endTime);
+      this.searchData.timeRange = [startTime, endTime];
     },
 
     reset() {
       // 重置查询参数
       this.timeRange = []; // 时间
       this.searchData = {
-        downType: "3",
+        downType: "1",
         merchantType: "0", //商户
         merchantNames: "",
         merchantIds: [],

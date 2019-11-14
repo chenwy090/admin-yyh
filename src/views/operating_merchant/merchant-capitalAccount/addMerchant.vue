@@ -142,7 +142,7 @@
     deleteRequest,
     uploadFileRequest
   } from "@/libs/axios";
-  import { baseUrl, downloadUrl } from "@/api/index";
+  import { baseUrl } from "@/api/index";
   import { formatDate, checkImageWH, checkImage, uniqueArray } from "@/libs/date";
 
   export default {
@@ -522,12 +522,12 @@
       downloadDoc1() {
         // window.location.href = baseUrl+`/system/sys-shop-info/downloadTemplateShop`
         window.location.href =
-          downloadUrl + "/document/2019-4-8壹账通技术服务协议.docx";
+          baseUrl + "/document/2019-4-8壹账通技术服务协议.docx";
       },
       downloadDoc2() {
         // window.location.href = baseUrl+`/system/sys-shop-info/downloadTemplateShop`
         window.location.href =
-          downloadUrl +
+          baseUrl +
           "/document/《吉林亿联银行股份有限公司电子交易账簿管理协议》-用户协议.docx";
       },
 
