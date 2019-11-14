@@ -263,8 +263,8 @@
     <Modal v-model="bigImgDialog" title="查看大图" width="600" @on-cancel="bigImgCancel">
       <img style="width: 100%" :src="big_Image_url" />
     </Modal>
-
-    <Modal title="上架/下架" v-model="updateTemplateStatusDisplay" :mask-closable="false" footer-hide>
+    <!-- 上架/下架 -->
+    <Modal title="下架" v-model="updateTemplateStatusDisplay" :mask-closable="false" footer-hide>
       <Form ref="formCustom" :model="formCustom" :label-width="80" style="margin-top:20px">
         <span>提示：已售卖或领用的卡券仍可有效使用。</span>
         <FormItem label="填写原因" required>
@@ -530,13 +530,13 @@ export default {
               5: "换购券",
               6: "赠品券",
               7: "代金券",
-              8: "团购券",
+              8: "团购券"
             };
 
             let text = obj[row.couponType];
 
-            if (!text){
-              text = "未知类型"
+            if (!text) {
+              text = "未知类型";
             }
 
             return h(
@@ -868,35 +868,39 @@ export default {
       });
     },
 
-    // 传值到审核对话框
+    // 传值到审核对话框  下架
     inputUpdateAccountStatus(row) {
       this.formCustom.templateId = row.templateId;
       this.formCustom.type = "优惠券管理";
-      this.formCustom.status = "-1";
+      this.formCustom.status = -1; //下架状态, -1:下架
       this.updateTemplateStatusDisplay = true;
     },
-    // 传值到审核对话框
-    upStatus(item) {
+    // 传值到审核对话框  上架
+    upStatus(templateId) {
       // this.formCustom.templateId = row.templateId;
       // this.formCustom.type = "优惠券管理";
       // this.formCustom.status = "1";
       // this.updateTemplateStatusDisplay = true;
 
       this.setStore("camp_pageStatus", "上架");
-      this.couponEdit_info = item;
-      this.couponDetailPage = true;
+      this.couponEdit_info = templateId;
+      this.couponDetailPage = true; //显示 couponDetail组件！！
       this.couponEditPage = false;
     },
 
     // 更新账户
     updateTemplateStatusFn(item) {
-      const reqParams = {
-        templateId: this.formCustom.templateId,
-        status: this.formCustom.status,
-        remark: this.formCustom.remark,
-        type: this.formCustom.type
-      };
-      postRequest("/merchantCouponTemplate/updStatus", reqParams).then(res => {
+      // 券模板id  下架状态, -1:下架   //下架原因
+      let { templateId, status, remark, type } = this.formCustom;
+
+      remark = remark.trim();
+      if (remark.length == 0) {
+        return this.msgErr("请填写下架原因");
+      }
+
+      const reqParams = { templateId, status, remark, type };
+      const url = "/merchantCouponTemplate/downShelf";
+      postRequest(url, reqParams).then(res => {
         if (res.code == 200) {
           this.msgOk("更新成功");
           this.updateTemplateStatusDisplay = false;

@@ -29,27 +29,27 @@
             <Col span="4" class="left-text">
               <span style="color:red">*</span>优惠券来源
             </Col>
-            <Col span="16">
-            {{couponSourceList[edit_info.couponSource]?couponSourceList[edit_info.couponSource].label:''}}
-            </Col>
+            <Col
+              span="16"
+            >{{couponSourceList[edit_info.couponSource]?couponSourceList[edit_info.couponSource].label:''}}</Col>
           </Row>
 
           <Row class="box">
             <Col span="4" class="left-text">
               <span style="color:red">*</span>券码类型
             </Col>
-            <Col span="16">
-              {{couponCodeTypeList[edit_info.couponCodeType]?couponCodeTypeList[edit_info.couponCodeType].label:''}}
-            </Col>
+            <Col
+              span="16"
+            >{{couponCodeTypeList[edit_info.couponCodeType]?couponCodeTypeList[edit_info.couponCodeType].label:''}}</Col>
           </Row>
 
           <Row class="box">
             <Col span="4" class="left-text">
               <span style="color:red">*</span>立即使用打开方式
             </Col>
-            <Col span="20">
-            {{userOpenWithCouponList[edit_info.userOpenWithCoupon]?userOpenWithCouponList[edit_info.userOpenWithCoupon].label:''}}
-            </Col>
+            <Col
+              span="20"
+            >{{userOpenWithCouponList[edit_info.userOpenWithCoupon]?userOpenWithCouponList[edit_info.userOpenWithCoupon].label:''}}</Col>
           </Row>
 
           <Row class="box">
@@ -63,26 +63,21 @@
               width="600px"
               :columns="columnsSelectMerchant"
               :data="edit_info.merchantInfoVOList"
-            >
-            </Table>
+            ></Table>
           </Row>
 
           <Row class="box">
             <Col span="4" class="left-text">
               <span style="color:red">*</span>标题
             </Col>
-            <Col span="16">
-              {{edit_info.title}}
-            </Col>
+            <Col span="16">{{edit_info.title}}</Col>
           </Row>
 
           <Row class="box">
             <Col span="4" class="left-text">
-            <span style="color:red">*</span>收费类型
+              <span style="color:red">*</span>收费类型
             </Col>
-            <Col span="20">
-            {{couponKindList[edit_info.couponKind-1].label}}
-            </Col>
+            <Col span="20">{{couponKindList[edit_info.couponKind-1].label}}</Col>
           </Row>
 
           <!-- <Row class="box">
@@ -98,147 +93,137 @@
         </Col>
           </Row>-->
 
-          <Row class="box"  v-if="edit_info.couponKind==1">
+          <Row class="box" v-if="edit_info.couponKind==1">
+            <Col span="4" class="left-text">
+              <span style="color:red">*</span>优惠类型
+            </Col>
+            <Col span="16">{{edit_info.couponTypeName}}</Col>
+          </Row>
+          <Row class="box" v-if="edit_info.couponKind==2">
             <Col span="4" class="left-text">
               <span style="color:red">*</span>优惠类型
             </Col>
             <Col span="16">
-            {{edit_info.couponTypeName}}
-            </Col>
-          </Row>
-          <Row class="box" v-if="edit_info.couponKind==2">
-            <Col span="4" class="left-text">
-            <span style="color:red">*</span>优惠类型
-            </Col>
-            <Col span="16">
-            {{edit_info.couponTypeName}}
-            <div style="margin-top: 15px;">
-              <span style="color:red">*</span>原价
-             {{edit_info.originalPrice}}
+              {{edit_info.couponTypeName}}
+              <div style="margin-top: 15px;">
+                <span style="color:red">*</span>
+                原价
+                {{edit_info.originalPrice}}
                 <span>&nbsp;&nbsp; 元</span>
-              <span style="color:red;margin-left: 20px">*</span>售卖价
-             {{edit_info.price}}
+                <span style="color:red;margin-left: 20px">*</span>
+                售卖价
+                {{edit_info.price}}
                 <span>&nbsp;&nbsp; 元</span>
-            </div>
+              </div>
             </Col>
           </Row>
           <div v-if="edit_info.couponKind==1">
             <Row class="box" v-if="edit_info.couponType==1">
               <Col span="4" class="left-text">
-              <span style="color:red">*</span>立减
+                <span style="color:red">*</span>立减
               </Col>
               <Col span="16">
-              {{edit_info.ticketMoney}}
-              <span style="color:red">&nbsp;&nbsp; 元</span>
+                {{edit_info.ticketMoney}}
+                <span style="color:red">&nbsp;&nbsp; 元</span>
               </Col>
             </Row>
 
             <Row class="box" v-if="edit_info.couponType==2">
               <Col span="4" class="left-text">
-              <span style="color:red">*</span>折扣
+                <span style="color:red">*</span>折扣
               </Col>
               <Col span="16">
-              {{edit_info.ticketDiscount}}
-              <span style="color:red">&nbsp;&nbsp; 折</span>
+                {{edit_info.ticketDiscount}}
+                <span style="color:red">&nbsp;&nbsp; 折</span>
               </Col>
             </Row>
             <Row class="box" v-if="edit_info.couponType==3">
               <Col span="4" class="left-text">
-              <span style="color:red">*</span>满
+                <span style="color:red">*</span>满
               </Col>
               <Col span="16">
-              {{edit_info.fullAmout}}
-              <span style="color:red">&nbsp;&nbsp; 元</span>
+                {{edit_info.fullAmout}}
+                <span style="color:red">&nbsp;&nbsp; 元</span>
               </Col>
             </Row>
             <Row class="box" v-if="edit_info.couponType==3">
               <Col span="4" class="left-text">
-              <span style="color:red">*</span>减
+                <span style="color:red">*</span>减
               </Col>
               <Col span="16">
-              {{edit_info.decreaseAmount}}
-              <span style="color:red">&nbsp;&nbsp; 元</span>
+                {{edit_info.decreaseAmount}}
+                <span style="color:red">&nbsp;&nbsp; 元</span>
               </Col>
             </Row>
             <Row class="box" v-if="edit_info.couponType==4">
               <Col span="4" class="left-text">
-              <span style="color:red">*</span>面额描述
+                <span style="color:red">*</span>面额描述
               </Col>
               <Col span="16">
-              {{edit_info.displayText}}
-              <span style="color:red">&nbsp;&nbsp; 体验券</span>
+                {{edit_info.displayText}}
+                <span style="color:red">&nbsp;&nbsp; 体验券</span>
               </Col>
             </Row>
             <Row class="box" v-if="edit_info.couponType==5">
               <Col span="4" class="left-text">
-              <span style="color:red">*</span>面额描述
+                <span style="color:red">*</span>面额描述
               </Col>
               <Col span="16">
-              {{edit_info.displayText}}
-              <span style="color:red">&nbsp;&nbsp; 换购券</span>
+                {{edit_info.displayText}}
+                <span style="color:red">&nbsp;&nbsp; 换购券</span>
               </Col>
             </Row>
             <Row class="box" v-if="edit_info.couponType==6">
               <Col span="4" class="left-text">
-              <span style="color:red">*</span>面额描述
+                <span style="color:red">*</span>面额描述
               </Col>
               <Col span="16">
-              {{edit_info.displayText}}
-              <span style="color:red">&nbsp;&nbsp; 赠品券</span>
+                {{edit_info.displayText}}
+                <span style="color:red">&nbsp;&nbsp; 赠品券</span>
               </Col>
             </Row>
           </div>
           <Row class="box" v-if="edit_info.couponKind==2">
             <Col span="4" class="left-text">
-            <span style="color:red">*</span>售后条件
+              <span style="color:red">*</span>售后条件
             </Col>
             <Col span="20">
-            <span v-for="item in couponSaleAfterList">{{item.value}}&nbsp;&nbsp;</span>
+              <span v-for="item in couponSaleAfterList">{{item.value}}&nbsp;&nbsp;</span>
             </Col>
           </Row>
           <Row class="box">
             <Col span="4" class="left-text">
               <span style="color:red">*</span>活动开始时间
             </Col>
-            <Col span="16">
-              {{edit_info.startDate}}
-            </Col>
+            <Col span="16">{{edit_info.startDate}}</Col>
           </Row>
 
           <Row class="box">
             <Col span="4" class="left-text">
               <span style="color:red">*</span>活动结束时间
             </Col>
-            <Col span="16">
-              {{edit_info.endDate}}
-            </Col>
+            <Col span="16">{{edit_info.endDate}}</Col>
           </Row>
 
           <Row class="box">
             <Col span="4" class="left-text">
               <span style="color:red">*</span>用券有效期类型
             </Col>
-            <Col span="16">
-            {{['','固定时间范围','相对有效期'][edit_info.useDateType]}}
-            </Col>
+            <Col span="16">{{['','固定时间范围','相对有效期'][edit_info.useDateType]}}</Col>
           </Row>
 
           <Row class="box" v-if="edit_info.useDateType =='1'">
             <Col span="4" class="left-text">
               <span style="color:red">*</span>用券开始时间
             </Col>
-            <Col span="16">
-             {{edit_info.useStartDate}}
-            </Col>
+            <Col span="16">{{edit_info.useStartDate}}</Col>
           </Row>
 
           <Row class="box" v-if="edit_info.useDateType =='1'">
             <Col span="4" class="left-text">
               <span style="color:red">*</span>用券结束时间
             </Col>
-            <Col span="16">
-             {{edit_info.useEndDate}}
-            </Col>
+            <Col span="16">{{edit_info.useEndDate}}</Col>
           </Row>
 
           <Row class="box" v-if="edit_info.useDateType =='2'">
@@ -246,7 +231,7 @@
               <span style="color:red">*</span>加X天开始生效
             </Col>
             <Col span="16">
-             {{edit_info.addDaysUseStart}}
+              {{edit_info.addDaysUseStart}}
               <span style="color:red">&nbsp;&nbsp; 天</span>
             </Col>
           </Row>
@@ -256,7 +241,7 @@
               <span style="color:red">*</span>加Y天结束用券
             </Col>
             <Col span="16">
-             {{edit_info.addDaysUseEnd}}
+              {{edit_info.addDaysUseEnd}}
               <span style="color:red">&nbsp;&nbsp; 天</span>
             </Col>
           </Row>
@@ -265,16 +250,14 @@
             <Col span="4" class="left-text">
               <span style="color:red">*</span> 是否活动券
             </Col>
-            <Col span="4">
-            {{['否','是'][edit_info.isActivityCoupon]}}
-            </Col>
+            <Col span="4">{{['否','是'][edit_info.isActivityCoupon]}}</Col>
           </Row>
           <Row class="box">
             <Col span="4" class="left-text">
-            <span style="color:red">*</span>投放渠道
+              <span style="color:red">*</span>投放渠道
             </Col>
             <Col span="20">
-           <span v-for="item in edit_info.couponPutChannelVOList">{{item.value}}&nbsp;&nbsp;</span>
+              <span v-for="item in edit_info.couponPutChannelVOList">{{item.value}}&nbsp;&nbsp;</span>
             </Col>
           </Row>
           <Row class="box">
@@ -299,13 +282,11 @@
             </Col>
           </Row>
           <Row class="box">
-            <Col span="4" class="left-text">
-            首页缩略图
-            </Col>
+            <Col span="4" class="left-text">首页缩略图</Col>
             <Col span="4">
-            <div class="imgSrc_box" v-if="imgSrc3">
-              <img :src="imgSrc3" style="width:100%" />
-            </div>
+              <div class="imgSrc_box" v-if="imgSrc3">
+                <img :src="imgSrc3" style="width:100%" />
+              </div>
             </Col>
           </Row>
           <Row class="box">
@@ -313,8 +294,8 @@
               <span style="color:red">*</span>库存数量
             </Col>
             <Col span="16">
-             {{edit_info.stockCount}}
-                <span style="color:red">&nbsp;&nbsp; 张</span>
+              {{edit_info.stockCount}}
+              <span style="color:red">&nbsp;&nbsp; 张</span>
             </Col>
           </Row>
           <Row class="box">
@@ -322,23 +303,19 @@
               <span style="color:red">*</span>用户限领数量
             </Col>
             <Col span="16">
-            {{edit_info.getLimit}}
-                <span style="color:red">&nbsp;&nbsp; 张</span>
+              {{edit_info.getLimit}}
+              <span style="color:red">&nbsp;&nbsp; 张</span>
             </Col>
           </Row>
           <Row class="box">
             <Col span="4" class="left-text">
               <span style="color:red">*</span>券使用说明
             </Col>
-            <Col span="16">
-             {{edit_info.useDesc}}
-            </Col>
+            <Col span="16">{{edit_info.useDesc}}</Col>
           </Row>
           <Row class="box">
             <Col span="4" class="left-text">备注</Col>
-            <Col span="16">
-              {{edit_info.remark}}
-            </Col>
+            <Col span="16">{{edit_info.remark}}</Col>
           </Row>
 
           <Row
@@ -370,35 +347,29 @@
           </Row>
           <Row class="box" v-if="camp_pageStatus=='上架'">
             <Col span="16">
-            <Button type="primary" @click="upStatus">上架</Button>
+              <Button type="primary" @click="upStatus">上架</Button>
             </Col>
           </Row>
         </Row>
       </Card>
     </div>
-    <logModal
-            ref="logModal"
-            :viewDialogVisible="logDialogModal"
-            @setViewDialogVisible="colseModal"
-    ></logModal>
+    <logModal ref="logModal" :viewDialogVisible="logDialogModal" @setViewDialogVisible="colseModal"></logModal>
   </div>
 </template>
 
 <script>
-import {
-    postJson,postRequest
-} from "@/libs/axios";
+import { postJson, postRequest } from "@/libs/axios";
 import { baseUrl } from "@/api/index";
-import logModal from "./logInfo"
+import logModal from "./logInfo";
 export default {
   name: "BasicSet",
   props: {
     couponEdit_info: String
   },
-    components:{logModal},
+  components: { logModal },
   data() {
     return {
-        logDialogModal:false,
+      logDialogModal: false,
       //乐刻需求新增begin--------------------------
       // 优惠券来源 0-平台自营券 1-第三方券
       // couponSource: "0",
@@ -412,7 +383,7 @@ export default {
           label: "第三方券"
         }
       ],
-        couponKindList: [
+      couponKindList: [
         {
           value: 1,
           label: "免费券"
@@ -422,53 +393,53 @@ export default {
           label: "付费券"
         }
       ],
-        couponSaleAfterList: [
+      couponSaleAfterList: [
         {
           code: 1,
-            value: "随时退"
+          value: "随时退"
         },
         {
           code: 2,
-            value: "过期退"
+          value: "过期退"
         }
       ],
-        couponPutChannelList: [
+      couponPutChannelList: [
         {
           code: 1,
           value: "常规券"
         },
         {
           code: 2,
-            value: "精准拓客"
+          value: "精准拓客"
         },
-            {
-                code: 3,
-                value: "平台拓客"
-            },
-            {
-                code: 4,
-                value: "客服补偿"
-            },
-            {
-                code: 5,
-                value: "抽奖团"
-            },
-            {
-                code: 6,
-                value: "超值爆抢"
-            },
-            {
-                code: 7,
-                value: "专题活动"
-            },
-            {
-                code: 8,
-                value: "赏U任务"
-            },
-            {
-                code: 9,
-                value: "核销赠券"
-            },
+        {
+          code: 3,
+          value: "平台拓客"
+        },
+        {
+          code: 4,
+          value: "客服补偿"
+        },
+        {
+          code: 5,
+          value: "抽奖团"
+        },
+        {
+          code: 6,
+          value: "超值爆抢"
+        },
+        {
+          code: 7,
+          value: "专题活动"
+        },
+        {
+          code: 8,
+          value: "赏U任务"
+        },
+        {
+          code: 9,
+          value: "核销赠券"
+        }
       ],
       // 券码类型  0-平台生成券码
       // couponCodeType: "0",
@@ -524,7 +495,7 @@ export default {
           align: "center",
           minWidth: 200,
           key: "merchantId"
-        },
+        }
       ],
       current: 1,
       totalSize: 0, //总条数
@@ -541,7 +512,7 @@ export default {
         isActivityCoupon: 0,
         orderBy: "",
         merchantList: [],
-          couponSaleAfterList:[],
+        couponSaleAfterList: [],
         startDate: "",
         endDate: "",
         useStartDate: "",
@@ -549,7 +520,7 @@ export default {
         addDaysUseStart: "",
         addDaysUseEnd: "",
         new_ticketMoney: 0,
-          couponKind:1,
+        couponKind: 1,
         ticketMoney: 0,
         price: 0,
         ticketDiscount: 0,
@@ -580,107 +551,110 @@ export default {
   },
   methods: {
     init() {
-        console.log(11);
-        this.camp_pageStatus = this.getStore("camp_pageStatus");
+      this.camp_pageStatus = this.getStore("camp_pageStatus");
       this.editInfo();
     },
-      showLog(){
-        this.logDialogModal = true;
-          this.$nextTick(() => {
-              this.$refs["logModal"].resetRow(this.couponEdit_info);
-          });
-      },
-      colseModal(){
-          this.logDialogModal = false;
-      },
+    showLog() {
+      this.logDialogModal = true;
+      this.$nextTick(() => {
+        this.$refs["logModal"].resetRow(this.couponEdit_info);
+      });
+    },
+    colseModal() {
+      this.logDialogModal = false;
+    },
     //编辑
     editInfo() {
-        postJson(baseUrl + "/merchantCouponTemplate/selectByTemplateId?templateId="+this.couponEdit_info,{}).then(res => {
-            // console.log(res);
-            if (res.code == 200) {
-                this.edit_info = res.data
-                this.uploadList = [{ url: this.edit_info.couponSmallImg }];
-                this.uploadList1 = [{ url: this.edit_info.couponBigImg }];
-                this.edit_info.merchantList = this.edit_info.merchantList;
-                this.edit_info.couponType = String(res.data.couponType);
-                this.imgSrc1 = this.edit_info.couponSmallImg;
-                this.imgSrc2 = this.edit_info.couponBigImg;
-                this.imgSrc3 = this.edit_info.couponSimpleImg;
+      postJson(
+        baseUrl +
+          "/merchantCouponTemplate/selectByTemplateId?templateId=" +
+          this.couponEdit_info,
+        {}
+      )
+        .then(res => {
+          // console.log(res);
+          if (res.code == 200) {
+            this.edit_info = res.data;
+            this.uploadList = [{ url: this.edit_info.couponSmallImg }];
+            this.uploadList1 = [{ url: this.edit_info.couponBigImg }];
+            this.edit_info.merchantList = this.edit_info.merchantList;
+            this.edit_info.couponType = String(res.data.couponType);
+            this.imgSrc1 = this.edit_info.couponSmallImg;
+            this.imgSrc2 = this.edit_info.couponBigImg;
+            this.imgSrc3 = this.edit_info.couponSimpleImg;
 
-                if (this.edit_info.couponKind == 2) {
-                    // this.edit_info.price = this.edit_info.price;
-                } else {
-                    this.edit_info.price = 0;
-                }
-
-                this.edit_info.ticketMoney = this.edit_info.ticketMoney / 100;
-                //console.info("this.edit_info.ticketMoney" + this.edit_info.ticketMoney);
-                //console.info("this.edit_info.ticketMoney" + this.edit_info.ticketMoney);
-
-                this.edit_info.ticketDiscount = this.edit_info.ticketDiscount / 10;
-                this.edit_info.couponKind = this.edit_info.couponKind-0;
-                // this.edit_info.couponType =
-                //     this.edit_info.couponType == 1
-                //         ? "1"
-                //         : this.edit_info.couponType == 2
-                //         ? "2"
-                //         : this.edit_info.couponType == 3
-                //             ? "3"
-                //             : this.edit_info.couponType == 4
-                //                 ? "4"
-                //                 : this.edit_info.couponType == 5
-                //                     ? "5"
-                //                     : "6";
-                this.edit_info.couponKind =
-                    this.edit_info.couponKind == 1 ? "1" : "2";
-                this.edit_info.useDateType =
-                    this.edit_info.useDateType == 1 ? "1" : "2";
+            if (this.edit_info.couponKind == 2) {
+              // this.edit_info.price = this.edit_info.price;
             } else {
-                this.msgErr(res.msg);
+              this.edit_info.price = 0;
             }
-        }).catch(err=>{
-            // console.log(err, 'operating_merchant/merchant-customer/merchant-customer-add, Line929')
+
+            this.edit_info.ticketMoney = this.edit_info.ticketMoney / 100;
+            //console.info("this.edit_info.ticketMoney" + this.edit_info.ticketMoney);
+            //console.info("this.edit_info.ticketMoney" + this.edit_info.ticketMoney);
+
+            this.edit_info.ticketDiscount = this.edit_info.ticketDiscount / 10;
+            this.edit_info.couponKind = this.edit_info.couponKind - 0;
+            // this.edit_info.couponType =
+            //     this.edit_info.couponType == 1
+            //         ? "1"
+            //         : this.edit_info.couponType == 2
+            //         ? "2"
+            //         : this.edit_info.couponType == 3
+            //             ? "3"
+            //             : this.edit_info.couponType == 4
+            //                 ? "4"
+            //                 : this.edit_info.couponType == 5
+            //                     ? "5"
+            //                     : "6";
+            this.edit_info.couponKind =
+              this.edit_info.couponKind == 1 ? "1" : "2";
+            this.edit_info.useDateType =
+              this.edit_info.useDateType == 1 ? "1" : "2";
+          } else {
+            this.msgErr(res.msg);
+          }
+        })
+        .catch(err => {
+          // console.log(err, 'operating_merchant/merchant-customer/merchant-customer-add, Line929')
         });
-
     },
-      upStatus(item) {
-          const reqParams = {
-              templateId: this.couponEdit_info,
-              status: '1',
-              type:'优惠券管理'
-          };
-          postRequest(
-              "/merchantCouponTemplate/updStatus",
-              reqParams
-          ).then(res => {
-              if (res.code == 200) {
-                  this.msgOk("更新成功");
-                  this.updateTemplateStatusDisplay = false;
-                  //this.getList({});
-                  // 清空输入框
-                  this.goback();
-              } else {
-                  this.msgErr(res.msg);
-              }
-          });
-      },
-      msgErr(txt) {
-          this.$Message.error({
-              content: txt,
-              duration: 3
-          });
-      },
-      // 全局提示
-      msgOk(txt) {
-          this.$Message.info({
-              content: txt,
-              duration: 3
-          });
-      },
-      goback() {
-          this.$emit("changeStatus", false);
-      },
-
+    upStatus() {
+      //templateId 券模板id 上架状态, 1:上架
+      const reqParams = {
+        templateId: this.couponEdit_info,
+        status: 1,
+        type: "优惠券管理"
+      };
+      const url = "/merchantCouponTemplate/upShelf";
+      postRequest(url, reqParams).then(res => {
+        if (res.code == 200) {
+          this.msgOk("更新成功");
+          this.updateTemplateStatusDisplay = false;
+          //this.getList({});
+          // 清空输入框
+          this.goback();
+        } else {
+          this.msgErr(res.msg);
+        }
+      });
+    },
+    msgErr(txt) {
+      this.$Message.error({
+        content: txt,
+        duration: 3
+      });
+    },
+    // 全局提示
+    msgOk(txt) {
+      this.$Message.info({
+        content: txt,
+        duration: 3
+      });
+    },
+    goback() {
+      this.$emit("changeStatus", false);
+    }
   },
   mounted() {
     // this.init();
