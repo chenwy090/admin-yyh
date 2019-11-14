@@ -60,7 +60,9 @@ export const downloadUrl = "http://192.168.31.134:8088/zex-mgr";
 // export const downloadUrl = "http://192.168.31.114:8088/zex-mgr";
 
 
+export const baseUrl = process.env.VUE_APP_API;
 
+console.log(baseUrl, 'baseUrl');
 
 //上传图片地址
 export const uploadOperationImage2AliOssURl =
