@@ -328,7 +328,7 @@
 
       // 打开选择列表对话框
       openMerchantModal() {
-        if(!this.form.merchantType) {
+        if(this.form.merchantType == null) {
           this.msgErr('请选择商户类型')
           return
         }
