@@ -612,7 +612,7 @@ export default {
     // 下载模板
     downloadTemplet() {
       // window.location.href = baseUrl+`/system/sys-shop-info/downloadTemplateShop`
-      window.location.href = baseUrl + "/document/shop_import.xlsx";
+      window.location.href = "/document/shop_import.xlsx";
     },
 
     dropDown() {
