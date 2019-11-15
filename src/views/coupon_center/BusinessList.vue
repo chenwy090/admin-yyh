@@ -226,7 +226,7 @@ export default {
       );
     },
     handleOnRowDbclick(row, index) {
-      let { userId, _checked } = row;
+      let { _checked } = row;
 
       _checked = !_checked;
       row._checked = _checked;
@@ -288,6 +288,7 @@ export default {
     },
     // 获取商户列表
     async queryTableData(pageNum) {
+      console.log(this.checked)
       this.page.pageNum = pageNum || 1;
       this.tableLoading = true;
 
@@ -309,7 +310,7 @@ export default {
           item.address = address;
           item._checked = false;
           for (let i = 0; i < this.checked.length; i++) {
-            let r = item.merchantId == this.checked[i];
+            let r = item.merchantId == this.checked[i].merchantId;
             if (r) {
               item._checked = true;
             }

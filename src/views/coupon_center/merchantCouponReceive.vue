@@ -44,6 +44,9 @@
                   <Option value="1">未使用</Option>
                   <Option value="2">已使用</Option>
                   <Option value="3">已过期</Option>
+                  <Option value="4">退款中</Option>
+                  <Option value="5">已退款</Option>
+                  <Option value="6">退款失败</Option>
                 </Select>
               </FormItem>
               <FormItem label="领取终端">
@@ -297,56 +300,45 @@ export default {
         {
           title: "领取时间",
           key: "receiveTime",
-          width: 150,
+          width: 170,
           align: "center"
         },
         {
           title: "使用时间",
           key: "useTime",
-          width: 150,
+          width: 170,
           align: "center"
         },
         {
           title: "退款时间",
           key: "refundTime",
-          width: 150,
+          width: 170,
           align: "center"
         },
         {
           title: "过期时间",
           key: "endUseTime",
-          width: 150,
+          width: 170,
           align: "center"
         },
         {
           title: "使用状态",
           key: "status",
           align: "center",
-          width: 150,
+          width: 120,
           render: (h, params) => {
-            const row = params.row;
-            const color =
-              row.status == "1"
-                ? "blue"
-                : row.status == 2
-                ? "#2db7f5"
-                : "#ed4014";
-            const text =
-              row.status == "1"
-                ? "未使用"
-                : row.status == "2"
-                ? "已使用"
-                : "已过期";
+            const { status } = params.row;
 
-            return h(
-              "Tag",
-              {
-                props: {
-                  color: color
-                }
-              },
-              text
-            );
+            let obj = {
+              1: { color: "blue", label: "未使用" },
+              2: { color: "#2db7f5", label: "已使用" },
+              3: { color: "#ed4014", label: "已过期" },
+              4: { color: "#ed4014", label: "退款中" },
+              5: { color: "primary", label: "已退款" },
+              6: { color: "warning", label: "退款失败" }
+            };
+            let { color, label } = obj[status];
+            return <Tag color={color}>{label}</Tag>;
           }
         }
       ],
