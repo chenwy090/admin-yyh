@@ -1,6 +1,6 @@
 <template>
   <div style="height: 100%">
-    <div v-if="!showViewDialogVisible" style="min-height: 100%">
+    <div style="min-height: 100%">
       <Card style="height: 100%">
         <div>
           <Card :bordered="false" style="margin-bottom:2px">
@@ -26,13 +26,13 @@
                   <span>审核失败</span>
                 </Radio>
               </RadioGroup>
-              <FormItem label="领取人手机：" span="24" style="width:25%">
+              <FormItem label="领取人手机：" span="24">
                 <Input v-model="searchForm.phoneNumber" placeholder="请填写领取人手机" />
               </FormItem>
-              <FormItem label="订单号：" span="24" style="width:25%">
+              <FormItem label="订单号：" span="24" :label-width="70">
                 <Input v-model="searchForm.orderNo" placeholder="请填写订单号" />
               </FormItem>
-              <FormItem label="退款申请时间：" span="35" style="width:40%">
+              <FormItem label="退款申请时间：" :label-width="120">
                 <DatePicker
                   :value="searchForm.applyRefundTimeStart"
                   type="date"
@@ -85,14 +85,14 @@
                     type="info"
                     style="margin-right: 5px"
                     size="small"
-                    @click="showDetail(row)"
+                    @click="oneCheck(row,'detail')"
                   >查看详情</Button>
                   <Button
                     type="info"
                     style="margin-right: 5px"
                     size="small"
                     v-if="searchForm.auditStatus=='1'"
-                    @click="oneCheck(row)"
+                    @click="oneCheck(row,'audit')"
                   >审核</Button>
                 </template>
                 <template slot-scope="{ row }" slot="log">
@@ -135,12 +135,24 @@
         </FormItem>
       </Form>
     </Modal>
-   
-    <checkModal
-      ref="showDetailModal"
-      :viewDialogVisible="showViewDialogVisible"
-      @setViewDialogVisible="closeTab"
-    ></checkModal>
+
+    <Drawer
+      v-model="showDetail"
+      :closable="true"
+      :mask-closable="true"
+      width="700"
+      :styles="styles"
+    >
+      <p slot="header" style="color:#f60;text-align:center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>{{title}}</span>
+      </p>
+      <checkModal
+        ref="showDetailModal"
+        :showDetail.sync="showDetail"
+        @refresh="closeTab"
+      ></checkModal>
+    </Drawer>
     <Modal v-model="showLogModal" width="360">
       <p slot="header" style="color:#f60;text-align:center">审核日志</p>
       <div style="text-align:center">
@@ -316,7 +328,14 @@ export default {
       options1: {},
       TokerViewDialogVisible: false,
       DownViewDialogVisible: false,
-      showViewDialogVisible: false
+      title: "详情", //"详情":"审核";
+      showDetail: false,
+      styles: {
+        height: "calc(100% - 55px)",
+        overflow: "auto",
+        paddingBottom: "53px",
+        position: "static"
+      }
     };
   },
   methods: {
@@ -421,16 +440,11 @@ export default {
         }
       );
     },
-    showDetail(row) {
-      this.showViewDialogVisible = true;
+    oneCheck(row, action) {
+      this.title = action == "detail" ? "详情" : "审核";
+      this.showDetail = true;
       this.$nextTick(() => {
-        this.$refs["showDetailModal"].resetRow(row);
-      });
-    },
-    oneCheck(row) {
-      this.showViewDialogVisible = true;
-      this.$nextTick(() => {
-        this.$refs["showDetailModal"].resetRow(row);
+        this.$refs["showDetailModal"].resetRow(row, action);
       });
     },
     changeCurrent(current) {
@@ -440,7 +454,6 @@ export default {
       }
     },
     closeTab(e) {
-      this.showViewDialogVisible = false;
       this.loadTableData();
     },
     close() {

@@ -1,6 +1,6 @@
 <template>
   <div style="height: 100%">
-    <div v-if="!showViewDialogVisible" style="min-height: 100%">
+    <div style="min-height: 100%">
       <Card style="height: 100%">
         <div>
           <Card :bordered="false" style="margin-bottom:2px">
@@ -116,11 +116,24 @@
     </div>
     <!--<TokerModal ref="TokerModal" :viewDialogVisible="TokerViewDialogVisible" @setViewDialogVisible="closeTab" @search="search"></TokerModal>-->
     <!--<DownModal ref="DownModal" :viewDialogVisible="DownViewDialogVisible" @setViewDialogVisible="closeTab"></DownModal>-->
-    <showDetailModal
-      ref="showDetailModal"
-      :viewDialogVisible="showViewDialogVisible"
-      @setViewDialogVisible="closeTab"
-    ></showDetailModal>
+
+    <Drawer
+      v-model="showViewDialogVisible"
+      :closable="true"
+      :mask-closable="true"
+      width="700"
+      :styles="styles"
+    >
+      <p slot="header" style="color:#f60;text-align:center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>详情</span>
+      </p>
+      <showDetailModal
+        ref="showDetailModal"
+        :viewDialogVisible="showViewDialogVisible"
+        @setViewDialogVisible="closeTab"
+      ></showDetailModal>
+    </Drawer>
   </div>
 </template>
 
@@ -132,6 +145,12 @@ export default {
   components: { showDetailModal },
   data() {
     return {
+      styles: {
+        height: "calc(100% - 55px)",
+        overflow: "auto",
+        paddingBottom: "53px",
+        position: "static"
+      },
       // mini: 微信小程序 IOS: 苹果app Android: 安卓app
       // 1: 待付款 2:已取消 3: 已付款 4: 退款 5: 已完成
       sourceList: [
