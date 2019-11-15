@@ -837,6 +837,7 @@
     <BusinessList
       v-if="showBusinessList"
       :showBusinessList.sync="showBusinessList"
+      :checked="add_info.merchantList"
       @seclectedTr-event="selectedTrCallBack"
     ></BusinessList>
   </div>
@@ -864,6 +865,11 @@ export default {
   components: { ImgCutter, BusinessList },
   props: {
     couponEdit_info: Object
+  },
+  watch: {
+    ["edit_info.couponPutChannelList"]() {
+      console.log("watch:---", this.edit_info.couponPutChannelList);
+    }
   },
   data() {
     return {
@@ -1056,7 +1062,7 @@ export default {
         roleIdList: [],
         merchantList: [],
         couponSaleAfterList: [],
-        couponPutChannelList: [],
+        couponPutChannelList: [1],
         userId: ""
       },
       edit_info: {
@@ -1066,7 +1072,7 @@ export default {
         couponSource: "",
         merchantList: [],
         couponSaleAfterList: [],
-        couponPutChannelList: [],
+        couponPutChannelList: [1],
         startDate: "",
         endDate: "",
         useStartDate: "",
@@ -1109,7 +1115,7 @@ export default {
     handleChangeCouponKind() {
       console.log("handleChangeCouponKind:", arguments);
 
-      //  this.add_info.merchantList = [];
+      this.add_info.merchantList = [];
     },
     selectedTrCallBack(data) {
       console.log("111selectedTrCallBack----", data);
@@ -1226,6 +1232,7 @@ export default {
         couponCodeType: 0, //券码类型
         userOpenWithCoupon: 0, //立即使用打开方式
         thirdUrl: "",
+        couponPutChannelList: [1],
         couponSaleAfterList: [1, 2],
         // 是否活动券 （默认否）0-否，1-是   isActivityCoupon
         isActivityCoupon: 0,
@@ -1427,6 +1434,7 @@ export default {
               that.edit_info.couponSaleAfterList.push(v.code);
             });
             that.edit_info.couponPutChannelList = [];
+            debugger;
             res.data.couponPutChannelVOList.forEach(function(v, i) {
               that.edit_info.couponPutChannelList.push(v.code);
             });
@@ -2102,6 +2110,8 @@ export default {
   },
   mounted() {
     // this.init();
+    console.log("mounted:", this.couponEdit_info);
+    console.log("mounted:", this.edit_info);
   }
 };
 </script>
