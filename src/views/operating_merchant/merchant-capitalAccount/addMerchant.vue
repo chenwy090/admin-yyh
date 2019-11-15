@@ -247,7 +247,7 @@
             title: "品牌名称",
             align: "center",
             width: 404,
-            key: "name"
+            key: "parentName"
           },
           {
             title: "关联店数",
@@ -328,6 +328,10 @@
 
       // 打开选择列表对话框
       openMerchantModal() {
+        if(!this.form.merchantType) {
+          this.msgErr('请选择商户类型')
+          return
+        }
         if (this.form.merchantType == 0) {
           this.getMerchantList();
         } else if (this.form.merchantType == 1) {
@@ -479,7 +483,7 @@
           if (this.form.merchantType == 0) {
             data.merchantId = this.addMerchantList[0].merchantId;
           } else {
-            data.brandId = this.addMerchantList[0].id;
+            data.brandId = this.addMerchantList[0].parentId;
           }
           data.createBy = this.userInfo.username;
           data.modifiedBy = this.userInfo.username;
