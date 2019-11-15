@@ -45,7 +45,7 @@
       <Log :id="action.id"></Log>
     </template>
     <template v-else-if="action.type=='audit'">
-      <Audit :id="action.id" @refresh="closeDialog"></Audit>
+      <Audit :id="action.id" @refresh="refresh"></Audit>
     </template>
     <div class="demo-drawer-footer">
       <Button style="margin-right: 8px" @click="closeDialog">关闭</Button>
@@ -160,6 +160,15 @@ export default {
     };
   },
   methods: {
+    
+    refresh() {
+      //关闭对话框清除表单数据
+      // this.$refs.formValidate.resetFields();
+      console.log("closeDialog");
+      this.$emit(`update:showDetail`, false);
+      //刷新列表数据
+      this.$emit("refresh");
+    },
     closeDialog() {
       //关闭对话框清除表单数据
       // this.$refs.formValidate.resetFields();
@@ -173,6 +182,7 @@ export default {
 .demo-drawer-footer {
   width: 100%;
   position: fixed;
+  z-index: 111;
   bottom: 0;
   left: 0;
   border-top: 1px solid #e8e8e8;

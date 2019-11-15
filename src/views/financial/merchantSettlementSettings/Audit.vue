@@ -98,7 +98,6 @@ export default {
             ...this.formData,
             id: this.id
           });
-
           if (code == 200) {
             this.msgOk("审核成功");
             this.cancelHandleReset(name);

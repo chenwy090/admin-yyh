@@ -180,13 +180,13 @@ export default {
   },
   methods: {
     resetRow(row) {
-      this.orderRefundId = row.id;
+      const { id } = row;
+      this.orderRefundId = id;
       if (row) {
         // /merchant/activity/award/activity/{id}
         // /trade/fund/account/order/refundOrderDetails/{id}
-        getRequest(
-          `/trade/fund/account/order/refundOrderDetails/${row.id}`
-        ).then(res => {
+        const url = `/trade/fund/account/order/refundOrderDetails/${id}`;
+        getRequest(url).then(res => {
           if (res.code === "200") {
             this.dataInfo = res.data.retData;
             this.dataInfo.merchantName = res.data.merchantName;
