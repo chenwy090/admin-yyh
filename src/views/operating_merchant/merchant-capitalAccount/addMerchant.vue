@@ -247,7 +247,7 @@ export default {
           title: "品牌名称",
           align: "center",
           width: 404,
-          key: "parentName"
+          key: "name"
         },
         {
           title: "关联店数",
@@ -357,10 +357,13 @@ export default {
     // 品牌列表
     getBrandList() {
       const reqParams = {
-        name: this.searchData.name
+        name: this.searchData.name,
+        pageNum:this.current,
+        pageSize:10,
+        // total:0
       };
       postRequest(
-        "/merchant/brandMain/list?pageNum=" + this.current + "&pageSize=10",
+        "/merchant/brandMain/selectByBrandName",
         reqParams
       ).then(res => {
         if (res.isSuccess) {
@@ -483,7 +486,7 @@ export default {
         if (this.form.merchantType == 0) {
           data.merchantId = this.addMerchantList[0].merchantId;
         } else {
-          data.brandId = this.addMerchantList[0].parentId;
+          data.brandId = this.addMerchantList[0].id;
         }
         data.createBy = this.userInfo.username;
         data.modifiedBy = this.userInfo.username;
