@@ -1,14 +1,7 @@
 <template>
   <div class="search">
-    <Row v-if="!couponEditPage&&!couponDetailPage">
-      <!--  <div
-        style="width: 90%;background: #fff;box-shadow:0 6px 6px -4px rgba(0,0,0,.2);z-index: 5;position:fixed; padding:14px"
-      >
-         <Alert show-icon v-if="merchantId">
-           商户编号 :  <span style="color:red">{{merchantId}}</span>
-            <span slot="desc"></span>
-          </Alert>
-      </div>-->
+    <!-- <Row v-if="!couponEditPage&&!couponDetailPage"> -->
+    <Row v-if="!couponEditPage">
       <div style>
         <Card>
           <Row>
@@ -252,13 +245,34 @@
     <div v-if="couponEditPage">
       <couponEdit @changeStatus="showbasicSetStatus" :couponEdit_info="couponEdit_info"></couponEdit>
     </div>
-    <div v-if="couponDetailPage">
+    <!-- <div v-if="couponDetailPage">
       <couponDetail
         ref="modalDetail"
         @changeStatus="showbasicSetStatus"
         :couponEdit_info="couponEdit_info"
       ></couponDetail>
-    </div>
+    </div>-->
+
+    <Drawer
+      v-model="couponDetailPage"
+      :closable="true"
+      :mask-closable="true"
+      width="800"
+      :styles="styles"
+    >
+      <p slot="header" style="color:#f60;text-align:center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>查看详情</span>
+      </p>
+
+      <!-- @changeStatus="showbasicSetStatus" -->
+      <couponDetail
+        ref="modalDetail"
+        v-if="couponDetailPage"
+        :couponDetailPage.sync="couponDetailPage"
+        :couponEdit_info="couponEdit_info"
+      ></couponDetail>
+    </Drawer>
 
     <Modal v-model="bigImgDialog" title="查看大图" width="600" @on-cancel="bigImgCancel">
       <img style="width: 100%" :src="big_Image_url" />
@@ -345,7 +359,6 @@
       :tagData="tagData"
       @refresh="queryTableData"
     ></SetTag>
-
     <modalDetail ref="modalDetail" :descConfig="descConfig" :show="modalDetailData.show" />
   </div>
 </template>
@@ -383,8 +396,20 @@ export default {
   props: {
     merchantId: String
   },
+  watch: {
+    logDialogModal() {
+      console.log("xxxx11111,logDialogModal:", this.logDialogModal);
+    }
+  },
   data() {
     return {
+      logDialogModal: false,
+      styles: {
+        height: "calc(100% - 55px)",
+        overflow: "auto",
+        paddingBottom: "53px",
+        position: "static"
+      },
       upType: "",
       descConfig: [
         ["templateId", "优惠券模板ID"],
@@ -644,12 +669,8 @@ export default {
       //   userOpenWithCoupon: '使用打开方式',
       //   thirdUrl: '第三方Url',
       // }
-      postJson(
-        baseUrl +
-          "/merchantCouponTemplate/selectByTemplateId?templateId=" +
-          templateId,
-        { templateId }
-      )
+      const url = `/merchantCouponTemplate/selectByTemplateId?templateId=${templateId}`;
+      postRequest(url, { templateId })
         .then(res => {
           // console.log(res);
           if (res.code == 200) {
@@ -943,6 +964,7 @@ export default {
       this.couponEdit_info = item;
       this.couponDetailPage = true;
       this.couponEditPage = false;
+
       // this.$refs.modalDetail.rowDate(item);
     },
     showbasicSetStatus(e) {

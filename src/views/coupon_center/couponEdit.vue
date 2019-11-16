@@ -873,7 +873,7 @@ export default {
           couponSource: "",
           couponCodeType: "",
           userOpenWithCoupon: "",
-          couponKind: "",
+          couponKind: 1,
           originalPrice: "",
           price: "",
           couponPutChannelList: [],
@@ -1279,6 +1279,7 @@ export default {
         couponCodeType: 0, //券码类型
         userOpenWithCoupon: 0, //立即使用打开方式
         thirdUrl: "",
+        couponKind: 1,
         couponPutChannelList: [1],
         couponSaleAfterList: [1, 2],
         // 是否活动券 （默认否）0-否，1-是   isActivityCoupon

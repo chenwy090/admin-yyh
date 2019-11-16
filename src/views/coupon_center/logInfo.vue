@@ -1,53 +1,61 @@
 <template>
-  <Modal
-    width="800"
-    v-model="viewDialogVisible"
-    title="操作日志"
-    :closable="false"
-    :mask-closable="false"
-  >
+  <Modal v-model="isShow" title="操作日志" width="700" @on-cancel="closeDialog" :styles="{top: '20px'}">
     <div class="loginfovue">
-      <div>
-        <Row>
-          <RadioGroup v-model="selectIndex" @on-change="selectBusiness()" style="width: 100%;">
-            <Table
-              ref="table"
-              border
-              sortable="custom"
-              :loading="TableLoading"
-              :columns="tableColumns"
-              :data="listData"
-            ></Table>
-          </RadioGroup>
-        </Row>
-        <!-- 分页 -->
-        <Row type="flex" justify="end" class="page">
-          <Page
-            :total="totalSize"
-            show-total
-            show-elevator
-            @on-change="changeCurrent"
-            style="float: right"
-            :current.sync="current"
-          ></Page>
-        </Row>
-      </div>
+      <Row>
+        <RadioGroup style="width: 100%;">
+          <Table
+            ref="table"
+            border
+            size="small"
+            sortable="custom"
+            :loading="TableLoading"
+            :columns="tableColumns"
+            :data="listData"
+          ></Table>
+        </RadioGroup>
+      </Row>
+      <!-- 分页 -->
+      <Row type="flex" justify="end" class="page">
+        <Page
+          :total="totalSize"
+          show-total
+          show-elevator
+          @on-change="changeCurrent"
+          style="float: right"
+          :current.sync="current"
+        ></Page>
+      </Row>
     </div>
     <div slot="footer" style="text-align: center;">
-      <Button type="primary" @click="contentClose">关闭</Button>
+      <Button type="primary" @click="closeDialog">关闭</Button>
     </div>
   </Modal>
 </template>
 
 <script>
-import { postRequest, getRequest, getSyncRequest } from "@/libs/axios";
+import { postRequest } from "@/libs/axios";
 export default {
   name: "logModal",
   props: {
-    viewDialogVisible: { type: Boolean, default: false }
+    viewDialogVisible: { type: Boolean, default: false },
+    logDialogModal: {
+      type: Boolean,
+      default: false
+    },
+    id: {
+      type: [String, Number],
+      default: ""
+    }
+  },
+  watch: {
+    logDialogModal() {
+      console.log("222222,logDialogModal:", this.logDialogModal);
+      this.isShow = this.logDialogModal;
+    }
   },
   data() {
     return {
+      isShow: false,
       listData: [],
       selectIndex: "",
       TableLoading: "",
@@ -79,7 +87,7 @@ export default {
         {
           title: "操作类型",
           key: "operationType",
-          minWidth: 140,
+          minWidth: 80,
           align: "center",
           render: (h, params) => {
             let { operationType, tag } = params.row;
@@ -97,14 +105,14 @@ export default {
           title: "操作人",
           key: "name",
           align: "center",
-          minWidth: 120,
+          minWidth: 80,
           key: "operator" //新店
         },
         {
           title: "操作时间",
           key: "gmtCreate",
           align: "center",
-          minWidth: 220
+          minWidth: 130
         }
       ]
     };
@@ -149,11 +157,14 @@ export default {
         this.loadTableData(current);
       }
     },
-    contentClose() {
-      this.$emit("setViewDialogVisible", false);
+    closeDialog() {
+      this.$emit("update:logDialogModal", false);
     }
   },
-  created() {}
+  created() {
+    console.log(" loginfo created:", this.id);
+    this.resetRow(this.id);
+  }
 };
 </script>
 
