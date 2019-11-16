@@ -3,15 +3,14 @@
     <!-- <Form ref="addOrEditModal" :label-width="100" label-position="left"> -->
     <Form label-position="right" :label-width="120">
       <h3>订单信息</h3>
-
       <FormItem label="订单编号：">{{dataInfo.orderNo}}</FormItem>
       <FormItem label="订单状态：">{{dataInfo.statusStr}}</FormItem>
-      <FormItem label="数量：">{{dataInfo.amount}}</FormItem>
-      <FormItem label="单价：">{{dataInfo.price}}</FormItem>
-      <FormItem label="总价：">{{dataInfo.totalPrice}}</FormItem>
+      <FormItem label="数量：">{{dataInfo.amount}}元</FormItem>
+      <FormItem label="单价：">{{dataInfo.price}}元</FormItem>
+      <FormItem label="总价：">{{dataInfo.totalPrice}}元</FormItem>
       <FormItem
         label="实付款："
-      >{{dataInfo.realPay}} U贝抵扣：{{dataInfo.ubayDiscount}} 红包抵扣：{{dataInfo.redEnvelopeDiscount}}</FormItem>
+      >{{dataInfo.realPay}}元 &nbsp;&nbsp;&nbsp;&nbsp;U贝抵扣：{{dataInfo.ubayDiscount}}元 &nbsp;&nbsp;&nbsp;&nbsp;红包抵扣：{{dataInfo.redEnvelopeDiscount}}元</FormItem>
       <FormItem label="渠道：">{{dataInfo.source}}</FormItem>
 
       <h3>交易记录</h3>
