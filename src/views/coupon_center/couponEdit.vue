@@ -1434,7 +1434,6 @@ export default {
               that.edit_info.couponSaleAfterList.push(v.code);
             });
             that.edit_info.couponPutChannelList = [];
-            debugger;
             res.data.couponPutChannelVOList.forEach(function(v, i) {
               that.edit_info.couponPutChannelList.push(v.code);
             });
