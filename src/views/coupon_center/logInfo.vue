@@ -5,25 +5,19 @@
     title="操作日志"
     :closable="false"
     :mask-closable="false"
-    footer-hide
   >
-    <div>
+    <div class="loginfovue">
       <div>
         <Row>
           <RadioGroup v-model="selectIndex" @on-change="selectBusiness()" style="width: 100%;">
             <Table
-              :loading="TableLoading"
+              ref="table"
               border
+              sortable="custom"
+              :loading="TableLoading"
               :columns="tableColumns"
               :data="listData"
-              sortable="custom"
-              ref="table"
-            >
-              <template
-                slot-scope="{ row }"
-                slot="operationType"
-              >{{["","新增","修改","下架"][row.operationType]}}</template>
-            </Table>
+            ></Table>
           </RadioGroup>
         </Row>
         <!-- 分页 -->
@@ -39,8 +33,8 @@
         </Row>
       </div>
     </div>
-    <div style="text-align: center;margin: 10px 0;">
-      <Button style="margin-left: 8px;" @click="contentClose">关闭</Button>
+    <div slot="footer" style="text-align: center;">
+      <Button type="primary" @click="contentClose">关闭</Button>
     </div>
   </Modal>
 </template>
@@ -84,8 +78,20 @@ export default {
         },
         {
           title: "操作类型",
-          slot: "operationType",
-          minWidth: 140
+          key: "operationType",
+          minWidth: 140,
+          align: "center",
+          render: (h, params) => {
+            let { operationType, tag } = params.row;
+
+            if (tag === null) {
+              tag = 0;
+            }
+            //  1 新增 2 编辑 3 下架 4 上架 5 追加库存
+            let arr = ["", "新增", "编辑", "下架", "上架", "追加库存"];
+            let name = arr[operationType];
+            return <Tag color={tag == 1 ? "error" : "blue"}>{name}</Tag>;
+          }
         },
         {
           title: "操作人",
@@ -156,3 +162,12 @@ export default {
   overflow: visible;
 }
 </style>
+
+<style lang="less">
+.loginfovue {
+  .ivu-tag {
+    cursor: default;
+  }
+}
+</style> >
+

@@ -120,20 +120,38 @@
         </div>
       </Card>
     </div>
-    <Modal title="Title" v-model="showCheck" @on-ok="check" :styles="{top: '20px'}">
-      <Form>
-        <RadioGroup v-model="checkData.auditStatus" style="width: 100%;margin: 10px;">
-          <Radio label="2">
-            <span>通过</span>
-          </Radio>
-          <Radio label="3">
-            <span>不通过</span>
-          </Radio>
-        </RadioGroup>
-        <FormItem label="备注：" span="24" :labelWidth="80">
-          <Input v-model="checkData.remark" type="textarea" :rows="4" placeholder="请输入备注" />
+    <Modal title="批量审核" v-model="showCheck" :styles="{top: '20px'}" @on-cancel="closeAuditModal">
+      <Form ref="form" :model="checkData" label-position="right" :label-width="120">
+        <FormItem label="审核结果：" prop="status">
+          <RadioGroup v-model="checkData.auditStatus">
+            <Radio label="2">
+              <span>通过</span>
+            </Radio>
+            <Radio label="3">
+              <span>不通过</span>
+            </Radio>
+          </RadioGroup>
+        </FormItem>
+        <FormItem label="备注：" prop="remark" :rules="{ required: true,validator:validateRemark}">
+          <Row>
+            <Col span="16">
+              <Tooltip trigger="focus" title="提醒" content="最多100个汉字" placement="right">
+                <Input
+                  v-model.trim="checkData.remark"
+                  type="textarea"
+                  style="width:300px"
+                  :rows="4"
+                  placeholder="请输入备注"
+                />
+              </Tooltip>
+            </Col>
+          </Row>
         </FormItem>
       </Form>
+      <div slot="footer">
+        <Button type="error" @click="check('form')" :loading="auditLoading">确认</Button>
+        <Button @click="cancelHandleReset('form')" style="margin-left: 8px">取消</Button>
+      </div>
     </Modal>
 
     <Drawer
@@ -177,6 +195,8 @@ export default {
     return {
       showLogModal: false,
       showCheck: false,
+      auditLoading: false,
+
       // mini: 微信小程序 IOS: 苹果app Android: 安卓app
       // 1: 待付款 2:已取消 3: 已付款 4: 退款 5: 已完成
       sourceList: [
@@ -198,7 +218,8 @@ export default {
       addressValue: [],
       selectDataList: [],
       checkData: {
-        auditStatus: "2"
+        auditStatus: "2",
+        remark: ""
       },
       tableColumnsLog: [
         {
@@ -407,6 +428,7 @@ export default {
         return;
       }
       this.showCheck = true;
+      console.log(11111, this.showCheck);
     },
     async showLog(row) {
       this.showLogModal = true;
@@ -421,23 +443,46 @@ export default {
       //   this.$Message.error(msg);
       // }
     },
-    check() {
-      var arr = [];
-      this.selectDataList.forEach(function(v, i) {
-        arr.push({ orderRefundId: v.id });
-      });
-      // /trade/fund/account/order/batchAudit
-      this.checkData.data = arr;
-      postRequest(`/trade/fund/account/order/batchAudit`, this.checkData).then(
-        res => {
-          this.TableLoading = false;
-          if (res.code === "200") {
-            this.search();
-          } else {
-            this.$Message.error("获取数据失败");
-          }
+    check(name) {
+      this.$refs[name].validate(async valid => {
+        if (!valid) return;
+        this.auditLoading = true;
+        var arr = this.selectDataList.map(item => ({ orderRefundId: item.id }));
+        // /trade/fund/account/order/batchAudit
+        this.checkData.data = arr;
+        const url = "/trade/fund/account/order/batchAudit";
+        const { code, msg } = await postRequest(url, this.checkData);
+        this.auditLoading = false;
+        if (code === "200") {
+          this.$Message.error("审核成功");
+
+          this.selectDataList = [];
+          this.showCheck = false;
+          this.cancelHandleReset(name);
+          this.search();
+        } else {
+          this.$Message.error(msg);
         }
-      );
+      });
+    },
+    closeAuditModal() {
+      this.cancelHandleReset("form");
+    },
+    cancelHandleReset(name) {
+      this.$nextTick(() => {
+        this.$refs[name].resetFields();
+      });
+    },
+    validateRemark(rule, value, callback) {
+      value += "";
+      value = value.trim();
+      if (value == "") {
+        callback(new Error("审核内容不能为空"));
+      } else if (value.length >= 100) {
+        callback(new Error("请输入100字以内的字符"));
+      } else {
+        callback();
+      }
     },
     oneCheck(row, action) {
       this.title = action == "detail" ? "详情" : "审核";

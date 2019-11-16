@@ -59,7 +59,13 @@
       </div>
       <div slot="footer">
         <Button @click="closeDialog">取消</Button>
-        <Button :disabled="!file" type="error" @click="upload" style="margin-left: 8px">上传</Button>
+        <Button
+          :disabled="!file"
+          :loading="loadingStatus"
+          type="error"
+          @click="upload"
+          style="margin-left: 8px"
+        >上传</Button>
       </div>
     </Modal>
   </div>
@@ -78,10 +84,10 @@ export default {
       type: Boolean,
       default: true
     },
-      upType: {
-          type: Number,
-          default: 1
-      },
+    upType: {
+      type: Number,
+      default: 1
+    }
   },
   watch: {
     ["formData.isNew"]() {
@@ -129,16 +135,16 @@ export default {
 
       this.loadingStatus = true;
       // 优惠券上传
-      var url = ''
-        if(this.upType ==1){
-            url = `${url}/template/sort/excel/upload`;
-        }else{
-            url = `${url}/merchantCouponTemplate/importShareReward`;
-        }
+      var url = "";
+      if (this.upType == 1) {
+        url = `${url}/template/sort/excel/upload`;
+      } else {
+        url = `${url}/merchantCouponTemplate/importShareReward`;
+      }
       let fd = new FormData();
       fd.append("file", this.file); //append方法传入formData中
 
-      const { code, msg, data } = await uploadFileRequest(url, fd);
+      let { code, msg, data } = await uploadFileRequest(url, fd);
 
       if (code == 200) {
         // this.msgOk("保存成功");
@@ -148,7 +154,12 @@ export default {
         this.$emit("refresh");
         this.msgOk("文件上传成功");
       } else if (code == 500) {
-        this.msgErr(data);
+        if (this.upType == 1) {
+          data = data || msg;
+          this.msgErr(data);
+        } else {
+          this.msgErr(msg);
+        }
       } else {
         this.msgErr(msg);
       }
@@ -220,7 +231,7 @@ export default {
             this.msgErr(msg);
           }
         } else {
-          this.$Message.error("数据验证失败！");
+          this.msgErr("数据验证失败！");
         }
       });
     },

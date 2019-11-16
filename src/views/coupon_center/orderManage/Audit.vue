@@ -27,7 +27,7 @@
           </Row>
         </FormItem>
         <FormItem>
-          <Button type="error" @click="check('form')">确认</Button>
+          <Button type="error" @click="check('form')" :loading="auditLoading">确认</Button>
           <Button @click="cancelHandleReset('form')" style="margin-left: 8px">取消</Button>
         </FormItem>
       </Form>
@@ -61,6 +61,7 @@ export default {
   },
   data() {
     return {
+      auditLoading: false,
       // 审核状态 2-审核通过 3-审核不通过 审核结果2:通过、3：拒绝
       auditStatusOption: {
         "2": "通过",
@@ -89,20 +90,21 @@ export default {
     },
     check(name) {
       this.$refs[name].validate(async valid => {
-        if (valid) {
-          // 审核
-          const url = "/trade/fund/account/order/leafletRefundAudit";
-          const { code, msg } = await postRequest(url, {
-            ...this.formData,
-            orderRefundId: this.id
-          });
-          if (code == 200) {
-            this.msgOk("审核成功");
-            this.cancelHandleReset(name);
-            this.$emit("refresh");
-          } else {
-            this.msgErr(msg);
-          }
+        if (!valid) return;
+        this.auditLoading = true;
+        // 审核
+        const url = "/trade/fund/account/order/leafletRefundAudit";
+        const { code, msg } = await postRequest(url, {
+          ...this.formData,
+          orderRefundId: this.id
+        });
+        this.auditLoading = false;
+        if (code == 200) {
+          this.msgOk("审核成功");
+          this.cancelHandleReset(name);
+          this.$emit("refresh");
+        } else {
+          this.msgErr(msg);
         }
       });
     },
