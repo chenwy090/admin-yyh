@@ -147,13 +147,9 @@
         <Icon type="ios-information-circle"></Icon>
         <span>{{title}}</span>
       </p>
-      <checkModal
-        ref="showDetailModal"
-        :showDetail.sync="showDetail"
-        @refresh="closeTab"
-      ></checkModal>
+      <checkModal ref="showDetailModal" :showDetail.sync="showDetail" @refresh="closeTab"></checkModal>
     </Drawer>
-    <Modal v-model="showLogModal" width="360">
+    <Modal v-model="showLogModal" width="700">
       <p slot="header" style="color:#f60;text-align:center">审核日志</p>
       <div style="text-align:center">
         <Table
@@ -173,7 +169,7 @@
 
 <script>
 import checkModal from "./checkModal";
-import { postRequest, getRequest, getSyncRequest } from "@/libs/axios";
+import { postRequest } from "@/libs/axios";
 export default {
   name: "refundCheck",
   components: { checkModal },
@@ -207,23 +203,25 @@ export default {
       tableColumnsLog: [
         {
           title: "审核人",
-          width: 200,
-          key: "auditUser"
+          width: 160,
+          key: "auditUser",
+          align: "center"
         },
         {
           title: "审核时间",
-          width: 200,
-          key: "auditTime"
+          width: 180,
+          key: "auditTime",
+          align: "center"
         },
         {
           title: "审核结果",
-          width: 200,
-          key: "auditResult"
+          key: "auditResult",
+          align: "center"
         },
         {
           title: "审核备注",
-          width: 200,
-          key: "remark"
+          key: "remark",
+          align: "center"
         }
       ],
       tableColumns: [
@@ -410,17 +408,18 @@ export default {
       }
       this.showCheck = true;
     },
-    showLog(row) {
-      postRequest(`/trade/fund/account/order/batchAudit`, {
-        orderRefundId: row.id
-      }).then(res => {
-        this.TableLoading = false;
-        if (res.code === "200") {
-          this.logData = res.data || [];
-        } else {
-          this.$Message.error("获取数据失败");
-        }
-      });
+    async showLog(row) {
+      this.showLogModal = true;
+      const url = `/trade/fund/account/order/auditLog/${row.id}`;
+      //  let { code, msg, data } = await postRequest(url);
+      let res = await postRequest(url);
+      this.TableLoading = false;
+      this.logData = res.data || [];
+      // if (code === "200") {
+      //   this.logData = res.data || [];
+      // } else {
+      //   this.$Message.error(msg);
+      // }
     },
     check() {
       var arr = [];
