@@ -865,7 +865,7 @@ export const getAbnormalPayment = params => {
     // let obj = JSON.stringify(params)
     let url = "/trade/merchant/remit/page";
     if (params.type === "fail") {
-        url = "/trade/remit/fail/page";
+        url = "/trade/merchant/remit/fail/page";
     }
     return postRequest(url, params)
 }
