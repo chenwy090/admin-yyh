@@ -19,6 +19,9 @@ import PlatformBonus from "./platformBonus"; //平台分红
 
 import bannerPage from "./bannerPage/bannerPage";
 
+// 领优惠配置
+import DiscountConfig from "./discountConfig";
+
 export default {
   name: "u-config",
   provide() {
@@ -34,7 +37,8 @@ export default {
     BootAd,
     bannerPage,
     IndexPage,
-    PlatformBonus
+    PlatformBonus,
+    DiscountConfig
   },
   computed: {
     ...mapGetters({ compName: "getCompName" })

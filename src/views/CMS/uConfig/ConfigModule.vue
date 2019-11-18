@@ -28,6 +28,10 @@ export default {
         bannerPage: {
           compName: "bannerPage",
           label: "banner设置"
+        },
+        discountConfig: {
+          compName: "discountConfig",
+          label: "领优惠配置"
         }
       }
     };

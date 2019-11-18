@@ -642,6 +642,7 @@ export default {
     //     code,
     //     data: { records, current, total, size }
     //   } = await  
+      obj.type = "fail";
       getAbnormalPayment(obj).then(res => {
         if(res.code == 200){
           // console.log(res);
