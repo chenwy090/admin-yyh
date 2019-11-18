@@ -861,7 +861,11 @@ export const getMerchantPayment = (params) => {
 }
 
 // 异常列表
-export const getAbnormalPayment = (params) => {
-    let obj = JSON.stringify(params)
-    return postRequest(`/trade/merchant/remit/page`, obj)
+export const getAbnormalPayment = params => {
+    // let obj = JSON.stringify(params)
+    let url = "/trade/merchant/remit/page";
+    if (params.type === "fail") {
+        url = "/remit/fail/page";
+    }
+    return postRequest(url, params)
 }

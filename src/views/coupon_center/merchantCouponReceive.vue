@@ -46,7 +46,7 @@
                   <Option value="3">已过期</Option>
                   <Option value="4">退款中</Option>
                   <Option value="5">已退款</Option>
-                  <Option value="6">退款失败</Option>
+                  <!-- <Option value="6">退款失败</Option> -->
                 </Select>
               </FormItem>
               <FormItem label="领取终端">
