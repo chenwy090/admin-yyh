@@ -1,6 +1,6 @@
 <template>
   <div style="height: 100%">
-    <div v-if="!showViewDialogVisible" style="min-height: 100%">
+    <div style="min-height: 100%">
       <Card style="height: 100%">
         <div>
           <Card :bordered="false" style="margin-bottom:2px">
@@ -26,13 +26,13 @@
                   <span>审核失败</span>
                 </Radio>
               </RadioGroup>
-              <FormItem label="领取人手机：" span="24" style="width:25%">
+              <FormItem label="领取人手机：" span="24">
                 <Input v-model="searchForm.phoneNumber" placeholder="请填写领取人手机" />
               </FormItem>
-              <FormItem label="订单号：" span="24" style="width:25%">
+              <FormItem label="订单号：" span="24" :label-width="70">
                 <Input v-model="searchForm.orderNo" placeholder="请填写订单号" />
               </FormItem>
-              <FormItem label="退款申请时间：" span="35" style="width:40%">
+              <FormItem label="退款申请时间：" :label-width="120">
                 <DatePicker
                   :value="searchForm.applyRefundTimeStart"
                   type="date"
@@ -85,14 +85,14 @@
                     type="info"
                     style="margin-right: 5px"
                     size="small"
-                    @click="showDetail(row)"
+                    @click="oneCheck(row,'detail')"
                   >查看详情</Button>
                   <Button
                     type="info"
                     style="margin-right: 5px"
                     size="small"
                     v-if="searchForm.auditStatus=='1'"
-                    @click="oneCheck(row)"
+                    @click="oneCheck(row,'audit')"
                   >审核</Button>
                 </template>
                 <template slot-scope="{ row }" slot="log">
@@ -120,28 +120,54 @@
         </div>
       </Card>
     </div>
-    <Modal title="Title" v-model="showCheck" @on-ok="check" :styles="{top: '20px'}">
-      <Form>
-        <RadioGroup v-model="checkData.auditStatus" style="width: 100%;margin: 10px;">
-          <Radio label="2">
-            <span>通过</span>
-          </Radio>
-          <Radio label="3">
-            <span>不通过</span>
-          </Radio>
-        </RadioGroup>
-        <FormItem label="备注：" span="24" :labelWidth="80">
-          <Input v-model="checkData.remark" type="textarea" :rows="4" placeholder="请输入备注" />
+    <Modal title="批量审核" v-model="showCheck" :styles="{top: '20px'}" @on-cancel="closeAuditModal">
+      <Form ref="form" :model="checkData" label-position="right" :label-width="120">
+        <FormItem label="审核结果：" prop="status">
+          <RadioGroup v-model="checkData.auditStatus">
+            <Radio label="2">
+              <span>通过</span>
+            </Radio>
+            <Radio label="3">
+              <span>不通过</span>
+            </Radio>
+          </RadioGroup>
+        </FormItem>
+        <FormItem label="备注：" prop="remark" :rules="{ required: true,validator:validateRemark}">
+          <Row>
+            <Col span="16">
+              <Tooltip trigger="focus" title="提醒" content="最多100个汉字" placement="right">
+                <Input
+                  v-model.trim="checkData.remark"
+                  type="textarea"
+                  style="width:300px"
+                  :rows="4"
+                  placeholder="请输入备注"
+                />
+              </Tooltip>
+            </Col>
+          </Row>
         </FormItem>
       </Form>
+      <div slot="footer">
+        <Button type="error" @click="check('form')" :loading="auditLoading">确认</Button>
+        <Button @click="cancelHandleReset('form')" style="margin-left: 8px">取消</Button>
+      </div>
     </Modal>
-   
-    <checkModal
-      ref="showDetailModal"
-      :viewDialogVisible="showViewDialogVisible"
-      @setViewDialogVisible="closeTab"
-    ></checkModal>
-    <Modal v-model="showLogModal" width="360">
+
+    <Drawer
+      v-model="showDetail"
+      :closable="true"
+      :mask-closable="true"
+      width="700"
+      :styles="styles"
+    >
+      <p slot="header" style="color:#f60;text-align:center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>{{title}}</span>
+      </p>
+      <checkModal ref="showDetailModal" :showDetail.sync="showDetail" @refresh="closeTab"></checkModal>
+    </Drawer>
+    <Modal v-model="showLogModal" width="700">
       <p slot="header" style="color:#f60;text-align:center">审核日志</p>
       <div style="text-align:center">
         <Table
@@ -161,7 +187,7 @@
 
 <script>
 import checkModal from "./checkModal";
-import { postRequest, getRequest, getSyncRequest } from "@/libs/axios";
+import { postRequest } from "@/libs/axios";
 export default {
   name: "refundCheck",
   components: { checkModal },
@@ -169,6 +195,8 @@ export default {
     return {
       showLogModal: false,
       showCheck: false,
+      auditLoading: false,
+
       // mini: 微信小程序 IOS: 苹果app Android: 安卓app
       // 1: 待付款 2:已取消 3: 已付款 4: 退款 5: 已完成
       sourceList: [
@@ -190,28 +218,31 @@ export default {
       addressValue: [],
       selectDataList: [],
       checkData: {
-        auditStatus: "2"
+        auditStatus: "2",
+        remark: ""
       },
       tableColumnsLog: [
         {
           title: "审核人",
-          width: 200,
-          key: "auditUser"
+          width: 160,
+          key: "auditUser",
+          align: "center"
         },
         {
           title: "审核时间",
-          width: 200,
-          key: "auditTime"
+          width: 180,
+          key: "auditTime",
+          align: "center"
         },
         {
           title: "审核结果",
-          width: 200,
-          key: "auditResult"
+          key: "auditResult",
+          align: "center"
         },
         {
           title: "审核备注",
-          width: 200,
-          key: "remark"
+          key: "remark",
+          align: "center"
         }
       ],
       tableColumns: [
@@ -316,7 +347,14 @@ export default {
       options1: {},
       TokerViewDialogVisible: false,
       DownViewDialogVisible: false,
-      showViewDialogVisible: false
+      title: "详情", //"详情":"审核";
+      showDetail: false,
+      styles: {
+        height: "calc(100% - 55px)",
+        overflow: "auto",
+        paddingBottom: "53px",
+        position: "static"
+      }
     };
   },
   methods: {
@@ -390,47 +428,67 @@ export default {
         return;
       }
       this.showCheck = true;
+      console.log(11111, this.showCheck);
     },
-    showLog(row) {
-      postRequest(`/trade/fund/account/order/batchAudit`, {
-        orderRefundId: row.id
-      }).then(res => {
-        this.TableLoading = false;
-        if (res.code === "200") {
-          this.logData = res.data || [];
+    async showLog(row) {
+      this.showLogModal = true;
+      const url = `/trade/fund/account/order/auditLog/${row.id}`;
+      //  let { code, msg, data } = await postRequest(url);
+      let res = await postRequest(url);
+      this.TableLoading = false;
+      this.logData = res.data || [];
+      // if (code === "200") {
+      //   this.logData = res.data || [];
+      // } else {
+      //   this.$Message.error(msg);
+      // }
+    },
+    check(name) {
+      this.$refs[name].validate(async valid => {
+        if (!valid) return;
+        this.auditLoading = true;
+        var arr = this.selectDataList.map(item => ({ orderRefundId: item.id }));
+        // /trade/fund/account/order/batchAudit
+        this.checkData.data = arr;
+        const url = "/trade/fund/account/order/batchAudit";
+        const { code, msg } = await postRequest(url, this.checkData);
+        this.auditLoading = false;
+        if (code === "200") {
+          this.$Message.error("审核成功");
+
+          this.selectDataList = [];
+          this.showCheck = false;
+          this.cancelHandleReset(name);
+          this.search();
         } else {
-          this.$Message.error("获取数据失败");
+          this.$Message.error(msg);
         }
       });
     },
-    check() {
-      var arr = [];
-      this.selectDataList.forEach(function(v, i) {
-        arr.push({ orderRefundId: v.id });
-      });
-      // /trade/fund/account/order/batchAudit
-      this.checkData.data = arr;
-      postRequest(`/trade/fund/account/order/batchAudit`, this.checkData).then(
-        res => {
-          this.TableLoading = false;
-          if (res.code === "200") {
-            this.search();
-          } else {
-            this.$Message.error("获取数据失败");
-          }
-        }
-      );
+    closeAuditModal() {
+      this.cancelHandleReset("form");
     },
-    showDetail(row) {
-      this.showViewDialogVisible = true;
+    cancelHandleReset(name) {
       this.$nextTick(() => {
-        this.$refs["showDetailModal"].resetRow(row);
+        this.$refs[name].resetFields();
       });
     },
-    oneCheck(row) {
-      this.showViewDialogVisible = true;
+    validateRemark(rule, value, callback) {
+      value += "";
+      value = value.trim();
+      if (value == "") {
+        callback(new Error("审核内容不能为空"));
+      } else if (value.length >= 100) {
+        callback(new Error("请输入100字以内的字符"));
+      } else {
+        callback();
+      }
+    },
+    oneCheck(row, action) {
+      this.title = action == "detail" ? "详情" : "审核";
+      this.showDetail = true;
       this.$nextTick(() => {
-        this.$refs["showDetailModal"].resetRow(row);
+        this.$refs["showDetailModal"].resetRow(row, action);
       });
     },
     changeCurrent(current) {
@@ -440,7 +498,6 @@ export default {
       }
     },
     closeTab(e) {
-      this.showViewDialogVisible = false;
       this.loadTableData();
     },
     close() {

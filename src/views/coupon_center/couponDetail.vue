@@ -2,7 +2,8 @@
 <template>
   <div class="search">
     <div
-      style="width: 90%;background: #fff;box-shadow:0 6px 6px -4px rgba(0,0,0,.2);z-index: 5;position:fixed; padding:14px"
+      style="width: 90%;background: #fff;box-shadow:0 6px 6px -4px rgba(0,0,0,.2);z-index: 100;position:fixed; padding:14px"
+      v-if="edit_info.merchantId"
     >
       <Alert show-icon v-if="edit_info.merchantId">
         <span>
@@ -17,343 +18,212 @@
       </Alert>
     </div>
     <div style="padding-top: 50px">
-      <Card>
-        <p slot="title">{{camp_pageStatus}}</p>
+      <!-- <Card> -->
+      <!-- <p slot="title">{{camp_pageStatus}}</p>
 
         <a href="#" slot="extra">
           <Button type="dashed" icon="md-arrow-round-back" @click="goback()">返回列表</Button>
-        </a>
+      </a>-->
 
-        <Row style="margin-left:15%;">
-          <Row class="box">
-            <Col span="4" class="left-text">
-              <span style="color:red">*</span>优惠券来源
-            </Col>
-            <Col
-              span="16"
-            >{{couponSourceList[edit_info.couponSource]?couponSourceList[edit_info.couponSource].label:''}}</Col>
-          </Row>
+      <Row style="margin-left:15%;">
+        <Form label-position="right" :label-width="150">
+          <FormItem
+            label="优惠券来源："
+            :rules="{ required: true}"
+          >{{couponSourceList[edit_info.couponSource]?couponSourceList[edit_info.couponSource].label:''}}</FormItem>
+          <FormItem
+            label="券码类型："
+            :rules="{ required: true}"
+          >{{couponCodeTypeList[edit_info.couponCodeType]?couponCodeTypeList[edit_info.couponCodeType].label:''}}</FormItem>
 
-          <Row class="box">
-            <Col span="4" class="left-text">
-              <span style="color:red">*</span>券码类型
-            </Col>
-            <Col
-              span="16"
-            >{{couponCodeTypeList[edit_info.couponCodeType]?couponCodeTypeList[edit_info.couponCodeType].label:''}}</Col>
-          </Row>
+          <FormItem
+            label="立即使用打开方式："
+            :rules="{ required: true}"
+          >{{userOpenWithCouponList[edit_info.userOpenWithCoupon]?userOpenWithCouponList[edit_info.userOpenWithCoupon].label:''}}</FormItem>
 
-          <Row class="box">
-            <Col span="4" class="left-text">
-              <span style="color:red">*</span>立即使用打开方式
-            </Col>
-            <Col
-              span="20"
-            >{{userOpenWithCouponList[edit_info.userOpenWithCoupon]?userOpenWithCouponList[edit_info.userOpenWithCoupon].label:''}}</Col>
-          </Row>
-
-          <Row class="box">
-            <Col span="4" class="left-text">
-              <span style="color:red">*</span>适用商户
-            </Col>
-          </Row>
-          <Row class="box">
+          <FormItem label="适用商户：" :rules="{ required: true}">
             <Table
               border
-              width="600px"
+              width="400"
               :columns="columnsSelectMerchant"
               :data="edit_info.merchantInfoVOList"
             ></Table>
-          </Row>
+          </FormItem>
 
-          <Row class="box">
-            <Col span="4" class="left-text">
-              <span style="color:red">*</span>标题
-            </Col>
-            <Col span="16">{{edit_info.title}}</Col>
-          </Row>
+          <FormItem label="标题：" :rules="{ required: true}">{{edit_info.title}}</FormItem>
+          <FormItem
+            label="收费类型："
+            :rules="{ required: true}"
+          >{{couponKindList[edit_info.couponKind-1].label}}</FormItem>
 
-          <Row class="box">
-            <Col span="4" class="left-text">
-              <span style="color:red">*</span>收费类型
-            </Col>
-            <Col span="20">{{couponKindList[edit_info.couponKind-1].label}}</Col>
-          </Row>
+          <template v-if="edit_info.couponKind==1">
+            <FormItem label="优惠类型：" :rules="{ required: true}">{{edit_info.couponTypeName}}</FormItem>
+          </template>
+          <template v-if="edit_info.couponKind==2">
+            <FormItem label="优惠类型：" :rules="{ required: true}">
+              <Row>
+                <Row>{{edit_info.couponTypeName}}</Row>
+                <Row>
+                  <span style="color:red">*</span>
+                  原价 {{edit_info.originalPrice}}
+                  <span>&nbsp;&nbsp; 元</span>
+                  <span style="color:red;margin-left: 20px">*</span>
+                  售卖价 {{edit_info.price}}
+                  <span>&nbsp;&nbsp; 元</span>
+                </Row>
+              </Row>
+            </FormItem>
+          </template>
 
-          <!-- <Row class="box">
-        <Col span="4" class="left-text"><span style="color:red">*</span>优惠副标题</Col>
-        <Col span="16">
-            <Input
-                type="text"
-                v-model="edit_info.subTitle"
-                style="width:300px"
-                placeholder="请输入优惠副标题"
-                @on-change="statusCheckChange"
-              />
-        </Col>
-          </Row>-->
+          <template v-if="edit_info.couponKind==1">
+            <FormItem label="立减：" :rules="{ required: true}" v-if="edit_info.couponType==1">
+              {{edit_info.ticketMoney}}
+              <span style="color:red">&nbsp;&nbsp; 元</span>
+            </FormItem>
+            <FormItem label="折扣：" :rules="{ required: true}" v-if="edit_info.couponType==2">
+              {{edit_info.ticketDiscount}}
+              <span style="color:red">&nbsp;&nbsp; 折</span>
+            </FormItem>
+            <FormItem label="满：" :rules="{ required: true}" v-if="edit_info.couponType==3">
+              {{edit_info.fullAmout}}
+              <span style="color:red">&nbsp;&nbsp; 元</span>
+            </FormItem>
+            <FormItem label="减：" :rules="{ required: true}" v-if="edit_info.couponType==3">
+              {{edit_info.decreaseAmount}}
+              <span style="color:red">&nbsp;&nbsp; 元</span>
+            </FormItem>
+            <FormItem label="面额描述：" :rules="{ required: true}" v-if="edit_info.couponType==4">
+              {{edit_info.displayText}}
+              <span style="color:red">&nbsp;&nbsp; 体验券</span>
+            </FormItem>
+            <FormItem label="面额描述：" :rules="{ required: true}" v-if="edit_info.couponType==5">
+              {{edit_info.displayText}}
+              <span style="color:red">&nbsp;&nbsp; 换购券</span>
+            </FormItem>
+            <FormItem label="面额描述：" :rules="{ required: true}" v-if="edit_info.couponType==6">
+              {{edit_info.displayText}}
+              <span style="color:red">&nbsp;&nbsp; 赠品券</span>
+            </FormItem>
+          </template>
 
-          <Row class="box" v-if="edit_info.couponKind==1">
-            <Col span="4" class="left-text">
-              <span style="color:red">*</span>优惠类型
-            </Col>
-            <Col span="16">{{edit_info.couponTypeName}}</Col>
-          </Row>
-          <Row class="box" v-if="edit_info.couponKind==2">
-            <Col span="4" class="left-text">
-              <span style="color:red">*</span>优惠类型
-            </Col>
-            <Col span="16">
-              {{edit_info.couponTypeName}}
-              <div style="margin-top: 15px;">
-                <span style="color:red">*</span>
-                原价
-                {{edit_info.originalPrice}}
-                <span>&nbsp;&nbsp; 元</span>
-                <span style="color:red;margin-left: 20px">*</span>
-                售卖价
-                {{edit_info.price}}
-                <span>&nbsp;&nbsp; 元</span>
-              </div>
-            </Col>
-          </Row>
-          <div v-if="edit_info.couponKind==1">
-            <Row class="box" v-if="edit_info.couponType==1">
-              <Col span="4" class="left-text">
-                <span style="color:red">*</span>立减
-              </Col>
-              <Col span="16">
-                {{edit_info.ticketMoney}}
-                <span style="color:red">&nbsp;&nbsp; 元</span>
-              </Col>
-            </Row>
+          <template v-if="edit_info.couponKind==2">
+            <FormItem label="售后条件：" :rules="{ required: true}">
+              <span
+                v-for="(item,index) in couponSaleAfterList"
+                :key="index"
+              >{{item.value}}&nbsp;&nbsp;</span>
+            </FormItem>
+            <FormItem label="售后条件：" :rules="{ required: true}">
+              <span
+                v-for="(item,index) in couponSaleAfterList"
+                :key="index"
+              >{{item.value}}&nbsp;&nbsp;</span>
+            </FormItem>
+          </template>
 
-            <Row class="box" v-if="edit_info.couponType==2">
-              <Col span="4" class="left-text">
-                <span style="color:red">*</span>折扣
-              </Col>
-              <Col span="16">
-                {{edit_info.ticketDiscount}}
-                <span style="color:red">&nbsp;&nbsp; 折</span>
-              </Col>
-            </Row>
-            <Row class="box" v-if="edit_info.couponType==3">
-              <Col span="4" class="left-text">
-                <span style="color:red">*</span>满
-              </Col>
-              <Col span="16">
-                {{edit_info.fullAmout}}
-                <span style="color:red">&nbsp;&nbsp; 元</span>
-              </Col>
-            </Row>
-            <Row class="box" v-if="edit_info.couponType==3">
-              <Col span="4" class="left-text">
-                <span style="color:red">*</span>减
-              </Col>
-              <Col span="16">
-                {{edit_info.decreaseAmount}}
-                <span style="color:red">&nbsp;&nbsp; 元</span>
-              </Col>
-            </Row>
-            <Row class="box" v-if="edit_info.couponType==4">
-              <Col span="4" class="left-text">
-                <span style="color:red">*</span>面额描述
-              </Col>
-              <Col span="16">
-                {{edit_info.displayText}}
-                <span style="color:red">&nbsp;&nbsp; 体验券</span>
-              </Col>
-            </Row>
-            <Row class="box" v-if="edit_info.couponType==5">
-              <Col span="4" class="left-text">
-                <span style="color:red">*</span>面额描述
-              </Col>
-              <Col span="16">
-                {{edit_info.displayText}}
-                <span style="color:red">&nbsp;&nbsp; 换购券</span>
-              </Col>
-            </Row>
-            <Row class="box" v-if="edit_info.couponType==6">
-              <Col span="4" class="left-text">
-                <span style="color:red">*</span>面额描述
-              </Col>
-              <Col span="16">
-                {{edit_info.displayText}}
-                <span style="color:red">&nbsp;&nbsp; 赠品券</span>
-              </Col>
-            </Row>
-          </div>
-          <Row class="box" v-if="edit_info.couponKind==2">
-            <Col span="4" class="left-text">
-              <span style="color:red">*</span>售后条件
-            </Col>
-            <Col span="20">
-              <span v-for="item in couponSaleAfterList">{{item.value}}&nbsp;&nbsp;</span>
-            </Col>
-          </Row>
-          <Row class="box">
-            <Col span="4" class="left-text">
-              <span style="color:red">*</span>活动开始时间
-            </Col>
-            <Col span="16">{{edit_info.startDate}}</Col>
-          </Row>
+          <FormItem label="活动开始时间：" :rules="{ required: true}">{{edit_info.startDate}}</FormItem>
+          <FormItem label="活动结束时间：" :rules="{ required: true}">{{edit_info.endDate}}</FormItem>
+          <FormItem
+            label="用券有效期类型："
+            :rules="{ required: true}"
+          >{{['','固定时间范围','相对有效期'][edit_info.useDateType]}}</FormItem>
 
-          <Row class="box">
-            <Col span="4" class="left-text">
-              <span style="color:red">*</span>活动结束时间
-            </Col>
-            <Col span="16">{{edit_info.endDate}}</Col>
-          </Row>
+          <FormItem
+            label="用券开始时间："
+            :rules="{ required: true}"
+            v-if="edit_info.useDateType =='1'"
+          >{{edit_info.useStartDate}}</FormItem>
+          <FormItem
+            label="用券结束时间："
+            :rules="{ required: true}"
+            v-if="edit_info.useDateType =='1'"
+          >{{edit_info.useEndDate}}</FormItem>
 
-          <Row class="box">
-            <Col span="4" class="left-text">
-              <span style="color:red">*</span>用券有效期类型
-            </Col>
-            <Col span="16">{{['','固定时间范围','相对有效期'][edit_info.useDateType]}}</Col>
-          </Row>
+          <FormItem label="加X天开始生效：" :rules="{ required: true}" v-if="edit_info.useDateType =='2'">
+            {{edit_info.addDaysUseStart}}
+            <span style="color:red">&nbsp;&nbsp; 天</span>
+          </FormItem>
+          <FormItem label="加Y天结束用券：" :rules="{ required: true}" v-if="edit_info.useDateType =='2'">
+            {{edit_info.addDaysUseEnd}}
+            <span style="color:red">&nbsp;&nbsp; 天</span>
+          </FormItem>
 
-          <Row class="box" v-if="edit_info.useDateType =='1'">
-            <Col span="4" class="left-text">
-              <span style="color:red">*</span>用券开始时间
-            </Col>
-            <Col span="16">{{edit_info.useStartDate}}</Col>
-          </Row>
+          <FormItem
+            label="是否活动券："
+            :rules="{ required: true}"
+          >{{['否','是'][edit_info.isActivityCoupon]}}</FormItem>
 
-          <Row class="box" v-if="edit_info.useDateType =='1'">
-            <Col span="4" class="left-text">
-              <span style="color:red">*</span>用券结束时间
-            </Col>
-            <Col span="16">{{edit_info.useEndDate}}</Col>
-          </Row>
+          <FormItem label="投放渠道：" :rules="{ required: true}">
+            <span
+              v-for="(item,index) in  edit_info.couponPutChannelVOList"
+              :key="index"
+            >{{item.value}}&nbsp;&nbsp;</span>
+          </FormItem>
 
-          <Row class="box" v-if="edit_info.useDateType =='2'">
-            <Col span="4" class="left-text">
-              <span style="color:red">*</span>加X天开始生效
-            </Col>
-            <Col span="16">
-              {{edit_info.addDaysUseStart}}
-              <span style="color:red">&nbsp;&nbsp; 天</span>
-            </Col>
-          </Row>
+          <FormItem label="优惠券缩略图：" :rules="{ required: true}">
+            <div class="imgSrc_box" v-if="imgSrc1">
+              <img :src="imgSrc1" style="width:100%" />
+            </div>
+          </FormItem>
+          <FormItem label="优惠券详情图：" :rules="{ required: true}">
+            <div class="imgSrc_box" v-if="imgSrc2">
+              <img :src="imgSrc2" style="width:100%" />
+            </div>
+          </FormItem>
+          <FormItem label="首页缩略图：" :rules="{ required: true}">
+            <div class="imgSrc_box" v-if="imgSrc3">
+              <img :src="imgSrc3" style="width:100%" />
+            </div>
+          </FormItem>
 
-          <Row class="box" v-if="edit_info.useDateType =='2'">
-            <Col span="4" class="left-text">
-              <span style="color:red">*</span>加Y天结束用券
-            </Col>
-            <Col span="16">
-              {{edit_info.addDaysUseEnd}}
-              <span style="color:red">&nbsp;&nbsp; 天</span>
-            </Col>
-          </Row>
+          <FormItem label="库存数量：" :rules="{ required: true}">
+            {{edit_info.stockCount}}
+            <span style="color:red">&nbsp;&nbsp; 张</span>
+          </FormItem>
+          <FormItem label="用户限领数量：" :rules="{ required: true}">
+            {{edit_info.getLimit}}
+            <span style="color:red">&nbsp;&nbsp; 张</span>
+          </FormItem>
+          <FormItem label="券使用说明：" :rules="{ required: true}">{{edit_info.useDesc}}</FormItem>
+          <FormItem label="备注：" :rules="{ required: true}">{{edit_info.remark}}</FormItem>
+        </Form>
 
-          <Row class="box">
-            <Col span="4" class="left-text">
-              <span style="color:red">*</span> 是否活动券
-            </Col>
-            <Col span="4">{{['否','是'][edit_info.isActivityCoupon]}}</Col>
-          </Row>
-          <Row class="box">
-            <Col span="4" class="left-text">
-              <span style="color:red">*</span>投放渠道
-            </Col>
-            <Col span="20">
-              <span v-for="item in edit_info.couponPutChannelVOList">{{item.value}}&nbsp;&nbsp;</span>
-            </Col>
-          </Row>
-          <Row class="box">
-            <Col span="4" class="left-text">
-              <span style="color:red">*</span> 优惠券缩略图
-            </Col>
-            <Col span="4">
-              <div class="imgSrc_box" v-if="imgSrc1">
-                <img :src="imgSrc1" style="width:100%" />
-              </div>
-            </Col>
-          </Row>
-
-          <Row class="box">
-            <Col span="4" class="left-text">
-              <span style="color:red">*</span> 优惠券详情图
-            </Col>
-            <Col span="4">
-              <div class="imgSrc_box" v-if="imgSrc2">
-                <img :src="imgSrc2" style="width:100%" />
-              </div>
-            </Col>
-          </Row>
-          <Row class="box">
-            <Col span="4" class="left-text">首页缩略图</Col>
-            <Col span="4">
-              <div class="imgSrc_box" v-if="imgSrc3">
-                <img :src="imgSrc3" style="width:100%" />
-              </div>
-            </Col>
-          </Row>
-          <Row class="box">
-            <Col span="4" class="left-text">
-              <span style="color:red">*</span>库存数量
-            </Col>
-            <Col span="16">
-              {{edit_info.stockCount}}
-              <span style="color:red">&nbsp;&nbsp; 张</span>
-            </Col>
-          </Row>
-          <Row class="box">
-            <Col span="4" class="left-text">
-              <span style="color:red">*</span>用户限领数量
-            </Col>
-            <Col span="16">
-              {{edit_info.getLimit}}
-              <span style="color:red">&nbsp;&nbsp; 张</span>
-            </Col>
-          </Row>
-          <Row class="box">
-            <Col span="4" class="left-text">
-              <span style="color:red">*</span>券使用说明
-            </Col>
-            <Col span="16">{{edit_info.useDesc}}</Col>
-          </Row>
-          <Row class="box">
-            <Col span="4" class="left-text">备注</Col>
-            <Col span="16">{{edit_info.remark}}</Col>
-          </Row>
-
-          <Row
-            style="border-top: 1px solid #666;margin-top: 20px"
-            v-if="formShareModal.shareData.length"
-          >
-            <Form
-              ref="shareModal"
-              :model="formShareModal"
-              :label-width="100"
-              style="margin-top:20px"
+        <Row
+          style="border-top: 1px solid #666;margin-top: 20px"
+          v-if="formShareModal.shareData.length"
+        >
+          <Form ref="shareModal" :model="formShareModal" :label-width="100" style="margin-top:20px">
+            <FormItem
+              v-for="item in formShareModal.shareData"
+              :key="item.id"
+              :label="item.name"
+              required
             >
-              <FormItem
-                v-for="item in formShareModal.shareData"
-                :key="item.id"
-                :label="item.name"
-                required
-              >
-                {{item.value}}
-                <span v-if="item.name!= '倍数'">&nbsp;&nbsp;U贝</span>
-                <span v-if="item.name== '倍数'">&nbsp;&nbsp;倍</span>
-              </FormItem>
-            </Form>
-          </Row>
-          <Row class="box">
-            <Col span="16">
-              <Button @click="showLog">操作日志</Button>
-            </Col>
-          </Row>
-          <Row class="box" v-if="camp_pageStatus=='上架'">
-            <Col span="16">
-              <Button type="primary" @click="upStatus">上架</Button>
-            </Col>
-          </Row>
+              {{item.value}}
+              <span v-if="item.name!= '倍数'">&nbsp;&nbsp;U贝</span>
+              <span v-if="item.name== '倍数'">&nbsp;&nbsp;倍</span>
+            </FormItem>
+          </Form>
         </Row>
-      </Card>
+        <Row class="box">
+          <Col span="16">
+            <Button @click="showLog">操作日志</Button>
+          </Col>
+        </Row>
+        <Row class="box" v-if="camp_pageStatus=='上架'">
+          <Col span="16">
+            <Button type="primary" @click="upStatus">上架</Button>
+          </Col>
+        </Row>
+      </Row>
+      <!-- </Card> -->
+
+      <div class="demo-drawer-footer">
+        <Button style="margin-right: 8px" @click="close">关闭</Button>
+      </div>
     </div>
-    <logModal ref="logModal" :viewDialogVisible="logDialogModal" @setViewDialogVisible="colseModal"></logModal>
+    <!-- <logModal ref="logModal" v-if="logDialogModal" :logDialogModal.sync="logDialogModal"></logModal> -->
+    <logModal :logDialogModal.sync="logDialogModal" :id="couponEdit_info"></logModal>
   </div>
 </template>
 
@@ -364,7 +234,11 @@ import logModal from "./logInfo";
 export default {
   name: "BasicSet",
   props: {
-    couponEdit_info: String
+    couponEdit_info: String,
+    couponDetailPage: {
+      type: Boolean,
+      default: true
+    }
   },
   components: { logModal },
   data() {
@@ -485,17 +359,21 @@ export default {
       },
       columnsSelectMerchant: [
         {
-          title: "商户名称",
+          title: "商户编号",
           align: "center",
-          width: 300,
-          key: "merchantName"
+          key: "merchantId"
         },
         {
-          title: "merchantId",
+          title: "商户名称",
           align: "center",
-          minWidth: 200,
-          key: "merchantId"
+          key: "merchantName"
         }
+        // {
+        //   title: "地址",
+        //   align: "center",
+        //   minWidth: 300,
+        //   key: "address"
+        // },
       ],
       current: 1,
       totalSize: 0, //总条数
@@ -556,9 +434,9 @@ export default {
     },
     showLog() {
       this.logDialogModal = true;
-      this.$nextTick(() => {
-        this.$refs["logModal"].resetRow(this.couponEdit_info);
-      });
+      // this.$nextTick(() => {
+      //   this.$refs["logModal"].resetRow(this.couponEdit_info);
+      // });
     },
     colseModal() {
       this.logDialogModal = false;
@@ -595,18 +473,7 @@ export default {
 
             this.edit_info.ticketDiscount = this.edit_info.ticketDiscount / 10;
             this.edit_info.couponKind = this.edit_info.couponKind - 0;
-            // this.edit_info.couponType =
-            //     this.edit_info.couponType == 1
-            //         ? "1"
-            //         : this.edit_info.couponType == 2
-            //         ? "2"
-            //         : this.edit_info.couponType == 3
-            //             ? "3"
-            //             : this.edit_info.couponType == 4
-            //                 ? "4"
-            //                 : this.edit_info.couponType == 5
-            //                     ? "5"
-            //                     : "6";
+
             this.edit_info.couponKind =
               this.edit_info.couponKind == 1 ? "1" : "2";
             this.edit_info.useDateType =
@@ -652,8 +519,13 @@ export default {
         duration: 3
       });
     },
-    goback() {
-      this.$emit("changeStatus", false);
+    // goback() {
+    //   this.$emit("changeStatus", false);
+    // }
+
+    close() {
+      // this.$emit("changeStatus", false);
+      this.$emit("update:couponDetailPage", false);
     }
   },
   mounted() {
@@ -738,6 +610,20 @@ export default {
   line-height: 1;
   padding: 10px 12px 10px 0;
   box-sizing: border-box;
+}
+/* .ivu-form-item {
+  margin-bottom: 0;
+} */
+.demo-drawer-footer {
+  width: 100%;
+  position: fixed;
+  z-index: 111;
+  bottom: 0;
+  left: 0;
+  border-top: 1px solid #e8e8e8;
+  padding: 10px 16px;
+  text-align: right;
+  background: #fff;
 }
 </style>
 

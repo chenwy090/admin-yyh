@@ -90,7 +90,7 @@ export default [
     {
         title: "审核日志",
         align: "center",
-        minWidth: 130,
+        minWidth: 80,
         slot: "auditLog",
     },
 ];

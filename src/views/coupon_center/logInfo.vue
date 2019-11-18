@@ -1,59 +1,61 @@
 <template>
-  <Modal
-    width="800"
-    v-model="viewDialogVisible"
-    title="操作日志"
-    :closable="false"
-    :mask-closable="false"
-    footer-hide
-  >
-    <div>
-      <div>
-        <Row>
-          <RadioGroup v-model="selectIndex" @on-change="selectBusiness()" style="width: 100%;">
-            <Table
-              :loading="TableLoading"
-              border
-              :columns="tableColumns"
-              :data="listData"
-              sortable="custom"
-              ref="table"
-            >
-              <template
-                slot-scope="{ row }"
-                slot="operationType"
-              >{{["","新增","修改","下架"][row.operationType]}}</template>
-            </Table>
-          </RadioGroup>
-        </Row>
-        <!-- 分页 -->
-        <Row type="flex" justify="end" class="page">
-          <Page
-            :total="totalSize"
-            show-total
-            show-elevator
-            @on-change="changeCurrent"
-            style="float: right"
-            :current.sync="current"
-          ></Page>
-        </Row>
-      </div>
+  <Modal v-model="isShow" title="操作日志" width="700" @on-cancel="closeDialog" :styles="{top: '20px'}">
+    <div class="loginfovue">
+      <Row>
+        <RadioGroup style="width: 100%;">
+          <Table
+            ref="table"
+            border
+            size="small"
+            sortable="custom"
+            :loading="TableLoading"
+            :columns="tableColumns"
+            :data="listData"
+          ></Table>
+        </RadioGroup>
+      </Row>
+      <!-- 分页 -->
+      <Row type="flex" justify="end" class="page">
+        <Page
+          :total="totalSize"
+          show-total
+          show-elevator
+          @on-change="changeCurrent"
+          style="float: right"
+          :current.sync="current"
+        ></Page>
+      </Row>
     </div>
-    <div style="text-align: center;margin: 10px 0;">
-      <Button style="margin-left: 8px;" @click="contentClose">关闭</Button>
+    <div slot="footer" style="text-align: center;">
+      <Button type="primary" @click="closeDialog">关闭</Button>
     </div>
   </Modal>
 </template>
 
 <script>
-import { postRequest, getRequest, getSyncRequest } from "@/libs/axios";
+import { postRequest } from "@/libs/axios";
 export default {
   name: "logModal",
   props: {
-    viewDialogVisible: { type: Boolean, default: false }
+    viewDialogVisible: { type: Boolean, default: false },
+    logDialogModal: {
+      type: Boolean,
+      default: false
+    },
+    id: {
+      type: [String, Number],
+      default: ""
+    }
+  },
+  watch: {
+    logDialogModal() {
+      console.log("222222,logDialogModal:", this.logDialogModal);
+      this.isShow = this.logDialogModal;
+    }
   },
   data() {
     return {
+      isShow: false,
       listData: [],
       selectIndex: "",
       TableLoading: "",
@@ -84,21 +86,33 @@ export default {
         },
         {
           title: "操作类型",
-          slot: "operationType",
-          minWidth: 140
+          key: "operationType",
+          minWidth: 80,
+          align: "center",
+          render: (h, params) => {
+            let { operationType, tag } = params.row;
+
+            if (tag === null) {
+              tag = 0;
+            }
+            //  1 新增 2 编辑 3 下架 4 上架 5 追加库存
+            let arr = ["", "新增", "编辑", "下架", "上架", "追加库存"];
+            let name = arr[operationType];
+            return <Tag color={tag == 1 ? "error" : "blue"}>{name}</Tag>;
+          }
         },
         {
           title: "操作人",
           key: "name",
           align: "center",
-          minWidth: 120,
+          minWidth: 80,
           key: "operator" //新店
         },
         {
           title: "操作时间",
           key: "gmtCreate",
           align: "center",
-          minWidth: 220
+          minWidth: 130
         }
       ]
     };
@@ -143,11 +157,14 @@ export default {
         this.loadTableData(current);
       }
     },
-    contentClose() {
-      this.$emit("setViewDialogVisible", false);
+    closeDialog() {
+      this.$emit("update:logDialogModal", false);
     }
   },
-  created() {}
+  created() {
+    console.log(" loginfo created:", this.id);
+    this.resetRow(this.id);
+  }
 };
 </script>
 
@@ -156,3 +173,12 @@ export default {
   overflow: visible;
 }
 </style>
+
+<style lang="less">
+.loginfovue {
+  .ivu-tag {
+    cursor: default;
+  }
+}
+</style> >
+
