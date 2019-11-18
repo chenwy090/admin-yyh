@@ -28,6 +28,28 @@ export default {
           return e;
         }
         return JSON.parse(JSON.stringify(e));
+      },
+      // 可以放在utils中
+      filterNull(json) {
+        let res = {}
+        Object.keys(json).forEach(el=>{
+          if (json[el] || typeof el === 'number') {
+            res[el] = json[el]
+          }
+        })
+        return res;
+      },
+      msgOk(txt) {
+        this.$Message.info({
+          content: txt,
+          duration: 3
+        });
+      },
+      msgErr(txt) {
+        this.$Message.error({
+          content: txt,
+          duration: 3
+        });
       }
   }
 }
