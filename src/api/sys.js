@@ -865,3 +865,11 @@ export const getAbnormalPayment = (params) => {
     let obj = JSON.stringify(params)
     return postRequest(`/trade/merchant/remit/page`, obj)
 }
+
+//--------------------------------------app专享 --------------------------
+
+// 获取优惠券列表
+export const getCoupon = (type,name,pageNum) => {
+    return postRequest(`/exclusive/selectCouponList?type=1&pageNum=1&pageSize=10`)
+}
+
