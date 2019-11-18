@@ -5,40 +5,49 @@
       <a href="#" slot="extra">
         <Button type="dashed" icon="md-arrow-round-back" @click="goback()">返回上一层</Button>
       </a>
-      <Form label-position="right" ref="form" :model="formData" :label-width="130">
-        <Card>
-          <p slot="title">
-            <Icon type="ios-film-outline"></Icon>超市券模块
-          </p>
-          <FormItem
-            label="主标题："
-            prop="mainTitle"
-            :rules="{required: true,  validator: validateEmpty('请输入主标题',6)}"
-          >
-            <Tooltip trigger="focus" title="提醒" content="最多6个汉字" placement="right">
-              <Input
-                style="width:200px"
-                v-model="formData.mainTitle"
-                :maxlength="20"
-                placeholder="请输入主标题"
-                clearable
-              />
-            </Tooltip>
-          </FormItem>
-          <!-- :rules="{ required: formData.subTitle.length, message: '请输入副标题' }" -->
-          <FormItem label="副标题：" prop="subTitle" :rules="subTitleRules">
-            <Tooltip trigger="focus" title="提醒" content="最多12个汉字" placement="right">
-              <Input
-                style="width:200px"
-                v-model="formData.subTitle"
-                :maxlength="20"
-                placeholder="请输入副标题"
-                clearable
-                @on-clear="clearValidateMsg('subTitle')"
-              />
-            </Tooltip>
-          </FormItem>
-        </Card>
+      <Form
+        label-position="right"
+        ref="form"
+        :model="formData"
+        :label-width="130"
+        style="min-width:1100px;"
+      >
+        <Row type="flex" justify="space-between" class="code-row-bg">
+          <Col span="8" v-for="({type,label}) in dataStructure" :key="type">
+            {{`formData.${type}.subTitle`}}----label:{{label}}
+            <Card>
+              <p slot="title">{{label}}</p>
+              <FormItem
+                label="主标题："
+                :prop="`${type}.mainTitle`"
+                :rules="{required: true,  validator: validateEmpty('请输入主标题',6)}"
+              >
+                <Tooltip trigger="focus" title="提醒" content="最多6个汉字" placement="right">
+                  <Input
+                    style="width:200px"
+                    v-model.trim="formData[type].mainTitle"
+                    :maxlength="20"
+                    placeholder="请输入主标题"
+                    clearable
+                  />
+                </Tooltip>
+              </FormItem>
+              <!-- :rules="{ required: formData.subTitle.length, message: '请输入副标题' }" -->
+              <FormItem label="副标题：" :prop="`${type}.subTitle`" :rules="subTitleRules">
+                <Tooltip trigger="focus" title="提醒" content="最多12个汉字" placement="right">
+                  <Input
+                    style="width:200px"
+                    v-model.trim="formData[type].subTitle"
+                    :maxlength="20"
+                    placeholder="请输入副标题"
+                    clearable
+                    @on-clear="clearValidateMsg(`${type}.subTitle`)"
+                  />
+                </Tooltip>
+              </FormItem>
+            </Card>
+          </Col>
+        </Row>
 
         <div style="margin-top:20px;">
           <FormItem label>
@@ -56,9 +65,10 @@ export default {
   name: "discountConfig",
   inject: ["linkTo", "msgOk", "msgErr"],
   computed: {
-    subTitleRules() {
+    subTitleRules(type) {
       let obj = null;
-      if (this.formData.subTitle.length) {
+      // if (this.formData[type].subTitle.length) {
+      if (0) {
         obj = {
           required: true,
           validator: this.validateEmpty("请输入副标题", 12)
@@ -72,26 +82,30 @@ export default {
     }
   },
   watch: {
-    ["formData.subTitle"]() {
-      this.formData.subTitle = this.formData.subTitle.trim();
-      console.log(this.formData.subTitle);
-      if (this.formData.subTitle.length) {
-        this.$refs.form.validateField("subTitle");
-      } else {
-        //清空校验
-        this.clearValidateMsg("subTitle");
-      }
+    ["formData.supermarket.subTitle"]() {
+      this.validateSubTitle("supermarket");
+    },
+    ["formData.coupon.subTitle"]() {
+      this.validateSubTitle("coupon");
+    },
+    ["formData.merchant.subTitle"]() {
+      this.validateSubTitle("merchant");
     }
   },
   data() {
     return {
       submitDisabled: false,
+      dataStructure: [
+        { type: "supermarket", label: "超市券模块" },
+        { type: "coupon", label: "周边券模块" },
+        { type: "merchant", label: "商户模块" }
+      ],
       formData: {
         id: "",
         //超市券模块
         supermarket: {
           mainTitle: "超市优惠", //主标题：超市优惠 必填，最多填写10个字节；
-          subTitle: "" //副标题：大家都在领  最多填写30个字节；
+          subTitle: "subTitle" //副标题：大家都在领  最多填写30个字节；
         },
         //周边券模块
         coupon: {
@@ -107,9 +121,23 @@ export default {
     };
   },
   created() {
-    this.getData();
+    // this.getData();
   },
   methods: {
+    validateSubTitle(type) {
+      // this.formData.subTitle = this.formData.subTitle.trim();
+      // console.log(this.formData.subTitle);
+      let props = `${type}.subTitle`;
+
+      console.log("xxxxx",type,props);
+      
+      if (this.formData[type].subTitle.length) {
+        this.$refs.form.validateField(props);
+      } else {
+        //清空校验
+        this.clearValidateMsg(props);
+      }
+    },
     goback() {
       this.linkTo("cms");
     },
@@ -120,36 +148,12 @@ export default {
       //  site 页面位置，1：首页、2：首页-平台分红
       let { code, msg, data } = await postRequest(url, { type, site });
       if (code == 200) {
-        if (data == "") {
-          data = {
-            id: "",
-            type: "",
-            mainTitle: "", //主标题：超值爆抢券
-            subTitle: "", //副标题：大家都在领
-            iconUrl: "", //首页分红banner图片
-            defaultIconUrlList: []
-          };
-        }
-        const { iconUrl } = data;
-
-        data.defaultIconUrlList = [];
-        if (iconUrl) {
-          data.defaultIconUrlList.push({ imgUrl: iconUrl });
-        }
-
-        this.formData = data;
+        // this.formData = data;
       } else {
         this.msgErr(msg);
       }
     },
-    removeIconUrl() {
-      this.formData.iconUrl = "";
-      this.formData.defaultIconUrlList = [];
-    },
-    iconUrlUploadSuccess({ imgUrl }) {
-      this.formData.iconUrl = imgUrl;
-      this.formData.defaultIconUrlList = [{ imgUrl }];
-    },
+
     validateEmpty(msg, len = 20) {
       return function(rule, value, callback) {
         value += "";
@@ -165,9 +169,11 @@ export default {
     },
     //清空校验
     clearValidateMsg(name) {
-      this.$refs.form.fields.some(function(e) {
-        let r = e.prop == name;
-        r && e.resetField();
+      this.$refs.form.fields.some(function(comp) {
+        console.log("clear::", comp);
+        //supermarket.mainTitle
+        let r = comp.prop == name;
+        r && comp.resetField();
         return r;
       });
     },

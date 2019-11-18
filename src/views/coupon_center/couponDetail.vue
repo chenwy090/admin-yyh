@@ -205,11 +205,11 @@
             </FormItem>
           </Form>
         </Row>
-        <Row class="box">
-          <Col span="16">
+        <Form label-position="right" :label-width="150">
+          <FormItem>
             <Button @click="showLog">操作日志</Button>
-          </Col>
-        </Row>
+          </FormItem>
+        </Form>
         <Row class="box" v-if="camp_pageStatus=='上架'">
           <Col span="16">
             <Button type="primary" @click="upStatus">上架</Button>
