@@ -605,7 +605,7 @@ export default {
 
 
 // 打款列表
-    async getMerchantPaymentFn(obj) {
+    getMerchantPaymentFn(obj) {
       this.tableLoading = true;
       // let reqPrams = {
       //   ...obj,...this.page
@@ -633,7 +633,7 @@ export default {
     },
 
 // 异常列表
-   async getAbnormalPaymentFn(obj) {
+   getAbnormalPaymentFn(obj) {
       this.tableLoading = true;
     //    let reqPrams = {
     //     ...obj,...this.page

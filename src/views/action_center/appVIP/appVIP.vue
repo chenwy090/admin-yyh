@@ -7,14 +7,19 @@
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
           <FormItem label="投放门店: " :label-width="85">
-            <Input style="width:200px" type="text" v-model="searchData.orderNo" placeholder="请输入商户名称"></Input>
+            <Select v-model="searchData.putShop" style="width:200px">
+              <Option value="0">全国</Option>
+              <Option value="1">零售商</Option>
+              <Option value="2">城市</Option>
+              <Option value="3">自定义门店</Option>
+            </Select>
           </FormItem>
           <FormItem label="优惠券: " :label-width="85">
             <Input
               style="width:200px"
               type="text"
-              v-model="searchData.merchantName"
-              placeholder="请输入商户名称"
+              v-model="searchData.couponName"
+              placeholder="请输入"
             ></Input>
           </FormItem>
           <FormItem style="margin-left:35px;" class="br">
@@ -27,29 +32,21 @@
         <div>
           <Row class="operation">
             <span style="margin-right:20px">app专享福利配置</span>
-            <Button type="primary" icon="md-add" @click="addInfo()">新增</Button>
+            <Button type="primary" icon="md-add" @click="addInfo(1)">新增</Button>
             <Button icon="md-refresh" @click="refreshFn()">刷新</Button>
           </Row>
           <!-- 用户列表 -->
-          <Table
-            border
-            width="100%"
-            :columns="columns1"
-            :data="tableData"
-            :loading="tableLoading"
-          >
+          <Table border width="100%" :columns="columns1" :data="tableData" :loading="tableLoading">
             <template slot-scope="{ row }" slot="action">
               <Button type="text" size="small" @click="viewDetailsFn(row)">查看</Button>
-              <Button type="text" size="small" @click="editInfo(row)">编辑</Button>
+              <Button type="text" size="small" @click="editInfo(row.id)">编辑</Button>
               <Button type="text" size="small" @click="editInfo(row)">上架</Button>
               <Button type="text" size="small" @click="editInfo(row)">删除</Button>
             </template>
-            <!-- 提现时间 -->
-            <template slot-scope="{ row }" slot="applyTime">
+            <!-- <template slot-scope="{ row }" slot="applyTime">
               <div>{{ row.applyTime | data}}</div>
               <div>{{ row.applyTime | time}}</div>
             </template>
-            <!-- 打款时间 -->
             <template slot-scope="{ row }" slot="remitTime">
               <div>{{ row.remitTime | data}}</div>
               <div>{{ row.remitTime | time}}</div>
@@ -58,6 +55,16 @@
               <span v-if="row.status == 1">处理中</span>
               <span v-else-if="row.status == 2">已完成（打款成功）</span>
               <span v-else-if="row.status == 3">提现到账失败</span>
+            </template>-->
+            <template slot-scope="{ row }" slot="putShop">
+              <span v-if="row.putShop == 0">全国</span>
+              <span v-else-if="row.putShop == 1">零售商</span>
+              <span v-else-if="row.putShop == 2">城市</span>
+              <span v-else-if="row.putShop == 3">自定义门店</span>
+            </template>
+            <template slot-scope="{ row }" slot="couponName">
+              <span>{{row.couponName | ellipsis}}</span>
+              <a style="margin-left:10px" @click="seeCouponInfo(row.id)">查看</a>
             </template>
           </Table>
           <!-- 用户列表 -->
@@ -85,11 +92,43 @@
         <!-- 分页器 -->
       </Card>
     </div>
+
+    <!-- 选择商户对话框 -->
+    <Modal
+      v-model="seeCouponDisplay"
+      title="查看优惠券详情"
+      :closable="false"
+      :mask-closable="false"
+      footer-hide
+      width="800"
+    >
+      <div>
+        <!-- 商户列表 -->
+        <Table
+          border
+          highlight-row
+          :columns="columns2"
+          :data="seeCouponList"
+        >
+          <!-- <template slot-scope="{ row }" slot="action">
+              <Button type="text" size="small">查看</Button>
+          </template>-->
+        </Table>
+        <!-- 商户列表 -->
+      </div>
+      <!-- 分页器 -->
+      <div style="margin-top: 20px;overflow: hidden;">
+        <div style="float: right;" slot="footer">
+          <Button style="margin-right: 20px" @click="seeCouponDisplay = false">关闭</Button>
+          <!-- <Button type="primary">确定</Button> -->
+        </div>
+      </div>
+    </Modal>
   </div>
 </template>
 
 <<script>
-import { getMerchantPayment, getAbnormalPayment } from '@/api/sys';
+import { getAppVipList, getAbnormalPayment, getCouponData } from '@/api/sys';
 import {
     getRequest,
     postRequest,
@@ -106,6 +145,9 @@ export default {
     },
   data() {
     return {
+      // 查看优惠券详情
+      seeCouponDisplay: false,
+      seeCouponList: [],
       id:null,
       addOrEdit:null,
       addOrEditDisplay:false,
@@ -124,45 +166,73 @@ export default {
           title: '投放门店',
           align: 'center',
           minWidth: 140,
-          key: 'orderNo',
+          key: 'putShop',
+          slot: "putShop",
         },
         {
           title: '优惠券',
           align: 'center',
-          width: 140,
-          key: 'callbackOrder',
+          width: 240,
+          key: 'couponName',
+          slot: "couponName",
         },
         {
           title: '剩余总量',
           align: 'center',
           minWidth: 120,
-          key: 'merchantName',
+          key: 'surplusCount',
         },
         {
           title: '领券量',
           align: 'center',
           minWidth: 120,
-          key: 'userName',
+          key: 'receiveCount',
         },
         {
           title: '修改人',
           align: 'center',
           minWidth: 120,
-          key: 'userPhone',
+          key: 'updateBy',
         },
         {
           title: '修改时间',
           align: 'center',
           minWidth: 120,
-          key: 'applyAmount',
+          key: 'updateTime',
         },
         
+      ],
+      columns2: [ // 优惠券列表
+        {
+          title: '优惠券',
+          align: 'center',
+          minWidth: 140,
+          key: 'putShop',
+        },
+        {
+          title: '剩余库存',
+          align: 'center',
+          width: 240,
+          key: 'couponName',
+        },
+        {
+          title: '领券量',
+          align: 'center',
+          minWidth: 120,
+          key: 'surplusCount',
+        },
+        {
+          title: '核销量',
+          align: 'center',
+          minWidth: 120,
+          key: 'receiveCount',
+        },
       ],
       tableData: [],
       daterange: [],
       searchData: { // 查询参数
-        merchantName: "",
-        orderNo: "",
+        couponName: "",
+        putShop: "",
         pageNum: 1, //页码
         pageSize: 10, //每页数量
       },
@@ -179,25 +249,35 @@ export default {
   },
 
   filters: {
-　　　　data: function (value) {
-          if(value) {
-            let time1 = value.slice(0,10)
-            return time1 
-          }
-　　　　},
-　　　　time: function (value) {
-          if(value) {
-            let time2 = value.slice(11,19)
-            return time2
-          }
-　　　　}
+    ellipsis: function (value) {
+      if(value) {
+        if(value.length > 10) {
+          let txt = value.slice(0,10) + '...'
+          return txt
+        }else {
+          return value
+        }
+      }
+　　},
+// 　　　　time: function (value) {
+//           if(value) {
+//             let time2 = value.slice(11,19)
+//             return time2
+//           }
+// 　　　　}
 　　},
   created: function() {
     this.search()
   },
   methods: {
+    // 新增
     addInfo(type) {
       this.addOrEdit = type
+      this.addOrEditDisplay = true
+    },
+    editInfo(id) {
+      this.addOrEdit = 2
+      this.id = id
       this.addOrEditDisplay = true
     },
     // 新增编辑返回数据
@@ -217,7 +297,7 @@ export default {
       // 页数
       // this.page.pageNum = 1;
       // this.page.total = 0;//总条数
-      this.getMerchantPaymentFn(this.searchData)
+      this.getAppVipListFn(this.searchData)
     },
 
 // 重置
@@ -247,18 +327,14 @@ export default {
       this.search()
     },
 
-
-// 打款列表
-    async getMerchantPaymentFn(obj) {
+// 列表
+    getAppVipListFn(obj) {
       this.tableLoading = true;
-      // let reqPrams = {
-      //   ...obj,...this.page
-      // };
-      // let {
-      //   code,
-      //   data: { records, current, total, size }
-      // } = await 
-      getMerchantPayment(obj).then(res => {
+      let data = {
+        // couponName: obj.couponName,
+        // putShop: obj.putShop,
+      }
+      getAppVipList(data,obj.pageNum).then(res => {
         if(res.code == 200){
           // console.log(res);
           // this.tableData = res.data.records
@@ -276,33 +352,19 @@ export default {
       })
     },
 
-// 异常列表
-   async getAbnormalPaymentFn(obj) {
-      this.tableLoading = true;
-    //    let reqPrams = {
-    //     ...obj,...this.page
-    //   };
-    //  let {
-    //     code,
-    //     data: { records, current, total, size }
-    //   } = await  
-      getAbnormalPayment(obj).then(res => {
+    // 查看优惠券详情
+    seeCouponInfo(id) {
+      
+      getCouponData(id).then(res => {
         if(res.code == 200){
-          // console.log(res);
-          // this.tableData = res.data.records
-          // this.current = res.data.current
-          // this.totalSize = res.data.total
-          this.tableData = res.data.records;
-          this.current = res.data.current; //分页查询起始记录
-          this.totalSize = res.data.total; //列表总数
-          // this.page.pageSize = size; //每页数据
-          this.tableLoading = false;
+          this.seeCouponDisplay = true
+          this.seeCouponList = res.data.records
         }else {
           this.msgErr(res.msg)
-          this.tableLoading = false;
         }
       })
     },
+    
 // 删除
     delStaffFn(id) {
       // console.log(id);
@@ -333,10 +395,10 @@ export default {
       this.searchData.pageNum = current
       // if(this.type == 1) {
       //     this.searchData.merchantType = 0
-      //     this.getMerchantPaymentFn(this.searchData)
+      //     this.getAppVipListFn(this.searchData)
       //   }else if(this.type == 2) {
       //     this.searchData.merchantType = 1
-      //     this.getMerchantPaymentFn(this.searchData)
+      //     this.getAppVipListFn(this.searchData)
       //   }else if(this.type == 3) {
       //     this.searchData.merchantType = 0
       //     this.getAbnormalPaymentFn(this.searchData)

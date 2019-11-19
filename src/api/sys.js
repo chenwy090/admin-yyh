@@ -873,7 +873,27 @@ export const getAbnormalPayment = params => {
 //--------------------------------------app专享 --------------------------
 
 // 获取优惠券列表
+export const getAppVipList = (data, pageNum ) => {
+    return postRequest(`/exclusive/list?pageNum=${pageNum}&pageSize=10`, data)
+}
+
+// 获取优惠券列表
 export const getCoupon = (type,name,pageNum) => {
-    return postRequest(`/exclusive/selectCouponList?type=1&pageNum=1&pageSize=10`)
+    return postRequest(`/exclusive/selectCouponList?type=${type}&name=${name}&pageNum=${pageNum}&pageSize=10`)
+}
+
+// 获取所有零售商列表
+export const getRetailerInfoList = () => {
+    return postRequest(`/system/sys-shop-info/getRetailerInfoList`)
+}
+
+// 新增
+export const addAppVip = (data) => {
+    return uploadformData(`/exclusive/add`,data)
+}
+
+// 新增
+export const getCouponData = (id) => {
+    return uploadformData(`/exclusive/selectCouponById?id=${id}`)
 }
 
