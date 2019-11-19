@@ -925,7 +925,7 @@ export default {
       const url = "/merchantCouponTemplate/downShelf";
       postRequest(url, reqParams).then(res => {
         if (res.code == 200) {
-          this.msgOk("更新成功");
+          this.msgOk("下架成功");
           this.updateTemplateStatusDisplay = false;
           //this.getList({});
           // 清空输入框
