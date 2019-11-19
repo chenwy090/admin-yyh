@@ -383,9 +383,13 @@ export default {
             this.auditing = 1;
           }
           financialWithdrawApplyAuditFinancial(this.auditForm).then(res => {
+            let { code, msg } = res;
             if (res.code === "200") {
               this.batchAuditModalShow = false;
               this.search(this.searchForm);
+            } else if (code == "-1") {
+              this.msgErr(msg);
+              this.auditing = 0;
             } else {
               this.msgErr("审核失败");
               this.auditing = 0;
