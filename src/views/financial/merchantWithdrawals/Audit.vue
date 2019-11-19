@@ -94,9 +94,8 @@ export default {
       }
     },
     check(name) {
-      console.log(JSON.stringify({ ...this.formData, id: this.id }));
+      // console.log(JSON.stringify({ ...this.formData, id: this.id }));
 
-      return;
       this.$refs[name].validate(async valid => {
         if (valid) {
           // 审核
