@@ -73,7 +73,7 @@
           <FormItem label="投放门店" span="24" style="width:15%">
             <Select v-model="searchForm.shopId" style="width:100%">
               <Option
-                v-for="(item, index) in merchantList"
+                v-for="(item, index) in shopIds"
                 :value="item.value"
                 :key="index"
                 >{{ item.label }}</Option
@@ -176,31 +176,28 @@
                         <!--@click="edit(row)"-->
                         <!--&gt;编辑</Button>-->
                         <Button
-                                type="info"
-                                style="margin-right: 5px"
+                                type="text"
+                                style="margin-right: 5px;color:#21b6b8"
                                 size="small"
                                 @click="showDetail(row)"
                         >查看</Button>
                         <Button
-                                v-if="row.status=='0'||row.status=='2'"
-                                type="error"
-                                style="margin-right: 5px"
+                                type="text"
+                                style="margin-right: 5px;color:#ed4014"
                                 size="small"
-                                @click="edit(row)"
+                                @click="doEdit(row)"
                         >编辑</Button>
                         <Button
-                                v-if="row.status=='1'"
-                                type="error"
-                                style="margin-right: 5px"
+                                type="text"
+                                style="margin-right: 5px;color: #2d8cf0"
                                 size="small"
                                 @click="apiUpdown(row.id, row.status)"
                         >{{row.status==1? '下': '上'}}架</Button>
                         <Button
-                                v-if="row.status=='0'||row.status=='2'"
                                 type="error"
                                 style="margin-right: 5px"
                                 size="small"
-                                @click="apiAdd(row.id)"
+                                @click="confirmDel(row.id)"
                         >删除</Button>
                     </template>
                     <template slot-scope="{ row }" slot="status">
@@ -219,7 +216,7 @@
                         show-elevator
                         @on-change="changeCurrent"
                         style="float: right"
-                        :current.sync="current"
+                        :current.sync="searchForm.pageNum"
                 ></Page>
             </Row>
         </Card>
@@ -230,6 +227,7 @@
 <script>
 // import { postRequest, getRequest,getSyncRequest } from "@/libs/axios";
 import { postJson, postRequest } from "@/libs/axios";
+import util from "@/libs/util";
 import { baseUrl } from "@/api/index";
 import comm from "@/mixins/common";
 export default {
@@ -261,7 +259,7 @@ export default {
             { value: 1, label: "已上架" },
             { value: 2, label: "已下架" }
         ],
-        merchantList: [],
+        shopIds: [],
         TableLoading: false,
         tableColumns: [
             {
@@ -281,7 +279,7 @@ export default {
                 title: "优惠券名称",
                 width: 200,
                 align: "center",
-                key: "title"
+                key: "name"
             },
             {
                 title: "投放位置",
@@ -343,7 +341,6 @@ export default {
             mainTitle: "", //主标题：超值爆抢券
             subTitle: "" //副标题：大家都在领
         },
-        current: 1,
         totalSize: 0,
         ruleValidate: {}
     };
@@ -374,6 +371,7 @@ export default {
   created() {
     this.getData();
     this.getList();
+    this.getShopList();
     const _form = JSON.stringify(this.searchForm);
     const that = this;
     this.reset = () => {
@@ -383,6 +381,27 @@ export default {
   },
   activated() {},
   methods: {
+    async getShopList() {
+      // /system/sys-shop-info/list
+      const url = "/system/sys-shop-info/list?pageNum=1&pageSize=9999";
+      let params = {
+        
+      };
+      let { code, msg, data } = await postRequest(url, params);
+      if (code == 200) {
+        console.log(data, 396);
+        if (Array.isArray(data.records)) {
+          this.shopIds = data.records.map(el=>{
+            return {
+              label: el.shopName,
+              value: el.shopId,
+            }
+          });
+        }
+      } else {
+        this.msgErr(msg);
+      }
+    },
     handleSelect(selection, index) {
         this.selectDataList = selection;
     },
@@ -420,7 +439,6 @@ export default {
     },
     search() {
       this.searchForm.pageNum = 1;
-      this.current = 1;
       this.getList();
     },
     reset() {
@@ -447,7 +465,7 @@ export default {
       }
     },
     async getList() {
-      const url = "/hotCoupon/list";
+      let url = `/hotCoupon/list`;
       const site = 1;
       let params = {
         // endTime	string
@@ -485,11 +503,20 @@ export default {
         status: this.searchForm.status,
         title: this.searchForm.title
       };
-      params = {};
+      const query = {
+        shopId: this.searchForm.shopId,
+        pageNum: this.searchForm.pageNum,
+        pageSize: this.searchForm.pageSize,
+      }
+      url = url + util.g_json2query(query);
+      Object.assign(params, this.searchForm);
+      params = util.filterNull(params);
       let { code, msg, data } = await postRequest(url, params);
       if (code == 200) {
-        console.log(data);
-        this.listData = data;
+        if (Array.isArray(data.records)) {
+          this.listData = data.records;
+        }
+        this.totalSize = data.total;
       } else {
         this.msgErr(msg);
       }
@@ -542,20 +569,9 @@ export default {
       }
     },
     // 删除
-    async apiSelectById() {
+    async apiDel(id) {
       const url = "/hotCoupon/delete";
-      const site = 1;
-      let params = {
-        startTime: this.searchForm.startTime,
-        endTime: this.searchForm.endTime,
-        orderBy: this.searchForm.orderBy,
-        pushPlatform: this.searchForm.pushPlatform,
-        shopId: this.searchForm.shopId,
-        status: this.searchForm.status,
-        title: this.searchForm.title
-      };
-      params = {};
-      let { code, msg, data } = await postRequest(url, params);
+      let { code, msg, data } = await postRequest(url, {id});
       if (code == 200) {
         console.log(data);
         this.listData = data;
@@ -565,14 +581,21 @@ export default {
     },
     // 新增
     async apiAdd(id) {
-      const url = "/hotCoupon/add";
-      let { code, msg, data } = await postRequest(url, {id});
-      if (code == 200) {
-        console.log(data);
-        this.listData = data;
-      } else {
-        this.msgErr(msg);
-      }
+        const url = "/hotCoupon/add";
+        let { code, msg, data } = await postRequest(url, {id});
+        if (code == 200) {
+          console.log(data);
+          this.listData = data;
+        } else {
+          this.msgErr(msg);
+        }
+    },
+    confirmDel() {
+      this.$Modal.warning({
+          title: '提示',
+          content: '是否确定删除？',
+          onOk: this.apiDel
+      })
     },
     validateEmpty(msg, len = 20) {
       return function(rule, value, callback) {
