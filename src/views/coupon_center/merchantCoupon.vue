@@ -6,6 +6,15 @@
         <Card>
           <Row>
             <Form ref="searchItem" :model="searchItem" inline :label-width="70" class="search-form">
+              <FormItem label="卡券ID">
+                <Input
+                  type="text"
+                  v-model="searchItem.templateId"
+                  clearable
+                  placeholder="请输入卡券ID"
+                  style="width: 200px"
+                />
+              </FormItem>
               <FormItem label="标题">
                 <Input
                   type="text"
@@ -482,6 +491,7 @@ export default {
       dropDownContent: "展开",
       dropDownIcon: "ios-arrow-down",
       searchItem: {
+        templateId: "",
         title: "",
         // 是否有标签 0-未打标签 1-已打标签
         isTag: "",
@@ -742,6 +752,7 @@ export default {
     //	刷新页面
     refresh() {
       this.searchItem = {
+        templateId: "",
         title: "",
         // 是否有标签 0-未打标签 1-已打标签
         isTag: "",
@@ -772,6 +783,7 @@ export default {
       this.TableLoading = true;
 
       const reqParams = {
+        templateId: this.searchItem.templateId,
         title: this.searchItem.title,
         isTag: this.searchItem.isTag,
         merchantNames: this.searchItem.merchantNames,

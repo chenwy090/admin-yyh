@@ -109,13 +109,7 @@
           <template v-if="edit_info.couponKind==2">
             <FormItem label="售后条件：" :rules="{ required: true}">
               <span
-                v-for="(item,index) in couponSaleAfterList"
-                :key="index"
-              >{{item.value}}&nbsp;&nbsp;</span>
-            </FormItem>
-            <FormItem label="售后条件：" :rules="{ required: true}">
-              <span
-                v-for="(item,index) in couponSaleAfterList"
+                v-for="(item,index) in edit_info.couponSaleAfterVOList"
                 :key="index"
               >{{item.value}}&nbsp;&nbsp;</span>
             </FormItem>
