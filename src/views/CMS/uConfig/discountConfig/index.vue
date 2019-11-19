@@ -14,7 +14,6 @@
       >
         <Row type="flex" justify="space-between" class="code-row-bg">
           <Col span="8" v-for="({type,label}) in dataStructure" :key="type">
-            {{`formData.${type}.subTitle`}}----label:{{label}}
             <Card>
               <p slot="title">{{label}}</p>
               <FormItem
@@ -32,8 +31,8 @@
                   />
                 </Tooltip>
               </FormItem>
-              <!-- :rules="{ required: formData.subTitle.length, message: '请输入副标题' }" -->
-              <FormItem label="副标题：" :prop="`${type}.subTitle`" :rules="subTitleRules">
+              <!-- :rules="{ required: formData.subTitle.length, message: '请输入副标题' }" supermarketSubTitleRules -->
+              <FormItem label="副标题：" :prop="`${type}.subTitle`" :rules="subTitleRules(type)">
                 <Tooltip trigger="focus" title="提醒" content="最多12个汉字" placement="right">
                   <Input
                     style="width:200px"
@@ -65,20 +64,10 @@ export default {
   name: "discountConfig",
   inject: ["linkTo", "msgOk", "msgErr"],
   computed: {
-    subTitleRules(type) {
-      let obj = null;
-      // if (this.formData[type].subTitle.length) {
-      if (0) {
-        obj = {
-          required: true,
-          validator: this.validateEmpty("请输入副标题", 12)
-        };
-      } else {
-        obj = { required: false };
-      }
-      console.log(11111, obj);
-
-      return obj;
+    subTitleRules() {
+      return function(type) {
+        return this.setSubTitleRules(type);
+      };
     }
   },
   watch: {
@@ -124,16 +113,35 @@ export default {
     // this.getData();
   },
   methods: {
-    validateSubTitle(type) {
-      // this.formData.subTitle = this.formData.subTitle.trim();
-      // console.log(this.formData.subTitle);
-      let props = `${type}.subTitle`;
+    setSubTitleRules(type) {
+      let obj = { required: false };
 
-      console.log("xxxxx",type,props);
-      
       if (this.formData[type].subTitle.length) {
-        this.$refs.form.validateField(props);
-      } else {
+        // if (1) {
+        obj = {
+          required: true,
+          validator: this.validateEmpty("请输入副标题", 12)
+        };
+      }
+      console.log(11111, obj);
+
+      return obj;
+    },
+    // validateSubTitle(type) {
+    //   // this.formData.subTitle = this.formData.subTitle.trim();
+    //   // console.log(this.formData.subTitle);
+    //   let props = `${type}.subTitle`;
+
+    //   if (this.formData[type].subTitle.length) {
+    //     this.$refs.form.validateField(props);
+    //   } else {
+    //     //清空校验
+    //     this.clearValidateMsg(props);
+    //   }
+    // },
+    validateSubTitle(type) {
+      let props = `${type}.subTitle`;
+      if (~this.formData[type].subTitle.length) {
         //清空校验
         this.clearValidateMsg(props);
       }
@@ -169,11 +177,18 @@ export default {
     },
     //清空校验
     clearValidateMsg(name) {
-      this.$refs.form.fields.some(function(comp) {
-        console.log("clear::", comp);
+      this.$refs.form.fields.some(field => {
+        // console.log("clear::", field);
         //supermarket.mainTitle
-        let r = comp.prop == name;
-        r && comp.resetField();
+        let r = field.prop == name;
+        // r && comp.resetField();
+        if (r) {
+          // this.formData[arr[0]][arr[1]] = "";
+          field.validateState = "success";
+          // v.validateDisabled 是否校验
+          // v.validateState 展示状态（校验错误时此处值为 'error'）
+          // v.validateMessage 错误提示文字
+        }
         return r;
       });
     },
@@ -184,16 +199,11 @@ export default {
           this.msgErr("数据验证失败！");
           return;
         }
-
         // 核销扫码首页配置
         const url = "/page/module/layout/saveCommonSetting";
 
         //清洗数据
         let formData = JSON.parse(JSON.stringify(this.formData));
-
-        const { type, site } = this.tab;
-        formData.type = type;
-        formData.site = site;
         postRequest(url, formData).then(res => {
           if (res.code == 200) {
             this.msgOk("保存成功");
