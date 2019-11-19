@@ -500,7 +500,7 @@ export default {
           this.updateTemplateStatusDisplay = false;
           //this.getList({});
           // 清空输入框
-          this.goback();
+          this.refresh();
         } else {
           this.msgErr(res.msg);
         }
@@ -519,10 +519,10 @@ export default {
         duration: 3
       });
     },
-    // goback() {
-    //   this.$emit("changeStatus", false);
-    // }
-
+    refresh() {
+      this.close();
+      this.$emit("refresh");
+    },
     close() {
       // this.$emit("changeStatus", false);
       this.$emit("update:couponDetailPage", false);

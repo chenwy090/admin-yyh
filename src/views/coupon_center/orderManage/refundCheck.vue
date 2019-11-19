@@ -433,15 +433,13 @@ export default {
     async showLog(row) {
       this.showLogModal = true;
       const url = `/trade/fund/account/order/auditLog/${row.id}`;
-      //  let { code, msg, data } = await postRequest(url);
-      let res = await postRequest(url);
+      let { code, msg, data } = await postRequest(url);
       this.TableLoading = false;
-      this.logData = res.data || [];
-      // if (code === "200") {
-      //   this.logData = res.data || [];
-      // } else {
-      //   this.$Message.error(msg);
-      // }
+      if (code === "200") {
+        this.logData = data || [];
+      } else {
+        this.$Message.error(msg);
+      }
     },
     check(name) {
       this.$refs[name].validate(async valid => {

@@ -220,7 +220,8 @@
                       <div v-for="(item,index) in row.couponOperationLogList" :key="index">
                         <p>操作人：{{item.operator}}</p>
                         <p>操作时间:{{item.operationTime}}</p>
-                        <p>下架原因：{{item.afterOperation}}</p>
+                        <!-- 下架原因： -->
+                        <p>{{item.afterOperation}}</p>
                       </div>
                     </div>
                   </div>
@@ -271,6 +272,7 @@
         v-if="couponDetailPage"
         :couponDetailPage.sync="couponDetailPage"
         :couponEdit_info="couponEdit_info"
+        @refresh="refresh"
       ></couponDetail>
     </Drawer>
 
