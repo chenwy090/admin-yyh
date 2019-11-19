@@ -9,7 +9,13 @@
       <div v-if=" tab_model=='57'">
         <Row>
           <!-- 搜索 -->
-          <Form ref="search" :model="search" inline :label-width="120" style="display:inline-block;">
+          <Form
+            ref="search"
+            :model="search"
+            inline
+            :label-width="120"
+            style="display:inline-block;"
+          >
             <Form-item label="活动ID" :label-width="100">
               <Input
                 type="text"
@@ -42,7 +48,7 @@
                 <Select v-model="search.label" placeholder="请选择" style="width: 200px">
                   <Option v-for="(item, index) in templatelist" :key="index" :value="item.dictValue">{{item.dictLabel}}</Option>
                 </Select>
-              </Form-item> -->
+              </Form-item>-->
               <Form-item label="是否限抢券" :label-width="100">
                 <Select v-model="search.isLimitGrap" placeholder="请选择" style="width: 200px">
                   <Option value="0">否</Option>
@@ -66,14 +72,15 @@
                 </Select>
               </Form-item>
 
-
-            <Form-item label="投放渠道" :label-width="100">
+              <Form-item label="投放渠道" :label-width="100">
                 <Select v-model="search.sendChannel" placeholder="请选择" style="width: 200px">
-               <Option v-for="item in res_list" :value="item.dictValue" :key="item.id">{{ item.dictLabel }}</Option>
+                  <Option
+                    v-for="item in res_list"
+                    :value="item.dictValue"
+                    :key="item.id"
+                  >{{ item.dictLabel }}</Option>
                 </Select>
               </Form-item>
-
-
             </span>
             <Button type="primary" icon="ios-search" @click="queryTableList">搜索</Button>
             <Button icon="md-refresh" style="margin-left:5px" @click="resetting">重置</Button>
@@ -90,48 +97,51 @@
         </Row>
 
         <Row>
-          <Table  :loading="TableLoading"     border   :columns="tableColumns"   :data="table_list"  sortable="custom"  ref="table"  >
-
-
-         <template slot-scope="{ row }" slot="couponImg">
-              <img :src="row.couponImg" style="width:74px;height:43px;" >
+          <Table
+            :loading="TableLoading"
+            border
+            :columns="tableColumns"
+            :data="table_list"
+            sortable="custom"
+            ref="table"
+          >
+            <template slot-scope="{ row }" slot="couponImg">
+              <img :src="row.couponImg" style="width:74px;height:43px;" />
             </template>
 
             <template slot-scope="{ row }" slot="ChangeStart">
-            <span v-if="row.changeDateType ==0"> {{row.changeStartDate}}</span>
-              <span  v-if="row.changeDateType ==1"> 发券后+{{row.changeStart}}天开始兑换</span>
+              <span v-if="row.changeDateType ==0">{{row.changeStartDate}}</span>
+              <span v-if="row.changeDateType ==1">发券后+{{row.changeStart}}天开始兑换</span>
             </template>
-
 
             <template slot-scope="{ row }" slot="ChangeEnd">
-               <span  v-if="row.changeDateType ==0"> {{row.changeEndDate}}</span>
-              <span v-if="row.changeDateType ==1"> 发券后+{{row.changeEnd}}天结束兑换</span>
+              <span v-if="row.changeDateType ==0">{{row.changeEndDate}}</span>
+              <span v-if="row.changeDateType ==1">发券后+{{row.changeEnd}}天结束兑换</span>
             </template>
-
-
 
             <template slot-scope="{ row }" slot="imgUrl">
-               <Tooltip content="点击可查看大图 " placement="right">
-              <img :src="row.imgUrl" style="width:74px;height:43px;" @click="showBigImg(row)">
-               </Tooltip>
+              <Tooltip content="点击可查看大图 " placement="right">
+                <img :src="row.imgUrl" style="width:74px;height:43px;" @click="showBigImg(row)" />
+              </Tooltip>
             </template>
 
-
-           <template slot-scope="{ row }" slot="getrules">
-            <span style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;">{{row.rules}}</span>
-
-
+            <template slot-scope="{ row }" slot="getrules">
+              <span
+                style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;"
+              >{{row.rules}}</span>
             </template>
 
-             <template slot-scope="{ row }" slot="getcouponValueDesc">
-            <span style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;">{{row.couponValueDesc}}</span>
+            <template slot-scope="{ row }" slot="getcouponValueDesc">
+              <span
+                style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;"
+              >{{row.couponValueDesc}}</span>
             </template>
 
-           <template slot-scope="{ row }" slot="getdoorsillDesc">
-             <span style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;">{{row.doorsillDesc}}</span>
+            <template slot-scope="{ row }" slot="getdoorsillDesc">
+              <span
+                style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;"
+              >{{row.doorsillDesc}}</span>
             </template>
-
-
           </Table>
         </Row>
         <Row type="flex" justify="end" class="page">
@@ -147,6 +157,13 @@
       </div>
 
       <div style="margin-top: 15px;" v-if=" tab_model!='57'">
+        <Alert v-if="tab_model=='64'" type="error" show-icon>
+          <span style="color:red;">提示：</span>
+          <Icon type="md-flash" slot="icon"></Icon>
+          <template slot="desc">
+            <span style="color:red;">当前功能不可用</span>
+          </template>
+        </Alert>
         <Form :model="add_info" ref="add_info" :label-width="180">
           <FormItem label="appid" required>
             <Select
@@ -222,13 +239,13 @@
           </FormItem>
 
           <FormItem label="优惠券缩略图" required>
-        <!-- <FormItem label="优惠券详情图"> -->
+            <!-- <FormItem label="优惠券详情图"> -->
             <div
               style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
               v-for="(item, index) in uploadList1"
               :key="index"
             >
-              <img :src="item.url" style="width:100%">
+              <img :src="item.url" style="width:100%" />
             </div>
             <div style="display: inline-block;">
               <Upload
@@ -245,7 +262,7 @@
                 @on-change="statusCheckChange"
               >
                 <div style="width: 90px;height:90px;line-height: 90px;">
-                  <Icon type="ios-camera" size="20"/>
+                  <Icon type="ios-camera" size="20" />
                 </div>
               </Upload>
               <p>选择优惠券缩略图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
@@ -253,13 +270,13 @@
           </FormItem>
 
           <FormItem label="优惠券详情图" required>
-        <!-- <FormItem label="优惠券详情图"> -->
+            <!-- <FormItem label="优惠券详情图"> -->
             <div
               style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
               v-for="(item, index) in uploadList"
               :key="index"
             >
-              <img :src="item.url" style="width:100%">
+              <img :src="item.url" style="width:100%" />
             </div>
             <div style="display: inline-block;">
               <Upload
@@ -276,7 +293,7 @@
                 @on-change="statusCheckChange"
               >
                 <div style="width: 90px;height:90px;line-height: 90px;">
-                  <Icon type="ios-camera" size="20"/>
+                  <Icon type="ios-camera" size="20" />
                 </div>
               </Upload>
               <p>选择优惠券详情图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
@@ -285,28 +302,28 @@
           <FormItem label="首页缩略图">
             <!-- <FormItem label="首页缩略图"> -->
             <div
-                    style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
-                    v-for="(item, index) in uploadList1"
-                    :key="index"
+              style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
+              v-for="(item, index) in uploadList1"
+              :key="index"
             >
-              <img :src="item.url" style="width:100%">
+              <img :src="item.url" style="width:100%" />
             </div>
             <div style="display: inline-block;">
               <Upload
-                      ref="upload"
-                      :defaultList="uploadList"
-                      type="drag"
-                      :format="['jpg','jpeg','png','bmp']"
-                      :on-success="handleSuccess2"
-                      :action="url"
-                      accept="image"
-                      :max-size="1024"
-                      :headers="userToken"
-                      style="display: inline-block;width:90px;"
-                      @on-change="statusCheckChange"
+                ref="upload"
+                :defaultList="uploadList"
+                type="drag"
+                :format="['jpg','jpeg','png','bmp']"
+                :on-success="handleSuccess2"
+                :action="url"
+                accept="image"
+                :max-size="1024"
+                :headers="userToken"
+                style="display: inline-block;width:90px;"
+                @on-change="statusCheckChange"
               >
                 <div style="width: 90px;height:90px;line-height: 90px;">
-                  <Icon type="ios-camera" size="20"/>
+                  <Icon type="ios-camera" size="20" />
                 </div>
               </Upload>
               <p>选择首页缩略图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
@@ -385,17 +402,28 @@
           </FormItem>
         </Form>
         <!--分享奖励配置-->
-        <Form v-if="formShareModal.shareData.length&&tab_model!=64" ref="shareModal" :model="formShareModal" :label-width="180" style="margin-top:20px">
-          <FormItem v-for="item in formShareModal.shareData" :key="item.id" :label="item.name" required>
-            <span v-if="item.name!= '倍数'&&item.name!= '上限'">&nbsp;优惠面额  X</span>
+        <Form
+          v-if="formShareModal.shareData.length&&tab_model!=64"
+          ref="shareModal"
+          :model="formShareModal"
+          :label-width="180"
+          style="margin-top:20px"
+        >
+          <FormItem
+            v-for="item in formShareModal.shareData"
+            :key="item.id"
+            :label="item.name"
+            required
+          >
+            <!-- <span v-if="item.name!= '倍数'&&item.name!= '上限'">&nbsp;优惠面额 X</span> -->
+            <!-- :disabled="item.name=='分享奖励'" -->
             <InputNumber
-                    :disabled="item.name=='分享奖励'"
-                    :min="item.name== '倍数'?1:0"
-                    :step="1"
-                    type="text"
-                    v-model="item.value"
-                    placeholder="请输入"
-                    style="width:320px"
+              :min="item.name== '倍数'?1:0"
+              :step="1"
+              type="text"
+              v-model="item.value"
+              placeholder="请输入"
+              style="width:320px"
             ></InputNumber>
             <span v-if="item.name== '上限'">&nbsp;&nbsp;U贝</span>
             <span v-if="item.name== '倍数'">&nbsp;倍</span>
@@ -403,10 +431,8 @@
           </FormItem>
           <FormItem>
             <Button style="float: left;" type="primary" @click="shareSave('shareModal')">保存</Button>
-
           </FormItem>
         </Form>
-
       </div>
     </Card>
 
@@ -429,7 +455,7 @@
     </Modal>
 
     <Modal v-model="bigImgDialog" title="查看大图" width="600" @on-cancel="bigImgCancel">
-      <img style="width: 100%" :src="big_Image_url">
+      <img style="width: 100%" :src="big_Image_url" />
     </Modal>
 
     <!-- 领优惠基础设置 -->
@@ -481,9 +507,9 @@ export default {
   },
   data() {
     return {
-        formShareModal:{
-            shareData:[]
-        },
+      formShareModal: {
+        shareData: []
+      },
       drop: false,
       dropDownContent: "展开",
       dropDownIcon: "ios-arrow-down",
@@ -572,16 +598,18 @@ export default {
               row.campType === 57
                 ? "red"
                 : row.campType === 62
-                  ? "volcano"
-                  : row.campType === 63 ? "green" : "blue";
+                ? "volcano"
+                : row.campType === 63
+                ? "green"
+                : "blue";
             const text =
               row.campType === 57
                 ? "领优惠"
                 : row.campType === 62
-                  ? "要优惠"
-                  : row.campType === 63
-                    ? "领优惠分享奖励"
-                    : "要优惠参与奖励（接受分享/参团）";
+                ? "要优惠"
+                : row.campType === 63
+                ? "领优惠分享奖励"
+                : "要优惠参与奖励（接受分享/参团）";
             return h(
               "Tag",
               {
@@ -604,18 +632,22 @@ export default {
               row.couponType === 1
                 ? "red"
                 : row.couponType === 2
-                  ? "cyan"
-                  : row.couponType === 3
-                    ? "green"
-                    : row.couponType === 4 ? "blue" : "purple";
+                ? "cyan"
+                : row.couponType === 3
+                ? "green"
+                : row.couponType === 4
+                ? "blue"
+                : "purple";
             const text =
               row.couponType === 1
                 ? "换购券"
                 : row.couponType === 2
-                  ? "商品券"
-                  : row.couponType === 3
-                    ? "折扣券"
-                    : row.couponType === 4 ? "全场券" : "赠品券";
+                ? "商品券"
+                : row.couponType === 3
+                ? "折扣券"
+                : row.couponType === 4
+                ? "全场券"
+                : "赠品券";
 
             return h(
               "Tag",
@@ -665,24 +697,26 @@ export default {
               row.sendChannel === 1
                 ? "red"
                 : row.sendChannel === 2
-                  ? "cyan"
-                  : row.sendChannel === 3
-                    ? "green"
-                    : row.sendChannel === 4
-                      ? "blue"
-                      : row.sendChannel === 5 ? "yellow" : "purple";
+                ? "cyan"
+                : row.sendChannel === 3
+                ? "green"
+                : row.sendChannel === 4
+                ? "blue"
+                : row.sendChannel === 5
+                ? "yellow"
+                : "purple";
             const text =
               row.sendChannel === 1
                 ? "领优惠列表"
                 : row.sendChannel === 2
-                  ? "拉新奖励"
-                  : row.sendChannel === 3
-                    ? "签到奖励"
-                    : row.sendChannel === 4
-                      ? "领优惠分享领用奖励"
-                      : row.sendChannel === 5
-                        ? "要优惠领优惠领券抽奖奖励"
-                        : "新人奖励";
+                ? "拉新奖励"
+                : row.sendChannel === 3
+                ? "签到奖励"
+                : row.sendChannel === 4
+                ? "领优惠分享领用奖励"
+                : row.sendChannel === 5
+                ? "要优惠领优惠领券抽奖奖励"
+                : "新人奖励";
 
             return h(
               "Tag",
@@ -1054,66 +1088,71 @@ export default {
       this.getActivity();
       this.getchannel();
     },
-      share(code){
-          console.log(111);
-          if(!code){
-            return;
-        }
-          this.formShareModal.shareData = [];
-          postRequest('/commonConfig/queryConfigByCode',{
-                  code:code
+    share(code) {
+      console.log(111);
+      if (!code) {
+        return;
+      }
+      this.formShareModal.shareData = [];
+      postRequest("/commonConfig/queryConfigByCode", {
+        code: code
+      }).then(res => {
+        if (res.code == 200) {
+          debugger;
+          if (res.data || res.data.noOverallCommonConfigList) {
+            let arr = res.data.noOverallCommonConfigList || [];
+            this.formShareModal.shareData = arr.filter(
+              item => item.name !== "上限"
+            );
+
+            console.log(this.formShareModal.shareData);
+
+            this.formShareModal.shareData.forEach(function(v) {
+              v.value = Number(v.value) || 0;
+              if (v.name == "分享奖励") {
+                v.value = 0;
               }
-          ).then(res => {
-              if (res.code == 200) {
-                  if(res.data||res.data.noOverallCommonConfigList){
-                      this.formShareModal.shareData = res.data.noOverallCommonConfigList||[];
-                      this.formShareModal.shareData.forEach(function(v){
-                          v.value = Number(v.value)||0;
-                          if(v.name=='分享奖励'){
-                              v.value=0;
-                          }
-                      })
-                      this.shareDisplay = true;
-                  }else{
-                      this.$Message.error('未查询到数据');
-                  }
-              } else {
-                  this.$Message.error(res.msg);
-              }
-          });
-      },
-      shareSave(name){
-          let canSave = true;
-          let msg = ''
-          this.formShareModal.shareData.forEach(function(v){
-              v.createTime = null;
-              v.updateTime = null;
-              v.updateBy = null;
-              if(!v.value&&v.value!==0){
-                  canSave = false
-                  msg='请输入完整表单'
-              }
-              if(v.name=='倍数'&&v.value<1){
-                  canSave = false
-                  msg='请输入大于等于1的倍数'
-              }
-          })
-          if(!canSave){
-              this.$Message.error('请输入完整表单');
-              return;
+            });
+            this.shareDisplay = true;
+          } else {
+            this.$Message.error("未查询到数据");
           }
-          postRequest(
-              "/commonConfig/updateConfigBatch",
-              {"noOverallCommonConfigList":this.formShareModal.shareData}
-          ).then(res => {
-              if (res.code == 200) {
-                  //this.formCustom.remark='';
-                  this.$Message.success('保存成功')
-              } else {
-                  this.$Message.error(res.msg);
-              }
-          });
-      },
+        } else {
+          this.$Message.error(res.msg);
+        }
+      });
+    },
+    shareSave(name) {
+      let canSave = true;
+      let msg = "";
+      this.formShareModal.shareData.forEach(function(v) {
+        v.createTime = null;
+        v.updateTime = null;
+        v.updateBy = null;
+        if (!v.value && v.value !== 0) {
+          canSave = false;
+          msg = "请输入完整表单";
+        }
+        if (v.name == "倍数" && v.value < 1) {
+          canSave = false;
+          msg = "请输入大于等于1的倍数";
+        }
+      });
+      if (!canSave) {
+        this.$Message.error("请输入完整表单");
+        return;
+      }
+      postRequest("/commonConfig/updateConfigBatch", {
+        noOverallCommonConfigList: this.formShareModal.shareData
+      }).then(res => {
+        if (res.code == 200) {
+          //this.formCustom.remark='';
+          this.$Message.success("保存成功");
+        } else {
+          this.$Message.error(res.msg);
+        }
+      });
+    },
 
     //获取投放渠道
     getchannel() {
@@ -1206,7 +1245,7 @@ export default {
 
     //搜索
     queryTableList() {
-        this.pageNum = 1;
+      this.pageNum = 1;
       // console.log(this.search);
       this.searchType = 2;
       this.updateTableList(this.search);
@@ -1250,12 +1289,12 @@ export default {
         "/campagin/list?pageNum=" + this.pageNum + "&pageSize=" + this.limit,
         reqParams
       ).then(res => {
-          console.log(111);
-          this.TableLoading = false;
+        console.log(111);
+        this.TableLoading = false;
         if (res.isSuccess) {
-            if(this.add_info.campType == 62){
-                this.share(res.data.records[0].campId)
-            }
+          if (this.add_info.campType == 62) {
+            this.share(res.data.records[0].campId);
+          }
           if (this.add_info.campType == 57) {
             this.totalSize = res.data.total;
             this.table_list = res.data.records;
@@ -1287,22 +1326,28 @@ export default {
               res.data.records[0].campType == 57
                 ? "57"
                 : res.data.records[0].campType == 62
-                  ? "62"
-                  : res.data.records[0].campType == 63 ? "63" : "64";
+                ? "62"
+                : res.data.records[0].campType == 63
+                ? "63"
+                : "64";
 
             this.add_info.couponType =
               res.data.records[0].couponType == 1
                 ? "1"
                 : res.data.records[0].couponType == 2
-                  ? "2"
-                  : res.data.records[0].couponType == 3
-                    ? "3"
-                    : res.data.records[0].couponType == 4 ? "4" : "5";
+                ? "2"
+                : res.data.records[0].couponType == 3
+                ? "3"
+                : res.data.records[0].couponType == 4
+                ? "4"
+                : "5";
 
             this.add_info.status =
               res.data.records[0].status == 0
                 ? "0"
-                : res.data.records[0].status == 1 ? "1" : "-1";
+                : res.data.records[0].status == 1
+                ? "1"
+                : "-1";
 
             this.add_info.dateType =
               res.data.records[0].dateType == 2 ? "2" : "2";
@@ -1662,25 +1707,25 @@ export default {
       this.statusCheckChange();
     },
 
-      handleSuccess2(res, file) {
-          if (res.code == 200) {
-              this.add_info.couponSimpleImg = res.image_url;
+    handleSuccess2(res, file) {
+      if (res.code == 200) {
+        this.add_info.couponSimpleImg = res.image_url;
 
-              if (this.uploadList2.length == 0) {
-                  let obj = {
-                      url: res.image_url
-                  };
-                  this.uploadList2.push(obj);
-              } else {
-                  this.uploadList2[0].url = res.image_url;
-              }
+        if (this.uploadList2.length == 0) {
+          let obj = {
+            url: res.image_url
+          };
+          this.uploadList2.push(obj);
+        } else {
+          this.uploadList2[0].url = res.image_url;
+        }
 
-              this.$Message.info("上传图片成功");
-          } else {
-              this.$Message.error("上传图片失败，请重新上传");
-          }
-          this.statusCheckChange();
-      },
+        this.$Message.info("上传图片成功");
+      } else {
+        this.$Message.error("上传图片失败，请重新上传");
+      }
+      this.statusCheckChange();
+    },
 
     //获取APPid
     getAppId() {

@@ -31,7 +31,7 @@
 
       <h3>券码信息</h3>
       <div v-for="item in dataInfo.coupon" :key="item.id">
-        <FormItem label="券码：">{{item.barcode}}</FormItem>
+        <FormItem label="券码：">{{item.barCode}}</FormItem>
         <FormItem label="状态：">{{item.status}}</FormItem>
 
         <FormItem label="过期时间：" v-if="item.endUseTime">{{item.endUseTime}}</FormItem>
