@@ -233,7 +233,7 @@ import util from "@/libs/util";
 import { baseUrl } from "@/api/index";
 import comm from "@/mixins/common";
 import Detail from './Detail';
-import Edit from './Edit';
+import Edit from './AddOrEdit';
 export default {
   name: "valueBurst",
   components: {
@@ -407,7 +407,6 @@ export default {
       };
       let { code, msg, data } = await postRequest(url, params);
       if (code == 200) {
-        console.log(data, 396);
         if (Array.isArray(data.records)) {
           this.shopIds = data.records;
         }
@@ -598,8 +597,50 @@ export default {
         this.msgErr(msg);
       }
     },
-    // 新增
+    // 新增 给子组件调用的 别删！！
     async apiAdd(e) {
+      console.log(JSON.stringify(e, null, 2));
+      
+      return;
+      e = {
+        "hotCouponVoList": [
+          {
+            "couponKind": "2",
+            "endTime": "2019-11-11",
+            "startTime": "2019-11-03",
+            "orderByName": 2,// java：此处统一为 orderByName
+            "pushPlatformList": [ // java: 此处统一为 pushPlatformList
+              0,
+              1
+            ],
+            "templateId": "20191113220136",
+            "title": "分润测试劵"
+          }
+        ],
+        "pushRange": 3,
+        "shopInfo": [
+          {
+            "venderId": "80",
+            "venderName": "浙江世纪联华",
+            "shopId": "1229",
+            "venderShopId": "1229",
+            "shopName": "杭州江城店",
+            "categories": "购物,超市",
+            "address": "江城路558号",
+            "city": "杭州市",
+            "district": "上城区",
+            "province": "浙江省",
+            "longitude": "120.17624",
+            "latitude": "30.235",
+            "enabled": 1,
+            "createBy": "suncongying",
+            "createTime": "2019-07-30 10:52:18",
+            "updateBy": "",
+            "updateTime": null,
+            "_checked": false
+          }
+        ]
+      }
         const url = "/hotCoupon/add";
         let { code, msg, data } = await postRequest(url, e);
         if (code == 200) {

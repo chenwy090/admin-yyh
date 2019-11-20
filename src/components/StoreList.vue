@@ -218,18 +218,14 @@ export default {
     // //确定选择商户
     selectMerchant() {
       this.choices = this.shopLists.filter(item => item._checked);
-
-      console.log(
-        this.choices.map(item =>
-          JSON.stringify({
-            shopId: item.shopId,
-            _checked: item._checked
-          })
-        )
-      );
+      let choices = [];
+      this.choices.forEach((el,i) =>{
+        delete el._checked;
+        choices.push(el)
+      })
 
       if (this.choices.length) {
-        this.$emit("storeSelect", this.choices);
+        this.$emit("storeSelect", choices);
         if (Array.isArray(this.shopLists)) {
           this.shopLists.forEach((el, i) => {
             if (el._checked === true) {
