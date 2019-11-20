@@ -57,7 +57,7 @@
             </div>
         </Form>
     </Card>
-    <h2>内容设置</h2>
+    <h2 class="mgt-20">内容设置</h2>
     <div>
       <Card :bordered="false" style="margin-bottom:2px">
         <Form
@@ -74,9 +74,9 @@
             <Select v-model="searchForm.shopId" style="width:100%">
               <Option
                 v-for="(item, index) in shopIds"
-                :value="item.value"
+                :value="item.shopId"
                 :key="index"
-                >{{ item.label }}</Option
+                >{{ item.shopName }}</Option
               >
             </Select>
           </FormItem>
@@ -156,7 +156,7 @@
       </Card>
         <Card>
             <Row class="operation">
-                <Button type="primary" icon="md-add">新增</Button>
+                <Button type="primary" icon="md-add" @click="addItem">新增</Button>
             </Row>
             <Row>
                 <Table
@@ -179,7 +179,7 @@
                                 type="text"
                                 style="margin-right: 5px;color:#21b6b8"
                                 size="small"
-                                @click="showDetail(row)"
+                                @click="apiSelectById(row.id)"
                         >查看</Button>
                         <Button
                                 type="text"
@@ -221,6 +221,8 @@
             </Row>
         </Card>
     </div>
+    <burst-detail ref="burstDetail" />
+    <burst-edit :show="showEdit" />
   </div>
 </template>
 
@@ -230,12 +232,18 @@ import { postJson, postRequest } from "@/libs/axios";
 import util from "@/libs/util";
 import { baseUrl } from "@/api/index";
 import comm from "@/mixins/common";
+import Detail from './Detail';
+import Edit from './Edit';
 export default {
   name: "valueBurst",
-  components: {},
+  components: {
+    'burst-detail': Detail,
+    'burst-edit': Edit
+  },
   mixins: [comm],
   data() {
     return {
+        showEdit: 0,
         tab: {
             id: "tab6",
             type: 6,
@@ -279,19 +287,19 @@ export default {
                 title: "优惠券名称",
                 width: 200,
                 align: "center",
-                key: "name"
+                key: "title"
             },
             {
                 title: "投放位置",
                 width: 150,
                 align: "center",
-                key: "id"
+                key: "orderByName"
             },
             {
                 title: "投放门店数",
                 width: 150,
                 align: "center",
-                key: "id"
+                key: "shopNum"
             },
             {
                 title: "运营状态",
@@ -303,7 +311,14 @@ export default {
                 title: "投放终端",
                 minWidth: 150,
                 align: "center",
-                key: "clientStr"
+                key: "pushPlatformList",
+                render: (h, {row}) => {
+                    let _clients = [];
+                    if (Array.isArray(row.pushPlatformList)) {
+                      _clients = row.pushPlatformList.map(el=> el.pushPlatformTxt);
+                    }
+                    return h('div', _clients.join(','))
+                }
             },
             {
                 title: "推荐时间",
@@ -315,13 +330,13 @@ export default {
                 title: "操作人",
                 minWidth: 100,
                 align: "center",
-                key: "modifiedBy"
+                key: "updateBy"
             },
             {
                 title: "操作时间",
                 minWidth: 200,
                 align: "center",
-                key: "gmtModified"
+                key: "updateTime"
             }
         ],
         searchForm: {
@@ -381,6 +396,9 @@ export default {
   },
   activated() {},
   methods: {
+    addItem() {
+      this.showEdit = Math.random();
+    },
     async getShopList() {
       // /system/sys-shop-info/list
       const url = "/system/sys-shop-info/list?pageNum=1&pageSize=9999";
@@ -391,12 +409,7 @@ export default {
       if (code == 200) {
         console.log(data, 396);
         if (Array.isArray(data.records)) {
-          this.shopIds = data.records.map(el=>{
-            return {
-              label: el.shopName,
-              value: el.shopId,
-            }
-          });
+          this.shopIds = data.records;
         }
       } else {
         this.msgErr(msg);
@@ -525,11 +538,16 @@ export default {
     async apiUpdown(id, status) {
       const url = "/hotCoupon/updown";
       // reasonInfo 非必须 下架原因
-      // sysUserName 非必须 
-      let { code, msg, data } = await postRequest(url, {id, status});
+      // sysUserName 非必须
+      let query = util.g_json2query({id, status});
+      let { code, msg, data } = await postRequest(url + query, {});
       if (code == 200) {
-        console.log(data);
-        this.listData = data;
+        let msg = '上架成功';
+        if (status == 1) {
+          msg = '下架成功';
+        }
+        this.msgOk(msg);
+        this.getList();
       } else {
         this.msgErr(msg);
       }
@@ -545,6 +563,7 @@ export default {
       } else {
         this.msgErr(msg);
       }
+      this.$refs.burstDetail.showDetail();
     },
     // 编辑
     async apiEdit() {
@@ -568,21 +587,21 @@ export default {
         this.msgErr(msg);
       }
     },
-    // 删除
+    // 删除 ok
     async apiDel(id) {
-      const url = "/hotCoupon/delete";
-      let { code, msg, data } = await postRequest(url, {id});
+      const url = `/hotCoupon/delete?id=${id}`;
+      let { code, msg, data } = await postRequest(url, {});
       if (code == 200) {
-        console.log(data);
-        this.listData = data;
+        this.msgOk('删除成功！');
+        this.getList();
       } else {
         this.msgErr(msg);
       }
     },
     // 新增
-    async apiAdd(id) {
+    async apiAdd(e) {
         const url = "/hotCoupon/add";
-        let { code, msg, data } = await postRequest(url, {id});
+        let { code, msg, data } = await postRequest(url, e);
         if (code == 200) {
           console.log(data);
           this.listData = data;
@@ -590,11 +609,13 @@ export default {
           this.msgErr(msg);
         }
     },
-    confirmDel() {
+    confirmDel(id) {
       this.$Modal.warning({
           title: '提示',
           content: '是否确定删除？',
-          onOk: this.apiDel
+          onOk: () => {
+            this.apiDel(id)
+          }
       })
     },
     validateEmpty(msg, len = 20) {
@@ -648,13 +669,10 @@ export default {
 </script>
 
 <style scoped>
+.mgt-20{
+  margin-top: 20px
+}
 .operation {
   margin-bottom: 2vh;
-}
-.confirm-textarea {
-  width: 100%;
-  height: 100px;
-  padding: 5px;
-  outline: none;
 }
 </style>
