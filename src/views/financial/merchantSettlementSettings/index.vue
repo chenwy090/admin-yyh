@@ -93,6 +93,7 @@
         :showDetail.sync="showDetail"
         :action="action"
         :detailData="detailData"
+        @refresh="queryTableData"
       ></Detail>
     </Drawer>
     <!-- <Drawer v-model="showAudit" :closable="true" :mask-closable="true" width="820" :styles="styles">

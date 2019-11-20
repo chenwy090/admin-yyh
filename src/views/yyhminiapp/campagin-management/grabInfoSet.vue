@@ -14,7 +14,7 @@
       <p>
         <Alert show-icon>
           活动ID:
-          <span style="color:red">{{edit_info.campId}}</span>
+          <span style="color:red">{{edit_info.campId}} &nbsp;&nbsp;提示：仅保留”每人每天开团次数“设置，其他功能暂不生效</span>
           <span slot="desc"></span>
         </Alert>
 
@@ -375,7 +375,7 @@ export default {
       const res = await downloadSteam(url, { campId: this.campId });
       const content = res.data;
       const { filename } = res.headers;
-      
+
       const blob = new Blob([content], { type: "application/vnd.ms-excel" });
       const oA = document.createElement("a");
       if ("download" in oA) {

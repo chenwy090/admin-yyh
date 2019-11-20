@@ -1,18 +1,20 @@
 <template>
   <div class="search">
-    <Row v-if="!couponEditPage&&!couponDetailPage">
-      <!--  <div
-        style="width: 90%;background: #fff;box-shadow:0 6px 6px -4px rgba(0,0,0,.2);z-index: 5;position:fixed; padding:14px"
-      >
-         <Alert show-icon v-if="merchantId">
-           商户编号 :  <span style="color:red">{{merchantId}}</span>
-            <span slot="desc"></span>
-          </Alert>
-      </div>-->
+    <!-- <Row v-if="!couponEditPage&&!couponDetailPage"> -->
+    <Row v-if="!couponEditPage">
       <div style>
         <Card>
           <Row>
             <Form ref="searchItem" :model="searchItem" inline :label-width="70" class="search-form">
+              <FormItem label="卡券ID">
+                <Input
+                  type="text"
+                  v-model="searchItem.templateId"
+                  clearable
+                  placeholder="请输入卡券ID"
+                  style="width: 200px"
+                />
+              </FormItem>
               <FormItem label="标题">
                 <Input
                   type="text"
@@ -227,7 +229,8 @@
                       <div v-for="(item,index) in row.couponOperationLogList" :key="index">
                         <p>操作人：{{item.operator}}</p>
                         <p>操作时间:{{item.operationTime}}</p>
-                        <p>下架原因：{{item.afterOperation}}</p>
+                        <!-- 下架原因： -->
+                        <p>{{item.afterOperation}}</p>
                       </div>
                     </div>
                   </div>
@@ -252,19 +255,41 @@
     <div v-if="couponEditPage">
       <couponEdit @changeStatus="showbasicSetStatus" :couponEdit_info="couponEdit_info"></couponEdit>
     </div>
-    <div v-if="couponDetailPage">
+    <!-- <div v-if="couponDetailPage">
       <couponDetail
         ref="modalDetail"
         @changeStatus="showbasicSetStatus"
         :couponEdit_info="couponEdit_info"
       ></couponDetail>
-    </div>
+    </div>-->
+
+    <Drawer
+      v-model="couponDetailPage"
+      :closable="true"
+      :mask-closable="true"
+      width="800"
+      :styles="styles"
+    >
+      <p slot="header" style="color:#f60;text-align:center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>查看详情</span>
+      </p>
+
+      <!-- @changeStatus="showbasicSetStatus" -->
+      <couponDetail
+        ref="modalDetail"
+        v-if="couponDetailPage"
+        :couponDetailPage.sync="couponDetailPage"
+        :couponEdit_info="couponEdit_info"
+        @refresh="refresh"
+      ></couponDetail>
+    </Drawer>
 
     <Modal v-model="bigImgDialog" title="查看大图" width="600" @on-cancel="bigImgCancel">
       <img style="width: 100%" :src="big_Image_url" />
     </Modal>
-
-    <Modal title="上架/下架" v-model="updateTemplateStatusDisplay" :mask-closable="false" footer-hide>
+    <!-- 上架/下架 -->
+    <Modal title="下架" v-model="updateTemplateStatusDisplay" :mask-closable="false" footer-hide>
       <Form ref="formCustom" :model="formCustom" :label-width="80" style="margin-top:20px">
         <span>提示：已售卖或领用的卡券仍可有效使用。</span>
         <FormItem label="填写原因" required>
@@ -345,7 +370,6 @@
       :tagData="tagData"
       @refresh="queryTableData"
     ></SetTag>
-
     <modalDetail ref="modalDetail" :descConfig="descConfig" :show="modalDetailData.show" />
   </div>
 </template>
@@ -383,8 +407,20 @@ export default {
   props: {
     merchantId: String
   },
+  watch: {
+    logDialogModal() {
+      console.log("xxxx11111,logDialogModal:", this.logDialogModal);
+    }
+  },
   data() {
     return {
+      logDialogModal: false,
+      styles: {
+        height: "calc(100% - 55px)",
+        overflow: "auto",
+        paddingBottom: "53px",
+        position: "static"
+      },
       upType: "",
       descConfig: [
         ["templateId", "优惠券模板ID"],
@@ -455,6 +491,7 @@ export default {
       dropDownContent: "展开",
       dropDownIcon: "ios-arrow-down",
       searchItem: {
+        templateId: "",
         title: "",
         // 是否有标签 0-未打标签 1-已打标签
         isTag: "",
@@ -530,13 +567,13 @@ export default {
               5: "换购券",
               6: "赠品券",
               7: "代金券",
-              8: "团购券",
+              8: "团购券"
             };
 
             let text = obj[row.couponType];
 
-            if (!text){
-              text = "未知类型"
+            if (!text) {
+              text = "未知类型";
             }
 
             return h(
@@ -644,12 +681,8 @@ export default {
       //   userOpenWithCoupon: '使用打开方式',
       //   thirdUrl: '第三方Url',
       // }
-      postJson(
-        baseUrl +
-          "/merchantCouponTemplate/selectByTemplateId?templateId=" +
-          templateId,
-        { templateId }
-      )
+      const url = `/merchantCouponTemplate/selectByTemplateId?templateId=${templateId}`;
+      postRequest(url, { templateId })
         .then(res => {
           // console.log(res);
           if (res.code == 200) {
@@ -719,6 +752,7 @@ export default {
     //	刷新页面
     refresh() {
       this.searchItem = {
+        templateId: "",
         title: "",
         // 是否有标签 0-未打标签 1-已打标签
         isTag: "",
@@ -749,6 +783,7 @@ export default {
       this.TableLoading = true;
 
       const reqParams = {
+        templateId: this.searchItem.templateId,
         title: this.searchItem.title,
         isTag: this.searchItem.isTag,
         merchantNames: this.searchItem.merchantNames,
@@ -868,37 +903,41 @@ export default {
       });
     },
 
-    // 传值到审核对话框
+    // 传值到审核对话框  下架
     inputUpdateAccountStatus(row) {
       this.formCustom.templateId = row.templateId;
       this.formCustom.type = "优惠券管理";
-      this.formCustom.status = "-1";
+      this.formCustom.status = -1; //下架状态, -1:下架
       this.updateTemplateStatusDisplay = true;
     },
-    // 传值到审核对话框
-    upStatus(item) {
+    // 传值到审核对话框  上架
+    upStatus(templateId) {
       // this.formCustom.templateId = row.templateId;
       // this.formCustom.type = "优惠券管理";
       // this.formCustom.status = "1";
       // this.updateTemplateStatusDisplay = true;
 
       this.setStore("camp_pageStatus", "上架");
-      this.couponEdit_info = item;
-      this.couponDetailPage = true;
+      this.couponEdit_info = templateId;
+      this.couponDetailPage = true; //显示 couponDetail组件！！
       this.couponEditPage = false;
     },
 
     // 更新账户
     updateTemplateStatusFn(item) {
-      const reqParams = {
-        templateId: this.formCustom.templateId,
-        status: this.formCustom.status,
-        remark: this.formCustom.remark,
-        type: this.formCustom.type
-      };
-      postRequest("/merchantCouponTemplate/updStatus", reqParams).then(res => {
+      // 券模板id  下架状态, -1:下架   //下架原因
+      let { templateId, status, remark, type } = this.formCustom;
+
+      remark = remark.trim();
+      if (remark.length == 0) {
+        return this.msgErr("请填写下架原因");
+      }
+
+      const reqParams = { templateId, status, remark, type };
+      const url = "/merchantCouponTemplate/downShelf";
+      postRequest(url, reqParams).then(res => {
         if (res.code == 200) {
-          this.msgOk("更新成功");
+          this.msgOk("下架成功");
           this.updateTemplateStatusDisplay = false;
           //this.getList({});
           // 清空输入框
@@ -939,6 +978,7 @@ export default {
       this.couponEdit_info = item;
       this.couponDetailPage = true;
       this.couponEditPage = false;
+
       // this.$refs.modalDetail.rowDate(item);
     },
     showbasicSetStatus(e) {

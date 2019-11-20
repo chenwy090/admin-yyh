@@ -516,8 +516,8 @@
             <Col span="20">
               <CheckboxGroup v-model="edit_info.couponPutChannelList">
                 <Checkbox
-                  v-for="(item,index) in couponPutChannelList"
-                  :key="index"
+                  v-for="item in couponPutChannelList"
+                  :key="item.code+item.value"
                   :label="item.code"
                 >{{item.value}}</Checkbox>
               </CheckboxGroup>
@@ -837,6 +837,7 @@
     <BusinessList
       v-if="showBusinessList"
       :showBusinessList.sync="showBusinessList"
+      :checked="add_info.merchantList"
       @seclectedTr-event="selectedTrCallBack"
     ></BusinessList>
   </div>
@@ -863,7 +864,62 @@ export default {
   name: "BasicSet",
   components: { ImgCutter, BusinessList },
   props: {
-    couponEdit_info: Object
+    // couponEdit_info: Object
+
+    couponEdit_info: {
+      type: Object,
+      default: function() {
+        return {
+          couponSource: "",
+          couponCodeType: "",
+          userOpenWithCoupon: "",
+          couponKind: 1,
+          originalPrice: "",
+          price: "",
+          couponPutChannelVOList: [],
+          couponSaleAfterVOList: [],
+          couponPutChannelList: [1],
+          couponSaleAfterList: [],
+          thirdUrl: "",
+          // 是否活动券 （默认否）0-否，1-是   isActivityCoupon
+          isActivityCoupon: "",
+          title: "",
+          subTitle: "",
+          couponType: "",
+          ticketMoney: "",
+          ticketDiscount: "",
+          price: "",
+          label: "",
+          startDate: "",
+          endDate: "",
+          useDateType: "",
+          useStartDate: "",
+          useEndDate: "",
+          addDaysUseStart: "",
+          addDaysUseEnd: "",
+          couponSmallImg: "",
+          couponBigImg: "",
+          couponSimpleImg: "",
+          buyNotes: "",
+          useDesc: "",
+          getLimit: "",
+          stockCount: "",
+          status: "",
+          remark: "",
+          merchantId: "",
+          orderBy: "",
+          fullAmout: "",
+          decreaseAmount: "",
+          displayText: "",
+          merchantList: ""
+        };
+      }
+    }
+  },
+  watch: {
+    ["edit_info.couponPutChannelList"]() {
+      console.log("watch:---", this.edit_info.couponPutChannelList);
+    }
   },
   data() {
     return {
@@ -1056,7 +1112,7 @@ export default {
         roleIdList: [],
         merchantList: [],
         couponSaleAfterList: [],
-        couponPutChannelList: [],
+        couponPutChannelList: [1],
         userId: ""
       },
       edit_info: {
@@ -1066,7 +1122,7 @@ export default {
         couponSource: "",
         merchantList: [],
         couponSaleAfterList: [],
-        couponPutChannelList: [],
+        couponPutChannelList: [1],
         startDate: "",
         endDate: "",
         useStartDate: "",
@@ -1103,17 +1159,17 @@ export default {
 
   created() {
     this.userToken = { jwttoken: localStorage.getItem("jwttoken") };
-    this.init();
+    // this.init();
   },
   methods: {
     handleChangeCouponKind() {
       console.log("handleChangeCouponKind:", arguments);
-
-      //  this.add_info.merchantList = [];
+      this.add_info.merchantList = [];
     },
     selectedTrCallBack(data) {
       console.log("111selectedTrCallBack----", data);
       this.add_info.merchantList = data;
+      this.edit_info.payCouponMerchantType = data.couponType;
     },
     //确定选择商户
     /*selectMerchant() {
@@ -1226,6 +1282,8 @@ export default {
         couponCodeType: 0, //券码类型
         userOpenWithCoupon: 0, //立即使用打开方式
         thirdUrl: "",
+        couponKind: 1,
+        couponPutChannelList: [1],
         couponSaleAfterList: [1, 2],
         // 是否活动券 （默认否）0-否，1-是   isActivityCoupon
         isActivityCoupon: 0,
@@ -1248,7 +1306,83 @@ export default {
         displayText: ""
       };
     },
+    //编辑
+    async gitEditInfo() {
+      const { templateId } = this.couponEdit_info;
+      const url = `/merchantCouponTemplate/selectByTemplateId?templateId=${templateId}`;
 
+      // const url = `/merchantCouponTemplate/selectByTemplateId`;
+      const res = await postRequest(url);
+
+      // console.log(res);
+      if (res.code == 200) {
+        var that = this;
+        let { thirdUrl } = res.data;
+        res.data.thirdUrl = thirdUrl || "";
+        this.edit_info = {
+          ...this.edit_info,
+          ...res.data
+        };
+
+        let {
+          couponType,
+          couponSaleAfterVOList,
+          couponPutChannelVOList,
+          merchantList
+        } = res.data;
+        couponSaleAfterVOList = couponSaleAfterVOList || [];
+        couponPutChannelVOList = couponPutChannelVOList || [];
+        merchantList = merchantList || [];
+
+        this.edit_info.couponType = String(couponType);
+        let couponSaleAfterList = couponSaleAfterVOList.map(
+          item => item.code
+        );
+        that.edit_info.couponSaleAfterList = couponSaleAfterList
+        // that.edit_info.couponPutChannelList = [];
+        // that.edit_info.couponPutChannelList.splice(0,that.edit_info.couponPutChannelList.length);
+        let couponPutChannelList = couponPutChannelVOList.map(
+          item => item.code
+        );
+        that.edit_info.couponPutChannelList = couponPutChannelList;
+        console.log(
+          "edit_info.couponPutChannelList:--->",
+          couponPutChannelList
+        );
+        this.uploadList = [{ url: this.edit_info.couponSmallImg }];
+        this.uploadList1 = [{ url: this.edit_info.couponBigImg }];
+        this.edit_info.merchantList = merchantList;
+
+        this.imgSrc1 = this.edit_info.couponSmallImg;
+        this.imgSrc2 = this.edit_info.couponBigImg;
+        this.imgSrc3 = this.edit_info.couponSimpleImg;
+        if (this.edit_info.couponKind == 2) {
+          // this.edit_info.price = this.edit_info.price / 100;
+        } else {
+          this.edit_info.price = 0;
+        }
+
+        this.edit_info.ticketMoney = this.edit_info.ticketMoney / 100;
+        //console.info("this.edit_info.ticketMoney" + this.edit_info.ticketMoney);
+        //console.info("this.edit_info.ticketMoney" + this.edit_info.ticketMoney);
+
+        this.edit_info.ticketDiscount = this.edit_info.ticketDiscount / 10;
+        this.edit_info.couponKind = this.edit_info.couponKind - 0;
+        this.edit_info.useDateType =
+          this.edit_info.useDateType == 1 ? "1" : "2";
+        if (this.camp_pageStatus == "copy") {
+          // 卡券活动时间、有效期、发布总量
+          this.edit_info.startDate = "";
+          this.edit_info.endDate = "";
+          this.edit_info.useStartDate = "";
+          this.edit_info.useEndDate = "";
+          this.edit_info.stockCount = null;
+        }
+      } else {
+        this.msgErr(res.msg);
+      }
+      // console.log(err, 'operating_merchant/merchant-customer/merchant-customer-add, Line929')
+    },
     //编辑
     statusCheckChange() {
       this.isCheckDisabled = false;
@@ -1290,10 +1424,8 @@ export default {
         (this.camp_pageStatus == "copy" || this.camp_pageStatus == "edit") &&
         this.couponEdit_info.templateId
       ) {
-        postRequest(
-          "/merchant/merchantCouponRelation/selectByTemplateId?templateId=" +
-            this.couponEdit_info.templateId
-        ).then(res => {
+        let url = `/merchant/merchantCouponRelation/selectByTemplateId?templateId=${this.couponEdit_info.templateId}`;
+        postRequest(url).then(res => {
           if (res.code == 200) {
             that.add_info = res.data;
             // that.edit_info = res.data;
@@ -1394,7 +1526,6 @@ export default {
     //弹出商户选择框
     addMerchantList() {
       //couponKind 1 免费券 | 2 付费券
-
       const { couponKind } = this.edit_info;
       if (couponKind == 1) {
         this.merchantTabDisplay = true;
@@ -1406,80 +1537,7 @@ export default {
         this.msgErr("请选择收费类型");
       }
     },
-    //编辑
-    gitEditInfo() {
-      postJson(
-        baseUrl +
-          "/merchantCouponTemplate/selectByTemplateId?templateId=" +
-          this.couponEdit_info.templateId,
-        {}
-      )
-        .then(res => {
-          // console.log(res);
-          if (res.code == 200) {
-            var that = this;
-            let { thirdUrl } = res.data;
-            res.data.thirdUrl = thirdUrl || "";
-            this.edit_info = res.data;
-            this.edit_info.couponType = String(res.data.couponType);
-            this.edit_info.couponSaleAfterList = [];
-            res.data.couponSaleAfterVOList.forEach(function(v, i) {
-              that.edit_info.couponSaleAfterList.push(v.code);
-            });
-            that.edit_info.couponPutChannelList = [];
-            res.data.couponPutChannelVOList.forEach(function(v, i) {
-              that.edit_info.couponPutChannelList.push(v.code);
-            });
-            this.uploadList = [{ url: this.edit_info.couponSmallImg }];
-            this.uploadList1 = [{ url: this.edit_info.couponBigImg }];
-            this.edit_info.merchantList = this.edit_info.merchantList;
 
-            this.imgSrc1 = this.edit_info.couponSmallImg;
-            this.imgSrc2 = this.edit_info.couponBigImg;
-            this.imgSrc3 = this.edit_info.couponSimpleImg;
-
-            if (this.edit_info.couponKind == 2) {
-              // this.edit_info.price = this.edit_info.price / 100;
-            } else {
-              this.edit_info.price = 0;
-            }
-
-            this.edit_info.ticketMoney = this.edit_info.ticketMoney / 100;
-            //console.info("this.edit_info.ticketMoney" + this.edit_info.ticketMoney);
-            //console.info("this.edit_info.ticketMoney" + this.edit_info.ticketMoney);
-
-            this.edit_info.ticketDiscount = this.edit_info.ticketDiscount / 10;
-            this.edit_info.couponKind = this.edit_info.couponKind - 0;
-            // this.edit_info.couponType =
-            //     this.edit_info.couponType == 1
-            //         ? "1"
-            //         : this.edit_info.couponType == 2
-            //         ? "2"
-            //         : this.edit_info.couponType == 3
-            //             ? "3"
-            //             : this.edit_info.couponType == 4
-            //                 ? "4"
-            //                 : this.edit_info.couponType == 5
-            //                     ? "5"
-            //                     : "6";
-            this.edit_info.useDateType =
-              this.edit_info.useDateType == 1 ? "1" : "2";
-            if (this.camp_pageStatus == "copy") {
-              // 卡券活动时间、有效期、发布总量
-              this.edit_info.startDate = "";
-              this.edit_info.endDate = "";
-              this.edit_info.useStartDate = "";
-              this.edit_info.useEndDate = "";
-              this.edit_info.stockCount = null;
-            }
-          } else {
-            this.msgErr(res.msg);
-          }
-        })
-        .catch(err => {
-          // console.log(err, 'operating_merchant/merchant-customer/merchant-customer-add, Line929')
-        });
-    },
     // 获取商户列表
     getMerchantListFn() {
       this.TableLoading = false;
@@ -1557,7 +1615,6 @@ export default {
           this.$Message.error("请选择优惠类型");
           return;
         }
-        console.log(this.edit_info.originalPrice);
         if (!this.edit_info.originalPrice || !this.edit_info.price) {
           this.$Message.error("请填写原价和售卖价");
           return;
@@ -1691,12 +1748,18 @@ export default {
         this.$Message.error("请选择投放渠道");
         return;
       } else {
-        var that = this;
-        this.edit_info.couponPutChannelList.map(function(v, i) {
-          that.edit_info.newCouponPutChannelList.push(
-            that.couponPutChannelList[v - 1]
-          );
+        let newCouponPutChannelList = [];
+
+        this.edit_info.couponPutChannelList.forEach(code => {
+          that.couponPutChannelList.some(item => {
+            let r = code == item.code;
+            if (r) {
+              newCouponPutChannelList.push(item);
+            }
+            return r;
+          });
         });
+        this.edit_info.newCouponPutChannelList = newCouponPutChannelList;
       }
       this.edit_info.startDate = formatDate(
         new Date(this.edit_info.startDate),
@@ -1917,7 +1980,8 @@ export default {
         fullAmout: this.edit_info.fullAmout,
         decreaseAmount: this.edit_info.decreaseAmount,
         displayText: this.edit_info.displayText,
-        merchantList: this.add_info.merchantList
+        merchantList: this.add_info.merchantList,
+        payCouponMerchantType:this.edit_info.payCouponMerchantType
       };
 
       if (this.camp_pageStatus === "add") {
@@ -2101,7 +2165,9 @@ export default {
     }
   },
   mounted() {
-    // this.init();
+    this.init();
+    // console.log("mounted: couponEdit_info ", this.couponEdit_info);
+    // console.log("mounted: edit_info", this.edit_info);
   }
 };
 </script>

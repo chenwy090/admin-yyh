@@ -25,7 +25,7 @@
                       </Radio>
                     </RadioGroup>
                   </div>
-                  <div>
+                  <div v-if="searchData.merchantType==1">
                     <Input
                       v-model="searchData.merchantNames"
                       type="textarea"
@@ -49,7 +49,7 @@
                       </Radio>
                     </RadioGroup>
                   </div>
-                  <div>
+                  <div v-if="searchData.brandType==1">
                     <Input
                       v-model="searchData.brandNames"
                       type="textarea"
@@ -180,7 +180,7 @@ export default {
       // 类型  明细
       downTypeOption: {
         "1": "交易",
-        "2": "解冻",
+        "2": "分账",
         "3": "提现"
       },
       merchantOption: {

@@ -1,233 +1,152 @@
 <template>
-    <!--查看详情-->
-    <!--<Modal width="800"-->
-           <!--v-model="viewDialogVisible"-->
-           <!--title="查看详情"-->
-           <!--:closable="false"-->
-           <!--:mask-closable="false"-->
-           <!--footer-hide>-->
-    <div v-if="viewDialogVisible" class="modal" @click.stop>
-        <Card>
-            <p slot="title">查看详情</p>
-            <a href="#" slot="extra">
-                <Button type="dashed" icon="md-arrow-round-back" @click="close()">返回上一层</Button>
-            </a>
-            <Form ref="addOrEditModal" :label-width="100" label-position="left">
-                <h3>订单信息</h3>
-                <Row class="padding-left-12">
-                    <Col span="18">
-                    <div>
-                        订单编号：{{dataInfo.orderNo}}
-                    </div>
-                    </Col>
-                </Row>
-                <Row class="padding-left-12">
-                    <Col span="18">
-                    <div>
-                        订单状态：{{dataInfo.status}}
-                    </div>
-                    </Col>
-                </Row>
-                <Row class="padding-left-12">
-                    <Col span="18">
-                    <div>
-                        数量：{{dataInfo.amount}}
-                    </div>
-                    </Col>
-                </Row>
-                <Row class="padding-left-12">
-                    <Col span="18">
-                    <div>
-                        单价：{{dataInfo.price}}
-                    </div>
-                    </Col>
-                </Row>
-                <Row class="padding-left-12">
-                    <Col span="18">
-                    <div>
-                        总价：{{dataInfo.totalPrice}}
-                    </div>
-                    </Col>
-                </Row>
-                <Row class="padding-left-12">
-                    <Col span="18">
-                    <div>
-                        实付款：{{dataInfo.realPay}}   U贝抵扣：{{dataInfo.ubayDiscount}}  红包抵扣：{{dataInfo.redEnvelopeDiscount}}
-                    </div>
-                    </Col>
-                </Row>
-                <Row class="padding-left-12">
-                    <Col span="18">
-                    <div>
-                        渠道：{{dataInfo.source}}
-                    </div>
-                    </Col>
-                </Row>
+  <div class="modal" @click.stop>
+    <!-- <Form ref="addOrEditModal" :label-width="100" label-position="left"> -->
+    <Form label-position="right" :label-width="120">
+      <h3>订单信息</h3>
+      <FormItem label="订单编号：">{{dataInfo.orderNo}}</FormItem>
+      <FormItem label="订单状态：">{{dataInfo.statusStr}}</FormItem>
+      <FormItem label="数量：">{{dataInfo.amount}}元</FormItem>
+      <FormItem label="单价：">{{dataInfo.price}}元</FormItem>
+      <FormItem label="总价：">{{dataInfo.totalPrice}}元</FormItem>
+      <FormItem
+        label="实付款："
+      >{{dataInfo.realPay}}元 &nbsp;&nbsp;&nbsp;&nbsp;U贝抵扣：{{dataInfo.ubayDiscount}}元 &nbsp;&nbsp;&nbsp;&nbsp;红包抵扣：{{dataInfo.redEnvelopeDiscount}}元</FormItem>
+      <FormItem label="渠道：">{{dataInfo.source}}</FormItem>
 
-                <h3>交易记录</h3>
-                <Row class="padding-left-12">
-                    <Col span="18">
-                    <div>
-                        下单时间：{{dataInfo.gmtCreate}}
-                    </div>
-                    </Col>
-                </Row>
-                <Row class="padding-left-12">
-                    <Col span="18">
-                    <div>
-                        付款时间：{{dataInfo.payTime}}
-                    </div>
-                    </Col>
-                </Row>
-                <Row class="padding-left-12">
-                    <Col span="18">
-                    <div>
-                        付款方式：{{dataInfo.payType}}
-                    </div>
-                    </Col>
-                </Row>
-                <Row class="padding-left-12">
-                    <Col span="18">
-                    <div>
-                        交易流水号：{{dataInfo.transactionNo}}
-                    </div>
-                    </Col>
-                </Row>
+      <h3>交易记录</h3>
+      <FormItem label="下单时间：">{{dataInfo.gmtCreate}}</FormItem>
+      <FormItem label="付款时间：">{{dataInfo.payTime}}</FormItem>
+      <FormItem label="付款方式：">{{dataInfo.payTypeStr}}</FormItem>
+      <FormItem label="交易流水号：">{{dataInfo.transactionNo}}</FormItem>
 
-                <h3>买家信息</h3>
-                <Row class="padding-left-12">
-                    <Col span="18">
-                    <div>
-                        买家昵称：{{dataInfo.nickName}}
-                    </div>
-                    </Col>
-                </Row>
-                <Row class="padding-left-12">
-                    <Col span="18">
-                    <div>
-                        买家账号：{{dataInfo.phoneNumber}}
-                    </div>
-                    </Col>
-                </Row>
+      <h3>买家信息</h3>
+      <FormItem label="买家昵称：">{{dataInfo.nickName}}</FormItem>
+      <FormItem label="买家账号：">{{dataInfo.phoneNumber}}</FormItem>
 
-                <h3>优惠券信息</h3>
-                <Row class="padding-left-12">
-                    <Col span="18">
-                    <div>
-                        卡券编码：{{dataInfo.couponId}}
-                    </div>
-                    </Col>
-                </Row>
-                <Row class="padding-left-12">
-                    <Col span="18">
-                    <div>
-                        优惠券所属商户：{{dataInfo.merchantName}}
-                    </div>
-                    </Col>
-                </Row>
-                <Row class="padding-left-12">
-                    <Col span="18">
-                    <div>
-                        有效时间：{{dataInfo.endUseTime}}
-                    </div>
-                    </Col>
-                </Row>
-                <Row class="padding-left-12">
-                    <Col span="18">
-                    <div>
-                        售后信息：{{dataInfo.sale}}
-                    </div>
-                    </Col>
-                </Row>
+      <h3>优惠券信息</h3>
+      <FormItem label="卡券编码：">{{dataInfo.couponId}}</FormItem>
+      <FormItem label="优惠券所属商户：">{{dataInfo.merchantName}}</FormItem>
+      <FormItem label="有效时间：">{{dataInfo.endUseTime}}</FormItem>
+      <FormItem label="售后信息：">{{dataInfo.sale}}</FormItem>
 
-                <h3>券码信息</h3>
-                <Row class="padding-left-12">
-                    <Col span="18">
-                    <div v-for="item in dataInfo.coupon">
-                        <p>券码：{{item.barCode}}</p>
-                        <p>状态：{{item.status}}</p>
-                        <p v-if="item.endUseTime">过期时间：{{item.endUseTime}}</p>
-                        <p v-if="item.useTime">核销时间：{{item.useTime}}</p>
-                        <p v-if="item.pplyRefundTime">申请退款时间：{{item.pplyRefundTime}}</p>
-                        <p v-if="item.refundTime">退款时间：{{item.refundTime}}</p>
-                        <p v-if="item.refundReason">退款原因：{{item.refundReason}}</p>
-                        <p v-if="item.transactionNo">交易流水号：{{item.transactionNo}}</p>
-                        <p v-if="item.auditUser">操作人：{{item.auditUser}}</p>
-                        <p v-if="item.nickName">核销人：{{item.nickName}}</p>
-                        <p v-if="item.phoneNumber">手机号：{{item.phoneNumber}}</p>
-                        <p v-if="item.merchantName">核销门店：{{item.merchantName}}</p>
-                        <p v-if="item.auditTime">操作时间：{{item.auditTime}}</p>
-                        <p v-if="item.remark">备注：{{item.remark}}</p>
-                    </div>
-                    </Col>
-                </Row>
-                <FormItem>
-                    <Button style="margin-left: 8px;float: right;" @click="close">关闭</Button>
-                </FormItem>
-            </Form>
-        </Card>
+      <h3>券码信息</h3>
+      <div v-for="item in dataInfo.coupon" :key="item.id">
+        <FormItem label="券码：">{{item.barCode}}</FormItem>
+        <FormItem label="状态：">{{item.status}}</FormItem>
+
+        <FormItem label="过期时间：" v-if="item.endUseTime">{{item.endUseTime}}</FormItem>
+        <FormItem label="核销时间：" v-if="item.useTime">{{item.useTime}}</FormItem>
+        <FormItem label="申请退款时间：" v-if="item.applyRefundTime">{{item.applyRefundTime}}</FormItem>
+        <FormItem label="退款时间：" v-if="item.refundTime">{{item.refundTime}}</FormItem>
+        <FormItem label="退款原因：" v-if="item.refundReason">{{item.refundReason}}</FormItem>
+        <FormItem label="交易流水号：" v-if="item.transactionNo">{{item.transactionNo}}</FormItem>
+        <FormItem label="操作人：" v-if="item.auditUser">{{item.auditUser}}</FormItem>
+        <FormItem label="核销人：" v-if="item.nickName">{{item.nickName}}</FormItem>
+        <FormItem label="手机号：" v-if="item.phoneNumber">{{item.phoneNumber}}</FormItem>
+        <FormItem label="核销门店：" v-if="item.merchantName">{{item.merchantName}}</FormItem>
+        <FormItem label="操作时间：" v-if="item.auditTime">{{item.auditTime}}</FormItem>
+        <FormItem label="备注：" v-if="item.remark">{{item.remark}}</FormItem>
+      </div>
+    </Form>
+    <div class="demo-drawer-footer">
+      <Button style="margin-right: 8px" @click="close">关闭</Button>
     </div>
-    <!--</Modal>-->
+  </div>
+  <!--</Modal>-->
 </template>
 
 <script>
-    import { postRequest, getRequest,getSyncRequest,uploadformData } from "@/libs/axios";
-    export default {
-        name: "show-detail-modal",
-        props: {
-            viewDialogVisible: { type: Boolean, default: false }
-        },
-        data(){
-            return{
-                titleName:'',
-                statusList:[{value:1,label:'未开始'},{value:2,label:'进行中'},{value:3,label:'已结束'},{value:4,label:'已终止'}],
-                dataInfo:{},
-            }
-        },
-        methods:{
-            resetRow(row){
-                this.dataInfo={};
-                if(row){
-                    // /merchant/activity/award/activity/{id}
-                    getRequest(`/trade/fund/account/order/details/${row.id}`).then(res => {
-                        if (res.code === "200") {
-                            this.dataInfo = res.data.retData;
-                            this.dataInfo.merchantName = res.data.merchantName;
-                            this.dataInfo.sale = res.sale;
-                            this.dataInfo.coupon = res.coupon;
-                        } else {
-                            this.$Message.error('获取数据失败');
-                        }
-                    });
-                }
-            },
-            close() {
-                this.$emit('setViewDialogVisible', false)
-            }
+import {
+  postRequest,
+  getRequest,
+  getSyncRequest,
+  uploadformData
+} from "@/libs/axios";
+export default {
+  name: "show-detail-modal",
+  props: {
+    viewDialogVisible: { type: Boolean, default: false }
+  },
+  data() {
+    return {
+      titleName: "",
+      statusList: [
+        { value: 1, label: "未开始" },
+        { value: 2, label: "进行中" },
+        { value: 3, label: "已结束" },
+        { value: 4, label: "已终止" }
+      ],
+      statusOptions: {
+        1: "未使用",
+        2: "已使用",
+        3: "已过期",
+        4: "退款中",
+        5: "已退款",
+        6: "退款失败"
+      },
+      dataInfo: {}
+    };
+  },
+  methods: {
+    async resetRow(row) {
+      this.dataInfo = {};
+      if (row) {
+        // /merchant/activity/award/activity/{id}
+        const url = `/trade/fund/account/order/details/${row.id}`;
+        let { code, sale, coupon, merchantName, data } = await getRequest(url);
+
+        if (code === "200") {
+          this.dataInfo = data.retData;
+          this.dataInfo.merchantName = merchantName;
+          this.dataInfo.sale = sale;
+          this.dataInfo.coupon = coupon;
+        } else {
+          this.$Message.error("获取数据失败");
         }
+      }
+    },
+    close() {
+      this.$emit("setViewDialogVisible", false);
     }
+  }
+};
 </script>
 
 <style scoped>
-    h3{
-        border-left: 3px solid #333;
-        padding-left: 10px;
-        margin: 15px 0;
-    }
-    .padding-left-12{
-        padding-left: 12px;
-    }
-    .colof-a2{
-        color:#a2a2a2;
-    }
-    .ivu-radio-group-vertical .ivu-radio-wrapper{
-        height: auto;
-    }
-    .radio-item {
-        width: 100%;
-        border: 1px solid #f4f4f4;
-        padding: 10px;
-        margin: 10px 0;
-        position: relative;
-    }
+h3 {
+  border-left: 3px solid #333;
+  padding-left: 10px;
+  margin: 15px 0;
+}
+.padding-left-12 {
+  padding-left: 12px;
+}
+.colof-a2 {
+  color: #a2a2a2;
+}
+.ivu-radio-group-vertical .ivu-radio-wrapper {
+  height: auto;
+}
+.radio-item {
+  width: 100%;
+  border: 1px solid #f4f4f4;
+  padding: 10px;
+  margin: 10px 0;
+  position: relative;
+}
+
+.ivu-form-item {
+  margin-bottom: 0;
+}
+.demo-drawer-footer {
+  width: 100%;
+  position: fixed;
+  z-index: 111;
+  bottom: 0;
+  left: 0;
+  border-top: 1px solid #e8e8e8;
+  padding: 10px 16px;
+  text-align: right;
+  background: #fff;
+}
 </style>

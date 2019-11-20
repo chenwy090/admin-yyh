@@ -297,14 +297,10 @@ export default {
           this.tableData = records.map(item => {
             // "userStatus": 0,//0-正常 1-封禁
 
-            const {
-              status,
-              userStatus,
-              sourceType,
-              tags = [],
-              citys = [],
-              coupons = []
-            } = item;
+            let { status, userStatus, sourceType, tags, citys, coupons } = item;
+            tags = tags || [];
+            citys = citys || [];
+            coupons = coupons || [];
             // 用户状态:userStatusName  类型:sourceTypeName  城市:cityNames 标签:tagNames 优惠券:couponNames
 
             // 审核状态 status

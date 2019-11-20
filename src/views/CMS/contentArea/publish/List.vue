@@ -287,14 +287,7 @@ export default {
             // "userStatus": 0,//0-正常 1-封禁
             console.log(item.tags, item.citys, item.coupons);
 
-            let {
-              status,
-              userStatus,
-              sourceType,
-              tags,
-              citys,
-              coupons
-            } = item;
+            let { status, userStatus, sourceType, tags, citys, coupons } = item;
             tags = tags || [];
             citys = citys || [];
             coupons = coupons || [];
