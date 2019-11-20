@@ -39,9 +39,20 @@
           <Table border width="100%" :columns="columns1" :data="tableData" :loading="tableLoading">
             <template slot-scope="{ row }" slot="action">
               <Button type="text" size="small" @click="viewDetailsFn(row)">查看</Button>
-              <Button type="text" size="small" @click="editInfo(row.id)">编辑</Button>
-              <Button type="text" size="small" @click="editInfo(row)">上架</Button>
-              <Button type="text" size="small" @click="editInfo(row)">删除</Button>
+              <Button
+                type="text"
+                size="small"
+                :disabled="row.status == 1"
+                @click="editInfo(row.id)"
+              >编辑</Button>
+              <Button type="text" size="small" v-if="row.status != 1" @click="upLow(row.id, 1)">上架</Button>
+              <Button type="text" size="small" v-else @click="lowDisplay = true;lowId = row.id">下架</Button>
+              <Button
+                type="text"
+                size="small"
+                :disabled="row.status == 1"
+                @click="delStaffFn(row.id, 2)"
+              >删除</Button>
             </template>
             <!-- <template slot-scope="{ row }" slot="applyTime">
               <div>{{ row.applyTime | data}}</div>
@@ -50,12 +61,12 @@
             <template slot-scope="{ row }" slot="remitTime">
               <div>{{ row.remitTime | data}}</div>
               <div>{{ row.remitTime | time}}</div>
-            </template>
-            <template slot-scope="{ row }" slot="status">
-              <span v-if="row.status == 1">处理中</span>
-              <span v-else-if="row.status == 2">已完成（打款成功）</span>
-              <span v-else-if="row.status == 3">提现到账失败</span>
             </template>-->
+            <template slot-scope="{ row }" slot="status">
+              <span v-if="row.status == 1">上架</span>
+              <span v-else-if="row.status == 0">创建</span>
+              <span v-else-if="row.status == -1">下架</span>
+            </template>
             <template slot-scope="{ row }" slot="putShop">
               <span v-if="row.putShop == 0">全国</span>
               <span v-else-if="row.putShop == 1">零售商</span>
@@ -104,12 +115,7 @@
     >
       <div>
         <!-- 商户列表 -->
-        <Table
-          border
-          highlight-row
-          :columns="columns2"
-          :data="seeCouponList"
-        >
+        <Table border highlight-row :columns="columns2" :data="seeCouponList">
           <!-- <template slot-scope="{ row }" slot="action">
               <Button type="text" size="small">查看</Button>
           </template>-->
@@ -124,11 +130,31 @@
         </div>
       </div>
     </Modal>
+    <!-- 选择商户对话框 -->
+
+    <!-- 下架对话框 -->
+    <Modal
+      v-model="lowDisplay"
+      title="下架原因"
+      :closable="false"
+      :mask-closable="false"
+      footer-hide
+      width="350"
+    >
+      <Input style="width:300px" type="textarea" :rows="4" v-model="lowTxt" placeholder="请输入"></Input>
+      <div style="margin-top: 20px;overflow: hidden;">
+        <div style="float: right;" slot="footer">
+          <Button style="margin-right: 20px" @click="lowDisplay = false">取消</Button>
+          <Button type="primary" @click="upLow(lowId, -1)">确定</Button>
+        </div>
+      </div>
+    </Modal>
+    <!-- 下架对话框 -->
   </div>
 </template>
 
 <<script>
-import { getAppVipList, getAbnormalPayment, getCouponData } from '@/api/sys';
+import { getAppVipList, getAbnormalPayment, getCouponData, updateStatus } from '@/api/sys';
 import {
     getRequest,
     postRequest,
@@ -145,6 +171,10 @@ export default {
     },
   data() {
     return {
+      // 下架原因
+      lowId:null,
+      lowTxt:'',
+      lowDisplay: false,
       // 查看优惠券详情
       seeCouponDisplay: false,
       seeCouponList: [],
@@ -154,7 +184,7 @@ export default {
       provinceList: [], //省份
       cityList: [], //城市
       data1: [],
-      columns1: [
+      columns1: [ //活动列表
         {
           title: '操作',
           align: 'center',
@@ -175,6 +205,13 @@ export default {
           width: 240,
           key: 'couponName',
           slot: "couponName",
+        },
+        {
+          title: '状态',
+          align: 'center',
+          width: 100,
+          key: 'status',
+          slot: "status",
         },
         {
           title: '剩余总量',
@@ -283,7 +320,7 @@ export default {
     // 新增编辑返回数据
     addOrEditChange(e) {
         this.addOrEditDisplay = e;
-        // this.search();
+        this.search();
     },
 
     tabsFn(name) {
@@ -331,8 +368,8 @@ export default {
     getAppVipListFn(obj) {
       this.tableLoading = true;
       let data = {
-        // couponName: obj.couponName,
-        // putShop: obj.putShop,
+        couponName: obj.couponName,
+        putShop: obj.putShop,
       }
       getAppVipList(data,obj.pageNum).then(res => {
         if(res.code == 200){
@@ -359,6 +396,23 @@ export default {
         if(res.code == 200){
           this.seeCouponDisplay = true
           this.seeCouponList = res.data.records
+        }else {
+          this.msgErr(res.msg)
+        }
+      })
+    },
+
+    // 上下架
+    upLow(id,type) {
+      if(type == -1 && !this.lowTxt) {
+        this.msgErr('请输入下架原因')
+        return
+      }
+      updateStatus(id,type,this.lowTxt).then(res => {
+        if(res.code == 200){
+          this.msgOk('操作成功')
+          this.search()
+          this.lowDisplay = false
         }else {
           this.msgErr(res.msg)
         }
@@ -393,19 +447,7 @@ export default {
     changeCurrent: function (current) {
       this.current = current;
       this.searchData.pageNum = current
-      // if(this.type == 1) {
-      //     this.searchData.merchantType = 0
-      //     this.getAppVipListFn(this.searchData)
-      //   }else if(this.type == 2) {
-      //     this.searchData.merchantType = 1
-      //     this.getAppVipListFn(this.searchData)
-      //   }else if(this.type == 3) {
-      //     this.searchData.merchantType = 0
-      //     this.getAbnormalPaymentFn(this.searchData)
-      //   }else if(this.type == 4) {
-      //     this.searchData.merchantType = 1
-      //     this.getAbnormalPaymentFn(this.searchData)
-      //   }
+      this.search()
     },
 
 //过滤小数点

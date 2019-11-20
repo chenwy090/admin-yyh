@@ -892,8 +892,23 @@ export const addAppVip = (data) => {
     return uploadformData(`/exclusive/add`,data)
 }
 
-// 新增
+// 编辑
+export const editAppVip = (data) => {
+    return uploadformData(`/exclusive/edit`,data)
+}
+
+// 查询优惠券详情
 export const getCouponData = (id) => {
-    return uploadformData(`/exclusive/selectCouponById?id=${id}`)
+    return postRequest(`/exclusive/selectCouponById?id=${id}`)
+}
+
+// 查询活动详情
+export const getAppVipInfo = (id) => {
+    return postRequest(`/exclusive/selectById?id=${id}`)
+}
+
+// 上下架
+export const updateStatus = (id, status, reason) => {
+    return postRequest(`/exclusive/updateStatus?id=${id}&status=${status}&reason=${reason}`)
 }
 

@@ -73,29 +73,69 @@
           </RadioGroup>
         </FormItem>
         <FormItem label="选择零售商: " v-if="form.putShop == 1" required>
-          <Select v-model="retailer" multiple style="width:260px">
-            <Option
-              v-for="item in retailerList"
-              :value="item.venderId"
-              :key="item.value"
-            >{{ item.venderName }}</Option>
-          </Select>
+          <div
+            v-for="(item, index) in retailer"
+            :key="index"
+            :style="index !=0?'margin:10px 0 0 85px':''"
+          >
+            <Select v-model="item.venderId" style="width:260px">
+              <Option
+                v-for="item in retailerList"
+                :value="item.venderId"
+                :key="item.value"
+              >{{ item.venderName }}</Option>
+            </Select>
+            <Button
+              type="primary"
+              shape="circle"
+              icon="md-add"
+              style="margin-left:10px"
+              @click="addOrDelVender(1)"
+            ></Button>
+            <Button
+              shape="circle"
+              icon="md-close"
+              style="margin-left:10px"
+              @click="addOrDelVender(2,index)"
+              v-if="retailer.length != 1"
+            ></Button>
+          </div>
         </FormItem>
         <FormItem label="选择城市: " v-if="form.putShop == 2" required>
-          <Select v-model="provinceId" style="width:100px" @on-change="getcitylist()">
-            <Option
-              v-for="(item,index) in provinceList"
-              :key="index"
-              :value="item.provinceCode"
-            >{{item.provinceName}}</Option>
-          </Select>
-          <Select v-model="cityId" style="width:100px;margin-left:10px">
-            <Option
-              v-for="(item,index) in cityList"
-              :key="index"
-              :value="item.cityCode"
-            >{{item.cityName}}</Option>
-          </Select>
+          <div
+            v-for="(list, num) in provinceOrcity"
+            :key="num"
+            :style="num !=0?'margin:10px 0 0 74px':''"
+          >
+            <Select v-model="list.provinceCode" style="width:100px" @on-change="getcitylist(num)">
+              <Option
+                v-for="(item,index) in provinceList"
+                :key="index"
+                :value="item.provinceCode"
+              >{{item.provinceName}}</Option>
+            </Select>
+            <Select v-model="list.cityCode" style="width:100px;margin-left:10px">
+              <Option
+                v-for="(item,index) in cityList[num]"
+                :key="index"
+                :value="item.cityCode"
+              >{{item.cityName}}</Option>
+            </Select>
+            <Button
+              type="primary"
+              shape="circle"
+              icon="md-add"
+              style="margin-left:10px"
+              @click="addOrDelCity(1)"
+            ></Button>
+            <Button
+              shape="circle"
+              icon="md-close"
+              style="margin-left:10px"
+              @click="addOrDelCity(2,num)"
+              v-if="provinceOrcity.length != 1"
+            ></Button>
+          </div>
         </FormItem>
         <FormItem label="上传门店excel: " v-if="form.putShop == 3" required>
           <Upload
@@ -103,7 +143,7 @@
             :before-upload="handleUpload"
             style="display:inline-block"
           >
-            <Button icon="ios-cloud-upload-outline">请上传文件</Button>
+            <Button icon="ios-cloud-upload-outline">{{addOrEdit==1?'上传文件':'修改上传文件'}}</Button>
           </Upload>
           <Button type="text" style="color:#169bd5" @click="downloadDoc()">下载模板</Button>
         </FormItem>
@@ -138,20 +178,25 @@
                 style="display: inline-block;width:90px;"
               >
                 <div style="width: 90px;height:90px;line-height: 90px;" @click="makeIndex(index)">
-                  <Icon type="ios-camera" size="20"/>
+                  <Icon type="ios-camera" size="20" />
                 </div>
               </Upload>
               <!-- <p style="font-size:12px">选择微信二维码 (不大于1M,JPG/PNG/JPEG/BMP）</p> -->
             </div>
           </FormItem>
-          <Button shape="circle" icon="md-close" @click="delList(index)">删除</Button>
+          <Button
+            shape="circle"
+            icon="md-close"
+            v-if="form.coupons.length != 1"
+            @click="delList(index)"
+          >删除</Button>
         </div>
         <!-- 选择优惠券 -->
         <FormItem style="margin-top:30px">
           <Button
             type="info"
             style="width:240px;margin-right: 20px; float: left;"
-            @click="goback()"
+            @click="goback(1)"
           >取&nbsp;&nbsp;&nbsp;消</Button>
           <Button
             type="primary"
@@ -166,8 +211,8 @@
 <script>
   import {
     addAppVip,
-    getMerchantInfo,
-    editMerchantInfo,
+    getAppVipInfo,
+    editAppVip,
     getCoupon,
     getRetailerInfoList
   } from "@/api/sys";
@@ -189,9 +234,13 @@
     },
     data() {
       return {
+        // 编辑时要删除的id
+        delCouponIds: [], //删除的优惠券id
+        delShopSetIds: [], //删除的零售商和城市id
         // 上传文件
         file: null,
         tempList: null, // 临时
+        provinceOrcity: [{ provinceCode: "", cityCode: "" }], // 选中城市列表
         provinceId: "", // 省
         cityId: "", //市
         // 图片
@@ -199,7 +248,7 @@
         imgIndex: null,
         bsUploadList: [],
         url: uploadOperationImage2AliOssURl,
-        retailer: "", // 选中零售商
+        retailer: [{ venderId: "" }], // 选中零售商
         retailerList: [], // 零售商
         userInfo: {}, // 用户信息
         provinceList: [], //省份
@@ -288,34 +337,52 @@
       this.getprovincelist();
       this.getRetailerInfoListFn();
       if (this.addOrEdit == 2) {
-        this.getMerchantInfoFn();
+        this.getAppVipInfoFn();
       }
     },
     mounted() {},
     methods: {
       // 根据id获取信息
-      getMerchantInfoFn() {
-        getMerchantInfo(this.id).then(res => {
+      getAppVipInfoFn() {
+        getAppVipInfo(this.id).then(res => {
           if (res.code == 200) {
+            this.form.putShop = res.data.putShop;
+            // this.form.coupons = res.data.couponList;
+            let dataArr = res.data.couponList;
+            for (let z = 0; z < dataArr.length; z++) {
+              let data = {
+                id: dataArr[z].id,
+                couponType: dataArr[z].couponType,
+                couponId: dataArr[z].couponId,
+                subTitle: dataArr[z].subTitle,
+                couponUrl: dataArr[z].couponUrl,
+                couponName: dataArr[z].couponName
+              };
+              this.form.coupons.push(data);
+            }
             this.form.id = res.data.id;
-            this.form.type = res.data.type;
-            this.form.merchantType = res.data.merchantType;
-            if (res.data.merchantType == 0) {
-              // 单店
-              this.addMerchantList = [
-                {
-                  name: res.data.merchantName,
-                  merchantId: res.data.merchantId
-                }
-              ];
-            } else if (res.data.merchantType == 1) {
-              // 多店
-              this.addMerchantList = [
-                {
-                  name: res.data.merchantName,
-                  id: res.data.brandId
-                }
-              ];
+            // this.form.shopSets = res.data.shopSetList;
+            if (res.data.putShop == 1) {
+              this.retailer = [];
+              let list = res.data.shopSetList;
+              for (let i = 0; i < list.length; i++) {
+                let data = { id: list[i].id, venderId: list[i].venderId };
+                this.retailer.push(data);
+              }
+            } else if (res.data.putShop == 2) {
+              this.provinceOrcity = [];
+              let list = res.data.shopSetList;
+              for (let i = 0; i < list.length; i++) {
+                let data = {
+                  id: list[i].id,
+                  provinceCode: list[i].provinceCode,
+                  cityCode: list[i].cityCode
+                };
+                this.provinceOrcity.push(data);
+              }
+              for (let j = 0; j < this.provinceOrcity.length; j++) {
+                this.getcitylist(j);
+              }
             }
           } else {
             this.msgErr(res.msg);
@@ -339,15 +406,44 @@
         });
       },
       //根据省份code获取城市信息数据
-      getcitylist() {
-        getRequest("/system/area/city/" + this.provinceId).then(res => {
+      getcitylist(num) {
+        this.cityList.splice(num, 1, []);
+        getRequest(
+          "/system/area/city/" + this.provinceOrcity[num].provinceCode
+        ).then(res => {
           if (res.code == 200) {
-            this.cityList = res.data;
-            // this.searchItem.areaId = "";
+            this.cityList.splice(num, 1, res.data);
           } else {
             this.$Message.error(res.msg);
           }
         });
+      },
+
+      // 加减城市
+      addOrDelCity(type, index) {
+        if (type == 1) {
+          this.provinceOrcity.push({ provinceCode: "", cityCode: "" });
+        } else {
+          if (this.addOrEdit == 2) {
+            this.delShopSetIds.push(this.provinceOrcity[index].id);
+            // console.log(this.delShopSetIds);
+          }
+          this.provinceOrcity.splice(index, 1);
+          this.cityList.splice(index, 1);
+        }
+      },
+
+      // 加减零售商
+      addOrDelVender(type, index) {
+        if (type == 1) {
+          this.retailer.push({ venderId: "" });
+        } else {
+          if (this.addOrEdit == 2) {
+            this.delShopSetIds.push(this.retailer[index].id);
+            // console.log(this.delShopSetIds);
+          }
+          this.retailer.splice(index, 1);
+        }
       },
 
       // 获取零售商
@@ -363,7 +459,7 @@
 
       // 打开选择列表对话框
       openMerchantModal() {
-        // this.getMerchantList();
+        this.merchantList = []
         this.merchantDisplay = true;
       },
       // 优惠券列表
@@ -398,6 +494,9 @@
       cancelCampagin(selection, row) {
         for (let i = 0; i < this.form.coupons.length; i++) {
           if (row.couponId == this.form.coupons[i].couponId) {
+            if(this.form.coupons[i].id) {
+              this.delCouponIds.push(this.form.coupons[i].id)
+            }
             this.form.coupons.splice(i, 1);
           }
         }
@@ -436,10 +535,10 @@
         //去重
         var afterArr = uniqueArray(this.form.coupons, "couponId");
         this.form.coupons = afterArr;
-        for (let i = 0; i < this.form.coupons.length; i++) {
-          for (let j = 0; j < this.tempList.length; j++) {
-            if (this.tempList[j].couponId == this.form.coupons[i].couponId) {
-              this.form.coupons.splice(i, 1);
+        for (let i = 0; i < this.tempList.length; i++) {
+          for (let j = 0; j < this.form.coupons.length; j++) {
+            if (this.tempList[i].couponId == this.form.coupons[j].couponId) {
+              this.form.coupons.splice(j, 1);
             }
           }
         }
@@ -447,6 +546,10 @@
 
       // 移除
       delList(index) {
+        if (this.addOrEdit == 2) {
+          this.delCouponIds.push(this.form.coupons[index].id);
+          console.log(this.delCouponIds);
+        }
         this.form.coupons.splice(index, 1);
       },
 
@@ -535,65 +638,83 @@
       },
 
       submit() {
-        // console.log(this.addOrEdit);
-        // return;
         if (!this.ruleValidate1()) {
           return;
         }
-        let shopSets
-        if(this.form.putShop == 1) {
-          shopSets = [{venderId:this.retailer}]
-        }else if (this.form.putShop == 2) {
-          shopSets = [{provinceCode:this.provinceId,cityCode:this.cityId}]
-        }
 
-        let formData = new FormData();
-        formData.append('putShop', JSON.stringify(this.form.putShop));
-        formData.append('shopSets', JSON.stringify(shopSets));
-        formData.append('coupons', JSON.stringify(this.form.coupons));
-        if(this.form.putShop == 3) {
-          formData.append('file', this.file);
-        }
+        // console.log(shopSets);
+        // return;
 
         if (this.addOrEdit == 1) {
           // 新增
-          // let data = this.form;
-          // if (this.form.merchantType == 0) {
-          //   data.merchantId = this.addMerchantList[0].merchantId;
-          // } else {
-          //   data.brandId = this.addMerchantList[0].id;
-          // }
-          // data.createBy = this.userInfo.username;
-          // data.modifiedBy = this.userInfo.username;
-          // console.log(data);
-          // return
+          let shopSets;
+          if (this.form.putShop == 1) {
+            // 零售商
+            let arr = [];
+            for (let i = 0; i < this.retailer.length; i++) {
+              let obj = { venderId: this.retailer[i] };
+              arr.push(obj);
+            }
+            shopSets = arr;
+          } else if (this.form.putShop == 2) {
+            shopSets = this.provinceOrcity;
+          }
+
+          let formData = new FormData();
+          formData.append("putShop", JSON.stringify(this.form.putShop));
+          formData.append("shopSets", JSON.stringify(shopSets));
+          formData.append("coupons", JSON.stringify(this.form.coupons));
+          if (this.form.putShop == 3) {
+            formData.append("file", this.file);
+          }
           addAppVip(formData).then(res => {
             if (res.code == 200) {
               this.msgOk("新增成功");
               this.goback();
-            } else if(res.code == 100001) {
+            } else if (res.code == 100001) {
               this.$Modal.confirm({
-                    title: '提示',
-                    content: res.msg,
-                    okText: '继续添加'
-                });
+                title: "提示",
+                content: res.msg,
+                okText: "继续添加"
+              });
             } else {
               this.msgErr(res.msg);
             }
           });
         } else {
-          let data = this.form;
-          if (this.form.merchantType == 0) {
-            data.merchantId = this.addMerchantList[0].merchantId;
-          } else {
-            data.brandId = this.addMerchantList[0].id;
-          }
-          data.modifiedBy = this.userInfo.username;
           // 编辑
-          editMerchantInfo(data).then(res => {
+          let shopSets;
+          if (this.form.putShop == 1) {
+            // 零售商
+            shopSets = this.retailer;
+          } else if (this.form.putShop == 2) {
+            shopSets = this.provinceOrcity;
+          }
+          let str1 = this.delShopSetIds ? this.delShopSetIds.toString() : "";
+          let str2 = this.delCouponIds ? this.delCouponIds.toString() : "";
+          // console.log(str);
+          // return
+
+          let formData = new FormData();
+          formData.append("id", this.form.id);
+          formData.append("putShop", this.form.putShop);
+          formData.append("shopSets", JSON.stringify(shopSets));
+          formData.append("delShopSetIds", str1);
+          formData.append("coupons", JSON.stringify(this.form.coupons));
+          formData.append("delCouponIds", str2);
+          if (this.form.putShop == 3 && this.file) {
+            formData.append("file", this.file);
+          }
+          editAppVip(formData).then(res => {
             if (res.code == 200) {
               this.msgOk("编辑成功");
               this.goback();
+            } else if (res.code == 100001) {
+              this.$Modal.confirm({
+                title: "提示",
+                content: res.msg,
+                okText: "继续添加"
+              });
             } else {
               this.msgErr(res.msg);
             }
@@ -614,12 +735,23 @@
             }
           }
           if (this.form.putShop == 2) {
-            if (!this.cityId) {
-              this.msgErr("请选择城市");
-              return;
+            for (let i = 0; i < this.provinceOrcity.length; i++) {
+              let num = i + 1;
+              if (!this.provinceOrcity[i].provinceCode) {
+                this.msgErr("第" + num + "条省份没有选择");
+                return;
+              }
+              if (!this.provinceOrcity[i].cityCode) {
+                this.msgErr("第" + num + "条城市没有选择");
+                return;
+              }
             }
+            // if (!this.cityId) {
+            //   this.msgErr("请选择城市");
+            //   return;
+            // }
           }
-          if (this.form.putShop == 3) {
+          if (this.form.putShop == 3 && this.addOrEdit == 1) {
             if (this.file == null) {
               this.msgErr("请上传文件");
               return;
@@ -628,17 +760,17 @@
         }
 
         // 优惠券
-        if(this.form.coupons.length == 0) {
+        if (this.form.coupons.length == 0) {
           this.msgErr("请选择优惠券");
           return;
         }
         for (let i = 0; i < this.form.coupons.length; i++) {
-          if(!this.form.coupons[i].subTitle) {
-            this.msgErr(this.form.coupons[i].couponName + '的副标题不能为空');
+          if (!this.form.coupons[i].subTitle) {
+            this.msgErr(this.form.coupons[i].couponName + "的副标题不能为空");
             return;
           }
-          if(!this.form.coupons[i].couponUrl) {
-            this.msgErr(this.form.coupons[i].couponName + '的详情大图不能为空');
+          if (!this.form.coupons[i].couponUrl) {
+            this.msgErr(this.form.coupons[i].couponName + "的详情大图不能为空");
             return;
           }
         }
@@ -647,8 +779,19 @@
       },
 
       // 返回
-      goback() {
-        this.$emit("changeStatus", false);
+      goback(num) {
+        if (num && this.addOrEdit == 2) {
+          this.$Modal.confirm({
+            title: "提示",
+            content: "确认要放弃当前操作吗？",
+            okText: "放弃",
+            onOk: () => {
+              this.$emit("changeStatus", false);
+            },
+          });
+        } else {
+          this.$emit("changeStatus", false);
+        }
       },
 
       // 下载
