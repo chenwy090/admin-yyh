@@ -1169,6 +1169,7 @@ export default {
     selectedTrCallBack(data) {
       console.log("111selectedTrCallBack----", data);
       this.add_info.merchantList = data;
+      this.edit_info.payCouponMerchantType = data.couponType;
     },
     //确定选择商户
     /*selectMerchant() {
@@ -1614,7 +1615,6 @@ export default {
           this.$Message.error("请选择优惠类型");
           return;
         }
-        console.log(this.edit_info.originalPrice);
         if (!this.edit_info.originalPrice || !this.edit_info.price) {
           this.$Message.error("请填写原价和售卖价");
           return;
@@ -1980,7 +1980,8 @@ export default {
         fullAmout: this.edit_info.fullAmout,
         decreaseAmount: this.edit_info.decreaseAmount,
         displayText: this.edit_info.displayText,
-        merchantList: this.add_info.merchantList
+        merchantList: this.add_info.merchantList,
+        payCouponMerchantType:this.edit_info.payCouponMerchantType
       };
 
       if (this.camp_pageStatus === "add") {
