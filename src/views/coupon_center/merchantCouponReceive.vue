@@ -228,7 +228,7 @@ export default {
       self: this,
       tableColumns: [
         {
-          title: "订单编号",
+          title: "编号",
           key: "id",
           width: 100,
           align: "center"
