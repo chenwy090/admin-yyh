@@ -190,11 +190,19 @@ export default {
         )
       );
 
-      if (this.choices.length) {
+      // if (this.choices.length) {
+      //   this.$emit("seclectedTr-event", this.choices);
+      //   this.closeDialog();
+      // } else {
+      //   this.msgErr("至少选一项");
+      // }
+      if (this.choices.length == 0) {
+        this.msgErr("至少选一项");
+      } else if (this.choices.length > 1) {
+        this.msgErr("只能选择一项");
+      } else {
         this.$emit("seclectedTr-event", this.choices);
         this.closeDialog();
-      } else {
-        this.msgErr("至少选一项");
       }
     },
     handleSelectChange(selection) {
@@ -319,7 +327,6 @@ export default {
     closeDialog() {
       //关闭对话框清除表单数据
       this.$emit(`closeDialog`);
-      
     },
     //重置搜索条件
     reset() {
