@@ -544,12 +544,9 @@ export default {
           minWidth: 200,
           render: (h, params) => {
             let { merchantNames } = params.row;
-
             let arr = merchantNames.split(",");
             let str = arr[0];
-            if (arr.length == 1) {
-            } else {
-              str = arr[0];
+            if (arr.length > 1) {
               str = `${str}。。。`;
             }
             return <div title={arr}>{str}</div>;
