@@ -541,13 +541,25 @@ export default {
           title: "适用商户",
           key: "merchantNames",
           align: "center",
-          width: 150
+          minWidth: 200,
+          render: (h, params) => {
+            let { merchantNames } = params.row;
+
+            let arr = merchantNames.split(",");
+            let str = arr[0];
+            if (arr.length == 1) {
+            } else {
+              str = arr[0];
+              str = `${str}。。。`;
+            }
+            return <div title={arr}>{str}</div>;
+          }
         },
         {
           title: "来源",
           key: "source",
           align: "center",
-          width: 150
+          width: 100
         },
 
         {
