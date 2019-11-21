@@ -32,6 +32,7 @@
           width="810"
           :columns="columns1"
           :data="merchantList"
+          :loading="tableLoading"
           @on-select="selectionCampagin"
           @on-select-cancel="cancelCampagin"
           @on-select-all="allCampagin"
@@ -66,19 +67,25 @@
       <Form style="margin:30px 3%;">
         <FormItem label="投放门店: " required>
           <RadioGroup v-model="form.putShop" @on-change="changeRadio()">
-            <Radio :label="0">全国</Radio>
-            <Radio :label="1" style="margin-left:20px">零售商</Radio>
-            <Radio :label="2" style="margin-left:20px">城市</Radio>
-            <Radio :label="3" style="margin-left:20px">自定义门店</Radio>
+            <Radio :disabled="addOrEdit == 3" :label="0">全国</Radio>
+            <Radio :disabled="addOrEdit == 3" :label="1" style="margin-left:20px">零售商</Radio>
+            <Radio :disabled="addOrEdit == 3" :label="2" style="margin-left:20px">城市</Radio>
+            <Radio :disabled="addOrEdit == 3" :label="3" style="margin-left:20px">自定义门店</Radio>
           </RadioGroup>
         </FormItem>
         <FormItem label="选择零售商: " v-if="form.putShop == 1" required>
+          <Button
+            type="primary"
+            icon="md-add"
+            @click="addOrDelVender(1)"
+            v-if="addOrEdit != 3"
+          >添加零售商</Button>
           <div
             v-for="(item, index) in retailer"
             :key="index"
-            :style="index !=0?'margin:10px 0 0 85px':''"
+            style="margin:10px 0 0 85px"
           >
-            <Select v-model="item.venderId" style="width:260px">
+            <Select v-model="item.venderId" style="width:260px" :disabled="addOrEdit == 3">
               <Option
                 v-for="item in retailerList"
                 :value="item.venderId"
@@ -86,35 +93,43 @@
               >{{ item.venderName }}</Option>
             </Select>
             <Button
-              type="primary"
-              shape="circle"
-              icon="md-add"
-              style="margin-left:10px"
-              @click="addOrDelVender(1)"
-            ></Button>
-            <Button
               shape="circle"
               icon="md-close"
               style="margin-left:10px"
               @click="addOrDelVender(2,index)"
-              v-if="retailer.length != 1"
+              v-if="retailer.length != 1 && addOrEdit != 3"
             ></Button>
           </div>
         </FormItem>
         <FormItem label="选择城市: " v-if="form.putShop == 2" required>
+          <Button
+            type="primary"
+            icon="md-add"
+            @click="addOrDelCity(1)"
+            v-if="addOrEdit != 3"
+          >添加城市</Button>
           <div
             v-for="(list, num) in provinceOrcity"
             :key="num"
-            :style="num !=0?'margin:10px 0 0 74px':''"
+            style="margin:10px 0 0 74px"
           >
-            <Select v-model="list.provinceCode" style="width:100px" @on-change="getcitylist(num)">
+            <Select
+              :disabled="addOrEdit == 3"
+              v-model="list.provinceCode"
+              style="width:100px"
+              @on-change="getcitylist(num)"
+            >
               <Option
                 v-for="(item,index) in provinceList"
                 :key="index"
                 :value="item.provinceCode"
               >{{item.provinceName}}</Option>
             </Select>
-            <Select v-model="list.cityCode" style="width:100px;margin-left:10px">
+            <Select
+              :disabled="addOrEdit == 3"
+              v-model="list.cityCode"
+              style="width:100px;margin-left:10px"
+            >
               <Option
                 v-for="(item,index) in cityList[num]"
                 :key="index"
@@ -122,22 +137,15 @@
               >{{item.cityName}}</Option>
             </Select>
             <Button
-              type="primary"
-              shape="circle"
-              icon="md-add"
-              style="margin-left:10px"
-              @click="addOrDelCity(1)"
-            ></Button>
-            <Button
               shape="circle"
               icon="md-close"
               style="margin-left:10px"
               @click="addOrDelCity(2,num)"
-              v-if="provinceOrcity.length != 1"
+              v-if="provinceOrcity.length != 1 && addOrEdit != 3"
             ></Button>
           </div>
         </FormItem>
-        <FormItem label="上传门店excel: " v-if="form.putShop == 3" required>
+        <FormItem label="上传门店excel: " v-if="form.putShop == 3 && addOrEdit != 3" required>
           <Upload
             action="//jsonplaceholder.typicode.com/posts/"
             :before-upload="handleUpload"
@@ -148,60 +156,84 @@
           <Button type="text" style="color:#169bd5" @click="downloadDoc()">下载模板</Button>
         </FormItem>
         <!-- 选择优惠券 -->
-        <Button type="primary" style="margin-bottom:20px" @click="openMerchantModal()">选择优惠券</Button>
-        <div v-for="(item,index) in form.coupons" :key="index">
-          <FormItem label="优惠券名称: " style="margin-bottom: 0px;">{{item.couponName}}</FormItem>
-          <FormItem label="优惠券详情副标题: " style="display:inline-block;width: 300px;">
-            <Input style="width:150px" type="text" v-model="item.subTitle" placeholder="请输入"></Input>
-          </FormItem>
-          <FormItem label="优惠券详情大图: " style="display:inline-block;width: 350px;">
-            <div
-              style="float:left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
-              v-if="item.couponUrl"
-            >
-              <img :src="item.couponUrl" style="width:100%" />
+        <Button
+          type="primary"
+          style="margin-bottom:20px"
+          v-if="addOrEdit != 3"
+          @click="openMerchantModal()"
+        >选择优惠券</Button>
+        <Card
+          v-for="(item,index) in form.coupons"
+          :key="index"
+          style="width:850px;margin-bottom:10px"
+        >
+          <div>
+            <FormItem label="优惠券名称: " style="margin-bottom:0px">{{item.couponName}}</FormItem>
+            <div v-if="addOrEdit == 3">
+              <FormItem label="优惠券ID: " class="couponInformation">{{item.couponId}}</FormItem>
+              <FormItem label="领券量: " class="couponInformation">{{item.receiveCount}}</FormItem>
+              <FormItem label="剩余量: " class="couponInformation">{{item.surplusCount}}</FormItem>
+              <FormItem label="核销量: " class="couponInformation">{{item.useCount}}</FormItem>
             </div>
-            <div style="display: inline-block;">
-              <Upload
-                ref="upload"
-                type="drag"
-                :format="['jpg','jpeg','png','bmp']"
-                :on-success="bsHandleSuccess"
-                :action="url"
-                accept="image"
-                :max-size="1024"
-                :on-exceeded-size="handleMaxSize"
-                :on-format-error="formatError"
-                :defaultList="bsUploadList"
-                :headers="userToken"
-                :show-upload-list="false"
-                style="display: inline-block;width:90px;"
+            <FormItem label="优惠券详情副标题: " style="display:inline-block;width: 300px;">
+              <Input
+                :disabled="addOrEdit == 3"
+                style="width:150px"
+                type="text"
+                v-model="item.subTitle"
+                placeholder="请输入"
+              ></Input>
+            </FormItem>
+            <FormItem label="优惠券详情大图: " style="display:inline-block;width: 350px;">
+              <div
+                style="float:left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
+                v-if="item.couponUrl"
               >
-                <div style="width: 90px;height:90px;line-height: 90px;" @click="makeIndex(index)">
-                  <Icon type="ios-camera" size="20" />
-                </div>
-              </Upload>
-              <!-- <p style="font-size:12px">选择微信二维码 (不大于1M,JPG/PNG/JPEG/BMP）</p> -->
-            </div>
-          </FormItem>
-          <Button
-            shape="circle"
-            icon="md-close"
-            v-if="form.coupons.length != 1"
-            @click="delList(index)"
-          >删除</Button>
-        </div>
+                <img :src="item.couponUrl" style="width:100%" />
+              </div>
+              <div style="display: inline-block;" v-if="addOrEdit != 3">
+                <Upload
+                  ref="upload"
+                  type="drag"
+                  :format="['jpg','jpeg','png','bmp']"
+                  :on-success="bsHandleSuccess"
+                  :action="url"
+                  accept="image"
+                  :max-size="1024"
+                  :on-exceeded-size="handleMaxSize"
+                  :on-format-error="formatError"
+                  :defaultList="bsUploadList"
+                  :headers="userToken"
+                  :show-upload-list="false"
+                  style="display: inline-block;width:90px;"
+                >
+                  <div style="width: 90px;height:90px;line-height: 90px;" @click="makeIndex(index)">
+                    <Icon type="ios-camera" size="20" />
+                  </div>
+                </Upload>
+                <!-- <p style="font-size:12px">选择微信二维码 (不大于1M,JPG/PNG/JPEG/BMP）</p> -->
+              </div>
+            </FormItem>
+            <Button
+              shape="circle"
+              icon="md-close"
+              v-if="form.coupons.length != 1 && addOrEdit != 3"
+              @click="delList(index)"
+            >删除</Button>
+          </div>
+        </Card>
         <!-- 选择优惠券 -->
         <FormItem style="margin-top:30px">
           <Button
             type="info"
             style="width:240px;margin-right: 20px; float: left;"
             @click="goback(1)"
-          >取&nbsp;&nbsp;&nbsp;消</Button>
+          >{{addOrEdit != 3? '取&nbsp;&nbsp;&nbsp;消': '关&nbsp;&nbsp;&nbsp;闭'}}</Button>
           <Button
             type="primary"
             style="width:240px; float: left;"
             @click="submit()"
+            v-if="addOrEdit != 3"
           >保&nbsp;&nbsp;&nbsp;存</Button>
         </FormItem>
       </Form>
@@ -234,12 +266,13 @@
     },
     data() {
       return {
+        tableLoading: false,
         // 编辑时要删除的id
         delCouponIds: [], //删除的优惠券id
         delShopSetIds: [], //删除的零售商和城市id
         // 上传文件
         file: null,
-        tempList: null, // 临时
+        // tempList: null, // 临时
         provinceOrcity: [{ provinceCode: "", cityCode: "" }], // 选中城市列表
         provinceId: "", // 省
         cityId: "", //市
@@ -301,7 +334,7 @@
             title: "数量",
             align: "center",
             minWidth: 140,
-            key: "useCount"
+            key: "surplusCount"
             // slot: "operate"
           }
         ],
@@ -336,7 +369,7 @@
       this.userInfo = JSON.parse(localStorage.getItem("userInfo"));
       this.getprovincelist();
       this.getRetailerInfoListFn();
-      if (this.addOrEdit == 2) {
+      if (this.addOrEdit != 1) {
         this.getAppVipInfoFn();
       }
     },
@@ -348,19 +381,23 @@
           if (res.code == 200) {
             this.form.putShop = res.data.putShop;
             // this.form.coupons = res.data.couponList;
-            let dataArr = res.data.couponList;
-            for (let z = 0; z < dataArr.length; z++) {
-              let data = {
-                id: dataArr[z].id,
-                couponType: dataArr[z].couponType,
-                couponId: dataArr[z].couponId,
-                subTitle: dataArr[z].subTitle,
-                couponUrl: dataArr[z].couponUrl,
-                couponName: dataArr[z].couponName
-              };
-              this.form.coupons.push(data);
+            if (this.addOrEdit == 2) {
+              let dataArr = res.data.couponList;
+              for (let z = 0; z < dataArr.length; z++) {
+                let data = {
+                  id: dataArr[z].id,
+                  couponType: dataArr[z].couponType,
+                  couponId: dataArr[z].couponId,
+                  subTitle: dataArr[z].subTitle,
+                  couponUrl: dataArr[z].couponUrl,
+                  couponName: dataArr[z].couponName
+                };
+                this.form.coupons.push(data);
+              }
+              this.form.id = res.data.id;
+            } else if (this.addOrEdit == 3) {
+              this.form.coupons = res.data.couponList;
             }
-            this.form.id = res.data.id;
             // this.form.shopSets = res.data.shopSetList;
             if (res.data.putShop == 1) {
               this.retailer = [];
@@ -459,11 +496,12 @@
 
       // 打开选择列表对话框
       openMerchantModal() {
-        this.merchantList = []
+        this.merchantList = [];
         this.merchantDisplay = true;
       },
       // 优惠券列表
       getCouponFn() {
+        this.tableLoading = true;
         // const reqParams = this.searchData;
         getCoupon(this.searchData.type, this.searchData.name, this.current).then(
           res => {
@@ -482,8 +520,10 @@
                   }
                 }
               }
+              this.tableLoading = false;
             } else {
               this.$Message.error(res.msg);
+              this.tableLoading = false;
             }
           }
         );
@@ -494,8 +534,8 @@
       cancelCampagin(selection, row) {
         for (let i = 0; i < this.form.coupons.length; i++) {
           if (row.couponId == this.form.coupons[i].couponId) {
-            if(this.form.coupons[i].id) {
-              this.delCouponIds.push(this.form.coupons[i].id)
+            if (this.form.coupons[i].id) {
+              this.delCouponIds.push(this.form.coupons[i].id);
             }
             this.form.coupons.splice(i, 1);
           }
@@ -527,17 +567,19 @@
           this.form.coupons.push(data);
         }
         // this.form.coupons.push(selection[i]);
-        this.tempList = selection;
+        // this.tempList = selection;
       },
 
       // 取消全选
       cancelAllCampagin(selection) {
+        // console.log(this.tempList);
+        // console.log(this.form.coupons);
         //去重
         var afterArr = uniqueArray(this.form.coupons, "couponId");
         this.form.coupons = afterArr;
-        for (let i = 0; i < this.tempList.length; i++) {
+        for (let i = 0; i < this.merchantList.length; i++) {
           for (let j = 0; j < this.form.coupons.length; j++) {
-            if (this.tempList[i].couponId == this.form.coupons[j].couponId) {
+            if (this.merchantList[i].couponId == this.form.coupons[j].couponId) {
               this.form.coupons.splice(j, 1);
             }
           }
@@ -548,7 +590,7 @@
       delList(index) {
         if (this.addOrEdit == 2) {
           this.delCouponIds.push(this.form.coupons[index].id);
-          console.log(this.delCouponIds);
+          // console.log(this.delCouponIds);
         }
         this.form.coupons.splice(index, 1);
       },
@@ -787,7 +829,7 @@
             okText: "放弃",
             onOk: () => {
               this.$emit("changeStatus", false);
-            },
+            }
           });
         } else {
           this.$emit("changeStatus", false);
@@ -820,5 +862,11 @@
 <style>
   .box {
     margin-bottom: 20px;
+  }
+
+  .couponInformation {
+    /* margin-bottom: 0px; */
+    display: inline-block;
+    width: 200px;
   }
 </style>
