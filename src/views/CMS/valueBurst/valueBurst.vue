@@ -246,11 +246,10 @@ export default {
         currentTitle: '',
         showEdit: 0,
         tab: {
-            id: "tab6",
-            type: 6,
-            name: "xxx",
-            label: "好券一起领",
-            compName: "tab6"
+          id: "tab2",
+          type: 2,
+          label: "超值爆抢券",
+          compName: "tab2"
         },
 
         details: {}, // 详情数据
