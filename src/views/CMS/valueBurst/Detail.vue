@@ -15,18 +15,13 @@
           height: 300px"
         >
           <div>{{typeof pushRange === 'number'? rangeConf[pushRange]: ''}}</div>
-          <div>
-            自定义门店：
-            <div>
-              表格： “门店编号、门店名称、零售商、地址”；数量较多时，滚动条查看
-            </div>
-
+          <div class="store-wrap mgt-10">
             <Table v-show="pushRange === 3" border :columns="columns2" :data="shopReqList"></Table>
-            
           </div>
         </div>
       </div>
 
+      <h2>投放内容</h2>
       <Table border :columns="columns1" :data="contentList"></Table>
     </div>
   </Modal>
@@ -85,24 +80,25 @@ export default {
         {
           title: "地址",
           render: (h, {row}) => {
-            return h(div, row.province + row.city)
+            return h('div', row.province + row.city)
           }
         }
       ],
       shopReqList: [],
       contentList: [
-        {
-          title: "John Brown",
-          orderByName: 18,
-          pushPlatformList: [
-            {pushPlatformTxt: '小程序'},
-            {pushPlatformTxt: 'android'},
-            {pushPlatformTxt: 'ios'},
-            {pushPlatformTxt: '其他'},
-          ],
-          startTime: "2016-10-03",
-          endTime: "2017-10-03",
-        }
+        {}
+        // {
+        //   title: "券标题",
+        //   orderByName: 18,
+        //   pushPlatformList: [
+        //     {pushPlatformTxt: '小程序'},
+        //     {pushPlatformTxt: 'android'},
+        //     {pushPlatformTxt: 'ios'},
+        //     {pushPlatformTxt: '其他'},
+        //   ],
+        //   startTime: "2016-10-03",
+        //   endTime: "2017-10-03",
+        // }
       ]
     };
   },
@@ -114,9 +110,8 @@ export default {
           this.shopReqList = data.shopReqList;
         }
         const {title, orderByName, pushPlatformList, startTime, endTime} = data;
-        this.setData({
-          title, orderByName, pushPlatformList, startTime, endTime
-        }, this.contentList[0])
+        this.contentList = [{title, orderByName, pushPlatformList, startTime, endTime}]
+        this.pushRange = data.pushRange;
       } else {
         this.modalShow = true;
       }
@@ -136,7 +131,7 @@ export default {
 .yyh-modal {
   .title {
     color: #000;
-    width: 18em;
+    width: 7em;
     margin-right: 1em;
   }
   .banner-img {
@@ -170,8 +165,15 @@ export default {
 }
 .modal-content {
   max-width: 960px;
-  max-height: 150px;
-  overflow: auto;
+  min-height: 150px;
+  max-height: 400px;
   word-break: break-all;
+}
+
+.store-wrap{
+  min-height: 150px;
+  max-height: 280px;
+  overflow: auto;
+  margin-bottom: 10px;
 }
 </style>

@@ -197,7 +197,7 @@
                                 type="error"
                                 style="margin-right: 5px"
                                 size="small"
-                                @click="confirmDel(params.row.id)"
+                                @click="confirmDel(params.row.id, params.row.title)"
                         >删除</Button>
                     </template>
                     <template slot-scope="{ row }" slot="status">
@@ -567,7 +567,11 @@ export default {
       if (code == 200) {
         console.log(data);
         this.details = data;
-        cb(data);
+        if (typeof cb === 'function') {
+          cb(data);
+        } else {
+          this.$refs.burstDetail.showDetail(data);
+        }
       } else {
         this.msgErr(msg);
       }
@@ -586,10 +590,10 @@ export default {
         this.msgErr(msg);
       }
     },
-    confirmDel(id) {
-      this.$Modal.warning({
-          title: '提示',
-          content: '是否确定删除？',
+    confirmDel(id, title) {
+      this.$Modal.confirm({
+          title: '是否确定删除？',
+          content: `title: ${title}, id: ${id}`,
           onOk: () => {
             this.apiDel(id)
           }

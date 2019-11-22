@@ -67,7 +67,8 @@
               style="color:#2d8cf0"
               @click="showCouponFn(params.index)"
             >选择优惠券</Button>
-            <p v-for="(el,i) in hotCouponVoList" :key="'line71'+i">{{el.title}}</p>
+            <p class="mgt-5">{{hotCouponVoList[params.index].title}}</p>
+            <!-- <p v-for="(el,i) in hotCouponVoList" :key="'line71'+i">{{el.title}}</p> -->
         </template>
         <!-- <template slot="content" slot-scope="params">
             <Input  v-model="hotCouponVoList[params.index].title" style="width:120px"></Input>
@@ -243,7 +244,6 @@ export default {
   mixins: [comm],
   methods: {
     async apiAdd(e) {
-      console.log(JSON.stringify(e, null, 2));
       // e = {
       //   "hotCouponVoList": [
       //     {
@@ -291,9 +291,9 @@ export default {
         }, 6000);
         let { code, msg, data } = await postRequest(url, e);
         if (code == 200) {
-          console.log(data);
           this.$Spin.hide();
           this.msgOk('新增成功');
+          this.$parent.getList();
         } else {
           this.msgErr(msg);
         }
@@ -302,10 +302,15 @@ export default {
     // 编辑
     async apiEdit(e) {
       const url = "/hotCoupon/edit";
+      this.$Spin.show();
+        setTimeout(() => {
+            this.$Spin.hide();
+        }, 6000);
       let { code, msg, data } = await postRequest(url, e);
       if (code == 200) {
-        console.log(data);
-        this.listData = data;
+        this.$Spin.hide();
+        this.msgOk('编辑成功');
+        this.$parent.getList();
       } else {
         this.msgErr(msg);
       }
@@ -319,8 +324,6 @@ export default {
     },
     selectedCoupon(arr) {
       let e = arr[0]
-      console.log('选中的券是：');
-      console.log(e);
       if (typeof e === 'object' && 'campId' in e) {
         // 超市券
         this.hotCouponVoList[this.currentContentIndex].couponKind = 1;
@@ -372,7 +375,7 @@ export default {
       let res = [];
       rules.forEach((el, i) => {
         if (Array.isArray(obj[el[0]])) {
-          if(obj[el[0]].length < 0) {
+          if(obj[el[0]].length < 1) {
             res.push(el)
           }
         } else {
@@ -386,10 +389,10 @@ export default {
     submitOk() {
       // 这里做一下参数检测和提示 。。。
       if (typeof this.pushRange !== 'number') {
-        this.msgErr('请选择投放范围');
+        return this.msgErr('请选择投放范围');
       }
       if (this.hotCouponVoList.length < 0) {
-        this.msgErr('至少要有一条内容');
+        return this.msgErr('至少要有一条内容');
       }
       if (Array.isArray(this.hotCouponVoList)) {
         this.hotCouponVoList.forEach((el,i) => {
@@ -405,16 +408,16 @@ export default {
           }
         });
       } else {
-        console.log('hotCouponVoList 有问题')
+        console.warn('hotCouponVoList 有问题')
         return;
       }
       let rules = [
-        ['couponKind', '请选择优惠券 couponKind'],
-        ['templateId', '请选择优惠券 templateId'],
-        ['orderBy', '投放位置'],
-        ['pushPlatformList', '投放终端'],
-        ['startTime', '投放时间 startTime'],
-        ['endTime', '投放时间 endTime'],
+        ['couponKind', '【请选择优惠券】 couponKind'],
+        ['templateId', '【请选择优惠券】 templateId'],
+        ['orderBy', '【投放位置】'],
+        ['pushPlatformList', '【投放终端】'],
+        ['startTime', '【投放时间】 startTime'],
+        ['endTime', '【投放时间】 endTime'],
       ];
       const handleRes = this.handleMsg(this.hotCouponVoList, rules);
       if (handleRes.status !== true) {
@@ -438,7 +441,6 @@ export default {
         }]
       } else if (this.pushRange == 2) {
         if (!this.province) {
-          console.log(params, this.province);
           return this.msgErr('请选择省');
         }
         if (this.city) {
@@ -491,7 +493,6 @@ export default {
     },
     //根据省份code获取城市信息数据
     getcitylist(provinceName) {
-      console.log(provinceName, 'provinceName');
       if (!provinceName) {
         this.province = ''
         this.city = ''
@@ -499,7 +500,7 @@ export default {
       }
       let i = util.findIndex(this.provincelist, 'provinceName', provinceName);
       if (i === -1) {
-        console.log('未找到该 provinceName');
+        console.warn('未找到该 provinceName');
         return;
       }
       const url = "/system/area/city/" + this.provincelist[i].provinceCode;
@@ -544,7 +545,6 @@ export default {
       //   ]
       // }
       this.$Spin.hide();
-      console.log(JSON.stringify(data, null, 2));
       this.pushRange = data.pushRange;
       // 投放位置
       this.hotCouponVoList[0].orderBy = data.orderBy;
