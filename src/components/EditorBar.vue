@@ -26,17 +26,27 @@ export default {
       }
     };
   },
-  props: ["content"],
+  // props: ["content"],
+  props: {
+    content:String,
+    disabled:null,
+  },
   watch: {
     content(newOne, oldOne) {
-      if (newOne.indexOf("<!--") !== -1) {
-        var strArr1 = newOne.split("<!--");
-        var strArr2 = strArr1[1].split("-->");
-        newOne = strArr1[0] + strArr2[1];
-        this.$emit("on-change", newOne);
+      if(newOne){
+        if (newOne.indexOf("<!--") !== -1) {
+          var strArr1 = newOne.split("<!--");
+          var strArr2 = strArr1[1].split("-->");
+          newOne = strArr1[0] + strArr2[1];
+          this.$emit("on-change", newOne);
+        }
       }
       this.editor.txt.text(newOne);
-    }
+      // this.disabled 传1过来表示禁用
+      if(this.disabled == 1) {
+        this.editor.$textElem.attr('contenteditable', false)
+      }
+    },
   },
   mounted() {
     this.seteditor();
