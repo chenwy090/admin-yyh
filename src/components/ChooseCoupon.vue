@@ -12,6 +12,7 @@
             @on-cancel="closeDialog"
     >
       <Alert type="warning">请点击选择优惠券类型，按搜索，选择需要的优惠券</Alert>
+      <Alert v-if="single === true" type="warning">点击表格行，即可选中该条优惠券</Alert>
       <Form ref="checkDetailsData" :model="checkDetailsData" :label-width="100">
         <FormItem label="优惠券类型：" style="display:inline-block">
           <!-- <Input style="width:200px" v-model="couponSearchData.couponType" placeholder="请输入" clearable /> -->
