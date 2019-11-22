@@ -351,19 +351,13 @@
     import {
         getCompensateList,
         getCampaginListData,
-        selectByActivityId,
         addCompensate,
-        editRedEnvelopmentData,
         selectByid,
-        upStatus,
-        selectmaterialByActivityId,
-        addMateria,
-        editMateria,
-        selectmateriaById,
-        userFailDownload
+        addMateria
     } from "@/api/sys";
     import { uploadOperationImage2AliOssURl,baseUrl } from "@/api/index";
-    import { postRequest, getRequest,downloadSteam } from "@/libs/axios";
+    import { postRequest, downloadSteam } from "@/libs/axios";
+    import { uniqueArray } from "@/libs/date";
 
     //import chooseCouponListView from "./chooseCouponList";
     export default {
@@ -638,13 +632,6 @@
             };
         },
 
-        created: function() {
-            this.getStaffListFn({});
-            this.pagingType = "1";
-            this.userToken = {
-                jwttoken: localStorage.getItem("jwttoken")
-            };
-        },
         watch: {
             // 'formValidate.cashCouponDrawSetList.limitCnt': function(newVal){
             //   console.log(123);
@@ -1340,6 +1327,14 @@
                 }
                 this.drop = !this.drop;
             }
+        },
+        
+        created: function() {
+            this.getStaffListFn({});
+            this.pagingType = "1";
+            this.userToken = {
+                jwttoken: localStorage.getItem("jwttoken")
+            };
         },
         mounted() {
             this.init();

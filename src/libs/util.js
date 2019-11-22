@@ -9,7 +9,68 @@ import Cookies from "js-cookie";
 let util = {
 
 };
-
+const _methods = {
+  /**
+   * 找到符合的
+   * @param {*} arr 
+   * @param {*} key 
+   * @param {*} name
+   */
+  findIndex(arr, key, name) {
+    console.log(arr, key, name);
+    const len = arr.length;
+    for(let i = 0; i < len; i++){
+      if (arr[i][key] === name) {
+        return i;
+      }
+      console.log(i);
+    }
+    return -1;
+  },
+  g_isNotNull(el) {
+      if (el || (typeof el === 'number' && ! isNaN(el)) || typeof el === 'boolean') {
+          return true
+      }
+      return false
+  },
+  // 可以放在utils中
+  filterNull: (json) => {
+      let res = {}
+      Object.keys(json).forEach(k => {
+          if (_methods.g_isNotNull(json[k])) {
+              res[k] = json[k]
+          }
+      })
+      return res;
+  }, // json to FormData()
+  g_json2form: (json) => {
+      let form = new FormData()
+      if (typeof json !== 'object' || json === {}) {
+          return form
+      }
+      Object.keys(json).forEach((k) => {
+          form.append(k, json[k])
+      })
+      return form
+  },
+  // json to FormData()
+  g_json2query: (json) => {
+      let str = '';
+      if (typeof json !== 'object' || json === {}) {
+          return str
+      }
+      Object.keys(json).forEach((k, i) => {
+          if (_methods.g_isNotNull(json[k])) {
+              str += '&' + k + '=' + json[k]
+          }
+      })
+      if (str[0] === '&') {
+          str = '?' + str.slice(1);
+      }
+      return str
+  }
+}
+Object.assign(util, _methods);
 util.title = function(title) {
     title = title || '知而行管理系统';
     window.document.title = title;
@@ -256,9 +317,27 @@ util.initRouter = function(vm) {
 
 
         // res.data =[{"visible":"1","icon":"ios-cog","orderNum":1,"title":"测试管理","parentId":0,"url":"Main","path":"xxx","component":"Main","children":[{"path":"text","component":"text","visible":"1","icon":"#","name":"text","menuId":1239,"orderNum":1,"menuType":"C","perms":"","title":"测试2","parentId":1236,"url":"text","permTypes":["del"]},{"path":"sys/text","component":"xx","visible":"1","icon":"#","name":"sys/text","menuId":1237,"orderNum":1,"menuType":"C","perms":"xx","title":"测试菜单5","parentId":1236,"url":"xx"}],"name":"xxx","menuId":1236,"menuType":"M","perms":"","permTypes":["del","edit"]}]
-
+        
         let menuData = res.data;
-
+        console.log('这是个危险操作，快看看我在哪:');
+        menuData.forEach((el,i) => {
+          if (el.title === 'CMS') {
+            menuData[i].children.push({
+              component: "CMS/valueBurst/valueBurst",
+              icon: "#",
+              menuId: 1362,
+              menuType: "C",
+              name: "valueBurst",
+              orderNum: 3,
+              parentId: 1466,
+              path: "valueBurst",
+              perms: "",
+              title: "超值爆抢券",
+              url: "CMS/valueBurst",
+              visible: "1"
+            })
+          }
+        })
 
         if (menuData === null || menuData === "" || menuData === undefined) {
             return;
