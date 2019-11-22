@@ -10,6 +10,23 @@ let util = {
 
 };
 const _methods = {
+  /**
+   * 找到符合的
+   * @param {*} arr 
+   * @param {*} key 
+   * @param {*} name
+   */
+  findIndex(arr, key, name) {
+    console.log(arr, key, name);
+    const len = arr.length;
+    for(let i = 0; i < len; i++){
+      if (arr[i][key] === name) {
+        return i;
+      }
+      console.log(i);
+    }
+    return -1;
+  },
   g_isNotNull(el) {
       if (el || (typeof el === 'number' && ! isNaN(el)) || typeof el === 'boolean') {
           return true

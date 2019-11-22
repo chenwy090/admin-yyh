@@ -168,7 +168,7 @@
                         ref="table"
                         @on-selection-change="handleSelect"
                 >
-                    <template slot-scope="{ row }" slot="action">
+                    <template slot-scope="params" slot="action">
                         <!--<Button v-if="row.status==='0'"-->
                         <!--type="success"-->
                         <!--style="margin-right: 5px"-->
@@ -179,29 +179,29 @@
                                 type="text"
                                 style="margin-right: 5px;color:#21b6b8"
                                 size="small"
-                                @click="apiSelectById(row.id)"
+                                @click="apiSelectById(params.row.id)"
                         >查看</Button>
                         <Button
                                 type="text"
                                 style="margin-right: 5px;color:#ed4014"
                                 size="small"
-                                @click="doEdit(row)"
+                                @click="doEdit(params.row.id)"
                         >编辑</Button>
                         <Button
                                 type="text"
                                 style="margin-right: 5px;color: #2d8cf0"
                                 size="small"
-                                @click="apiUpdown(row.id, row.status)"
-                        >{{row.status==1? '下': '上'}}架</Button>
+                                @click="apiUpdown(params.row.id, params.row.status)"
+                        >{{params.row.statusTxt}}</Button>
                         <Button
                                 type="error"
                                 style="margin-right: 5px"
                                 size="small"
-                                @click="confirmDel(row.id)"
+                                @click="confirmDel(params.row.id)"
                         >删除</Button>
                     </template>
                     <template slot-scope="{ row }" slot="status">
-                        <div>{{['待上架','已上架', '已下架'][row.status]}}</div>
+                        <div>{{['待上架','已下架', '已上架'][row.status]}}</div>
                     </template>
                     <template slot-scope="{ row }" slot="time">
                         <div>{{row.startTime}}-{{row.endTime}}</div>
@@ -222,13 +222,13 @@
         </Card>
     </div>
     <burst-detail ref="burstDetail" />
-    <burst-edit :show="showEdit" />
+    <burst-edit ref="burstEdit" :show="showEdit" />
   </div>
 </template>
 
 <script>
 // import { postRequest, getRequest,getSyncRequest } from "@/libs/axios";
-import { postJson, postRequest } from "@/libs/axios";
+import { postJson, postRequest, getRequest } from "@/libs/axios";
 import util from "@/libs/util";
 import { baseUrl } from "@/api/index";
 import comm from "@/mixins/common";
@@ -243,6 +243,7 @@ export default {
   mixins: [comm],
   data() {
     return {
+        currentTitle: '',
         showEdit: 0,
         tab: {
             id: "tab6",
@@ -397,6 +398,14 @@ export default {
   activated() {},
   methods: {
     addItem() {
+      this.currentTitle = '新增';
+      this.showEdit = Math.random();
+    },
+    doEdit(id) {
+      this.apiSelectById(id, (data) => {
+        this.$refs.burstEdit.alreadyGetDetail(data);
+      })
+      this.currentTitle = '编辑';
       this.showEdit = Math.random();
     },
     async getShopList() {
@@ -538,11 +547,11 @@ export default {
       const url = "/hotCoupon/updown";
       // reasonInfo 非必须 下架原因
       // sysUserName 非必须
-      let query = util.g_json2query({id, status});
-      let { code, msg, data } = await postRequest(url + query, {});
+      // let query = util.g_json2query({id, status});
+      let { code, msg, data } = await postRequest(url, {id, status});
       if (code == 200) {
         let msg = '上架成功';
-        if (status == 1) {
+        if (status == 2) {
           msg = '下架成功';
         }
         this.msgOk(msg);
@@ -552,38 +561,19 @@ export default {
       }
     },
     // 查看详情
-    async apiSelectById(id) {
-      const url = "/hotCoupon/selectById";
+    async apiSelectById(id, cb) {
+      const url = "/hotCoupon/selectById?id=" + id;
       const site = 1;
       let { code, msg, data } = await postRequest(url, {id});
       if (code == 200) {
         console.log(data);
         this.details = data;
+        cb(data);
       } else {
         this.msgErr(msg);
       }
-      this.$refs.burstDetail.showDetail();
-    },
-    // 编辑
-    async apiEdit() {
-      const url = "/hotCoupon/edit";
-      const site = 1;
-      let params = {
-        startTime: this.searchForm.startTime,
-        endTime: this.searchForm.endTime,
-        orderBy: this.searchForm.orderBy,
-        pushPlatform: this.searchForm.pushPlatform,
-        shopId: this.searchForm.shopId,
-        status: this.searchForm.status,
-        title: this.searchForm.title
-      };
-      params = {};
-      let { code, msg, data } = await postRequest(url, params);
-      if (code == 200) {
-        console.log(data);
-        this.listData = data;
-      } else {
-        this.msgErr(msg);
+      if (!cb) {
+        this.$refs.burstDetail.showDetail();
       }
     },
     // 删除 ok
@@ -596,59 +586,6 @@ export default {
       } else {
         this.msgErr(msg);
       }
-    },
-    // 新增 给子组件调用的 别删！！
-    async apiAdd(e) {
-      console.log(JSON.stringify(e, null, 2));
-      
-      return;
-      e = {
-        "hotCouponVoList": [
-          {
-            "couponKind": "2",
-            "endTime": "2019-11-11",
-            "startTime": "2019-11-03",
-            "orderByName": 2,// java：此处统一为 orderByName
-            "pushPlatformList": [ // java: 此处统一为 pushPlatformList
-              0,
-              1
-            ],
-            "templateId": "20191113220136",
-            "title": "分润测试劵"
-          }
-        ],
-        "pushRange": 3,
-        "shopInfo": [
-          {
-            "venderId": "80",
-            "venderName": "浙江世纪联华",
-            "shopId": "1229",
-            "venderShopId": "1229",
-            "shopName": "杭州江城店",
-            "categories": "购物,超市",
-            "address": "江城路558号",
-            "city": "杭州市",
-            "district": "上城区",
-            "province": "浙江省",
-            "longitude": "120.17624",
-            "latitude": "30.235",
-            "enabled": 1,
-            "createBy": "suncongying",
-            "createTime": "2019-07-30 10:52:18",
-            "updateBy": "",
-            "updateTime": null,
-            "_checked": false
-          }
-        ]
-      }
-        const url = "/hotCoupon/add";
-        let { code, msg, data } = await postRequest(url, e);
-        if (code == 200) {
-          console.log(data);
-          this.listData = data;
-        } else {
-          this.msgErr(msg);
-        }
     },
     confirmDel(id) {
       this.$Modal.warning({

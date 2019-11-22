@@ -20,8 +20,8 @@
                   style="width:200px"
                   @on-change="optionChange"
           >
-            <Option value="1">超市券</Option>
-            <Option value="2">周边券</Option>
+            <Option :value="1">超市券</Option>
+            <Option :value="2">周边券</Option>
           </Select>
         </FormItem>
         <FormItem label="优惠券名称：" style="display:inline-block">
@@ -33,6 +33,16 @@
         </FormItem>
       </Form>
       <Table
+              v-if="single === true"
+              border
+              ref="selection"
+              :highlight-row="true"
+              @on-current-change="currentChange"
+              :columns="couponSearchData.couponType == '1'?columns10:columns9"
+              :data="CampaginList"
+      ></Table>
+      <Table
+              v-else
               border
               ref="selection"
               :columns="couponSearchData.couponType == '1'?columns10:columns9"
@@ -43,7 +53,7 @@
               @on-select-all-cancel="cancelAllCampagin"
       ></Table>
       <!-- 分页器 -->
-      <Row type="flex" justify="end" class="page">
+      <Row type="flex" justify="end" class="page mgt-10">
         <Page
                 :total="totalSize1"
                 show-total
@@ -52,16 +62,17 @@
                 @on-change="changeCurrent1"
         ></Page>
       </Row>
-      <!-- 分页器 -->
-      <Row class="mgt-10 tgn-r">
-        <Button class="mgr-20" @click="campaginDisplayFn">保存</Button><Button type="primary" @click="closeDialog">关闭</Button>
+      <Row class="mgt-10">
+        <Button @click="closeDialog">关闭</Button>
+        <Button class="fl-r" type="primary" @click="campaginDisplayFn">保存</Button>
       </Row>
     </Modal>
   </div>
 </template>
 <script>
 /**
- * 选择优惠券 多选
+ * 选择优惠券 默认多选
+ * 需要单选 增加属性 :single="true"
  * 从这里摘出来的：
  * http://localhost:9999/customer_service/compensate
  * 使用方式：
@@ -84,6 +95,25 @@ import { uniqueArray } from "@/libs/date";
 import comm from "@/mixins/common";
 
 export default {
+  props: {
+    // 是否只能单选 默认false
+    single: {
+      type: Boolean,
+      default() {
+        return false
+      }
+    },
+    checkedData: Object
+    // checkedData = {
+    //   couponKind: data.couponKind,
+    //   list: [
+    //     {
+    //       templateId: data.templateId,
+    //       title: data.title,
+    //     }
+    //   ]
+    // }
+  },
   data () {
     return {
         isShow: true, // 默认true
@@ -163,6 +193,9 @@ export default {
   },
   mixins: [comm],
   methods: {
+      currentChange(row) {
+        this.formValidate.specialTopicCouponList = [row];
+      },
       // 保存 关闭优惠券选择对话框
       campaginDisplayFn () {
           this.$emit('couponSelect', JSON.parse(JSON.stringify(this.formValidate.specialTopicCouponList)));
@@ -182,7 +215,7 @@ export default {
           this.couponSearchData.name = "";
           this.current1 = 1;
       },
-      // 优惠券活动分页
+      // 分页
       changeCurrent1: function(current) {
           this.current1 = current;
           this.search1();
@@ -216,38 +249,44 @@ export default {
                   this.CampaginList = res.data.records;
                   //console.log(this.formValidate.specialTopicCouponList.length);
                   //console.log(this.formValidate.specialTopicCouponList[0].templateId);
-                  if (this.formValidate.specialTopicCouponList.length != 0) {
-                      if (this.couponSearchData.couponType == "1") {
-                          for (let i = 0; i < this.CampaginList.length; i++) {
-                              for (
-                                  let j = 0;
-                                  j < this.formValidate.specialTopicCouponList.length;
-                                  j++
-                              ) {
-                                  if (
-                                      this.formValidate.specialTopicCouponList[j].templateId ==
-                                      this.CampaginList[i].campId
-                                  ) {
-                                      this.CampaginList[i]._checked = true;
-                                  }
-                              }
-                          }
-                      } else {
-                          for (let i = 0; i < this.CampaginList.length; i++) {
-                              for (
-                                  let j = 0;
-                                  j < this.formValidate.specialTopicCouponList.length;
-                                  j++
-                              ) {
-                                  if (
-                                      this.formValidate.specialTopicCouponList[j].templateId ==
-                                      this.CampaginList[i].templateId
-                                  ) {
-                                      this.CampaginList[i]._checked = true;
-                                  }
-                              }
-                          }
-                      }
+                  if (this.single === true) {
+                    this.handleChecked();
+                  } else {
+                    console.log(this.formValidate.specialTopicCouponList);
+                    return;
+                    if (this.formValidate.specialTopicCouponList.length != 0) {
+                        if (this.couponSearchData.couponType == "1") {
+                            for (let i = 0; i < this.CampaginList.length; i++) {
+                                for (
+                                    let j = 0;
+                                    j < this.formValidate.specialTopicCouponList.length;
+                                    j++
+                                ) {
+                                    if (
+                                        this.formValidate.specialTopicCouponList[j].templateId ==
+                                        this.CampaginList[i].campId
+                                    ) {
+                                        this.CampaginList[i]._checked = true;
+                                    }
+                                }
+                            }
+                        } else {
+                            for (let i = 0; i < this.CampaginList.length; i++) {
+                                for (
+                                    let j = 0;
+                                    j < this.formValidate.specialTopicCouponList.length;
+                                    j++
+                                ) {
+                                    if (
+                                        this.formValidate.specialTopicCouponList[j].templateId ==
+                                        this.CampaginList[i].templateId
+                                    ) {
+                                        this.CampaginList[i]._checked = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
                   }
                   // 分页
                   this.current1 = res.data.current;
@@ -257,8 +296,29 @@ export default {
               }
           });
       },
+      handleChecked() {
+        if (this.single === true) {
+          let _keys = ['', 'campId', 'templateId'];
+          let key = _keys[this.couponSearchData.couponType];
+          if (this.checkedData && this.checkedData.templateId) {
+            console.log(this.checkedData, this.CampaginList);
+            const len = this.CampaginList.length;
+            for (let i = 0; i < len; i++) {
+              if (this.CampaginList[i][key] === this.checkedData.templateId) {
+                this.CampaginList[i]._highlight = true;
+                this.formValidate.specialTopicCouponList = this.CampaginList[i];
+                console.log('fond it')
+                break;
+              }
+            }
+          }
+        }
+      },
+
       // 选中优惠活动
       selectionCampagin(selection, row) {
+          console.log(selection);
+          console.log(row);
           let obj = {};
           if (this.couponSearchData.couponType == 1) {
               obj = {
@@ -276,7 +336,7 @@ export default {
               };
           }
           this.formValidate.specialTopicCouponList.push(obj);
-          this.msgOk("选择成功，点击保存即刻关闭");
+          // this.msgOk("选择成功，点击保存即刻关闭");
           console.log(this.formValidate.specialTopicCouponList);
       },
 
@@ -401,7 +461,23 @@ export default {
               }
           }
           // console.log(this.formValidate.specialTopicCouponList);
-      },
+      }
+
+  },
+  mounted() {
+    if (this.single === true) {
+      if (this.columns9[0].type === 'selection') {
+        this.columns9.shift();
+      }
+      if (this.columns10[0].type === 'selection') {
+        this.columns10.shift();
+      }
+    }
+    console.log(this.checkedData);
+    if (this.checkedData.couponKind || typeof this.checkedData.couponKind === 'number') {
+      this.couponSearchData.couponType = this.checkedData.couponKind;
+      this.search1();
+    }
   }
 }
 </script>

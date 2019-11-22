@@ -261,7 +261,7 @@ export default {
       this.tableData.splice(index, 1, row);
       
       let cur = (this.page.pageNum - 1) * this.page.pageSize;
-      this.shopLists.splice(cur, 1, row);
+      this.shopLists.splice(cur + index, 1, row);
       console.log(
         this.tableData.map(item =>
           JSON.stringify({
@@ -319,7 +319,6 @@ export default {
     },
     // 获取商户列表
     async queryTableData(pageNum) {
-      console.log('shopIds', this.shopLists);
       if (! Array.isArray(this.shopLists)) {
         return;
       }
@@ -330,43 +329,6 @@ export default {
       this.tableData = this.shopLists.slice(cur, cur + this.page.pageSize);
 
       this.page.total = this.shopLists.length; //列表总数
-      return;
-      console.log(this.checked)
-      this.page.pageNum = pageNum || 1;
-      this.tableLoading = true;
-
-      // 获取成功开户的商户信息,type=0 商户;type = 1 品牌
-      const url = "/trade/merchant/fund/account/basic/success";
-
-      let {
-        code,
-        data: { records, current, total, size }
-      } = await postRequest(url, {
-        ...this.searchData,
-        ...this.page
-      });
-      if (code == 200) {
-        this.tableData = records.map(item => {
-          let { shopName, province, city } = item;
-          let address = `${province}${city}`;
-          item.name = shopName;
-          item.address = address;
-          item._checked = false;
-          for (let i = 0; i < this.checked.length; i++) {
-            let r = item.shopId == this.checked[i].shopId;
-            if (r) {
-              item._checked = true;
-            }
-          }
-          return item;
-        });
-        this.page.pageNum = current; //分页查询起始记录
-        this.page.total = total; //列表总数
-        this.page.pageSize = size; //每页数据
-      } else {
-        this.msgErr(res.msg);
-      }
-      this.tableLoading = false;
     },
     closeDialog() {
       //关闭对话框清除表单数据
