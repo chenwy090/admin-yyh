@@ -1,6 +1,6 @@
 <template>
   <div class="publish-edit">
-    <Button type="dashed" icon="md-arrow-round-back" @click="goback()">返回上一层1111111</Button>
+    <Button type="dashed" icon="md-arrow-round-back" @click="goback()">返回上一层</Button>
 
     <ModalAddPhone
       v-if="showAddPhone"

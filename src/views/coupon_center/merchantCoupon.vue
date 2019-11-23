@@ -6,6 +6,15 @@
         <Card>
           <Row>
             <Form ref="searchItem" :model="searchItem" inline :label-width="70" class="search-form">
+              <FormItem label="卡券ID">
+                <Input
+                  type="text"
+                  v-model="searchItem.templateId"
+                  clearable
+                  placeholder="请输入卡券ID"
+                  style="width: 200px"
+                />
+              </FormItem>
               <FormItem label="标题">
                 <Input
                   type="text"
@@ -220,7 +229,8 @@
                       <div v-for="(item,index) in row.couponOperationLogList" :key="index">
                         <p>操作人：{{item.operator}}</p>
                         <p>操作时间:{{item.operationTime}}</p>
-                        <p>下架原因：{{item.afterOperation}}</p>
+                        <!-- 下架原因： -->
+                        <p>{{item.afterOperation}}</p>
                       </div>
                     </div>
                   </div>
@@ -271,6 +281,7 @@
         v-if="couponDetailPage"
         :couponDetailPage.sync="couponDetailPage"
         :couponEdit_info="couponEdit_info"
+        @refresh="refresh"
       ></couponDetail>
     </Drawer>
 
@@ -480,6 +491,7 @@ export default {
       dropDownContent: "展开",
       dropDownIcon: "ios-arrow-down",
       searchItem: {
+        templateId: "",
         title: "",
         // 是否有标签 0-未打标签 1-已打标签
         isTag: "",
@@ -529,13 +541,22 @@ export default {
           title: "适用商户",
           key: "merchantNames",
           align: "center",
-          width: 150
+          minWidth: 200,
+          render: (h, params) => {
+            let { merchantNames } = params.row;
+            let arr = merchantNames.split(",");
+            let str = arr[0];
+            if (arr.length > 1) {
+              str = `${str}。。。`;
+            }
+            return <div title={arr}>{str}</div>;
+          }
         },
         {
           title: "来源",
           key: "source",
           align: "center",
-          width: 150
+          width: 100
         },
 
         {
@@ -740,6 +761,7 @@ export default {
     //	刷新页面
     refresh() {
       this.searchItem = {
+        templateId: "",
         title: "",
         // 是否有标签 0-未打标签 1-已打标签
         isTag: "",
@@ -770,6 +792,7 @@ export default {
       this.TableLoading = true;
 
       const reqParams = {
+        templateId: this.searchItem.templateId,
         title: this.searchItem.title,
         isTag: this.searchItem.isTag,
         merchantNames: this.searchItem.merchantNames,
@@ -923,7 +946,7 @@ export default {
       const url = "/merchantCouponTemplate/downShelf";
       postRequest(url, reqParams).then(res => {
         if (res.code == 200) {
-          this.msgOk("更新成功");
+          this.msgOk("下架成功");
           this.updateTemplateStatusDisplay = false;
           //this.getList({});
           // 清空输入框

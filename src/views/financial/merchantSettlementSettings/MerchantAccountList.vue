@@ -169,7 +169,7 @@ export default {
         url = "/merchant/merchantEmployee/brand";
       }
       console.log("queryTableData", url, this.id);
-      const { code, data, msg } = await getRequest(url, { id: this.id });
+      const { code, data = [], msg } = await getRequest(url, { id: this.id });
       if (code == 200) {
         this.tableData = data.map(item => {
           item._checked = false;
