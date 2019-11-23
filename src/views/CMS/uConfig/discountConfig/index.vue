@@ -94,7 +94,7 @@ export default {
         supermarket: {
           id: "",
           mainTitle: "超市优惠", //主标题：超市优惠 必填，最多填写10个字节；
-          subTitle: "" //副标题：大家都在领  最多填写30个字节；
+          subTitle: "subTitle" //副标题：大家都在领  最多填写30个字节；
         },
         //周边券模块
         coupon: {
@@ -112,7 +112,7 @@ export default {
     };
   },
   created() {
-    this.getData();
+    // this.getData();
   },
   methods: {
     setSubTitleRules(type) {
@@ -197,13 +197,11 @@ export default {
           this.msgErr("数据验证失败！");
           return;
         }
-
         // 核销扫码首页配置
         const url = "/page/module/layout/savePreferential";
 
         //清洗数据
         let formData = JSON.parse(JSON.stringify(this.formData));
-
         postRequest(url, formData).then(res => {
           if (res.code == 200) {
             this.msgOk("保存成功");
