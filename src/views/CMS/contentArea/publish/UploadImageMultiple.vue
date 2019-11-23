@@ -1,15 +1,28 @@
 <template>
-  <div>
+  <div class="zex-upload-box">
     <span class="label">{{label}}</span>
     <div class="demo-upload-list" v-for="(item, index) in uploadList" :key="index">
-      <img :src="item.imgUrl" />
-      <div class="demo-upload-list-cover">
-        <Icon type="ios-eye-outline" @click.native="handleView(item.imgUrl)"></Icon>
-        <Icon type="ios-trash-outline" @click.native="handleRemove(item,index)"></Icon>
+      <div class="item">
+        <img :src="item.imgUrl" />
+        <div class="demo-upload-list-cover">
+          <Icon type="ios-eye-outline" @click.native="handleView(item.imgUrl)"></Icon>
+          <Icon type="ios-trash-outline" @click.native="handleRemove(item,index)"></Icon>
+        </div>
+      </div>
+      <div class="imgSort">
+        <!--  style="display:inline-block;width:80px" v-model="item.sort"  @on-change="xxx($event,index)" -->
+
+        <Input
+          size="small"
+          v-model="item.sort"
+          placeholder="请输入排序"
+          @input.native="changeImageSort($event,index)"
+        />
+        <span class="error-msg">error-msg{{item.msg}}</span>
       </div>
     </div>
     <!-- :default-file-list="defaultList"  :default-file-list="defaultList"-->
-    <div style="display: inline-block;">
+    <div class="btn-upload">
       <Upload
         ref="upload"
         type="drag"
@@ -86,7 +99,7 @@ export default {
           this.uploadList.push(item);
         }
 
-        console.log("uploadList:", this.uploadList);
+        console.log("watch defaultList uploadList:", this.uploadList);
       },
       immediate: true
     }
@@ -127,6 +140,7 @@ export default {
   },
 
   methods: {
+    changeCouponSort(ev, index) {},
     handleView(imgUrl) {
       this.imgUrl = imgUrl;
       this.visible = true;
@@ -213,40 +227,76 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style  lang="less" scoped>
+.zex-upload-box {
+  margin-bottom: 30px;
+}
 .label {
   float: left;
   height: 90px;
 }
-.demo-upload-list {
+
+.btn-upload {
   display: inline-block;
-  /* float: left; */
   width: 90px;
-  height: 90px;
+  height: 150px;
+}
+.demo-upload-list {
+  position: relative;
+  // display: inline-block;
+  float: left;
+  width: 90px;
+  height: 150px;
   text-align: center;
-  line-height: 90px;
+  // line-height: 90px;
   border: 1px solid transparent;
   border-radius: 4px;
-  overflow: hidden;
+  // overflow: hidden;
   background: #fff;
+  // border: 1px solid red;
   position: relative;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+ 
   margin-right: 4px;
+
+  .item {
+    position: relative;
+    width: 90px;
+    height: 90px;
+     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+
+    .demo-upload-list-cover {
+      display: none;
+      position: absolute;
+      line-height: 90px;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.6);
+    }
+  }
+
+  .imgSort {
+    position: relative;
+    // left: 0;
+    // bottom: -30px;
+    width: 80px;
+    height: 30px;
+    // background: yellow;
+    .error-msg {
+      position: absolute;
+      left: 0;
+      top: 26px;
+      color: red;
+    }
+  }
 }
-.demo-upload-list img {
-  width: 100%;
-  height: 100%;
-}
-.demo-upload-list-cover {
-  display: none;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(0, 0, 0, 0.6);
-}
-.demo-upload-list:hover .demo-upload-list-cover {
+.demo-upload-list .item:hover .demo-upload-list-cover {
   display: block;
 }
 .demo-upload-list-cover i {
