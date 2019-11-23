@@ -912,3 +912,8 @@ export const updateStatus = (id, status, reason) => {
     return postRequest(`/exclusive/updateStatus?id=${id}&status=${status}&reason=${reason}`)
 }
 
+// 删除
+export const delAppVip = (id) => {
+    return postRequest(`/exclusive/delete?id=${id}`)
+}
+

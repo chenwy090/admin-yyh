@@ -33,12 +33,12 @@
           <Row class="operation">
             <span style="margin-right:20px">app专享福利配置</span>
             <Button type="primary" icon="md-add" @click="addInfo(1)">新增</Button>
-            <Button icon="md-refresh" @click="refreshFn()">刷新</Button>
+            <Button icon="md-refresh" @click="search()">刷新</Button>
           </Row>
           <!-- 用户列表 -->
           <Table border width="100%" :columns="columns1" :data="tableData" :loading="tableLoading">
             <template slot-scope="{ row }" slot="action">
-              <Button type="text" size="small" @click="viewDetailsFn(row)">查看</Button>
+              <Button type="text" size="small" @click="seeInfo(row.id)">查看</Button>
               <Button
                 type="text"
                 size="small"
@@ -51,7 +51,7 @@
                 type="text"
                 size="small"
                 :disabled="row.status == 1"
-                @click="delStaffFn(row.id, 2)"
+                @click="delAppVipFn(row.id, 2)"
               >删除</Button>
             </template>
             <!-- <template slot-scope="{ row }" slot="applyTime">
@@ -75,7 +75,7 @@
             </template>
             <template slot-scope="{ row }" slot="couponName">
               <span>{{row.couponName | ellipsis}}</span>
-              <a style="margin-left:10px" @click="seeCouponInfo(row.id)">查看</a>
+              <a style="margin-left:10px" @click="seeCouponInfo(row.id)">详细</a>
             </template>
           </Table>
           <!-- 用户列表 -->
@@ -90,21 +90,12 @@
             :page-size="10"
             @on-change="changeCurrent"
           ></Page>
-
-          <!-- <Page
-            show-total
-            show-elevator
-            :current="current"
-            :page-size="searchData.pageSize"
-            :total="page.total"
-            @on-change="changeCurrent"
-          ></Page>-->
         </Row>
         <!-- 分页器 -->
       </Card>
     </div>
 
-    <!-- 选择商户对话框 -->
+    <!-- 选择商户对话框 -->
     <Modal
       v-model="seeCouponDisplay"
       title="查看优惠券详情"
@@ -114,23 +105,23 @@
       width="800"
     >
       <div>
-        <!-- 商户列表 -->
+        <!-- 商户列表 -->
         <Table border highlight-row :columns="columns2" :data="seeCouponList">
-          <!-- <template slot-scope="{ row }" slot="action">
-              <Button type="text" size="small">查看</Button>
+          <!-- <template slot-scope="{ row }" slot="action">
+              <Button type="text" size="small">查看</Button>
           </template>-->
         </Table>
-        <!-- 商户列表 -->
+        <!-- 商户列表 -->
       </div>
-      <!-- 分页器 -->
-      <div style="margin-top: 20px;overflow: hidden;">
-        <div style="float: right;" slot="footer">
-          <Button style="margin-right: 20px" @click="seeCouponDisplay = false">关闭</Button>
-          <!-- <Button type="primary">确定</Button> -->
+      <!-- 分页器 -->
+      <div style="margin-top: 20px;overflow: hidden;">
+        <div style="float: right;" slot="footer">
+          <Button style="margin-right: 20px" @click="seeCouponDisplay = false">关闭</Button>
+          <!-- <Button type="primary">确定</Button> -->
         </div>
       </div>
     </Modal>
-    <!-- 选择商户对话框 -->
+    <!-- 选择商户对话框 -->
 
     <!-- 下架对话框 -->
     <Modal
@@ -154,7 +145,7 @@
 </template>
 
 <<script>
-import { getAppVipList, getAbnormalPayment, getCouponData, updateStatus } from '@/api/sys';
+import { getAppVipList, getAbnormalPayment, getCouponData, updateStatus, delAppVip } from '@/api/sys';
 import {
     getRequest,
     postRequest,
@@ -171,13 +162,12 @@ export default {
     },
   data() {
     return {
+      seeCouponDisplay: false, // 查看优惠券详情
+      seeCouponList: [], // 查看优惠券列表
       // 下架原因
       lowId:null,
       lowTxt:'',
       lowDisplay: false,
-      // 查看优惠券详情
-      seeCouponDisplay: false,
-      seeCouponList: [],
       id:null,
       addOrEdit:null,
       addOrEditDisplay:false,
@@ -244,25 +234,25 @@ export default {
           title: '优惠券',
           align: 'center',
           minWidth: 140,
-          key: 'putShop',
+          key: 'couponName',
         },
         {
           title: '剩余库存',
           align: 'center',
-          width: 240,
-          key: 'couponName',
+          minWidth: 140,
+          key: 'surplusCount',
         },
         {
           title: '领券量',
           align: 'center',
           minWidth: 120,
-          key: 'surplusCount',
+          key: 'receiveCount',
         },
         {
           title: '核销量',
           align: 'center',
           minWidth: 120,
-          key: 'receiveCount',
+          key: 'useCount',
         },
       ],
       tableData: [],
@@ -296,12 +286,6 @@ export default {
         }
       }
 　　},
-// 　　　　time: function (value) {
-//           if(value) {
-//             let time2 = value.slice(11,19)
-//             return time2
-//           }
-// 　　　　}
 　　},
   created: function() {
     this.search()
@@ -317,23 +301,36 @@ export default {
       this.id = id
       this.addOrEditDisplay = true
     },
+    seeInfo(id) {
+      this.addOrEdit = 3
+      this.id = id
+      this.addOrEditDisplay = true
+    },
+
+    
+    // 查看优惠券详情
+    seeCouponInfo(id) {
+      getCouponData(id).then(res => {
+        if(res.code == 200){
+          this.seeCouponDisplay = true
+          this.seeCouponList = res.data
+        }else {
+          this.msgErr(res.msg)
+        }
+      })
+    },
+
+
     // 新增编辑返回数据
     addOrEditChange(e) {
         this.addOrEditDisplay = e;
         this.search();
     },
 
-    tabsFn(name) {
-      this.type = name
-      this.tableData = []
-      this.reset()
-    },
-
 // 搜索
     search() {
       // 页数
-      // this.page.pageNum = 1;
-      // this.page.total = 0;//总条数
+      this.searchData.pageNum = 1;
       this.getAppVipListFn(this.searchData)
     },
 
@@ -342,25 +339,11 @@ export default {
       this.daterange = []; // 时间
 
       this.searchData = { // 查询参数
-        merchantType: 0,
-        merchantName: "",
-        orderNo: "",
-        provinceCode: "",
-        cityCode: "",
-        remitStatus: '',
-        remitTime: [ "",""],
-        userName: "",
-        userPhone: "",
-        withdrawTime: ["",""],
+        couponName: "",
+        putShop: "",
         pageNum: 1, //页码
         pageSize: 10, //每页数量
       };
-
-      // this.page = {
-      //   pageNum: 1, //页码
-      //   pageSize: 10, //每页数量
-      //   total: 0 //数据总数
-      // };
       this.search()
     },
 
@@ -373,31 +356,13 @@ export default {
       }
       getAppVipList(data,obj.pageNum).then(res => {
         if(res.code == 200){
-          // console.log(res);
-          // this.tableData = res.data.records
-          // this.current = res.data.current
-          // this.totalSize = res.data.total
           this.tableData = res.data.records;
-          this.current = res.data.current; //分页查询起始记录
+          this.searchData.pageNum = res.data.current; //分页查询起始记录
           this.totalSize = res.data.total; //列表总数
-          // this.page.pageSize = size; //每页数据
           this.tableLoading = false;
         }else {
           this.msgErr(res.msg)
           this.tableLoading = false;
-        }
-      })
-    },
-
-    // 查看优惠券详情
-    seeCouponInfo(id) {
-      
-      getCouponData(id).then(res => {
-        if(res.code == 200){
-          this.seeCouponDisplay = true
-          this.seeCouponList = res.data.records
-        }else {
-          this.msgErr(res.msg)
         }
       })
     },
@@ -420,14 +385,14 @@ export default {
     },
     
 // 删除
-    delStaffFn(id) {
+    delAppVipFn(id) {
       // console.log(id);
       // return
       this.$Modal.confirm({
           title: '删除确认',
-          content: '<p>确认删除当前员工吗？</p>',
+          content: '<p>确认删除当前活动吗？</p>',
           onOk: () => {
-            delStaff(id).then(res => {
+            delAppVip(id).then(res => {
               if(res.code == 200){
                 this.msgOk('删除成功')
                 this.search()
@@ -445,60 +410,10 @@ export default {
 
 // 分页（点击第几页）
     changeCurrent: function (current) {
-      this.current = current;
       this.searchData.pageNum = current
-      this.search()
+      this.getAppVipListFn(this.searchData)
     },
 
-//过滤小数点
-      // changeNumber() {
-      //   let str = "" + this.formValidate.mobile;
-      //   if (str.indexOf(".") != -1) {
-      //     let arr = str.split("");
-      //     arr.splice(arr.length - 1);
-      //     let str2 = arr.join("");
-      //     this.formValidate.mobile = +str2;
-      //     this.msgErr('只能输入整数')
-      //   }
-      // },
-      // changeNumber1() {
-      //   let str = "" + this.searchData.mobile;
-      //   if (str.indexOf(".") != -1) {
-      //     let arr = str.split("");
-      //     arr.splice(arr.length - 1);
-      //     let str2 = arr.join("");
-      //     this.searchData.mobile = +str2;
-      //     this.msgErr('只能输入整数')
-      //   }
-      // },
-      // changeNumber2() {
-      //   let str = "" + this.bindData.mobile;
-      //   if (str.indexOf(".") != -1) {
-      //     let arr = str.split("");
-      //     arr.splice(arr.length - 1);
-      //     let str2 = arr.join("");
-      //     this.bindData.mobile = +str2;
-      //     this.msgErr('只能输入整数')
-      //   }
-      // },
-
-      // 时间
-      time1(arr) {
-        let [startTime, endTime] = arr;
-        if (startTime) {
-          startTime = `${arr[0]} 00:00:00`;
-          endTime = `${arr[1]} 23:59:59`;
-        }
-        this.searchData.remitTime = [startTime, endTime];
-      },
-      time2(arr) {
-        let [startTime, endTime] = arr;
-        if (startTime) {
-          startTime = `${arr[0]} 00:00:00`;
-          endTime = `${arr[1]} 23:59:59`;
-        }
-        this.searchData.withdrawTime = [startTime, endTime];
-      },
 
 // 全局提示
       msgOk(txt) {
@@ -514,17 +429,6 @@ export default {
           duration: 3
         });
       },
-
-    // dropDown() {
-    //   if (this.drop) {
-    //     this.dropDownContent = "展开";
-    //     this.dropDownIcon = "ios-arrow-down";
-    //   } else {
-    //     this.dropDownContent = "收起";
-    //     this.dropDownIcon = "ios-arrow-up";
-    //   }
-    //   this.drop = !this.drop;
-    // },
 
   },
 };

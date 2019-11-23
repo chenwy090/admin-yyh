@@ -154,7 +154,7 @@
                     <img
                       :src="edit_info.couponImg"
                       style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
-                    >
+                    />
                   </FormItem>
                 </Col>
                 <Col span="12">
@@ -164,7 +164,7 @@
                         :src="edit_info.imgUrl"
                         @click="showBigImg(edit_info.imgUrl)"
                         style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
-                      >
+                      />
                     </FormItem>
                   </Tooltip>
                 </Col>
@@ -200,7 +200,7 @@
                 />
               </FormItem>
 
-              <FormItem label="券使用说明">
+              <FormItem label="领券规则">
                 <Input
                   type="textarea"
                   v-model="edit_info.useDesc"
@@ -208,6 +208,15 @@
                   :autosize="{minRows: 4,maxRows: 8}"
                   disabled
                 />
+              </FormItem>
+
+              <FormItem label="图文详情">
+                <EditorBar
+                  v-model="edit_info.discountDetail"
+                  :content="edit_info.discountDetail"
+                  :disabled="1"
+                  style="width:400px;margin:0;"
+                ></EditorBar>
               </FormItem>
             </Form>
           </div>
@@ -325,11 +334,7 @@
 
                 <Col span="12">
                   <FormItem label="默认推荐排除">
-                    <Select
-                      v-model="edit_info1.isBlack"
-                      style="width:200px"
-                      disabled
-                    >
+                    <Select v-model="edit_info1.isBlack" style="width:200px" disabled>
                       <Option value="0">否</Option>
                       <Option value="1">是</Option>
                     </Select>
@@ -338,20 +343,28 @@
               </Row>
             </Form>
 
-
-
-
             <!--分享奖励配置-->
-            <Form ref="shareModal" v-if="formShareModal.shareData.length" :model="formShareModal" :label-width="160" style="margin-top:20px">
-              <FormItem v-for="item in formShareModal.shareData" :key="item.id" :label="item.name" required>
+            <Form
+              ref="shareModal"
+              v-if="formShareModal.shareData.length"
+              :model="formShareModal"
+              :label-width="160"
+              style="margin-top:20px"
+            >
+              <FormItem
+                v-for="item in formShareModal.shareData"
+                :key="item.id"
+                :label="item.name"
+                required
+              >
                 <InputNumber
-                        :min="item.name== '倍数'?1:0"
-                        :step="1"
-                        type="text"
-                        v-model="item.value"
-                        placeholder="请输入"
-                        style="width:320px"
-                        disabled
+                  :min="item.name== '倍数'?1:0"
+                  :step="1"
+                  type="text"
+                  v-model="item.value"
+                  placeholder="请输入"
+                  style="width:320px"
+                  disabled
                 ></InputNumber>
                 <span v-if="item.name!= '倍数'">&nbsp;&nbsp;U贝</span>
                 <span v-if="item.name== '倍数'">&nbsp;&nbsp;倍</span>
@@ -469,7 +482,7 @@
     </Tabs>
 
     <Modal v-model="bigImgDialog" title="查看大图" width="600" @on-cancel="bigImgCancel">
-      <img style="width: 100%" :src="big_Image_url">
+      <img style="width: 100%" :src="big_Image_url" />
     </Modal>
   </div>
 </template>
@@ -484,10 +497,11 @@ import {
   } from "@/libs/axios";
 import { baseUrl, uploadOperationImage2AliOssURl } from "@/api/index";
 import { formatDate } from "@/libs/date";
+import EditorBar from "@/components/EditorBar";
 
 export default {
   name: "detailsView",
-  components: { },
+  components: { EditorBar },
   props: {
       camp_Info: Object
     },
@@ -575,6 +589,7 @@ export default {
   },
 
     created: function() {
+      console.log(this.camp_Info);
     },
     methods: {
 
