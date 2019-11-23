@@ -1098,7 +1098,7 @@ export default {
         code: code
       }).then(res => {
         if (res.code == 200) {
-          debugger;
+         
           if (res.data || res.data.noOverallCommonConfigList) {
             let arr = res.data.noOverallCommonConfigList || [];
             this.formShareModal.shareData = arr.filter(
@@ -1805,7 +1805,8 @@ export default {
         ChangeStartDate: row.changeStartDate,
         ChangeEndDate: row.changeEndDate,
         ChangeStart: row.changeStart,
-        ChangeEnd: row.changeEnd
+        ChangeEnd: row.changeEnd,
+        discountDetail: row.discountDetail // 优惠券详情（富文本）
       };
       this.camp_Info3 = rowData;
       this.detailsDisplay = true;

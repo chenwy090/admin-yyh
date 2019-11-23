@@ -277,6 +277,12 @@
                         key: "channelNo"
                     },
                     {
+                        title: "交易类型",
+                        minWidth: 100,
+                        align: "center",
+                        key: "tradeTypeDesc"
+                    },
+                    {
                         title: "审核时间",
                         minWidth: 100,
                         align: "center",

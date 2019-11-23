@@ -1,0 +1,64 @@
+{
+    "contentAuthor": {
+        "id": 1,
+        "userId": 75504,
+        "todayPublishNum": 0,
+        "weekPublishNum": 3,
+        "followerNum": 7,
+        "phoneNumber": "13681814967"
+    },
+    "images": [
+        {
+            "imgUrl": "http://image.52iuh.cn/wx_mini/NbZO7VsMUK.gif",
+            "sort": 0
+        }
+    ],
+    "coverImg": "http://image.52iuh.cn/wx_mini/IvAqJQHLvQ.jpg",
+    "smallImg": "http://image.52iuh.cn/wx_mini/zsxaoA2dGE.jpg",
+    "likeUbay": 999,
+    "citys": [
+        {
+            "cityName": "杭州市",
+            "cityCode": "330100"
+        }
+    ],
+    "title": "iuh 111111",
+    "userId": 75504,
+    "scanUbay": 999,
+    "tags": [
+        {
+            "name": "情感",
+            "id": 5
+        }
+    ],
+    "addLikeNum": 9999,
+    "addShareNum": 99999,
+    "duration": 5,
+    "shareUbay": 999,
+    "coverImgWidth": 650,
+    "addWatchNum": 9999,
+    "coupons": [
+        {
+            "couponId": "2019061060243",
+            "couponName": "内容测试118",
+            "couponType": 1
+        }
+    ],
+    "sourceType": 1,
+    "coverImgHeight": 512,
+    "id": 40,
+    "describe": "<p>&nbsp; 有一种借口叫年青，能够不珍爱时刻，不爱护爱，不珍惜所有来之不易的货色。有一种情感叫错过，错过爱，错过能够相守的人，错过一段刻骨铭心的情。有一种寂寞叫想念，惦念一个人，一段旧事，一场相遇。安静的夜里，深深切切的想念，于是深深切切地寂寞&nbsp;&nbsp;<br></p >",
+    "contentType": 1,
+    "newDescribe": "<p>&nbsp; 有一种借口叫年青，能够不珍爱时刻，不爱护爱，不珍惜所有来之不易的货色。有一种情感叫错过，错过爱，错过能够相守的人，错过一段刻骨铭心的情。有一种寂寞叫想念，惦念一个人，一段旧事，一场相遇。安静的夜里，深深切切的想念，于是深深切切地寂寞&nbsp;&nbsp;<br></p >",
+    "defaultSmallImgList": [
+        {
+            "imgUrl": "http://image.52iuh.cn/wx_mini/zsxaoA2dGE.jpg"
+        }
+    ],
+    "defaultCoverImgList": [
+        {
+            "imgUrl": "http://image.52iuh.cn/wx_mini/IvAqJQHLvQ.jpg"
+        }
+    ],
+    "templateName": "内容测试118"
+}

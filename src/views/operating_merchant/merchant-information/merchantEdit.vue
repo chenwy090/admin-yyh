@@ -62,6 +62,62 @@
 
             <Row class="box">
               <Col span="2" class="left-text">
+                <span style="color:red">*</span> 商户门店图片
+              </Col>
+              <Button
+                type="primary"
+                icon="md-add-circle"
+                size="small"
+                style="margin-left:250px"
+                @click="addImgArr()"
+              >增加</Button>
+              <Card
+                v-for="(item, index) in edit_info.merchantShopImageList"
+                :key="index"
+                style="margin:10px 0 10px 116px;width:400px"
+              >
+                <div>
+                  <span style="overflow:hidden;display:inline-block;margin-right:10px;">
+                    <div class="imgSrc_box" style="margin-right:0;;width:90px" v-if="item.imgUrl">
+                      <img :src="item.imgUrl" style="width:100%" />
+                    </div>
+                  </span>
+                  <div style="overflow:hidden;display:inline-block">
+                    <div style="width:100px; float:left">
+                      <ImgCutter
+                        :label="'选择图片'"
+                        :boxWidth="600"
+                        :boxHeight="500"
+                        :rate="1"
+                        v-on:cutDown="cutDownArr"
+                      >
+                        <button
+                          slot="openImgCutter"
+                          style="width:100px; background: border-box"
+                          @click="cutDownNum(index)"
+                        >上传图片</button>
+                      </ImgCutter>
+                    </div>
+                    <!-- 删除按钮 -->
+                    <Button
+                      type="warning"
+                      icon="md-close"
+                      size="small"
+                      style="margin-left:20px"
+                      @click="delImgArr(index)"
+                      v-if="index !=0"
+                    >删除</Button>
+                    <br />
+                    <div class="left-text">
+                      <h4>商户门店{{index + 1}}</h4>(不大于1M,JPG/PNG/JPEG/BMP）
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </Row>
+
+            <Row class="box">
+              <Col span="2" class="left-text">
                 <span style="color:red">*</span> 主营品牌
               </Col>
               <Col span="4">
@@ -243,20 +299,30 @@
                 <span style="color:red">*</span> 周边商超
               </Col>
               <!--<CheckboxGroup v-model="edit_info.shopIdList" span="3" @on-change="statusCheckChange">-->
-                <!--<Checkbox-->
-                  <!--style="width:130px"-->
-                  <!--v-for="(item, index) in shopList"-->
-                  <!--:key="item.shopId"-->
-                  <!--:label="item.shopId"-->
-                <!--&gt;{{item.shopName}}</Checkbox>-->
+              <!--<Checkbox-->
+              <!--style="width:130px"-->
+              <!--v-for="(item, index) in shopList"-->
+              <!--:key="item.shopId"-->
+              <!--:label="item.shopId"-->
+              <!--&gt;{{item.shopName}}</Checkbox>-->
               <!--</CheckboxGroup>-->
               <!--<Select v-model="edit_info.shopIdList" multiple style="width:260px">-->
-                <!--<Option v-for="(item, index) in shopList" :value="item.shopId" :key="item.shopId">{{ item.shopName }}</Option>-->
+              <!--<Option v-for="(item, index) in shopList" :value="item.shopId" :key="item.shopId">{{ item.shopName }}</Option>-->
               <!--</Select>-->
               <Col span="16">
-              <Select v-model="edit_info.shopIdList" multiple style="width:260px"  @on-change="statusCheckChange" filterable>
-                <Option v-for="(item, index) in shopList" :value="item.shopId" :key="item.shopId">{{ item.shopName }}</Option>
-              </Select>
+                <Select
+                  v-model="edit_info.shopIdList"
+                  multiple
+                  style="width:260px"
+                  @on-change="statusCheckChange"
+                  filterable
+                >
+                  <Option
+                    v-for="(item, index) in shopList"
+                    :value="item.shopId"
+                    :key="item.shopId"
+                  >{{ item.shopName }}</Option>
+                </Select>
               </Col>
             </Row>
             <Row class="box">
@@ -896,6 +962,7 @@ export default {
   },
   data() {
     return {
+      imgArrIndex: null, //商户图片数组index
       identification_info: {
         merchantId: "",
         businessLicenseName: "",
@@ -933,7 +1000,8 @@ export default {
         secendBrandIdList: [],
         shopIdList: [],
         operatingStatus: "",
-        telephone: ""
+        telephone: "",
+        merchantShopImageList: [{ imgUrl: "" }]
       },
       res_list: [],
       edit_loading: false,
@@ -1153,6 +1221,56 @@ export default {
       });
       this.isCheckDisabled = false;
     },
+
+    // 新增商户门店图片
+    addImgArr() {
+      if (this.edit_info.merchantShopImageList.length == 8) {
+        this.msgErr("最多只能增加8张");
+        return;
+      }
+      this.edit_info.merchantShopImageList.push({ imgUrl: "" });
+    },
+
+    // 删除商户门店图片
+    delImgArr(index) {
+      if (this.edit_info.merchantShopImageList[index].id) {
+        this.edit_info.delShopImgIds.push(
+          this.edit_info.merchantShopImageList[index].id
+        );
+      }
+      this.edit_info.merchantShopImageList.splice(index, 1);
+    },
+
+    // 商户门店图片 记录index
+    cutDownNum(index) {
+      this.imgArrIndex = index;
+    },
+
+    // 商户门店图片
+    cutDownArr: function(res) {
+      // this.logeImgSrc = res.dataURL;
+      this.showSize();
+      if (this.logImgSize > 1024) {
+        this.$Message.error("图片不能大于1M");
+        return;
+      }
+      var reqParams = {
+        imgStr: res.dataURL.substr(22)
+      };
+      postRequest(
+        "/operation/operation-info/uploadBase64Image2AliOss",
+        reqParams
+      ).then(res => {
+        if (res.code == 200) {
+          this.edit_info.merchantShopImageList[this.imgArrIndex].imgUrl =
+            res.image_url;
+        } else {
+          this.$Message.error(res.msg);
+        }
+      });
+      this.isCheckDisabled = false;
+    },
+
     init() {
       this.camp_pageStatus = this.getStore("camp_pageStatus");
       this.getCampInfo();
@@ -1189,7 +1307,8 @@ export default {
         secendBrandIdList: [],
         shopIdList: [],
         operatingStatus: "",
-        telephone: ""
+        telephone: "",
+        merchantShopImageList: [{ imgUrl: "" }]
       };
     },
 
@@ -1208,13 +1327,17 @@ export default {
           this.edit_info = res.data;
           console.info(JSON.stringify(res.data));
 
-          console.log("mounted:",this.edit_info.merchantProfileList);
+          console.log("mounted:", this.edit_info.merchantProfileList);
 
           this.identification_info.merchantId = res.data.merchantId;
 
           this.edit_info.provinceCode = res.data.provinceCode;
           this.edit_info.cityCode = res.data.cityCode;
           this.edit_info.areaCode = res.data.areaCode;
+
+          // 商户门店图片
+          this.edit_info.merchantShopImageList = res.data.merchantShopImageList;
+          this.edit_info.delShopImgIds = [];
 
           this.mainIndustryId = parseInt(res.data.mainIndustryId);
           this.edit_info.industryId = parseInt(res.data.industryId);
@@ -1325,9 +1448,9 @@ export default {
         return;
       }
       /*if (this.identification_info.accountType == "") {
-              this.$Message.error("请选择资金类型");
-              return;
-          }*/
+                                    this.$Message.error("请选择资金类型");
+                                    return;
+                                }*/
       if (this.identification_info.accountType == "bank") {
         if (this.identification_info.bankCardUsername == "") {
           this.$Message.error("请填写持卡人姓名");
@@ -1361,6 +1484,15 @@ export default {
         }
       }
 
+      // 商户门店列表
+      for (let i = 0; i < this.edit_info.merchantShopImageList.length; i++) {
+        let index = i + 1;
+        if (!this.edit_info.merchantShopImageList[i].imgUrl) {
+          this.msgErr("商户图片" + index + "没有上传");
+          return;
+        }
+      }
+
       if (this.camp_pageStatus === "add" || this.camp_pageStatus === "copy") {
         this.getUrl = "/merchant/merchantInfo/add";
         this.msg = "新增成功";
@@ -1376,7 +1508,9 @@ export default {
           mainBrandId: this.edit_info.mainBrandId,
           shopIdList: this.edit_info.shopIdList,
           operatingStatus: this.edit_info.operatingStatus,
-          telephone: this.edit_info.telephone
+          telephone: this.edit_info.telephone,
+          merchantShopImageList: this.edit_info.merchantShopImageList
+          // delShopImgIds: this.edit_info.delShopImgIds
         };
         if (this.compatibleList) {
           var secendBrandIdList = [];
@@ -1402,7 +1536,9 @@ export default {
           mainBrandId: this.edit_info.mainBrandId,
           shopIdList: this.edit_info.shopIdList,
           operatingStatus: this.edit_info.operatingStatus,
-          telephone: this.edit_info.telephone
+          telephone: this.edit_info.telephone,
+          merchantShopImageList: this.edit_info.merchantShopImageList,
+          delShopImgIds: this.edit_info.delShopImgIds.join()
         };
         if (this.compatibleList) {
           var secendBrandIdList = [];
@@ -1636,7 +1772,7 @@ export default {
       this.$Message.error("图片不大于1M");
     },
 
-    handleBeforeUpload1(file) {
+    handleBeforeUpload(file) {
       return checkImage(file);
     },
 
@@ -1770,6 +1906,21 @@ export default {
     removeTwoList(index, index1) {
       this.edit_info.merchantProfileList[index].contents.splice(index1, 1);
       this.isCheckDisabled = false;
+    },
+
+    // 全局提示
+    msgOk(txt) {
+      this.$Message.info({
+        content: txt,
+        duration: 3
+      });
+    },
+
+    msgErr(txt) {
+      this.$Message.error({
+        content: txt,
+        duration: 3
+      });
     }
   },
   mounted() {
@@ -1841,6 +1992,10 @@ export default {
   line-height: 1;
   padding: 10px 12px 10px 0;
   box-sizing: border-box;
+}
+.left-text h4 {
+  display: inline-block;
+  font-size: 14px;
 }
 .box {
   margin-bottom: 20px;

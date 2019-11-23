@@ -197,27 +197,27 @@
             </FormItem>
             <FormItem label="首页缩略图">
               <div
-                      style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
-                      v-for="(item, index) in uploadList2"
-                      :key="index"
+                style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
+                v-for="(item, index) in uploadList2"
+                :key="index"
               >
                 <img :src="item.url" style="width:100%" />
               </div>
               <div style="display: inline-block;">
                 <Upload
-                        ref="upload"
-                        :defaultList="uploadList2"
-                        type="drag"
-                        :format="['jpg','jpeg','png','bmp']"
-                        :on-success="handleSucces2"
-                        :action="url"
-                        accept="image"
-                        :max-size="1024"
-                        :headers="userToken"
-                        style="display: inline-block;width:90px;"
-                        @on-change="statusCheckChange"
-                        :on-exceeded-size="handleMaxSize"
-                        :show-upload-list="false"
+                  ref="upload"
+                  :defaultList="uploadList2"
+                  type="drag"
+                  :format="['jpg','jpeg','png','bmp']"
+                  :on-success="handleSucces2"
+                  :action="url"
+                  accept="image"
+                  :max-size="1024"
+                  :headers="userToken"
+                  style="display: inline-block;width:90px;"
+                  @on-change="statusCheckChange"
+                  :on-exceeded-size="handleMaxSize"
+                  :show-upload-list="false"
                 >
                   <div style="width: 90px;height:90px;line-height: 90px;">
                     <Icon type="ios-camera" size="20" />
@@ -332,6 +332,16 @@
               />
             </FormItem>
 
+            <FormItem label="优惠券详情" required>
+              <EditorBar
+                v-model="edit_info.discountDetail"
+                :content="edit_info.discountDetail"
+                @on-change="change"
+                @on-blur="blur"
+                style="width:400px;margin:0;"
+              ></EditorBar>
+            </FormItem>
+
             <FormItem label="状态" required placeholder="请选择状态">
               <Select
                 v-model="edit_info.status"
@@ -420,10 +430,13 @@ import { formatDate, checkImageWH } from "@/libs/date";
 
 import receiveRuleSet from "./receiveRuleManagement";
 
+import EditorBar from "@/components/EditorBar";
+
 export default {
   name: "BasicSet",
   components: {
-    receiveRuleSet
+    receiveRuleSet,
+    EditorBar
   },
   props: {
     camp_Info: Object
@@ -448,12 +461,13 @@ export default {
         ticketTemplateId: "",
         useDesc: "",
         couponImg: "",
-        couponSimpleImg: '',
+        couponSimpleImg: "",
         ChangeDateType: "",
         ChangeStartDate: "",
         ChangeEndDate: "",
         ChangeStart: "",
-        ChangeEnd: ""
+        ChangeEnd: "",
+        discountDetail: "" //优惠券详情（富文本）
       },
       edit_loading: false,
       userToken: "",
@@ -615,7 +629,7 @@ export default {
         startDate: "",
         useDesc: "",
         couponImg: "",
-        couponSimpleImg: '',
+        couponSimpleImg: "",
         ChangeDateType: "",
         ChangeStartDate: "",
         ChangeEndDate: "",
@@ -694,6 +708,7 @@ export default {
       this.edit_info.ChangeEndDate = this.camp_Info.changeEndDate;
       this.edit_info.ChangeStart = this.camp_Info.changeStart;
       this.edit_info.ChangeEnd = this.camp_Info.changeEnd;
+      this.edit_info.discountDetail = this.camp_Info.discountDetail;
       console.log(this.edit_info.ChangeDateType);
 
       this.isCheckDisabled = true;
@@ -810,7 +825,8 @@ export default {
         ticketName: this.edit_info.ticketName,
         couponImg: this.edit_info.couponImg,
         couponSimpleImg: this.edit_info.couponSimpleImg,
-        imgUrl: this.edit_info.imgUrl
+        imgUrl: this.edit_info.imgUrl,
+        discountDetail: this.edit_info.discountDetail // 优惠券详情(富文本)
       };
 
       this.add_loading = true;
@@ -943,26 +959,26 @@ export default {
       }
       this.statusCheckChange();
     },
-      //上传couponImg图片
-      handleSucces2(res, file) {
-          if (res.code == 200) {
-              this.edit_info.couponSimpleImg = res.image_url;
+    //上传couponImg图片
+    handleSucces2(res, file) {
+      if (res.code == 200) {
+        this.edit_info.couponSimpleImg = res.image_url;
 
-              if (this.uploadList2.length == 0) {
-                  let obj = {
-                      url: res.image_url
-                  };
-                  this.uploadList2.push(obj);
-              } else {
-                  this.uploadList2[0].url = res.image_url;
-              }
+        if (this.uploadList2.length == 0) {
+          let obj = {
+            url: res.image_url
+          };
+          this.uploadList2.push(obj);
+        } else {
+          this.uploadList2[0].url = res.image_url;
+        }
 
-              this.$Message.info("上传图片成功");
-          } else {
-              this.$Message.error("上传图片失败，请重新上传");
-          }
-          this.statusCheckChange();
-      },
+        this.$Message.info("上传图片成功");
+      } else {
+        this.$Message.error("上传图片失败，请重新上传");
+      }
+      this.statusCheckChange();
+    },
 
     //获取APPid
     getAppId() {
@@ -1038,6 +1054,19 @@ export default {
       this.edit_info.ticketTemplateId = this.currentChooseID;
       this.edit_info.ticketName = this.currentChooseName;
       this.res_Modal_show = false;
+    },
+
+    // 富文本
+    change(val) {
+      // console.log("change:", val);
+      // console.log("data:",this.edit_info.discountDetail);
+      this.edit_info.discountDetail = val;
+      this.isCheckDisabled = false;
+    },
+    blur(val) {
+      // console.log("blur:", val);
+      this.edit_info.discountDetail = val;
+      this.isCheckDisabled = false;
     }
 
     // 选择模版end--------------------------------
