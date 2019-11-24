@@ -104,7 +104,7 @@
   <StoreList
       v-if="showStoreList"
       :showStoreList.sync="showStoreList"
-      :checked="checkedStoreList"
+      :hasChecked="checkedStoreList"
       :shopLists="shopIds"
       @storeSelect="selectedTrCallBack"
     ></StoreList>
@@ -316,11 +316,11 @@ export default {
       }
     },
     showCouponFn(i) {
-      this.showChooseCoupon = true;
       this.currentContentIndex = i;
       if (Array.isArray(this.hotCouponVoList) && this.hotCouponVoList[0]) {
         this.checkedData = this.hotCouponVoList[0];
       }
+      this.showChooseCoupon = true;
     },
     selectedCoupon(arr) {
       let e = arr[0]
@@ -337,6 +337,7 @@ export default {
       }
     },
     chooseStore() {
+      this.checkedStoreList  = this.shopReqList;
       this.showStoreList = true;
     },
     selectedTrCallBack(e) {
@@ -546,6 +547,10 @@ export default {
       // }
       this.$Spin.hide();
       this.pushRange = data.pushRange;
+      if(this.hotCouponVoList[0] || !Array.isArray(this.hotCouponVoList) || this.hotCouponVoList.length > 0) {
+        this.hotCouponVoList = [JSON.parse(this.hotListItem)];
+      }
+      this.hotCouponVoList[0].id = data.id;
       // 投放位置
       this.hotCouponVoList[0].orderBy = data.orderBy;
       // 投放终端 回填
@@ -572,6 +577,9 @@ export default {
         templateId: data.templateId,
         title: data.title
       }
+      this.hotCouponVoList[0].couponKind = data.couponKind;
+      this.hotCouponVoList[0].templateId = data.templateId;
+      this.hotCouponVoList[0].title = data.title;
     }
 
   },

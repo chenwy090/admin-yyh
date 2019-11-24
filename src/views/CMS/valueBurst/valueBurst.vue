@@ -565,7 +565,6 @@ export default {
       const site = 1;
       let { code, msg, data } = await postRequest(url, {id});
       if (code == 200) {
-        console.log(data);
         this.details = data;
         if (typeof cb === 'function') {
           cb(data);
@@ -622,7 +621,6 @@ export default {
     },
     handleSubmit(name) {
       this.$refs[name].validate(valid => {
-        console.log("valid", valid);
         if (!valid) {
           this.msgErr("数据验证失败！");
           return;
