@@ -413,7 +413,7 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style  lang="less" scoped>
 .demo-upload-list {
   display: inline-block;
   width: 90px;

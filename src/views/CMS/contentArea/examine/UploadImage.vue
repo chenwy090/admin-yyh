@@ -161,7 +161,7 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style  lang="less" scoped>
 .label {
   float: left;
   height: 90px;
