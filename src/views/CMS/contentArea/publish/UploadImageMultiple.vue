@@ -92,14 +92,14 @@ export default {
   watch: {
     defaultList: {
       handler: function() {
-        // console.log("watch", JSON.stringify(this.defaultList));
-        this.uploadList = [];
-        for (let i = 0; i < this.defaultList.length; i++) {
-          let item = this.defaultList[i];
-          this.uploadList.push(item);
-        }
-
-        console.log("watch defaultList uploadList:", this.uploadList);
+        this.uploadList = JSON.parse(JSON.stringify(this.defaultList));
+        // this.uploadList = [];
+        // for (let i = 0; i < this.defaultList.length; i++) {
+        //   let item = this.defaultList[i];
+        //   this.uploadList.push(item);
+        // }
+        let arr = JSON.stringify(this.uploadList);
+        console.log("watch defaultList uploadList:", arr);
       },
       immediate: true
     }
@@ -190,16 +190,38 @@ export default {
     handleMaxSize(file) {
       this.$Message.error("图片不大于2M");
     },
+    createSort(arr) {
+      arr = JSON.parse(JSON.stringify(arr));
+      console.log("this.uploadList arr:", arr);
+
+      let max = -1;
+      if (arr.length == 0) {
+        max = 1;
+      } else if (arr.length == 1) {
+        max = Number(arr[0].sort) + 1;
+      } else {
+        arr.sort((obj1, obj2) => obj2.sort - obj1.sort);
+        max = Number(arr[0].sort) + 1;
+      }
+
+      max = max || 1;
+      console.log("max===>", max);
+
+      return max;
+    },
     handleUploadSuccess(res, file, fileList) {
       if (res.code == 200) {
         let imgUrl = res.image_url;
-        this.uploadList.push({ imgUrl });
+        let sort = this.createSort(this.uploadList);
+        let _id = Math.random();
+        let msg = "";
+        this.uploadList.push({ _id, msg, imgUrl, sort });
 
         let images = JSON.parse(JSON.stringify(this.uploadList));
-        images = images.map((item, index) => {
-          item.sort = index;
-          return item;
-        });
+        // images = images.map((item, index) => {
+        //   item.sort = index;
+        //   return item;
+        // });
 
         this.$emit("uploadSuccess", {
           fileUploadType: this.fileUploadType,
@@ -255,14 +277,14 @@ export default {
   background: #fff;
   // border: 1px solid red;
   position: relative;
- 
+
   margin-right: 4px;
 
   .item {
     position: relative;
     width: 90px;
     height: 90px;
-     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 
     img {
       width: 100%;

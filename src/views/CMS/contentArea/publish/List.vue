@@ -285,7 +285,7 @@ export default {
         if (code == 200) {
           this.tableData = records.map(item => {
             // "userStatus": 0,//0-正常 1-封禁
-            console.log(item.tags, item.citys, item.coupons);
+            // console.log(item.tags, item.citys, item.coupons);
 
             let { status, userStatus, sourceType, tags, citys, coupons } = item;
             tags = tags || [];
