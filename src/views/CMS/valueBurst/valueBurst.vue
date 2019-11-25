@@ -172,12 +172,14 @@
                 size="small"
                 @click="doEdit(params.row.id)"
               >编辑</Button>
+
               <Button
                 type="text"
                 style="margin-right: 5px;color: #2d8cf0"
                 size="small"
                 @click="apiUpdown(params.row.id, params.row.status)"
-              >{{params.row.statusTxt}}</Button>
+              >{{["","下架","上架"][params.row.status]}}</Button>
+              <!-- status:  1   2下架  2  1上架 -->
               <Button
                 type="error"
                 style="margin-right: 5px"
@@ -553,9 +555,9 @@ export default {
       // let query = util.g_json2query({id, status});
       let { code, msg, data } = await postRequest(url, { id, status });
       if (code == 200) {
-        let msg = "上架成功";
+        let msg = "下架成功";
         if (status == 2) {
-          msg = "下架成功";
+          msg = "上架成功";
         }
         this.msgOk(msg);
         this.getList();
