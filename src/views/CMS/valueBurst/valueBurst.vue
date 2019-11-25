@@ -185,9 +185,7 @@
                 @click="confirmDel(params.row.id, params.row.title)"
               >删除</Button>
             </template>
-            <template slot-scope="{ row }" slot="status">
-              <div>{{['待上架','已下架', '已上架'][row.status]}}</div>
-            </template>
+
             <template slot-scope="{ row }" slot="time">
               <div>{{row.startTime}}-{{row.endTime}}</div>
             </template>
@@ -300,7 +298,7 @@ export default {
           title: "运营状态",
           width: 100,
           align: "center",
-          slot: "status"
+          key: "statusTxt"
         },
         {
           title: "投放终端",
