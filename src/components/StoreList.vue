@@ -126,7 +126,7 @@ export default {
       type: [Number, String],
       default: ""
     },
-    checked: {
+    hasChecked: {
       type: Array,
       default: () => []
     },
@@ -215,6 +215,15 @@ export default {
   },
 
   methods: {
+    handleChecked() {
+      this.hasChecked.forEach(el=>{
+        this.tableData.forEach((ell,ii)=>{
+          if (el.shopId == ell.shopId) {
+            this.tableData[ii]._checked = true;
+          }
+        });
+      })
+    },
     // //确定选择商户
     selectMerchant() {
       this.choices = this.shopLists.filter(item => item._checked);
@@ -239,7 +248,6 @@ export default {
       }
     },
     handleSelectChange(selection) {
-      console.log(this.shopLists);
       let cur = (this.page.pageNum - 1) * this.page.pageSize;
       this.tableData = this.tableData.map((item, index) => {
         item._checked = false;
@@ -372,6 +380,8 @@ export default {
   mounted() {
     this.queryTableData();
     this.getprovincelist();
+    console.log(this.hasChecked);
+    this.handleChecked();
   }
 };
 </script>

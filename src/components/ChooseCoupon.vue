@@ -107,12 +107,8 @@ export default {
     checkedData: Object
     // checkedData = {
     //   couponKind: data.couponKind,
-    //   list: [
-    //     {
-    //       templateId: data.templateId,
-    //       title: data.title,
-    //     }
-    //   ]
+    //   templateId: data.templateId,
+    //   title: data.title,
     // }
   },
   data () {
@@ -253,8 +249,6 @@ export default {
                   if (this.single === true) {
                     this.handleChecked();
                   } else {
-                    console.log(this.formValidate.specialTopicCouponList);
-                    return;
                     if (this.formValidate.specialTopicCouponList.length != 0) {
                         if (this.couponSearchData.couponType == "1") {
                             for (let i = 0; i < this.CampaginList.length; i++) {
@@ -302,13 +296,11 @@ export default {
           let _keys = ['', 'campId', 'templateId'];
           let key = _keys[this.couponSearchData.couponType];
           if (this.checkedData && this.checkedData.templateId) {
-            console.log(this.checkedData, this.CampaginList);
             const len = this.CampaginList.length;
             for (let i = 0; i < len; i++) {
               if (this.CampaginList[i][key] === this.checkedData.templateId) {
                 this.CampaginList[i]._highlight = true;
                 this.formValidate.specialTopicCouponList = this.CampaginList[i];
-                console.log('fond it')
                 break;
               }
             }
@@ -318,8 +310,6 @@ export default {
 
       // 选中优惠活动
       selectionCampagin(selection, row) {
-          console.log(selection);
-          console.log(row);
           let obj = {};
           if (this.couponSearchData.couponType == 1) {
               obj = {
@@ -338,7 +328,6 @@ export default {
           }
           this.formValidate.specialTopicCouponList.push(obj);
           // this.msgOk("选择成功，点击保存即刻关闭");
-          console.log(this.formValidate.specialTopicCouponList);
       },
 
       //全选优惠券
@@ -474,7 +463,6 @@ export default {
         this.columns10.shift();
       }
     }
-    console.log(this.checkedData);
     if (this.checkedData.couponKind || typeof this.checkedData.couponKind === 'number') {
       this.couponSearchData.couponType = this.checkedData.couponKind;
       this.search1();

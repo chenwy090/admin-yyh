@@ -303,6 +303,40 @@
                 style="margin-left: 3%"
               >已选择</Tag>
             </FormItem>
+            <FormItem label="品类、品牌" required>
+              <Select
+                v-model="edit_info.firstClassCode"
+                style="width:150px"
+                clearable
+                @on-change="get2"
+              >
+                <Option
+                  v-for="(item, index) in list1"
+                  :key="index"
+                  :value="item.classCode"
+                >{{ item.className }}</Option>
+              </Select>
+
+              <Select
+                v-model="edit_info.secondClassCode"
+                style="width:150px"
+                clearable
+                @on-change="get3"
+              >
+                <Option
+                  v-for="(item, index) in list2"
+                  :key="index"
+                  :value="item.classCode"
+                >{{ item.className }}</Option>
+              </Select>
+              <Select v-model="edit_info.threeClassCode" style="width:150px" clearable>
+                <Option
+                  v-for="(item, index) in list3"
+                  :key="index"
+                  :value="item.classCode"
+                >{{ item.className }}</Option>
+              </Select>
+            </FormItem>
 
             <FormItem v-if="edit_info.ticketName">
               <Alert style="width:500px">
@@ -445,7 +479,14 @@ export default {
     return {
       receiveRuleSetPage: false,
 
+      list1: [],
+      list2: [],
+      list3: [],
+
       edit_info: {
+        firstClassCode: "",
+        secondClassCode: "",
+        threeClassCode: "",
         appid: "",
         campType: "57",
         couponType: "",
@@ -1067,12 +1108,85 @@ export default {
       // console.log("blur:", val);
       this.edit_info.discountDetail = val;
       this.isCheckDisabled = false;
-    }
+    },
 
     // 选择模版end--------------------------------
+
+    //一级分类
+    async get1() {
+      const url = "/campagin/selectGoodClassByCode";
+      let { code, msg, data } = await postRequest(url, {});
+      if (code == 200) {
+        this.list1 = data;
+        this.list2 = [];
+        this.list3 = [];
+
+        this.secondClassCode = "";
+        this.threeClassCode = "";
+      } else {
+        this.msgErr(msg);
+      }
+    },
+    //二级分类
+    async get2() {
+      const url = "/campagin/selectGoodClassByCode";
+      let { code, msg, data } = await postRequest(url, {
+        parentCode: this.edit_info.firstClassCode
+      });
+      if (code == 200) {
+        this.list2 = data;
+        this.list3 = [];
+        this.threeClassCode = "";
+      } else {
+        this.msgErr(msg);
+      }
+    },
+    //三级分类
+    async get3() {
+      const url = "/campagin/selectGoodClassByCode";
+      let { code, msg, data } = await postRequest(url, {
+        parentCode: this.edit_info.secondClassCode
+      });
+      if (code == 200) {
+        this.list3 = data;
+      } else {
+        this.msgErr(msg);
+      }
+    },
+
+    //品牌
+    async getBrandList() {
+      const url = "/campagin/listGoodBrand";
+      let { code, msg, data } = await postRequest(url, {
+        brandCode: "",
+        brandName: "",
+        pageNum: 1,
+        pageSize: 10
+      });
+      if (code == 200) {
+        this.list3 = data;
+      } else {
+        this.msgErr(msg);
+      }
+    },
+    // 全局提示
+    msgOk(txt) {
+      this.$Message.info({
+        content: txt,
+        duration: 3
+      });
+    },
+    msgErr(txt) {
+      this.$Message.error({
+        content: txt,
+        duration: 3
+      });
+    }
   },
   mounted() {
     this.init();
+    this.get1();
+    this.getBrandList();
   }
 };
 </script>

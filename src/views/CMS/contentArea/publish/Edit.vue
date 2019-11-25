@@ -564,6 +564,9 @@ export default {
           return item;
         });
 
+        console.log("defaultList images ",this.formData.images);
+        
+
         // 有非法数据 不允许提交
         this.formData.imagesFlag = imagesFlag;
 
@@ -707,9 +710,8 @@ export default {
       console.log("removeImages", images);
     },
     imagesUploadSuccess({ images }) {
-      console.log(1);
       this.formData.images = images;
-      console.log("imagesUploadSuccess", this.formData.images);
+      console.log("imagesUploadSuccess", images);
     },
 
     removeCoverImg() {
