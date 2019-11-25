@@ -1,6 +1,8 @@
 <template>
   <div class="zex-upload-box">
     <span class="label">{{label}}</span>
+    <!-- <div>uploadList:{{uploadList}} ---changeImageSort:{{changeImageSort}}</div> -->
+
     <div class="demo-upload-list" v-for="(item, index) in uploadList" :key="index">
       <div class="item">
         <img :src="item.imgUrl" />
@@ -11,17 +13,16 @@
       </div>
       <div class="imgSort">
         <!--  style="display:inline-block;width:80px" v-model="item.sort"  @on-change="xxx($event,index)" -->
-
         <Input
           size="small"
           v-model="item.sort"
           placeholder="请输入排序"
           @input.native="changeImageSort($event,index)"
         />
-        <span class="error-msg">error-msg{{item.msg}}</span>
+        <span class="error-msg">{{item.msg}}</span>
       </div>
     </div>
-    <!-- :default-file-list="defaultList"  :default-file-list="defaultList"-->
+    <!-- :default-file-list="defaultList"  :default-file-list="defaultList" :defaultList="defaultList"-->
     <div class="btn-upload">
       <Upload
         ref="upload"
@@ -32,7 +33,7 @@
         :format="['gif','jpg','jpeg','png']"
         :on-format-error="handleFormatError"
         :show-upload-list="false"
-        :defaultList="defaultList"
+        :default-file-list="defaultList"
         :before-upload="handleBeforeUpload"
         :on-success="handleUploadSuccess"
         :max-size="2048"
@@ -138,9 +139,50 @@ export default {
       console.log("mounted:", this.uploadList);
     }
   },
-
+  renderError(createElement, err) {
+    console.log("ssssrenderError");
+    return createElement("div", err.stack);
+    //return createElement("div",{},err.stack);
+  },
+  errorCaptured() {
+    console.log("11errorCaptured");
+  },
   methods: {
-    changeCouponSort(ev, index) {},
+    changeImageSort(ev, index) {
+      this.idx = index;
+      let fileItem = this.uploadList[index];
+
+      let { value } = ev.target;
+      value = value.replace(/\D/g, "");
+      if (!/^[1-9]\d*$|^$/.test(value)) {
+        value = "";
+        // ev.target.value = "";
+      }
+
+      let sort = value;
+      let msg = "请输入排序";
+      if (sort.length) {
+        //验证sort是否重复
+        let isRepeat = false;
+        for (let i = 0; i < this.uploadList.length; i++) {
+          let item = this.uploadList[i];
+          if (item._id == fileItem._id) continue;
+          if (item.sort == sort) {
+            isRepeat = true;
+            break;
+          }
+        }
+
+        msg = isRepeat ? "排序不能重复" : "";
+      }
+      let newFileItem = { ...fileItem, msg, sort };
+      this.uploadList.splice(index, 1, newFileItem);
+
+      // console.log("change sort : newFileItem ", JSON.stringify(newFileItem));
+
+      let images = JSON.parse(JSON.stringify(this.uploadList));
+      this.$emit("updateImages", images);
+    },
     handleView(imgUrl) {
       this.imgUrl = imgUrl;
       this.visible = true;
@@ -149,10 +191,10 @@ export default {
       this.uploadList.splice(index, 1);
 
       let images = JSON.parse(JSON.stringify(this.uploadList));
-      images = images.map((item, index) => {
-        item.sort = index;
-        return item;
-      });
+      // images = images.map((item, index) => {
+      //   item.sort = index;
+      //   return item;
+      // });
       this.$emit("remove", images);
     },
     handleBeforeUpload(file) {
@@ -277,6 +319,7 @@ export default {
   background: #fff;
   // border: 1px solid red;
   position: relative;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 
   margin-right: 4px;
 
@@ -284,7 +327,6 @@ export default {
     position: relative;
     width: 90px;
     height: 90px;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 
     img {
       width: 100%;

@@ -62,12 +62,9 @@
         </Col>
       </Row>
       <Alert type="warning">视频/图片/GIF(1个视频/1个GIF/15张以内图片) 图片（不大于2M,GIF/JPG/JPEG/PNG）</Alert>
-      <!-- :rules="{ required: true, message: '请上传图片类型' }" -->
-      <FormItem
-        label="图片类型："
-        prop="contentType"
-        :rules="{ required: true, validator: validateImages }"
-      >
+      <!-- :rules="{ required: true, message: '请上传图片类型' }" 
+      :rules="{ required: true, validator: validateImages }"-->
+      <FormItem label="图片类型：" prop="contentType">
         <RadioGroup v-model="formData.contentType" @on-change="changeContentType">
           <Radio v-for="item in contentTypeList" :label="item.value" :key="item.value">
             <span>{{item.label}}</span>
@@ -78,12 +75,13 @@
         <UploadImageMultiple
           :defaultList="formData.images"
           @remove="removeImages"
+          @updateImages="removeImages"
           @uploadSuccess="imagesUploadSuccess"
         ></UploadImageMultiple>
       </FormItem>
 
       <FormItem prop="images" :rules="{ required: true, validator: validateImages }">
-        <Button type="primary" icon="md-add-circle" size="small" @click="addCoupons">新增</Button>
+        <!-- <Button type="primary" icon="md-add-circle" size="small" @click="addCoupons">新增</Button> -->
       </FormItem>
 
       <FormItem label="轮播类型：" v-if="formData.images.length>1">
@@ -164,7 +162,7 @@
             </Col>
             <Col span="2">
               <div class="couponSort">
-                <!-- v-model="item.sort"  @on-change="xxx($event,index)" -->
+                <!-- v-model="item.sort" @on-change="xxx($event,index)" -->
                 <Input
                   style="display:inline-block;width:100px"
                   v-model="item.sort"
@@ -438,6 +436,14 @@ export default {
       this.queryDetails(id);
     }
   },
+  renderError(createElement, err) {
+    console.log("renderError");
+    return createElement("div", err.stack);
+    //return createElement("div",{},err.stack);
+  },
+  errorCaptured() {
+    console.log("errorCaptured");
+  },
   methods: {
     changeCouponSort(ev, index) {
       this.couponIndex = index;
@@ -564,8 +570,7 @@ export default {
           return item;
         });
 
-        console.log("defaultList images ",this.formData.images);
-        
+        console.log("defaultList images ", imagesFlag, this.formData.images);
 
         // 有非法数据 不允许提交
         this.formData.imagesFlag = imagesFlag;
@@ -784,7 +789,7 @@ export default {
       this.$refs[name].validate(valid => {
         console.log("valid", valid);
         if (!valid) {
-          // this.msgErr("数据验证失败！");
+          this.msgErr("数据验证失败！");
           return;
         }
 
@@ -806,7 +811,7 @@ export default {
         });
 
         console.log("submit formData:", formData);
-
+        return;
         postRequest(url, formData).then(res => {
           if (res.code == 200) {
             this.msgOk("保存成功");
@@ -820,13 +825,17 @@ export default {
 
     validateImages(rule, value, callback) {
       console.log("validateImages", rule, value);
-      if (!this.formData.contentType) {
-        return callback("请选择图片类型");
-      }
+      debugger;
+      // if (!this.formData.contentType) {
+      //   return callback("请选择图片类型");
+      // }
+      debugger;
+      console.log("pass validateImages contentType");
       if (!this.formData.images.length) {
         return callback("请上传图片");
       }
-
+      debugger;
+      console.log("pass validateImages");
       callback();
     },
     validateCitys(rule, value, callback) {
@@ -834,13 +843,16 @@ export default {
       if (!this.formData.citys.length) {
         return callback("请选择适用城市");
       }
+      console.log("pass validateCitys");
       callback();
     },
     validateTags(rule, value, callback) {
-      console.log("validateCitys", rule, value);
+      console.log("validateTags", rule, value);
       if (!this.tags.length) {
+        console.log(" no pass validateTags");
         return callback("请选择标签");
       }
+      console.log("pass validateTags");
       callback();
     },
     validateEmpty(msg) {
@@ -862,6 +874,7 @@ export default {
       if (!this.formData.imagesFlag) {
         return callback("请输入大于等于1的排序字段");
       }
+      console.log("pass validateImages");
       callback();
     },
     validateCoupons(rule, value, callback) {
@@ -872,6 +885,7 @@ export default {
       if (!this.formData.couponsFlag) {
         return callback("请输入大于等于1的排序字段");
       }
+      console.log("pass validateCoupons");
       callback();
     }
   }
