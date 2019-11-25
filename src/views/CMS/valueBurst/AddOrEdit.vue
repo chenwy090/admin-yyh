@@ -1,28 +1,29 @@
 <template>
-<div>
-  <Modal
-    class="yyh-modal"
-    v-model="modalShow"
-    :title="title"
-    width="1000"
-    :styles="{ top: '20px' }"
-  >
-    <div style="height: 600px;overflow-y: auto;">
-      <div class="yyh-modal-item">
-        <span class="title">选择投放门店</span>
-        <div
-          class="modal-content"
-          style="flex: 1"
-        >
-          <RadioGroup v-model="pushRange">
+  <div>
+    <Modal
+      class="yyh-modal"
+      v-model="modalShow"
+      :title="title"
+      width="1000"
+      :styles="{ top: '20px' }"
+    >
+      <div style="height: 600px;overflow-y: auto;">
+        <div class="yyh-modal-item">
+          <span class="title">选择投放门店</span>
+          <div class="modal-content" style="flex: 1">
+            <RadioGroup v-model="pushRange">
               <Radio v-for="(el, i) in rangeConf" :label="i" :key="'line19'+i">{{el}}</Radio>
-          </RadioGroup>
-          <div v-show="pushRange == 1" class="mgt-10">
-            <Select v-model="venderName" style="width:150px" placeholder="选择零售商">
-                <Option v-for="(item,index) in venderNames" :value="item" :key="'L23' + index">{{ item }}</Option>
-            </Select>
-          </div>
-          <div v-show="pushRange == 2" class="mgt-10">
+            </RadioGroup>
+            <div v-show="pushRange == 1" class="mgt-10">
+              <Select v-model="venderName" style="width:150px" placeholder="选择零售商">
+                <Option
+                  v-for="(item,index) in venderNames"
+                  :value="item"
+                  :key="'L23' + index"
+                >{{ item }}</Option>
+              </Select>
+            </div>
+            <div v-show="pushRange == 2" class="mgt-10">
               <Select
                 class="mgr-10"
                 v-model="province"
@@ -34,99 +35,122 @@
                   v-for="(item, index) in provincelist"
                   :key="'line36'+index"
                   :value="item.provinceName"
-                  >{{ item.provinceName }}</Option
-                >
+                >{{ item.provinceName }}</Option>
               </Select>
-              <Select
-                v-model="city"
-                style="width:150px"
-                clearable
-              >
+              <Select v-model="city" style="width:150px" clearable>
                 <Option
                   v-for="(item, index) in citylist"
                   :key="'line48'+index"
                   :value="item.cityName"
-                  >{{ item.cityName }}</Option
-                >
+                >{{ item.cityName }}</Option>
               </Select>
-          </div>
-          <div v-show="pushRange == 3" class="mgt-10">
-            <Button @click="chooseStore">选择门店</Button>
-            <div class="store-wrap mgt-10">
-              <Table border :columns="columns2" :data="shopReqList"></Table>
+            </div>
+            <div v-show="pushRange == 3" class="mgt-10">
+              <Button @click="chooseStore">选择门店</Button>
+              <div class="store-wrap mgt-10">
+                <Table border :columns="columns2" :data="shopReqList"></Table>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <h2>投放设置</h2>
-      <Button v-if="title !== '编辑'" type="primary" icon="md-add" @click="hotCouponVoList.push(JSON.parse(hotListItem))">增加一条</Button>
-      <Table border :columns="columns1" :data="hotCouponVoList">
-        <template slot="content" slot-scope="params">
-            <Button
-              size="small"
-              style="color:#2d8cf0"
-              @click="showCouponFn(params.index)"
-            >选择优惠券</Button>
+        <h2>投放设置</h2>
+        <Button
+          v-if="title !== '编辑'"
+          type="primary"
+          icon="md-add"
+          @click="hotCouponVoList.push(JSON.parse(hotListItem))"
+        >增加一条</Button>
+        <Table border :columns="columns1" :data="hotCouponVoList">
+          <template slot="content" slot-scope="params">
+            <Button size="small" style="color:#2d8cf0" @click="showCouponFn(params.index)">选择优惠券</Button>
             <p class="mgt-5">{{hotCouponVoList[params.index].title}}</p>
             <!-- <p v-for="(el,i) in hotCouponVoList" :key="'line71'+i">{{el.title}}</p> -->
-        </template>
-        <!-- <template slot="content" slot-scope="params">
+          </template>
+          <!-- <template slot="content" slot-scope="params">
             <Input  v-model="hotCouponVoList[params.index].title" style="width:120px"></Input>
-        </template> -->
-        <template slot="pushPos" slot-scope="params">
+          </template>-->
+          <template slot="pushPos" slot-scope="params">
             <Select v-model="hotCouponVoList[params.index].orderBy" style="width:110px">
-                <Option v-for="(item,index) in '123456'" :value="Number(item)" :key="'L34' + index">{{ '爆抢位置' + item }}</Option>
+              <Option
+                v-for="(item,index) in '123456'"
+                :value="Number(item)"
+                :key="'L34' + index"
+              >{{ '爆抢位置' + item }}</Option>
             </Select>
-        </template>
-        <template slot="pushClients" slot-scope="params">
-          <CheckboxGroup v-model="hotCouponVoList[params.index].pushPlatformList">
-              <Checkbox style="width: 60px" v-for="el in clientTypeList" :label="el.value" :key="el.label">{{el.label}}</Checkbox>
-          </CheckboxGroup>
-        </template>
-        <template slot="pushTime" slot-scope="params">
-          <DatePicker type="date" v-model="hotCouponVoList[params.index].startTime" placeholder="Select date and time" style="width: 200px"></DatePicker>至<!--
-          --><DatePicker type="date" v-model="hotCouponVoList[params.index].endTime" placeholder="Select date and time" style="width: 200px"></DatePicker>
-        </template>
-        <template slot="operate" slot-scope="params" v-if="title !== '编辑'">
+          </template>
+          <template slot="pushClients" slot-scope="params">
+            <CheckboxGroup v-model="hotCouponVoList[params.index].pushPlatformList">
+              <Checkbox
+                style="width: 60px"
+                v-for="el in clientTypeList"
+                :label="el.value"
+                :key="el.label"
+              >{{el.label}}</Checkbox>
+            </CheckboxGroup>
+          </template>
+          <template slot="pushTime" slot-scope="params">
+            <!-- <DatePicker
+              type="date"
+              v-model="hotCouponVoList[params.index].startTime"
+              placeholder="Select date and time"
+              style="width: 200px"
+            ></DatePicker>至
+            <DatePicker
+              type="date"
+              v-model="hotCouponVoList[params.index].endTime"
+              placeholder="Select date and time"
+              style="width: 200px"
+            ></DatePicker>-->
+
+            <DatePicker
+              type="daterange"
+              placeholder="请选择日期"
+              style="width: 200px"
+              :value="hotCouponVoList[params.index].daterange"
+              @on-change="changeStartDate($event,params.index)"
+            ></DatePicker>
+          </template>
+          <template slot="operate" slot-scope="params" v-if="title !== '编辑'">
             <Button
               size="small"
               style="color:#2db7f5"
               @click="remove(params.index)"
               icon="ios-trash-outline"
             >移除</Button>
-        </template>
-      </Table>
-    </div>
-    <div slot="footer">
-      <Button type="primary" @click="submitOk">保存</Button>
-    </div>
-  </Modal>
-  <StoreList
+          </template>
+        </Table>
+      </div>
+      <div slot="footer">
+        <Button type="primary" @click="submitOk">保存</Button>
+      </div>
+    </Modal>
+    <StoreList
       v-if="showStoreList"
       :showStoreList.sync="showStoreList"
       :hasChecked="checkedStoreList"
       :shopLists="shopIds"
       @storeSelect="selectedTrCallBack"
     ></StoreList>
-  <ChooseCoupon
+    <ChooseCoupon
       v-if="showChooseCoupon"
       :single="true"
       :showChooseCoupon.sync="showChooseCoupon"
       :checkedData="checkedData"
       @couponSelect="selectedCoupon"
     ></ChooseCoupon>
-</div>
+  </div>
 </template>
 <script>
 import StoreList from "@/components/StoreList";
 import ChooseCoupon from "@/components/ChooseCoupon";
 import util from "@/libs/util";
+import { formatDate } from "@/libs/date";
 import comm from "@/mixins/common";
 import { postJson, postRequest, getRequest } from "@/libs/axios";
 
 export default {
   name: "burst-edit",
-  components: {StoreList, ChooseCoupon},
+  components: { StoreList, ChooseCoupon },
   props: {
     show: {
       type: Number,
@@ -138,44 +162,44 @@ export default {
       checkedData: {},
       provincelist: [],
       citylist: [],
-      province: '',
-      city: '',
-      venderName: '',
-      currentContentIndex: '',
+      province: "",
+      city: "",
+      venderName: "",
+      currentContentIndex: "",
       showChooseCoupon: false,
       clientTypeList: [
-          {value: 0, label: '小程序'},
-          {value: 1, label: '安卓'},
-          {value: 2, label: 'ios'},
-          {value: 3, label: '其他'},
+        { value: 0, label: "小程序" },
+        { value: 1, label: "安卓" },
+        { value: 2, label: "ios" },
+        // { value: 3, label: "其他" }
       ],
       showStoreList: false,
-      checkedStoreList: [],// 已选的门店
-      shopId: '',
+      checkedStoreList: [], // 已选的门店
+      shopId: "",
       shopIds: [], // 门店列表
       venderNames: [], // 门店类别
       title: "新增",
       modalShow: false,
-      rangeConf: ['全国', '零售商', '城市', '自定义门店(单店)'],
-      pushRange: '',
+      rangeConf: ["全国", "零售商", "城市", "自定义门店(单店)"],
+      pushRange: "",
 
       columns1: [
         {
           title: "投放内容",
           key: "title",
-          width: '145',
-          slot: 'content'
+          width: "145",
+          slot: "content"
         },
         {
           title: "投放位置",
           key: "orderBy",
-          width: '145',
-          slot: 'pushPos'
+          width: "145",
+          slot: "pushPos"
         },
         {
           title: "投放终端",
-          width: '120',
-          slot: 'pushClients'
+          width: "120",
+          slot: "pushClients"
           // render: (h, {row}) => {
           //     let _list = [];
           //     if (Array.isArray(row.pushPlatformList)) {
@@ -186,15 +210,15 @@ export default {
         },
         {
           title: "投放时间",
-          slot: 'pushTime'
+          slot: "pushTime"
           // render: (h, {row}) => {
           //     return h('div', row.startTime + ' - ' + row.endTime)
           // }
         },
         {
           title: "操作",
-          slot: 'operate',
-          width: '100'
+          slot: "operate",
+          width: "100"
         }
       ],
       columns2: [
@@ -212,37 +236,43 @@ export default {
         },
         {
           title: "地址",
-          render: (h, {row}) => {
-            return h('div', row.province + row.city)
+          render: (h, { row }) => {
+            return h("div", row.province + row.city);
           }
         }
       ],
       shopReqList: [],
       hotListItem: JSON.stringify({
-          orderBy: '',
-          pushPlatformList: [],
-          startTime: "",
-          endTime: "",
-          couponKind: '',
-          templateId: '',
-          title: "",
+        orderBy: "",
+        pushPlatformList: [],
+        startTime: "",
+        endTime: "",
+        couponKind: "",
+        templateId: "",
+        title: ""
       }),
       hotCouponVoList: [
         {
-          orderBy: '',
+          orderBy: "",
           pushPlatformList: [],
           startTime: "",
           endTime: "",
 
-          couponKind: '',
-          templateId: '',
-          title: "",
+          couponKind: "",
+          templateId: "",
+          title: ""
         }
       ]
     };
   },
   mixins: [comm],
   methods: {
+    changeStartDate(arr, index) {
+      // yyyy-MM-dd HH:mm:ss
+      let [startTime = "", endTime = ""] = arr;
+      this.hotCouponVoList[index].startTime = startTime;
+      this.hotCouponVoList[index].endTime = endTime;
+    },
     async apiAdd(e) {
       // e = {
       //   "hotCouponVoList": [
@@ -284,32 +314,32 @@ export default {
       //     }
       //   ]
       // }
-        const url = "/hotCoupon/add";
-        this.$Spin.show();
-        setTimeout(() => {
-            this.$Spin.hide();
-        }, 6000);
-        let { code, msg, data } = await postRequest(url, e);
-        if (code == 200) {
-          this.$Spin.hide();
-          this.msgOk('新增成功');
-          this.$parent.getList();
-        } else {
-          this.msgErr(msg);
-        }
+      const url = "/hotCoupon/add";
+      this.$Spin.show();
+      setTimeout(() => {
+        this.$Spin.hide();
+      }, 6000);
+      let { code, msg, data } = await postRequest(url, e);
+      if (code == 200) {
+        this.$Spin.hide();
+        this.msgOk("新增成功");
+        this.$parent.getList();
+      } else {
+        this.msgErr(msg);
+      }
     },
-    
+
     // 编辑
     async apiEdit(e) {
       const url = "/hotCoupon/edit";
       this.$Spin.show();
-        setTimeout(() => {
-            this.$Spin.hide();
-        }, 6000);
+      setTimeout(() => {
+        this.$Spin.hide();
+      }, 6000);
       let { code, msg, data } = await postRequest(url, e);
       if (code == 200) {
         this.$Spin.hide();
-        this.msgOk('编辑成功');
+        this.msgOk("编辑成功");
         this.$parent.getList();
       } else {
         this.msgErr(msg);
@@ -323,21 +353,23 @@ export default {
       this.showChooseCoupon = true;
     },
     selectedCoupon(arr) {
-      let e = arr[0]
-      if (typeof e === 'object' && 'campId' in e) {
+      let e = arr[0];
+      if (typeof e === "object" && "campId" in e) {
         // 超市券
         this.hotCouponVoList[this.currentContentIndex].couponKind = 1;
         this.hotCouponVoList[this.currentContentIndex].templateId = e.campId;
         this.hotCouponVoList[this.currentContentIndex].title = e.name;
       } else {
         // 周边券
-        this.hotCouponVoList[this.currentContentIndex].couponKind = e.couponKind;
-        this.hotCouponVoList[this.currentContentIndex].templateId = e.templateId;
+        this.hotCouponVoList[this.currentContentIndex].couponKind =
+          e.couponKind;
+        this.hotCouponVoList[this.currentContentIndex].templateId =
+          e.templateId;
         this.hotCouponVoList[this.currentContentIndex].title = e.title;
       }
     },
     chooseStore() {
-      this.checkedStoreList  = this.shopReqList;
+      this.checkedStoreList = this.shopReqList;
       this.showStoreList = true;
     },
     selectedTrCallBack(e) {
@@ -356,7 +388,7 @@ export default {
         status: true,
         index: -1,
         list: []
-      }
+      };
       const len = arr.length;
       for (let i = 0; i < len; i++) {
         let handleRes = this.handleNull(arr[i], rules);
@@ -376,109 +408,121 @@ export default {
       let res = [];
       rules.forEach((el, i) => {
         if (Array.isArray(obj[el[0]])) {
-          if(obj[el[0]].length < 1) {
-            res.push(el)
+          if (obj[el[0]].length < 1) {
+            res.push(el);
           }
         } else {
-          if(obj[el[0]] === '' || obj[el[0]] === undefined) {
-            res.push(el)
+          if (obj[el[0]] === "" || obj[el[0]] === undefined) {
+            res.push(el);
           }
         }
-      })
+      });
       return res;
     },
     submitOk() {
       // 这里做一下参数检测和提示 。。。
-      if (typeof this.pushRange !== 'number') {
-        return this.msgErr('请选择投放范围');
+      if (typeof this.pushRange !== "number") {
+        return this.msgErr("请选择投放范围");
       }
       if (this.hotCouponVoList.length < 0) {
-        return this.msgErr('至少要有一条内容');
+        return this.msgErr("至少要有一条内容");
       }
       if (Array.isArray(this.hotCouponVoList)) {
-        this.hotCouponVoList.forEach((el,i) => {
-          if (Object.prototype.toString.call(el.startTime) === '[object Date]') {
-            this.hotCouponVoList[i].startTime = el.startTime.toISOString().slice(0, 10);
-          } else if (typeof el.startTime === 'string') {
-            this.hotCouponVoList[i].startTime = el.startTime.slice(0, 10);
-          }
-          if (Object.prototype.toString.call(el.endTime) === '[object Date]') {
-            this.hotCouponVoList[i].endTime = el.endTime.toISOString().slice(0, 10);
-          } else if (typeof el.endTime === 'string') {
-            this.hotCouponVoList[i].endTime = el.endTime.slice(0, 10);
-          }
-        });
+        // this.hotCouponVoList.forEach((el, i) => {
+        //   if (
+        //     Object.prototype.toString.call(el.startTime) === "[object Date]"
+        //   ) {
+        //     this.hotCouponVoList[
+        //       i
+        //     ].startTime = el.startTime.toISOString().slice(0, 10);
+        //   } else if (typeof el.startTime === "string") {
+        //     this.hotCouponVoList[i].startTime = el.startTime.slice(0, 10);
+        //   }
+        //   if (Object.prototype.toString.call(el.endTime) === "[object Date]") {
+        //     this.hotCouponVoList[i].endTime = el.endTime
+        //       .toISOString()
+        //       .slice(0, 10);
+        //   } else if (typeof el.endTime === "string") {
+        //     this.hotCouponVoList[i].endTime = el.endTime.slice(0, 10);
+        //   }
+        // });
       } else {
-        console.warn('hotCouponVoList 有问题')
+        console.warn("hotCouponVoList 有问题");
         return;
       }
       let rules = [
-        ['couponKind', '【请选择优惠券】 couponKind'],
-        ['templateId', '【请选择优惠券】 templateId'],
-        ['orderBy', '【投放位置】'],
-        ['pushPlatformList', '【投放终端】'],
-        ['startTime', '【投放时间】 startTime'],
-        ['endTime', '【投放时间】 endTime'],
+        ["couponKind", "【请选择优惠券】 couponKind"],
+        ["templateId", "【请选择优惠券】 templateId"],
+        ["orderBy", "【投放位置】"],
+        ["pushPlatformList", "【投放终端】"],
+        ["startTime", "【投放时间】 startTime"],
+        ["endTime", "【投放时间】 endTime"]
       ];
       const handleRes = this.handleMsg(this.hotCouponVoList, rules);
       if (handleRes.status !== true) {
-        let _descs = handleRes.list.map(el=> el[1]);
+        let _descs = handleRes.list.map(el => el[1]);
         this.$Modal.warning({
           title: `投放设置的第${handleRes.index + 1}行有问题：`,
-          content: _descs.join(',')
+          content: _descs.join(",")
         });
         return;
       }
       let params = {
         hotCouponVoList: this.hotCouponVoList,
         pushRange: this.pushRange
-      }
+      };
       if (this.pushRange == 1) {
         if (!this.venderName) {
-          return this.msgErr('请选择零售商');
+          return this.msgErr("请选择零售商");
         }
-        params.shopInfo = [{
-          venderName: this.venderName
-        }]
+        params.shopInfo = [
+          {
+            venderName: this.venderName
+          }
+        ];
       } else if (this.pushRange == 2) {
         if (!this.province) {
-          return this.msgErr('请选择省');
+          return this.msgErr("请选择省");
         }
         if (this.city) {
-          params.shopInfo = [{
-            city: this.city,
-            province: this.province,
-          }]
+          params.shopInfo = [
+            {
+              city: this.city,
+              province: this.province
+            }
+          ];
         } else {
-          params.shopInfo = [{
-            province: this.province
-          }]
+          params.shopInfo = [
+            {
+              province: this.province
+            }
+          ];
         }
       } else if (this.pushRange == 3) {
-        params.shopInfo = this.shopReqList
+        params.shopInfo = this.shopReqList;
       }
       // 做一些参数检测 给对应的提示
       if (false) {
         return; // 参数有问题
       }
-      if (this.title === '编辑') {
+      if (this.title === "编辑") {
         this.apiEdit(JSON.parse(JSON.stringify(params)));
       } else {
         this.apiAdd(JSON.parse(JSON.stringify(params)));
       }
       this.hotCouponVoList = [];
       this.shopReqList = [];
-      this.pushRange = '';
+      this.pushRange = "";
       this.modalShow = false;
     },
     remove(i) {
       this.hotCouponVoList.splice(i, 1);
     },
     filterByName(arr, name) {
-      let obj = {}
-      arr.forEach(el=>{
-        obj[el[name]] = ''
-      })
+      let obj = {};
+      arr.forEach(el => {
+        obj[el[name]] = "";
+      });
       return Object.keys(obj);
     },
     //获取省份信息数据
@@ -495,13 +539,13 @@ export default {
     //根据省份code获取城市信息数据
     getcitylist(provinceName) {
       if (!provinceName) {
-        this.province = ''
-        this.city = ''
-        return this.citylist = []
+        this.province = "";
+        this.city = "";
+        return (this.citylist = []);
       }
-      let i = util.findIndex(this.provincelist, 'provinceName', provinceName);
+      let i = util.findIndex(this.provincelist, "provinceName", provinceName);
       if (i === -1) {
-        console.warn('未找到该 provinceName');
+        console.warn("未找到该 provinceName");
         return;
       }
       const url = "/system/area/city/" + this.provincelist[i].provinceCode;
@@ -515,6 +559,21 @@ export default {
     },
     // 在父级调用的 别删： 编辑时回填操作
     alreadyGetDetail(data) {
+      // 数据清洗
+      data = JSON.parse(JSON.stringify(data));
+
+      //回显编辑 推荐时间
+      let { startTime, endTime, pushPlatformList } = data;
+      startTime = formatDate(new Date(startTime), "yyyy-MM-dd");
+      endTime = formatDate(new Date(endTime), "yyyy-MM-dd");
+
+      // 投放时间
+      data.startTime = startTime;
+      data.endTime = endTime;
+      data.daterange = [startTime, endTime];
+      // 投放终端 回填
+      data.pushPlatformList = pushPlatformList.map(el => el.pushPlatform);
+
       // data = {
       //   "id": 329,
       //   "title": "分润测试劵",
@@ -547,41 +606,49 @@ export default {
       // }
       this.$Spin.hide();
       this.pushRange = data.pushRange;
-      if(this.hotCouponVoList[0] || !Array.isArray(this.hotCouponVoList) || this.hotCouponVoList.length > 0) {
+      if (
+        this.hotCouponVoList[0] ||
+        !Array.isArray(this.hotCouponVoList) ||
+        this.hotCouponVoList.length > 0
+      ) {
         this.hotCouponVoList = [JSON.parse(this.hotListItem)];
       }
-      this.hotCouponVoList[0].id = data.id;
-      // 投放位置
-      this.hotCouponVoList[0].orderBy = data.orderBy;
-      // 投放终端 回填
-      this.hotCouponVoList[0].pushPlatformList = data.pushPlatformList.map(el=> el.pushPlatform);
-      // 投放时间
-      if (data.startTime) {
-        this.hotCouponVoList[0].startTime = new Date(data.startTime);
-      }
-      if (data.endTime) {
-        this.hotCouponVoList[0].endTime = new Date(data.endTime);
-      }
 
-      if(data.pushRange == 1) {
+      this.hotCouponVoList[0] = data;
+      // this.hotCouponVoList[0].id = data.id;
+      // // 投放位置
+      // this.hotCouponVoList[0].orderBy = data.orderBy;
+      // 投放终端 回填
+      // this.hotCouponVoList[0].pushPlatformList = data.pushPlatformList.map(
+      //   el => el.pushPlatform
+      // );
+      // 投放时间
+      // if (data.startTime) {
+      //   this.hotCouponVoList[0].startTime = new Date(data.startTime);
+      // }
+      // if (data.endTime) {
+      //   this.hotCouponVoList[0].endTime = new Date(data.endTime);
+      // }
+      // this.hotCouponVoList[0].daterange = data.daterange;
+
+      if (data.pushRange == 1) {
         this.venderName = data.shopReqList[0].venderName;
       } else if (data.pushRange == 2) {
         this.province = data.shopReqList[0].province;
         this.getcitylist(this.province);
         this.city = data.shopReqList[0].city;
-      }  else if (data.pushRange == 3) {
+      } else if (data.pushRange == 3) {
         this.shopReqList = data.shopReqList;
       }
       this.checkedData = {
         couponKind: data.couponKind,
         templateId: data.templateId,
         title: data.title
-      }
+      };
       this.hotCouponVoList[0].couponKind = data.couponKind;
       this.hotCouponVoList[0].templateId = data.templateId;
       this.hotCouponVoList[0].title = data.title;
     }
-
   },
   mounted() {
     this.getprovincelist();
@@ -590,16 +657,23 @@ export default {
     show(e) {
       this.modalShow = !this.modalShow;
       this.title = this.$parent.currentTitle;
-      if (this.modalShow && this.shopIds.length < 1 && Array.isArray(this.$parent.shopIds)) {
+      if (
+        this.modalShow &&
+        this.shopIds.length < 1 &&
+        Array.isArray(this.$parent.shopIds)
+      ) {
         this.shopIds = JSON.parse(JSON.stringify(this.$parent.shopIds));
-        this.venderNames = this.filterByName(this.shopIds, 'venderName');
-        if (this.title === '编辑') {
+        this.venderNames = this.filterByName(this.shopIds, "venderName");
+        if (this.title === "编辑") {
           // 当前是编辑模式
           this.$Spin.show();
           setTimeout(() => {
-              this.$Spin.hide();
+            this.$Spin.hide();
           }, 6000);
-          if (this.columns1.slice(-1)[0] && this.columns1.slice(-1)[0].slot === 'operate') {
+          if (
+            this.columns1.slice(-1)[0] &&
+            this.columns1.slice(-1)[0].slot === "operate"
+          ) {
             this.columns1.pop();
           }
         }
@@ -617,8 +691,8 @@ export default {
 .bd {
   border: 1px solid;
 }
-.mgt-10{
-  margin-top: 10px
+.mgt-10 {
+  margin-top: 10px;
 }
 .yyh-modal-item {
   display: flex;
@@ -637,7 +711,8 @@ export default {
     max-height: 600px;
     background: #eee;
   }
-  .ivu-table-wrapper, .ivu-table {
+  .ivu-table-wrapper,
+  .ivu-table {
     overflow: initial;
   }
 }
@@ -669,7 +744,7 @@ export default {
   max-height: 400px;
   word-break: break-all;
 }
-.store-wrap{
+.store-wrap {
   min-height: 150px;
   max-height: 280px;
   overflow: auto;
