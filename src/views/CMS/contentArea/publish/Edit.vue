@@ -790,7 +790,7 @@ export default {
         console.log("valid", valid);
         if (!valid) {
           this.msgErr("数据验证失败！");
-          return;
+          // return;
         }
 
         //清洗数据
@@ -811,7 +811,6 @@ export default {
         });
 
         console.log("submit formData:", formData);
-        return;
         postRequest(url, formData).then(res => {
           if (res.code == 200) {
             this.msgOk("保存成功");
@@ -825,17 +824,12 @@ export default {
 
     validateImages(rule, value, callback) {
       console.log("validateImages", rule, value);
-      debugger;
       // if (!this.formData.contentType) {
       //   return callback("请选择图片类型");
       // }
-      debugger;
-      console.log("pass validateImages contentType");
       if (!this.formData.images.length) {
         return callback("请上传图片");
       }
-      debugger;
-      console.log("pass validateImages");
       callback();
     },
     validateCitys(rule, value, callback) {
@@ -843,16 +837,13 @@ export default {
       if (!this.formData.citys.length) {
         return callback("请选择适用城市");
       }
-      console.log("pass validateCitys");
       callback();
     },
     validateTags(rule, value, callback) {
       console.log("validateTags", rule, value);
       if (!this.tags.length) {
-        console.log(" no pass validateTags");
         return callback("请选择标签");
       }
-      console.log("pass validateTags");
       callback();
     },
     validateEmpty(msg) {
@@ -874,7 +865,6 @@ export default {
       if (!this.formData.imagesFlag) {
         return callback("请输入大于等于1的排序字段");
       }
-      console.log("pass validateImages");
       callback();
     },
     validateCoupons(rule, value, callback) {
@@ -885,7 +875,6 @@ export default {
       if (!this.formData.couponsFlag) {
         return callback("请输入大于等于1的排序字段");
       }
-      console.log("pass validateCoupons");
       callback();
     }
   }
