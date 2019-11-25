@@ -588,8 +588,7 @@ export default {
 
   },
 
-    created: function() {
-      console.log(this.camp_Info);
+    created() {
     },
     methods: {
 

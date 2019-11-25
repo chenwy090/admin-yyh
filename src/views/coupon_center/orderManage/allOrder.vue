@@ -151,12 +151,12 @@ export default {
         paddingBottom: "53px",
         position: "static"
       },
-      // mini: 微信小程序 IOS: 苹果app Android: 安卓app
+      // miniApp: 微信小程序 ios: 苹果app android: 安卓app
       // 1: 待付款 2:已取消 3: 已付款 4: 退款 5: 已完成
       sourceList: [
-        { value: "mini", label: "微信小程序" },
-        { value: "IOS", label: "苹果app" },
-        { value: "Android", label: "安卓app" }
+        { value: "miniApp", label: "微信小程序" },
+        { value: "ios", label: "苹果app" },
+        { value: "android", label: "安卓app" }
       ],
       //1: 待付款  2:已取消  3: 付款中  4：已付款  5: 退款  6: 已完成
       //全部、待付款、已取消（超时未支付、手动取消）、已付款（全部券码可使用、部分券码可使用）、退款（退款中、已退款、退款失败）、已完成（已全部使用、已全部退款）

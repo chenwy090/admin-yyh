@@ -5,13 +5,17 @@
       <Form label-position="right" ref="form" :model="formData" :label-width="120">
         <FormItem label="审核结果：" prop="status">
           <RadioGroup v-model="formData.auditStatus">
-            <Radio v-for="(v,k) in examineStatusOption" :key="k" :label="k">{{ v }}</Radio>
+            <Radio
+              v-for="item in auditStatusOption"
+              :key="item.value"
+              :label="item.value"
+            >{{ item.label }}</Radio>
           </RadioGroup>
         </FormItem>
         <FormItem
           label="原因："
           prop="remarks"
-          :rules="{ required: formData.auditStatus == 3?true:false,validator:formData.auditStatus == 3?validateReason:null }"
+          :rules="{ required: formData.auditStatus == 2?true:false,validator:formData.auditStatus == 2?validateReason:null }"
         >
           <Row>
             <Col span="16">
@@ -50,10 +54,10 @@ export default {
   watch: {
     ["formData.auditStatus"]() {
       const { auditStatus } = this.formData;
-      console.log("auditStatus", auditStatus);
+      // console.log("auditStatus", auditStatus);
 
       //清空验证
-      if (auditStatus == 2) {
+      if (auditStatus == 3) {
         this.$refs.form.resetFields();
         this.reasonPlaceholder = "请输入通过原因";
       } else {
@@ -64,15 +68,15 @@ export default {
   data() {
     return {
       // 审核状态 2-审核通过 3-审核不通过 审核结果2:通过、3：拒绝
-      examineStatusOption: {
-        "2": "通过",
-        "3": "拒绝"
-      },
+      auditStatusOption: [
+        { label: "通过", value: 3 },
+        { label: "拒绝", value: 2 }
+      ],
       // 请输入50字以内未通过原因
       reasonPlaceholder: "请输入通过原因",
       formData: {
         id: "",
-        auditStatus: "2",
+        auditStatus: 3,
         remarks: ""
       }
     };
@@ -90,6 +94,8 @@ export default {
       }
     },
     check(name) {
+      // console.log(JSON.stringify({ ...this.formData, id: this.id }));
+
       this.$refs[name].validate(async valid => {
         if (valid) {
           // 审核

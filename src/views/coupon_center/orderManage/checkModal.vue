@@ -31,12 +31,12 @@
 
       <h3>券码信息</h3>
       <div v-for="item in dataInfo.coupon" :key="item.id">
-        <FormItem label="券码：">{{item.barcode}}</FormItem>
+        <FormItem label="券码：">{{item.barCode}}</FormItem>
         <FormItem label="状态：">{{item.status}}</FormItem>
 
         <FormItem label="过期时间：" v-if="item.endUseTime">{{item.endUseTime}}</FormItem>
         <FormItem label="核销时间：" v-if="item.useTime">{{item.useTime}}</FormItem>
-        <FormItem label="申请退款时间：" v-if="item.pplyRefundTime">{{item.pplyRefundTime}}</FormItem>
+        <FormItem label="申请退款时间：" v-if="item.applyRefundTime">{{item.applyRefundTime}}</FormItem>
         <FormItem label="退款时间：" v-if="item.refundTime">{{item.refundTime}}</FormItem>
         <FormItem label="退款原因：" v-if="item.refundReason">{{item.refundReason}}</FormItem>
         <FormItem label="交易流水号：" v-if="item.transactionNo">{{item.transactionNo}}</FormItem>

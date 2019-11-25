@@ -416,673 +416,673 @@
 </template>
 
 <script>
-  import {
-    getRequest,
-    postRequest,
-    putRequest,
-    deleteRequest,
-    uploadFileRequest
-  } from "@/libs/axios";
+import {
+  getRequest,
+  postRequest,
+  putRequest,
+  deleteRequest,
+  uploadFileRequest
+} from "@/libs/axios";
 
-  import { baseUrl, uploadOperationImage2AliOssURl } from "@/api/index";
+import { baseUrl, uploadOperationImage2AliOssURl } from "@/api/index";
 
-  import { formatDate, checkImageWH } from "@/libs/date";
+import { formatDate, checkImageWH } from "@/libs/date";
 
-  import receiveRuleSet from "./receiveRuleManagement";
+import receiveRuleSet from "./receiveRuleManagement";
 
-  import EditorBar from "@/components/EditorBar";
+import EditorBar from "@/components/EditorBar";
 
-  export default {
-    name: "BasicSet",
-    components: {
-      receiveRuleSet,
-      EditorBar
-    },
-    props: {
-      camp_Info: Object
-    },
-    data() {
-      return {
-        receiveRuleSetPage: false,
+export default {
+  name: "BasicSet",
+  components: {
+    receiveRuleSet,
+    EditorBar
+  },
+  props: {
+    camp_Info: Object
+  },
+  data() {
+    return {
+      receiveRuleSetPage: false,
 
-        edit_info: {
-          appid: "",
-          campType: "57",
-          couponType: "",
-          couponValueDesc: "",
-          dateType: "1",
-          doorsillDesc: "",
-          endDate: "",
-          imgUrl: "",
-          name: "",
-          rules: "",
-          startDate: "",
-          status: "",
-          ticketTemplateId: "",
-          useDesc: "",
-          couponImg: "",
-          couponSimpleImg: "",
-          ChangeDateType: "",
-          ChangeStartDate: "",
-          ChangeEndDate: "",
-          ChangeStart: "",
-          ChangeEnd: "",
-          discountDetail:"", //优惠券详情（富文本）
-        },
-        edit_loading: false,
-        userToken: "",
-        campId: "",
+      edit_info: {
+        appid: "",
+        campType: "57",
+        couponType: "",
+        couponValueDesc: "",
+        dateType: "1",
+        doorsillDesc: "",
+        endDate: "",
         imgUrl: "",
-        url: uploadOperationImage2AliOssURl,
-        uploadList: [],
-        uploadList1: [],
-        uploadList2: [],
-        camp_pageStatus: "",
-        getUrl: "",
-        msg: "",
-        appId_info: [],
-        codeList: [],
+        name: "",
+        rules: "",
+        startDate: "",
+        status: "",
+        ticketTemplateId: "",
+        useDesc: "",
+        couponImg: "",
+        couponSimpleImg: "",
+        ChangeDateType: "",
+        ChangeStartDate: "",
+        ChangeEndDate: "",
+        ChangeStart: "",
+        ChangeEnd: "",
+        discountDetail: "" //优惠券详情（富文本）
+      },
+      edit_loading: false,
+      userToken: "",
+      campId: "",
+      imgUrl: "",
+      url: uploadOperationImage2AliOssURl,
+      uploadList: [],
+      uploadList1: [],
+      uploadList2: [],
+      camp_pageStatus: "",
+      getUrl: "",
+      msg: "",
+      appId_info: [],
+      codeList: [],
 
-        res_Modal_show: false,
-        res_loading: false,
-        res_list: [],
-        res_info: {},
+      res_Modal_show: false,
+      res_loading: false,
+      res_list: [],
+      res_info: {},
 
-        chooseResArray: [],
-        isCheckDisabled: true,
-        currentChooseID: "",
-        currentChooseName: "",
-        res_columns: [
-          {
-            title: "选择",
-            key: "ticketTemplateID",
-            width: 70,
-            align: "center",
-            render: (h, params) => {
-              let ticketTemplateID = params.row.ticketTemplateID;
-              let ticketName = params.row.ticketName;
+      chooseResArray: [],
+      isCheckDisabled: true,
+      currentChooseID: "",
+      currentChooseName: "",
+      res_columns: [
+        {
+          title: "选择",
+          key: "ticketTemplateID",
+          width: 70,
+          align: "center",
+          render: (h, params) => {
+            let ticketTemplateID = params.row.ticketTemplateID;
+            let ticketName = params.row.ticketName;
 
-              let flag = false;
-              if (this.currentChooseID === ticketTemplateID) {
-                flag = true;
-              } else {
-                flag = false;
-              }
-              let self = this;
-              return h("div", [
-                h("Radio", {
-                  props: {
-                    value: flag
-                  },
-                  on: {
-                    "on-change": () => {
-                      self.currentChooseID = ticketTemplateID;
-                      self.currentChooseName = ticketName;
-
-                      self.chooseResArray = params.row;
-                    }
-                  }
-                })
-              ]);
+            let flag = false;
+            if (this.currentChooseID === ticketTemplateID) {
+              flag = true;
+            } else {
+              flag = false;
             }
-          },
-          {
-            title: "sheetID",
-            key: "sheetID",
-            width: 200,
-            align: "center"
-          },
-          {
-            title: "模版ID",
-            key: "ticketTemplateID",
-            width: 200,
-            align: "center"
-          },
-          {
-            title: "模版名称",
-            key: "ticketName",
-            width: 200,
-            align: "center"
-          },
-          {
-            title: "ticketKind",
-            key: "ticketKind",
-            width: 200,
-            align: "center"
-          },
-          {
-            title: "兑换类型",
-            key: "ChangeDateType",
-            width: 200,
-            align: "center",
-            render: (h, params) => {
-              const row = params.row;
-              const color = row.changeDateType === 0 ? "red" : "blue";
-              const text =
-                row.changeDateType === 0
-                  ? "固定时间兑换"
-                  : "发券后+X天后开始兑换";
-
-              return h(
-                "Tag",
-                {
-                  props: {
-                    color: color
-                  }
+            let self = this;
+            return h("div", [
+              h("Radio", {
+                props: {
+                  value: flag
                 },
-                text
-              );
-            }
-          },
+                on: {
+                  "on-change": () => {
+                    self.currentChooseID = ticketTemplateID;
+                    self.currentChooseName = ticketName;
 
-          {
-            title: "兑换开始时间",
-            key: "ChangeStart",
-            width: 200,
-            align: "center",
-            slot: "ChangeStart"
-          },
-
-          {
-            title: "兑换结束时间",
-            key: "ChangeEnd",
-            width: 200,
-            align: "center",
-            slot: "ChangeEnd"
+                    self.chooseResArray = params.row;
+                  }
+                }
+              })
+            ]);
           }
-        ]
+        },
+        {
+          title: "sheetID",
+          key: "sheetID",
+          width: 200,
+          align: "center"
+        },
+        {
+          title: "模版ID",
+          key: "ticketTemplateID",
+          width: 200,
+          align: "center"
+        },
+        {
+          title: "模版名称",
+          key: "ticketName",
+          width: 200,
+          align: "center"
+        },
+        {
+          title: "ticketKind",
+          key: "ticketKind",
+          width: 200,
+          align: "center"
+        },
+        {
+          title: "兑换类型",
+          key: "ChangeDateType",
+          width: 200,
+          align: "center",
+          render: (h, params) => {
+            const row = params.row;
+            const color = row.changeDateType === 0 ? "red" : "blue";
+            const text =
+              row.changeDateType === 0
+                ? "固定时间兑换"
+                : "发券后+X天后开始兑换";
+
+            return h(
+              "Tag",
+              {
+                props: {
+                  color: color
+                }
+              },
+              text
+            );
+          }
+        },
+
+        {
+          title: "兑换开始时间",
+          key: "ChangeStart",
+          width: 200,
+          align: "center",
+          slot: "ChangeStart"
+        },
+
+        {
+          title: "兑换结束时间",
+          key: "ChangeEnd",
+          width: 200,
+          align: "center",
+          slot: "ChangeEnd"
+        }
+      ]
+    };
+  },
+
+  created: function() {
+    this.userToken = { jwttoken: localStorage.getItem("jwttoken") };
+  },
+  methods: {
+    init() {
+      this.camp_pageStatus = this.getStore("camp_pageStatus");
+      console.log(this.camp_pageStatus);
+      this.getAppId();
+      this.getCampInfo();
+    },
+    getCampInfo() {
+      if (this.camp_pageStatus == "add") {
+        this.addInfo();
+      } else if (this.camp_pageStatus == "edit") {
+        this.editInfo();
+      }
+    },
+    //新增
+    addInfo() {
+      this.edit_info = {
+        appid: "",
+        campType: "57",
+        couponType: "2",
+        couponValueDesc: "",
+        doorsillDesc: "",
+        imgUrl: "",
+        name: "",
+        rules: "",
+        status: "0",
+        ticketTemplateId: "",
+        dateType: "1",
+        endDate: "",
+        startDate: "",
+        useDesc: "",
+        couponImg: "",
+        couponSimpleImg: "",
+        ChangeDateType: "",
+        ChangeStartDate: "",
+        ChangeEndDate: "",
+        ChangeStart: "",
+        ChangeEnd: ""
       };
+      this.currentChooseID = "";
+      this.currentChooseName = "";
+      this.chooseResArray = "";
+      this.isCheckDisabled = true;
+      this.uploadList = [];
+      this.uploadList1 = [];
+      this.uploadList2 = [];
     },
 
-    created: function() {
-      this.userToken = { jwttoken: localStorage.getItem("jwttoken") };
+    //编辑
+    editInfo() {
+      this.edit_info = this.camp_Info;
+      this.uploadList = [{ url: this.camp_Info.imgUrl }];
+      this.uploadList1 = [{ url: this.camp_Info.couponImg }];
+      this.uploadList2 = [{ url: this.camp_Info.couponSimpleImg }];
+      this.edit_info.appid = this.camp_Info.appid;
+      this.campId = this.camp_Info.campId;
+
+      this.edit_info.name = this.camp_Info.name;
+      this.edit_info.rules = this.camp_Info.rules.replace(/\\n/g, "\n");
+      this.edit_info.couponValueDesc = this.camp_Info.couponValueDesc.replace(
+        /\\n/g,
+        "\n"
+      );
+      this.edit_info.doorsillDesc = this.camp_Info.doorsillDesc.replace(
+        /\\n/g,
+        "\n"
+      );
+
+      this.edit_info.imgUrl = this.camp_Info.imgUrl;
+      this.edit_info.couponImg = this.camp_Info.couponImg;
+
+      this.edit_info.campType = "57";
+
+      this.edit_info.couponType =
+        this.camp_Info.couponType == 1
+          ? "1"
+          : this.camp_Info.couponType == 2
+          ? "2"
+          : this.camp_Info.couponType == 3
+          ? "3"
+          : this.camp_Info.couponType == 4
+          ? "4"
+          : "5";
+
+      this.edit_info.status =
+        this.camp_Info.status == 0
+          ? "0"
+          : this.camp_Info.status == 1
+          ? "1"
+          : "-1";
+
+      this.edit_info.ticketTemplateId = this.camp_Info.ticketTemplateId;
+
+      this.currentChooseID = this.edit_info.ticketTemplateId;
+
+      this.currentChooseName = this.edit_info.ticketName;
+
+      this.chooseResArray = this.edit_info.ticketTemplateId;
+
+      this.edit_info.dateType = this.camp_Info.dateType == 1 ? "1" : "2";
+      this.edit_info.startDate = this.camp_Info.startDate || "";
+      this.edit_info.endDate = this.camp_Info.endDate || "";
+
+      this.edit_info.useDesc = this.camp_Info.useDesc.replace(/\\n/g, "\n");
+
+      this.edit_info.ChangeDateType =
+        this.camp_Info.changeDateType == 0 ? "0" : "1";
+      this.edit_info.ChangeStartDate = this.camp_Info.changeStartDate;
+      this.edit_info.ChangeEndDate = this.camp_Info.changeEndDate;
+      this.edit_info.ChangeStart = this.camp_Info.changeStart;
+      this.edit_info.ChangeEnd = this.camp_Info.changeEnd;
+      this.edit_info.discountDetail = this.camp_Info.discountDetail;
+      console.log(this.edit_info.ChangeDateType);
+
+      this.isCheckDisabled = true;
     },
-    methods: {
-      init() {
-        this.camp_pageStatus = this.getStore("camp_pageStatus");
-        console.log(this.camp_pageStatus);
-        this.getAppId();
-        this.getCampInfo();
-      },
-      getCampInfo() {
-        if (this.camp_pageStatus == "add") {
-          this.addInfo();
-        } else if (this.camp_pageStatus == "edit") {
-          this.editInfo();
-        }
-      },
-      //新增
-      addInfo() {
-        this.edit_info = {
-          appid: "",
-          campType: "57",
-          couponType: "2",
-          couponValueDesc: "",
-          doorsillDesc: "",
-          imgUrl: "",
-          name: "",
-          rules: "",
-          status: "0",
-          ticketTemplateId: "",
-          dateType: "1",
-          endDate: "",
-          startDate: "",
-          useDesc: "",
-          couponImg: "",
-          couponSimpleImg: "",
-          ChangeDateType: "",
-          ChangeStartDate: "",
-          ChangeEndDate: "",
-          ChangeStart: "",
-          ChangeEnd: ""
-        };
-        this.currentChooseID = "";
-        this.currentChooseName = "";
-        this.chooseResArray = "";
-        this.isCheckDisabled = true;
-        this.uploadList = [];
-        this.uploadList1 = [];
-        this.uploadList2 = [];
-      },
 
-      //编辑
-      editInfo() {
-        this.edit_info = this.camp_Info;
-        this.uploadList = [{ url: this.camp_Info.imgUrl }];
-        this.uploadList1 = [{ url: this.camp_Info.couponImg }];
-        this.uploadList2 = [{ url: this.camp_Info.couponSimpleImg }];
-        this.edit_info.appid = this.camp_Info.appid;
-        this.campId = this.camp_Info.campId;
+    statusCheckChange() {
+      this.isCheckDisabled = false;
+    },
 
-        this.edit_info.name = this.camp_Info.name;
-        this.edit_info.rules = this.camp_Info.rules.replace(/\\n/g, "\n");
-        this.edit_info.couponValueDesc = this.camp_Info.couponValueDesc.replace(
-          /\\n/g,
-          "\n"
-        );
-        this.edit_info.doorsillDesc = this.camp_Info.doorsillDesc.replace(
-          /\\n/g,
-          "\n"
-        );
-
-        this.edit_info.imgUrl = this.camp_Info.imgUrl;
-        this.edit_info.couponImg = this.camp_Info.couponImg;
-
-        this.edit_info.campType = "57";
-
-        this.edit_info.couponType =
-          this.camp_Info.couponType == 1
-            ? "1"
-            : this.camp_Info.couponType == 2
-            ? "2"
-            : this.camp_Info.couponType == 3
-            ? "3"
-            : this.camp_Info.couponType == 4
-            ? "4"
-            : "5";
-
-        this.edit_info.status =
-          this.camp_Info.status == 0
-            ? "0"
-            : this.camp_Info.status == 1
-            ? "1"
-            : "-1";
-
-        this.edit_info.ticketTemplateId = this.camp_Info.ticketTemplateId;
-
-        this.currentChooseID = this.edit_info.ticketTemplateId;
-
-        this.currentChooseName = this.edit_info.ticketName;
-
-        this.chooseResArray = this.edit_info.ticketTemplateId;
-
-        this.edit_info.dateType = this.camp_Info.dateType == 1 ? "1" : "2";
-        this.edit_info.startDate = this.camp_Info.startDate || "";
-        this.edit_info.endDate = this.camp_Info.endDate || "";
-
-        this.edit_info.useDesc = this.camp_Info.useDesc.replace(/\\n/g, "\n");
-
-        this.edit_info.ChangeDateType =
-          this.camp_Info.changeDateType == 0 ? "0" : "1";
-        this.edit_info.ChangeStartDate = this.camp_Info.changeStartDate;
-        this.edit_info.ChangeEndDate = this.camp_Info.changeEndDate;
-        this.edit_info.ChangeStart = this.camp_Info.changeStart;
-        this.edit_info.ChangeEnd = this.camp_Info.changeEnd;
-        this.edit_info.discountDetail = this.camp_Info.discountDetail;
-        console.log(this.edit_info.ChangeDateType);
-
-        this.isCheckDisabled = true;
-      },
-
-      statusCheckChange() {
-        this.isCheckDisabled = false;
-      },
-
-      //保存
-      campagin_add() {
-        if (this.edit_info.name == "") {
-          this.$Message.error("请填写活动标题");
-          return;
-        }
-        if (this.edit_info.appid == "") {
-          this.$Message.error("请选择appid");
-          return;
-        }
-
-        if (this.edit_info.doorsillDesc == "") {
-          this.$Message.error("请填写使用门槛描述");
-          return;
-        }
-
-        if (this.edit_info.startDate == "" || this.edit_info.endDate == "") {
-          this.$Message.error("请选择开始日前和结束日期");
-          return;
-        }
-        if (this.edit_info.startDate != "" || this.edit_info.endDate != "") {
-          if (
-            formatDate(
-              new Date(this.edit_info.startDate),
-              "yyyy-MM-dd hh:mm:ss"
-            ) >
-            formatDate(new Date(this.edit_info.endDate), "yyyy-MM-dd hh:mm:ss")
-          ) {
-            this.$Message.error("开始日期不能大于结束日期");
-            return;
-          }
-        }
-
-        this.edit_info.startDate = formatDate(
-          new Date(this.edit_info.startDate),
-          "yyyy-MM-dd hh:mm:ss"
-        );
-        this.edit_info.endDate = formatDate(
-          new Date(this.edit_info.endDate),
-          "yyyy-MM-dd hh:mm:ss"
-        );
-
-        // 转换结束时间 23:59:59
-        this.edit_info.endDate =
-          this.edit_info.endDate.slice(0, 10) + " 23:59:59";
-        // console.log(this.edit_info.endDate);
-        // return;
-
-        if (this.edit_info.rules == "") {
-          this.$Message.error("请填写活动/领券规则");
-          return;
-        }
-
-        if (this.edit_info.imgUrl == "") {
-          this.$Message.error("请上传优惠券详情图");
-          return;
-        }
-
-        if (this.edit_info.couponImg == "") {
-          this.$Message.error("请上传优惠券缩略图");
-          return;
-        }
-
-        if (this.edit_info.useDesc == "") {
-          this.$Message.error("请填写券使用说明");
-          return;
-        }
-
-        if (this.edit_info.ticketTemplateId == "") {
-          this.$Message.error("请选择优惠券模板");
-          return;
-        }
-
-        if (this.camp_pageStatus === "add") {
-          this.getUrl = "/campagin/add";
-          this.campId = "";
-          this.msg = "新增成功";
-        } else {
-          this.getUrl = "/campagin/edit/" + this.campId;
-          this.msg = "编辑成功";
-        }
-        // const reqParams = this.edit_info;
-
-        const reqParams = {
-          campId: this.campId,
-          appid: this.edit_info.appid,
-          campType: this.edit_info.campType,
-          couponType: this.edit_info.couponType,
-          ticketTemplateId: this.edit_info.ticketTemplateId,
-          name: this.edit_info.name,
-          couponValueDesc: this.edit_info.couponValueDesc
-            .replace(/\t/g, "")
-            .replace(/\n/g, "\\n"),
-          doorsillDesc: this.edit_info.doorsillDesc
-            .replace(/\t/g, "")
-            .replace(/\n/g, "\\n"),
-          dateType: this.edit_info.dateType,
-          startDate: this.edit_info.startDate,
-          endDate: this.edit_info.endDate,
-          rules: this.edit_info.rules.replace(/\t/g, "").replace(/\n/g, "\\n"),
-          useDesc: this.edit_info.useDesc
-            .replace(/\t/g, "")
-            .replace(/\n/g, "\\n"),
-          status: this.edit_info.status,
-          ticketName: this.edit_info.ticketName,
-          couponImg: this.edit_info.couponImg,
-          couponSimpleImg: this.edit_info.couponSimpleImg,
-          imgUrl: this.edit_info.imgUrl,
-          discountDetail: this.edit_info.discountDetail, // 优惠券详情(富文本)
-        };
-
-        this.add_loading = true;
-        postRequest(this.getUrl, reqParams).then(res => {
-          this.add_loading = false;
-
-          if (res.code == 200) {
-            this.isCheckDisabled = true;
-
-            this.$Message.info(this.msg);
-            if (this.camp_pageStatus === "add") {
-              this.campId = res.campId;
-            }
-            setTimeout(() => {
-              this.nextInfo();
-            }, 1200);
-          } else {
-            this.$Message.error(res.msg);
-          }
-        });
-      },
-
-      dataProcessing() {
-        if (this.edit_info.startDate == "" || this.edit_info.endDate == "") {
-          this.$Message.error("请选择开始日前和结束日期");
-          return;
-        }
-        if (this.edit_info.startDate != "" || this.edit_info.endDate != "") {
-          if (
-            formatDate(
-              new Date(this.edit_info.startDate),
-              "yyyy-MM-dd hh:mm:ss"
-            ) >
-            formatDate(new Date(this.edit_info.endDate), "yyyy-MM-dd hh:mm:ss")
-          ) {
-            this.$Message.error("开始日期不能大于结束日期");
-            return;
-          }
-        }
-
-        var old_sDate = formatDate(
-          new Date(this.edit_info.startDate),
-          "yyyy-MM-dd hh:mm:ss"
-        );
-
-        var old_eDate = formatDate(
-          new Date(this.edit_info.endDate),
-          "yyyy-MM-dd hh:mm:ss"
-        );
-
-        var new_sdate = new Date(old_sDate.replace(/-/g, "/"));
-        var new_edate = new Date(old_eDate.replace(/-/g, "/"));
-        var days = new_edate.getTime() - new_sdate.getTime();
-        var daySum = parseInt(days / (1000 * 60 * 60 * 24));
-
-        this.setStore("daySum", daySum);
-      },
-      //下一步
-      nextInfo() {
-        this.setStore("camp_pageStatus", "");
-        this.setStore("campId", this.campId);
-
-        this.receiveRuleSetPage = true;
-        this.dataProcessing();
-      },
-
-      showReceiveRuleSetStatus(e) {
-        if (e.type == 1) {
-          this.$emit("changeStatus", false);
-        }
-        this.receiveRuleSetPage = e.Return;
-      },
-
-      goback() {
-        this.$emit("changeStatus", false);
-      },
-
-      statusCheckChange() {
-        this.isCheckDisabled = false;
-      },
-      handleMaxSize(file) {
-        this.$Message.error("图片不大于1M");
-      },
-      //上传imgUrl图片
-      handleSuccess(res, file) {
-        if (res.code == 200) {
-          this.edit_info.imgUrl = res.image_url;
-
-          if (this.uploadList.length == 0) {
-            let obj = {
-              url: res.image_url
-            };
-            this.uploadList.push(obj);
-          } else {
-            this.uploadList[0].url = res.image_url;
-          }
-
-          this.$Message.info("上传图片成功");
-        } else {
-          this.$Message.error("上传图片失败，请重新上传");
-        }
-        this.statusCheckChange();
-      },
-
-      handleBeforeUpload(file) {
-        return checkImageWH(file, 130, 130);
-      },
-
-      handleBeforeUpload1(file) {
-        return checkImageWH(file, 280, 218);
-      },
-
-      //上传couponImg图片
-      handleSuccess1(res, file) {
-        if (res.code == 200) {
-          this.edit_info.couponImg = res.image_url;
-
-          if (this.uploadList1.length == 0) {
-            let obj = {
-              url: res.image_url
-            };
-            this.uploadList1.push(obj);
-          } else {
-            this.uploadList1[0].url = res.image_url;
-          }
-
-          this.$Message.info("上传图片成功");
-        } else {
-          this.$Message.error("上传图片失败，请重新上传");
-        }
-        this.statusCheckChange();
-      },
-      //上传couponImg图片
-      handleSucces2(res, file) {
-        if (res.code == 200) {
-          this.edit_info.couponSimpleImg = res.image_url;
-
-          if (this.uploadList2.length == 0) {
-            let obj = {
-              url: res.image_url
-            };
-            this.uploadList2.push(obj);
-          } else {
-            this.uploadList2[0].url = res.image_url;
-          }
-
-          this.$Message.info("上传图片成功");
-        } else {
-          this.$Message.error("上传图片失败，请重新上传");
-        }
-        this.statusCheckChange();
-      },
-
-      //获取APPid
-      getAppId() {
-        getRequest("/miniapp/miniapp-info/store").then(res => {
-          if (res.code == 200) {
-            this.appId_info = res.data;
-          } else {
-            this.$Message.error(res.msg);
-          }
-        });
-      },
-
-      // 选择模版start--------------------------------
-      resInfo() {
-        if (this.edit_info.startDate == "" || this.edit_info.endDate == "") {
-          this.$Message.error("请选择开始日前和结束日期");
-          return;
-        }
-        if (this.edit_info.startDate != "" || this.edit_info.endDate != "") {
-          if (
-            formatDate(
-              new Date(this.edit_info.startDate),
-              "yyyy-MM-dd hh:mm:ss"
-            ) >
-            formatDate(new Date(this.edit_info.endDate), "yyyy-MM-dd hh:mm:ss")
-          ) {
-            this.$Message.error("开始日期不能大于结束日期");
-            return;
-          }
-        }
-
-        this.edit_info.startDate = formatDate(
-          new Date(this.edit_info.startDate),
-          "yyyy-MM-dd hh:mm:ss"
-        );
-        this.edit_info.endDate = formatDate(
-          new Date(this.edit_info.endDate),
-          "yyyy-MM-dd hh:mm:ss"
-        );
-
-        // 转换结束时间 23:59:59
-        this.edit_info.endDate =
-          this.edit_info.endDate.slice(0, 10) + " 23:59:59";
-
-        this.res_Modal_show = true;
-        this.res_info.ticketTemplateIDs = this.edit_info.ticketTemplateId;
-
-        this.getTicketTemplate(this.edit_info.campType);
-        this.statusCheckChange();
-      },
-      //获取模版ID
-      getTicketTemplate(obj) {
-        postRequest(
-          "/campagin/selectSweetprojectitemBySheetID?type=" +
-            obj +
-            "&campId=" +
-            this.campId +
-            "&ChangeStartDate=" +
-            this.edit_info.startDate +
-            "&ChangeEndDate=" +
-            this.edit_info.endDate
-        ).then(res => {
-          if (res.code == 200) {
-            this.res_list = res.data;
-          } else {
-            this.$Message.error(res.msg);
-          }
-        });
-      },
-
-      resOk() {
-        this.res_info.ticketTemplateIDs = this.currentChooseID;
-        this.edit_info.ticketTemplateId = this.currentChooseID;
-        this.edit_info.ticketName = this.currentChooseName;
-        this.res_Modal_show = false;
-      },
-
-      // 富文本
-      change(val) {
-        // console.log("change:", val);
-        // console.log("data:",this.edit_info.discountDetail);
-        this.edit_info.discountDetail = val;
-        this.isCheckDisabled = false;
-      },
-      blur(val) {
-        // console.log("blur:", val);
-        this.edit_info.discountDetail = val;
-        this.isCheckDisabled = false;
+    //保存
+    campagin_add() {
+      if (this.edit_info.name == "") {
+        this.$Message.error("请填写活动标题");
+        return;
+      }
+      if (this.edit_info.appid == "") {
+        this.$Message.error("请选择appid");
+        return;
       }
 
-      // 选择模版end--------------------------------
+      if (this.edit_info.doorsillDesc == "") {
+        this.$Message.error("请填写使用门槛描述");
+        return;
+      }
+
+      if (this.edit_info.startDate == "" || this.edit_info.endDate == "") {
+        this.$Message.error("请选择开始日前和结束日期");
+        return;
+      }
+      if (this.edit_info.startDate != "" || this.edit_info.endDate != "") {
+        if (
+          formatDate(
+            new Date(this.edit_info.startDate),
+            "yyyy-MM-dd hh:mm:ss"
+          ) >
+          formatDate(new Date(this.edit_info.endDate), "yyyy-MM-dd hh:mm:ss")
+        ) {
+          this.$Message.error("开始日期不能大于结束日期");
+          return;
+        }
+      }
+
+      this.edit_info.startDate = formatDate(
+        new Date(this.edit_info.startDate),
+        "yyyy-MM-dd hh:mm:ss"
+      );
+      this.edit_info.endDate = formatDate(
+        new Date(this.edit_info.endDate),
+        "yyyy-MM-dd hh:mm:ss"
+      );
+
+      // 转换结束时间 23:59:59
+      this.edit_info.endDate =
+        this.edit_info.endDate.slice(0, 10) + " 23:59:59";
+      // console.log(this.edit_info.endDate);
+      // return;
+
+      if (this.edit_info.rules == "") {
+        this.$Message.error("请填写活动/领券规则");
+        return;
+      }
+
+      if (this.edit_info.imgUrl == "") {
+        this.$Message.error("请上传优惠券详情图");
+        return;
+      }
+
+      if (this.edit_info.couponImg == "") {
+        this.$Message.error("请上传优惠券缩略图");
+        return;
+      }
+
+      if (this.edit_info.useDesc == "") {
+        this.$Message.error("请填写券使用说明");
+        return;
+      }
+
+      if (this.edit_info.ticketTemplateId == "") {
+        this.$Message.error("请选择优惠券模板");
+        return;
+      }
+
+      if (this.camp_pageStatus === "add") {
+        this.getUrl = "/campagin/add";
+        this.campId = "";
+        this.msg = "新增成功";
+      } else {
+        this.getUrl = "/campagin/edit/" + this.campId;
+        this.msg = "编辑成功";
+      }
+      // const reqParams = this.edit_info;
+
+      const reqParams = {
+        campId: this.campId,
+        appid: this.edit_info.appid,
+        campType: this.edit_info.campType,
+        couponType: this.edit_info.couponType,
+        ticketTemplateId: this.edit_info.ticketTemplateId,
+        name: this.edit_info.name,
+        couponValueDesc: this.edit_info.couponValueDesc
+          .replace(/\t/g, "")
+          .replace(/\n/g, "\\n"),
+        doorsillDesc: this.edit_info.doorsillDesc
+          .replace(/\t/g, "")
+          .replace(/\n/g, "\\n"),
+        dateType: this.edit_info.dateType,
+        startDate: this.edit_info.startDate,
+        endDate: this.edit_info.endDate,
+        rules: this.edit_info.rules.replace(/\t/g, "").replace(/\n/g, "\\n"),
+        useDesc: this.edit_info.useDesc
+          .replace(/\t/g, "")
+          .replace(/\n/g, "\\n"),
+        status: this.edit_info.status,
+        ticketName: this.edit_info.ticketName,
+        couponImg: this.edit_info.couponImg,
+        couponSimpleImg: this.edit_info.couponSimpleImg,
+        imgUrl: this.edit_info.imgUrl,
+        discountDetail: this.edit_info.discountDetail // 优惠券详情(富文本)
+      };
+
+      this.add_loading = true;
+      postRequest(this.getUrl, reqParams).then(res => {
+        this.add_loading = false;
+
+        if (res.code == 200) {
+          this.isCheckDisabled = true;
+
+          this.$Message.info(this.msg);
+          if (this.camp_pageStatus === "add") {
+            this.campId = res.campId;
+          }
+          setTimeout(() => {
+            this.nextInfo();
+          }, 1200);
+        } else {
+          this.$Message.error(res.msg);
+        }
+      });
     },
-    mounted() {
-      this.init();
+
+    dataProcessing() {
+      if (this.edit_info.startDate == "" || this.edit_info.endDate == "") {
+        this.$Message.error("请选择开始日前和结束日期");
+        return;
+      }
+      if (this.edit_info.startDate != "" || this.edit_info.endDate != "") {
+        if (
+          formatDate(
+            new Date(this.edit_info.startDate),
+            "yyyy-MM-dd hh:mm:ss"
+          ) >
+          formatDate(new Date(this.edit_info.endDate), "yyyy-MM-dd hh:mm:ss")
+        ) {
+          this.$Message.error("开始日期不能大于结束日期");
+          return;
+        }
+      }
+
+      var old_sDate = formatDate(
+        new Date(this.edit_info.startDate),
+        "yyyy-MM-dd hh:mm:ss"
+      );
+
+      var old_eDate = formatDate(
+        new Date(this.edit_info.endDate),
+        "yyyy-MM-dd hh:mm:ss"
+      );
+
+      var new_sdate = new Date(old_sDate.replace(/-/g, "/"));
+      var new_edate = new Date(old_eDate.replace(/-/g, "/"));
+      var days = new_edate.getTime() - new_sdate.getTime();
+      var daySum = parseInt(days / (1000 * 60 * 60 * 24));
+
+      this.setStore("daySum", daySum);
+    },
+    //下一步
+    nextInfo() {
+      this.setStore("camp_pageStatus", "");
+      this.setStore("campId", this.campId);
+
+      this.receiveRuleSetPage = true;
+      this.dataProcessing();
+    },
+
+    showReceiveRuleSetStatus(e) {
+      if (e.type == 1) {
+        this.$emit("changeStatus", false);
+      }
+      this.receiveRuleSetPage = e.Return;
+    },
+
+    goback() {
+      this.$emit("changeStatus", false);
+    },
+
+    statusCheckChange() {
+      this.isCheckDisabled = false;
+    },
+    handleMaxSize(file) {
+      this.$Message.error("图片不大于1M");
+    },
+    //上传imgUrl图片
+    handleSuccess(res, file) {
+      if (res.code == 200) {
+        this.edit_info.imgUrl = res.image_url;
+
+        if (this.uploadList.length == 0) {
+          let obj = {
+            url: res.image_url
+          };
+          this.uploadList.push(obj);
+        } else {
+          this.uploadList[0].url = res.image_url;
+        }
+
+        this.$Message.info("上传图片成功");
+      } else {
+        this.$Message.error("上传图片失败，请重新上传");
+      }
+      this.statusCheckChange();
+    },
+
+    handleBeforeUpload(file) {
+      return checkImageWH(file, 130, 130);
+    },
+
+    handleBeforeUpload1(file) {
+      return checkImageWH(file, 280, 218);
+    },
+
+    //上传couponImg图片
+    handleSuccess1(res, file) {
+      if (res.code == 200) {
+        this.edit_info.couponImg = res.image_url;
+
+        if (this.uploadList1.length == 0) {
+          let obj = {
+            url: res.image_url
+          };
+          this.uploadList1.push(obj);
+        } else {
+          this.uploadList1[0].url = res.image_url;
+        }
+
+        this.$Message.info("上传图片成功");
+      } else {
+        this.$Message.error("上传图片失败，请重新上传");
+      }
+      this.statusCheckChange();
+    },
+    //上传couponImg图片
+    handleSucces2(res, file) {
+      if (res.code == 200) {
+        this.edit_info.couponSimpleImg = res.image_url;
+
+        if (this.uploadList2.length == 0) {
+          let obj = {
+            url: res.image_url
+          };
+          this.uploadList2.push(obj);
+        } else {
+          this.uploadList2[0].url = res.image_url;
+        }
+
+        this.$Message.info("上传图片成功");
+      } else {
+        this.$Message.error("上传图片失败，请重新上传");
+      }
+      this.statusCheckChange();
+    },
+
+    //获取APPid
+    getAppId() {
+      getRequest("/miniapp/miniapp-info/store").then(res => {
+        if (res.code == 200) {
+          this.appId_info = res.data;
+        } else {
+          this.$Message.error(res.msg);
+        }
+      });
+    },
+
+    // 选择模版start--------------------------------
+    resInfo() {
+      if (this.edit_info.startDate == "" || this.edit_info.endDate == "") {
+        this.$Message.error("请选择开始日前和结束日期");
+        return;
+      }
+      if (this.edit_info.startDate != "" || this.edit_info.endDate != "") {
+        if (
+          formatDate(
+            new Date(this.edit_info.startDate),
+            "yyyy-MM-dd hh:mm:ss"
+          ) >
+          formatDate(new Date(this.edit_info.endDate), "yyyy-MM-dd hh:mm:ss")
+        ) {
+          this.$Message.error("开始日期不能大于结束日期");
+          return;
+        }
+      }
+
+      this.edit_info.startDate = formatDate(
+        new Date(this.edit_info.startDate),
+        "yyyy-MM-dd hh:mm:ss"
+      );
+      this.edit_info.endDate = formatDate(
+        new Date(this.edit_info.endDate),
+        "yyyy-MM-dd hh:mm:ss"
+      );
+
+      // 转换结束时间 23:59:59
+      this.edit_info.endDate =
+        this.edit_info.endDate.slice(0, 10) + " 23:59:59";
+
+      this.res_Modal_show = true;
+      this.res_info.ticketTemplateIDs = this.edit_info.ticketTemplateId;
+
+      this.getTicketTemplate(this.edit_info.campType);
+      this.statusCheckChange();
+    },
+    //获取模版ID
+    getTicketTemplate(obj) {
+      postRequest(
+        "/campagin/selectSweetprojectitemBySheetID?type=" +
+          obj +
+          "&campId=" +
+          this.campId +
+          "&ChangeStartDate=" +
+          this.edit_info.startDate +
+          "&ChangeEndDate=" +
+          this.edit_info.endDate
+      ).then(res => {
+        if (res.code == 200) {
+          this.res_list = res.data;
+        } else {
+          this.$Message.error(res.msg);
+        }
+      });
+    },
+
+    resOk() {
+      this.res_info.ticketTemplateIDs = this.currentChooseID;
+      this.edit_info.ticketTemplateId = this.currentChooseID;
+      this.edit_info.ticketName = this.currentChooseName;
+      this.res_Modal_show = false;
+    },
+
+    // 富文本
+    change(val) {
+      // console.log("change:", val);
+      // console.log("data:",this.edit_info.discountDetail);
+      this.edit_info.discountDetail = val;
+      this.isCheckDisabled = false;
+    },
+    blur(val) {
+      // console.log("blur:", val);
+      this.edit_info.discountDetail = val;
+      this.isCheckDisabled = false;
     }
-  };
+
+    // 选择模版end--------------------------------
+  },
+  mounted() {
+    this.init();
+  }
+};
 </script>
 
 
 <style>
-  .form {
-    width: 900px;
-  }
-  .form > div {
-    display: inline-block;
-  }
+.form {
+  width: 900px;
+}
+.form > div {
+  display: inline-block;
+}
 </style>
