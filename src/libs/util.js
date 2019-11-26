@@ -23,7 +23,6 @@ const _methods = {
       if (arr[i][key] === name) {
         return i;
       }
-      console.log(i);
     }
     return -1;
   },

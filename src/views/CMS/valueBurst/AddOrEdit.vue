@@ -23,27 +23,30 @@
                 >{{ item }}</Option>
               </Select>
             </div>
-            <div v-show="pushRange == 2" class="mgt-10">
-              <Select
-                class="mgr-10"
-                v-model="province"
-                style="width:150px"
-                clearable
-                @on-change="getcitylist"
-              >
-                <Option
-                  v-for="(item, index) in provincelist"
-                  :key="'line36'+index"
-                  :value="item.provinceName"
-                >{{ item.provinceName }}</Option>
-              </Select>
-              <Select v-model="city" style="width:150px" clearable>
-                <Option
-                  v-for="(item, index) in citylist"
-                  :key="'line48'+index"
-                  :value="item.cityName"
-                >{{ item.cityName }}</Option>
-              </Select>
+            <div v-show="pushRange == 2" class="store-wrap">
+              <div class="mgt-10" v-for="(el,i) in cityItems" :key="'L27' + i">
+                <Select
+                  class="mgr-10"
+                  v-model="el.province"
+                  style="width:150px"
+                  clearable
+                  @on-change="getcitylist($event, i)"
+                >
+                  <Option
+                    v-for="(item, index) in provincelist"
+                    :key="'line36'+index"
+                    :value="item.provinceName"
+                  >{{ item.provinceName }}</Option>
+                </Select>
+                <Select v-model="el.city" style="width:150px" clearable>
+                  <Option
+                    v-for="(item, index) in el.citylist"
+                    :key="'line48'+index"
+                    :value="item.cityName"
+                  >{{ item.cityName }}</Option>
+                </Select>
+                <Icon @click="addCityItem(i)" type="md-add" class="pointer mgl-10 fz-26" /><Icon v-if="i!== 0" @click="removeCityItem(i)" type="md-remove" class="pointer mgl-10 fz-26" />
+              </div>
             </div>
             <div v-show="pushRange == 3" class="mgt-10">
               <Button @click="chooseStore">选择门店</Button>
@@ -159,6 +162,9 @@ export default {
   },
   data() {
     return {
+      cityItems: [
+        {province: '', city: ''},
+      ],
       checkedData: {},
       provincelist: [],
       citylist: [],
@@ -267,6 +273,12 @@ export default {
   },
   mixins: [comm],
   methods: {
+    addCityItem(i) {
+      this.cityItems.splice(i+1, 0, {province: '', city: '', citylist: []});
+    },
+    removeCityItem(i) {
+      this.cityItems.splice(i, 1);
+    },
     changeStartDate(arr, index) {
       // yyyy-MM-dd HH:mm:ss
       let [startTime = "", endTime = ""] = arr;
@@ -325,6 +337,7 @@ export default {
         this.msgOk("新增成功");
         this.$parent.getList();
       } else {
+        this.$Spin.hide();
         this.msgErr(msg);
       }
     },
@@ -342,6 +355,7 @@ export default {
         this.msgOk("编辑成功");
         this.$parent.getList();
       } else {
+        this.$Spin.hide();
         this.msgErr(msg);
       }
     },
@@ -450,6 +464,38 @@ export default {
         console.warn("hotCouponVoList 有问题");
         return;
       }
+      
+      let params = {
+        hotCouponVoList: this.hotCouponVoList,
+        pushRange: this.pushRange
+      };
+      if (this.pushRange == 1) {
+        if (!this.venderName) {
+          return this.msgErr("请选择零售商");
+        }
+        params.shopInfo = [
+          {
+            venderName: this.venderName
+          }
+        ];
+      } else if (this.pushRange == 2) {
+        
+        params.shopInfo = [];
+        this.cityItems.forEach((el,i)=>{
+          if (el.province !== '') {
+            params.shopInfo.push({
+              province: el.province,
+              city: el.city,
+            })
+          }
+        })
+        if (params.shopInfo.length < 1) {
+          return this.msgErr("请至少选择一个城市");
+        }
+      } else if (this.pushRange == 3) {
+        params.shopInfo = this.shopReqList;
+      }
+      // 做一些参数检测 给对应的提示
       let rules = [
         ["couponKind", "【请选择优惠券】 couponKind"],
         ["templateId", "【请选择优惠券】 templateId"],
@@ -466,44 +512,6 @@ export default {
           content: _descs.join(",")
         });
         return;
-      }
-      let params = {
-        hotCouponVoList: this.hotCouponVoList,
-        pushRange: this.pushRange
-      };
-      if (this.pushRange == 1) {
-        if (!this.venderName) {
-          return this.msgErr("请选择零售商");
-        }
-        params.shopInfo = [
-          {
-            venderName: this.venderName
-          }
-        ];
-      } else if (this.pushRange == 2) {
-        if (!this.province) {
-          return this.msgErr("请选择省");
-        }
-        if (this.city) {
-          params.shopInfo = [
-            {
-              city: this.city,
-              province: this.province
-            }
-          ];
-        } else {
-          params.shopInfo = [
-            {
-              province: this.province
-            }
-          ];
-        }
-      } else if (this.pushRange == 3) {
-        params.shopInfo = this.shopReqList;
-      }
-      // 做一些参数检测 给对应的提示
-      if (false) {
-        return; // 参数有问题
       }
       if (this.title === "编辑") {
         this.apiEdit(JSON.parse(JSON.stringify(params)));
@@ -537,7 +545,7 @@ export default {
       });
     },
     //根据省份code获取城市信息数据
-    getcitylist(provinceName) {
+    getcitylist(provinceName, index) {
       if (!provinceName) {
         this.province = "";
         this.city = "";
@@ -551,7 +559,9 @@ export default {
       const url = "/system/area/city/" + this.provincelist[i].provinceCode;
       getRequest(url).then(res => {
         if (res.code == 200) {
-          this.citylist = res.data;
+          if (typeof index === 'number') {
+            this.cityItems[index].citylist = res.data;
+          }
         } else {
           this.msgErr(res.msg);
         }
@@ -635,7 +645,7 @@ export default {
         this.venderName = data.shopReqList[0].venderName;
       } else if (data.pushRange == 2) {
         this.province = data.shopReqList[0].province;
-        this.getcitylist(this.province);
+        // this.getcitylist(this.province); // alert(debugger选择城市改造之后 这里就有问题了 ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
         this.city = data.shopReqList[0].city;
       } else if (data.pushRange == 3) {
         this.shopReqList = data.shopReqList;
@@ -749,5 +759,8 @@ export default {
   max-height: 280px;
   overflow: auto;
   margin-bottom: 10px;
+}
+.fz-26{
+  font-size: 26px
 }
 </style>

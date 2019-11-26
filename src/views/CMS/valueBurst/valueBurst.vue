@@ -393,7 +393,6 @@ export default {
       this.getList();
     };
   },
-  activated() {},
   methods: {
     addItem() {
       this.currentTitle = "新增";
