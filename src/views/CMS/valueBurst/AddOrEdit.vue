@@ -82,7 +82,16 @@
             </Select>
           </template>
           <template slot="pushClients" slot-scope="params">
-            <CheckboxGroup v-model="hotCouponVoList[params.index].pushPlatformList">
+            <div v-if="title == '编辑'">
+              <Checkbox
+                style="width: 60px"
+                v-for="(el,i) in clientTypeList"
+                :label="el.value"
+                :key="el.label"
+                v-model="hotCouponVoList[params.index].pushPlatformList[i]"
+              >{{el.label}}</Checkbox>
+            </div>
+            <CheckboxGroup v-else v-model="hotCouponVoList[params.index].pushPlatformList">
               <Checkbox
                 style="width: 60px"
                 v-for="el in clientTypeList"
@@ -92,19 +101,6 @@
             </CheckboxGroup>
           </template>
           <template slot="pushTime" slot-scope="params">
-            <!-- <DatePicker
-              type="date"
-              v-model="hotCouponVoList[params.index].startTime"
-              placeholder="Select date and time"
-              style="width: 200px"
-            ></DatePicker>至
-            <DatePicker
-              type="date"
-              v-model="hotCouponVoList[params.index].endTime"
-              placeholder="Select date and time"
-              style="width: 200px"
-            ></DatePicker>-->
-
             <DatePicker
               type="daterange"
               placeholder="请选择日期"
@@ -168,27 +164,21 @@ export default {
       checkedData: {},
       provincelist: [],
       citylist: [],
-      province: "",
-      city: "",
       venderName: "",
       currentContentIndex: "",
-      showChooseCoupon: false,
-      clientTypeList: [
-        { value: 0, label: "小程序" },
-        { value: 1, label: "安卓" },
-        { value: 2, label: "ios" },
-        // { value: 3, label: "其他" }
-      ],
-      showStoreList: false,
-      checkedStoreList: [], // 已选的门店
-      shopId: "",
-      shopIds: [], // 门店列表
-      venderNames: [], // 门店类别
-      title: "新增",
-      modalShow: false,
-      rangeConf: ["全国", "零售商", "城市", "自定义门店(单店)"],
-      pushRange: "",
+      hotCouponVoList: [
+        {
+          orderBy: "",
+          pushPlatformList: [],
+          startTime: "",
+          endTime: "",
 
+          couponKind: "",
+          templateId: "",
+          title: ""
+        }
+      ],
+      pushRange: 0,
       columns1: [
         {
           title: "投放内容",
@@ -206,20 +196,10 @@ export default {
           title: "投放终端",
           width: "120",
           slot: "pushClients"
-          // render: (h, {row}) => {
-          //     let _list = [];
-          //     if (Array.isArray(row.pushPlatformList)) {
-          //       _list = row.pushPlatformList.map(el=> h('div', el.pushPlatformTxt));
-          //     }
-          //     return h('div', _list)
-          // }
         },
         {
           title: "投放时间",
           slot: "pushTime"
-          // render: (h, {row}) => {
-          //     return h('div', row.startTime + ' - ' + row.endTime)
-          // }
         },
         {
           title: "操作",
@@ -248,6 +228,23 @@ export default {
         }
       ],
       shopReqList: [],
+      showStoreList: false,
+      checkedStoreList: [], // 已选的门店
+      shopId: "",
+      shopIds: [], // 门店列表
+      venderNames: [], // 门店类别
+
+
+      showChooseCoupon: false,
+      clientTypeList: [
+        { value: 0, label: "小程序" },
+        { value: 1, label: "安卓" },
+        { value: 2, label: "ios" },
+        // { value: 3, label: "其他" }
+      ],
+      title: "新增",
+      modalShow: false,
+      rangeConf: ["全国", "零售商", "城市", "自定义门店(单店)"],
       hotListItem: JSON.stringify({
         orderBy: "",
         pushPlatformList: [],
@@ -257,18 +254,6 @@ export default {
         templateId: "",
         title: ""
       }),
-      hotCouponVoList: [
-        {
-          orderBy: "",
-          pushPlatformList: [],
-          startTime: "",
-          endTime: "",
-
-          couponKind: "",
-          templateId: "",
-          title: ""
-        }
-      ]
     };
   },
   mixins: [comm],
@@ -293,8 +278,7 @@ export default {
       //       "endTime": "2019-11-11",
       //       "startTime": "2019-11-03",
       //       "orderBy": 2,
-      //       "pushPlatform": [ // java: 此处统一为 pushPlatformList
-      //       // "pushPlatformList": [ // java: 此处统一为 pushPlatformList
+      //       "pushPlatformList": [ // java: 此处统一为 pushPlatformList
       //         0,
       //         1
       //       ],
@@ -441,30 +425,6 @@ export default {
       if (this.hotCouponVoList.length < 0) {
         return this.msgErr("至少要有一条内容");
       }
-      if (Array.isArray(this.hotCouponVoList)) {
-        // this.hotCouponVoList.forEach((el, i) => {
-        //   if (
-        //     Object.prototype.toString.call(el.startTime) === "[object Date]"
-        //   ) {
-        //     this.hotCouponVoList[
-        //       i
-        //     ].startTime = el.startTime.toISOString().slice(0, 10);
-        //   } else if (typeof el.startTime === "string") {
-        //     this.hotCouponVoList[i].startTime = el.startTime.slice(0, 10);
-        //   }
-        //   if (Object.prototype.toString.call(el.endTime) === "[object Date]") {
-        //     this.hotCouponVoList[i].endTime = el.endTime
-        //       .toISOString()
-        //       .slice(0, 10);
-        //   } else if (typeof el.endTime === "string") {
-        //     this.hotCouponVoList[i].endTime = el.endTime.slice(0, 10);
-        //   }
-        // });
-      } else {
-        console.warn("hotCouponVoList 有问题");
-        return;
-      }
-      
       let params = {
         hotCouponVoList: this.hotCouponVoList,
         pushRange: this.pushRange
@@ -514,6 +474,17 @@ export default {
         return;
       }
       if (this.title === "编辑") {
+        // 编辑时只有一条优惠券
+        let pushPlatformList = []
+        params.hotCouponVoList[0].pushPlatformList.forEach((el,i)=>{
+          if (el === true) {
+            pushPlatformList.push(this.clientTypeList[i].value);
+          }
+        })
+        if (pushPlatformList.length < 1) {
+          return this.msgErr('请至少选择一个投放终端')
+        }
+        params.hotCouponVoList[0].pushPlatformList = pushPlatformList;
         this.apiEdit(JSON.parse(JSON.stringify(params)));
       } else {
         this.apiAdd(JSON.parse(JSON.stringify(params)));
@@ -582,7 +553,11 @@ export default {
       data.endTime = endTime;
       data.daterange = [startTime, endTime];
       // 投放终端 回填
-      data.pushPlatformList = pushPlatformList.map(el => el.pushPlatform);
+      data.pushPlatformList = this.clientTypeList.map(el=>false);
+      pushPlatformList.forEach(el => {
+        data.pushPlatformList[el.pushPlatform] = true;
+      });
+
 
       // data = {
       //   "id": 329,
@@ -674,6 +649,11 @@ export default {
       ) {
         this.shopIds = JSON.parse(JSON.stringify(this.$parent.shopIds));
         this.venderNames = this.filterByName(this.shopIds, "venderName");
+      }
+      if (this.modalShow) {
+        if (this.hotCouponVoList.length < 1) {
+          this.hotCouponVoList = [JSON.parse(this.hotListItem)];
+        }
         if (this.title === "编辑") {
           // 当前是编辑模式
           this.$Spin.show();
@@ -686,11 +666,85 @@ export default {
           ) {
             this.columns1.pop();
           }
-        }
-      }
-      if (this.modalShow) {
-        if (this.hotCouponVoList.length < 1) {
-          this.hotCouponVoList = [JSON.parse(this.hotListItem)];
+        } else {
+          // reset 数据
+          this.setData({
+            cityItems: [
+              {province: '', city: ''},
+            ],
+            checkedData: {},
+            provincelist: [],
+            citylist: [],
+            venderName: "",
+            currentContentIndex: "",
+            hotCouponVoList: [
+              {
+                orderBy: "",
+                pushPlatformList: [],
+                startTime: "",
+                endTime: "",
+
+                couponKind: "",
+                templateId: "",
+                title: ""
+              }
+            ],
+            pushRange: 0,
+            columns1: [
+              {
+                title: "投放内容",
+                key: "title",
+                width: "145",
+                slot: "content"
+              },
+              {
+                title: "投放位置",
+                key: "orderBy",
+                width: "145",
+                slot: "pushPos"
+              },
+              {
+                title: "投放终端",
+                width: "120",
+                slot: "pushClients"
+              },
+              {
+                title: "投放时间",
+                slot: "pushTime"
+              },
+              {
+                title: "操作",
+                slot: "operate",
+                width: "100"
+              }
+            ],
+            columns2: [
+              {
+                title: "门店编号",
+                key: "shopId"
+              },
+              {
+                title: "商超门店名称",
+                key: "shopName"
+              },
+              {
+                title: "零售商",
+                key: "venderName"
+              },
+              {
+                title: "地址",
+                render: (h, { row }) => {
+                  return h("div", row.province + row.city);
+                }
+              }
+            ],
+            shopReqList: [],
+            showStoreList: false,
+            checkedStoreList: [], // 已选的门店
+            shopId: "",
+            shopIds: [], // 门店列表
+            venderNames: [], // 门店类别
+          }, this);
         }
       }
     }

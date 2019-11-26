@@ -120,8 +120,6 @@ export default {
             couponType: "", //优惠券类型 1：超市券 2：周边券
             name: ""
         },
-        current: 1,
-        totalSize: 0, //总条数
         // 优惠券列表
         current1: 1,
         totalSize1: 0, //总条数
@@ -195,7 +193,11 @@ export default {
       },
       // 保存 关闭优惠券选择对话框
       campaginDisplayFn () {
-          this.$emit('couponSelect', JSON.parse(JSON.stringify(this.formValidate.specialTopicCouponList)));
+          let resData = JSON.parse(JSON.stringify(this.formValidate.specialTopicCouponList));
+          resData.forEach((el,i)=>{
+            resData[i].couponKind = this.couponSearchData.couponType;
+          })
+          this.$emit('couponSelect', resData);
           this.closeDialog();
           this.CampaginList = [];
           this.couponSearchData.couponType = "";
@@ -244,8 +246,6 @@ export default {
           getCampaginListData(url, data, this.current1).then(res => {
               if (res.code == 200) {
                   this.CampaginList = res.data.records;
-                  //console.log(this.formValidate.specialTopicCouponList.length);
-                  //console.log(this.formValidate.specialTopicCouponList[0].templateId);
                   if (this.single === true) {
                     this.handleChecked();
                   } else {
@@ -411,9 +411,6 @@ export default {
 
       // 取消选中
       cancelCampagin(selection, row) {
-          // console.log(123);
-          // console.log(selection);
-          // console.log(row);
           if (this.couponSearchData.couponType == 1) {
               for (
                   let i = 0;
@@ -450,7 +447,6 @@ export default {
                   }
               }
           }
-          // console.log(this.formValidate.specialTopicCouponList);
       }
 
   },

@@ -167,6 +167,7 @@
                 @click="apiSelectById(params.row.id)"
               >查看</Button>
               <Button
+                v-if="params.row.statusTxt !== '已上架'"
                 type="text"
                 style="margin-right: 5px;color:#ed4014"
                 size="small"
@@ -174,6 +175,7 @@
               >编辑</Button>
 
               <Button
+                v-if="params.row.status!==0"
                 type="text"
                 style="margin-right: 5px;color: #2d8cf0"
                 size="small"

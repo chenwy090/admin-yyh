@@ -16,7 +16,7 @@
         >
           <div>{{typeof pushRange === 'number'? rangeConf[pushRange]: ''}}</div>
           <div class="store-wrap mgt-10">
-            <Table v-show="pushRange === 3" border :columns="columns2" :data="shopReqList"></Table>
+            <Table v-show="pushRange == 1 || pushRange == 3" border :columns="columns2" :data="shopReqList"></Table>
           </div>
         </div>
       </div>
