@@ -25,8 +25,12 @@
               </Select>
             </div>
             <div v-show="pushRange == 2" class="store-wrap">
+<<<<<<< HEAD
               <span class="mgr-10">选择城市</span>
               <div class="mgt-10 dsp-ib" v-for="(el,i) in cityItems" :key="'L27' + i">
+=======
+              <div class="mgt-10" v-for="(el,i) in cityItems" :key="'L27' + i">
+>>>>>>> release-1.5.6
                 <Select
                   class="mgr-10"
                   v-model="el.province"
@@ -40,9 +44,15 @@
                     :value="item.provinceName"
                   >{{ item.provinceName }}</Option>
                 </Select>
+<<<<<<< HEAD
                 <Select v-model="cityItems[i].city" style="width:150px" clearable>
                   <Option
                     v-for="(item, index) in cityItems[i].citylist"
+=======
+                <Select v-model="el.city" style="width:150px" clearable>
+                  <Option
+                    v-for="(item, index) in el.citylist"
+>>>>>>> release-1.5.6
                     :key="'line48'+index"
                     :value="item.cityName"
                   >{{ item.cityName }}</Option>
@@ -161,7 +171,11 @@ export default {
   data() {
     return {
       cityItems: [
+<<<<<<< HEAD
         {province: '', city: '', citylist: []},
+=======
+        {province: '', city: ''},
+>>>>>>> release-1.5.6
       ],
       checkedData: {},
       citylist: [],
@@ -232,10 +246,17 @@ export default {
       showStoreList: false,
       checkedStoreList: [], // 已选的门店
       shopId: "",
+<<<<<<< HEAD
 
       provincelist: [],
       venderNames: [], // 门店类别
       shopIds: [], // 门店列表
+=======
+      shopIds: [], // 门店列表
+      venderNames: [], // 门店类别
+
+
+>>>>>>> release-1.5.6
       showChooseCoupon: false,
       clientTypeList: [
         { value: 0, label: "小程序" },
@@ -682,9 +703,16 @@ export default {
           // reset 数据
           this.setData({
             cityItems: [
+<<<<<<< HEAD
               {province: '', city: '', citylist: []},
             ],
             checkedData: {},
+=======
+              {province: '', city: ''},
+            ],
+            checkedData: {},
+            provincelist: [],
+>>>>>>> release-1.5.6
             citylist: [],
             venderName: "",
             currentContentIndex: "",
@@ -753,6 +781,11 @@ export default {
             showStoreList: false,
             checkedStoreList: [], // 已选的门店
             shopId: "",
+<<<<<<< HEAD
+=======
+            shopIds: [], // 门店列表
+            venderNames: [], // 门店类别
+>>>>>>> release-1.5.6
           }, this);
         }
       }
