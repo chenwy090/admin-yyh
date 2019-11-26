@@ -836,7 +836,6 @@
               this.getStaffListFn({});
               this.cancel();
               this.failList=res.data;
-              //console.log(">>>>>>>>>>>>>>>"+this.failList);
               if(this.failList!=null){
                 this.failDisplay = true;
               }
