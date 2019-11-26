@@ -200,7 +200,7 @@
                 />
               </FormItem>
 
-              <FormItem label="领券规则">
+              <FormItem label="券使用说明">
                 <Input
                   type="textarea"
                   v-model="edit_info.useDesc"
@@ -719,7 +719,7 @@ export default {
         this.edit_info.startDate = this.camp_Info.startDate || "";
         this.edit_info.endDate = this.camp_Info.endDate || "";
 
-        this.edit_info.useDesc = this.camp_Info.useDesc;
+        this.edit_info.useDesc = this.camp_Info.useDesc.replace(/\\n/g,"\n");
 
     this.edit_info.ChangeDateType = this.camp_Info.ChangeDateType;
     this.edit_info.ChangeStartDate = this.camp_Info.ChangeStartDate;
