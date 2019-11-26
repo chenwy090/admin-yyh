@@ -436,14 +436,6 @@ export default {
       this.queryDetails(id);
     }
   },
-  renderError(createElement, err) {
-    console.log("renderError");
-    return createElement("div", err.stack);
-    //return createElement("div",{},err.stack);
-  },
-  errorCaptured() {
-    console.log("errorCaptured");
-  },
   methods: {
     changeCouponSort(ev, index) {
       this.couponIndex = index;

@@ -73,6 +73,7 @@
         components:{thawingFlow,transactionFlow},
         data(){
             return{
+                cType: '0',
                 // mini: 微信小程序 IOS: 苹果app Android: 安卓app
                 // 1: 待付款 2:已取消 3: 已付款 4: 退款 5: 已完成
                 sourceList:[{value:'mini',label:'微信小程序'},{value:'IOS',label:'苹果app'},{value:'Android',label:'安卓app'}],

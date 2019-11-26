@@ -167,6 +167,7 @@
                 @click="apiSelectById(params.row.id)"
               >查看</Button>
               <Button
+                v-if="params.row.statusTxt !== '已上架'"
                 type="text"
                 style="margin-right: 5px;color:#ed4014"
                 size="small"
@@ -174,6 +175,7 @@
               >编辑</Button>
 
               <Button
+                v-if="params.row.status!==0"
                 type="text"
                 style="margin-right: 5px;color: #2d8cf0"
                 size="small"
@@ -195,7 +197,7 @@
           </Table>
         </Row>
         <!-- 分页 -->
-        <Row type="flex" justify="end" class="page">
+        <Row type="flex" justify="end" class="page mgt-10">
           <Page
             :total="totalSize"
             show-total
@@ -393,7 +395,6 @@ export default {
       this.getList();
     };
   },
-  activated() {},
   methods: {
     addItem() {
       this.currentTitle = "新增";
@@ -423,10 +424,8 @@ export default {
       this.selectDataList = selection;
     },
     changeCurrent(current) {
-      if (this.searchForm.pageNum != current) {
-        this.searchForm.pageNum = current;
-        this.loadTableData(current);
-      }
+      this.searchForm.pageNum = current;
+      this.getList();
     },
     changeStartDate(arr) {
       // yyyy-MM-dd HH:mm:ss
@@ -493,35 +492,7 @@ export default {
     },
     async getList() {
       let url = `/hotCoupon/list`;
-      const site = 1;
       let params = {
-        // endTime	string
-        // allowEmptyValue: false
-        // 结束时间 yyyy_MM_dd
-
-        // orderBy	integer($int32)
-        // allowEmptyValue: false
-        // 爆抢位置1-6
-
-        // pushPlatform	integer($int32)
-        // allowEmptyValue: false
-        // 投放终端 0 小程序 1 安卓 2 ios 3其他
-
-        // shopId	string
-        // allowEmptyValue: false
-        // 门店
-
-        // startTime	string
-        // allowEmptyValue: false
-        // 开始时间 yyyy_MM_dd
-
-        // status	integer($int32)
-        // allowEmptyValue: false
-        // 状态 0待上架 1 上架 2下架
-
-        // title	string
-        // allowEmptyValue: false
-        // 优惠券标题
         startTime: this.searchForm.startTime,
         endTime: this.searchForm.endTime,
         orderBy: this.searchForm.orderBy,
@@ -569,7 +540,6 @@ export default {
     // 查看详情
     async apiSelectById(id, cb) {
       const url = "/hotCoupon/selectById?id=" + id;
-      const site = 1;
       let { code, msg, data } = await postRequest(url, { id });
       if (code == 200) {
         this.details = data;

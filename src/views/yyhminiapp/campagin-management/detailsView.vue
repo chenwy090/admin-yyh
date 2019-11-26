@@ -532,7 +532,7 @@ export default {
         receiveRuleSetPage: false,
         edit_info: {
            categoryList: [],
-           brandNames: "",
+           brandNames: [],
            brandIds: [],
            brandCodes: [],
           appid: "",

@@ -1150,11 +1150,6 @@ export default {
       getRequest("/miniapp/miniapp-info/store").then(res => {
         if (res.code == 200) {
           this.appId_info = res.data;
-
-          console.log(
-            "appId_info this.edit_info.categoryList: ",
-            this.edit_info.categoryList
-          );
         } else {
           this.$Message.error(res.msg);
         }
