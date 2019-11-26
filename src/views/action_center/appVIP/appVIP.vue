@@ -69,9 +69,9 @@
             </template>
             <template slot-scope="{ row }" slot="putShop">
               <span v-if="row.putShop == 0">全国</span>
-              <span v-else-if="row.putShop == 1">零售商</span>
-              <span v-else-if="row.putShop == 2">城市</span>
-              <span v-else-if="row.putShop == 3">自定义门店</span>
+              <!-- <span v-else-if="row.putShop == 1">零售商</span> -->
+              <span v-else-if="row.putShop == 1">城市</span>
+              <span v-else-if="row.putShop == 2">自定义门店</span>
             </template>
             <template slot-scope="{ row }" slot="couponName">
               <span>{{row.couponName | ellipsis}}</span>
