@@ -15,6 +15,7 @@
               <Radio v-for="(el, i) in rangeConf" :label="i" :key="'line19'+i">{{el}}</Radio>
             </RadioGroup>
             <div v-show="pushRange == 1" class="mgt-10">
+              <span class="mgr-10">选择零售商</span>
               <Select v-model="venderName" style="width:150px" placeholder="选择零售商">
                 <Option
                   v-for="(item,index) in venderNames"
@@ -24,7 +25,8 @@
               </Select>
             </div>
             <div v-show="pushRange == 2" class="store-wrap">
-              <div class="mgt-10" v-for="(el,i) in cityItems" :key="'L27' + i">
+              <span class="mgr-10">选择城市</span>
+              <div class="mgt-10 dsp-ib" v-for="(el,i) in cityItems" :key="'L27' + i">
                 <Select
                   class="mgr-10"
                   v-model="el.province"
@@ -38,9 +40,9 @@
                     :value="item.provinceName"
                   >{{ item.provinceName }}</Option>
                 </Select>
-                <Select v-model="el.city" style="width:150px" clearable>
+                <Select v-model="cityItems[i].city" style="width:150px" clearable>
                   <Option
-                    v-for="(item, index) in el.citylist"
+                    v-for="(item, index) in cityItems[i].citylist"
                     :key="'line48'+index"
                     :value="item.cityName"
                   >{{ item.cityName }}</Option>
@@ -159,10 +161,9 @@ export default {
   data() {
     return {
       cityItems: [
-        {province: '', city: ''},
+        {province: '', city: '', citylist: []},
       ],
       checkedData: {},
-      provincelist: [],
       citylist: [],
       venderName: "",
       currentContentIndex: "",
@@ -231,10 +232,10 @@ export default {
       showStoreList: false,
       checkedStoreList: [], // 已选的门店
       shopId: "",
-      shopIds: [], // 门店列表
+
+      provincelist: [],
       venderNames: [], // 门店类别
-
-
+      shopIds: [], // 门店列表
       showChooseCoupon: false,
       clientTypeList: [
         { value: 0, label: "小程序" },
@@ -318,8 +319,19 @@ export default {
       let { code, msg, data } = await postRequest(url, e);
       if (code == 200) {
         this.$Spin.hide();
-        this.msgOk("新增成功");
-        this.$parent.getList();
+        if (data.faildata) {
+          let _msg = data.faildata.join(',')
+          this.$Modal.info({
+            title: "提示",
+            content: _msg
+          });
+        } else {
+          this.msgOk("新增成功");
+          this.$parent.getList();
+        }
+      } else if (msg == '数据重复') {
+        this.$parent.dataRepeat(data);
+        this.$Spin.hide();
       } else {
         this.$Spin.hide();
         this.msgErr(msg);
@@ -670,10 +682,9 @@ export default {
           // reset 数据
           this.setData({
             cityItems: [
-              {province: '', city: ''},
+              {province: '', city: '', citylist: []},
             ],
             checkedData: {},
-            provincelist: [],
             citylist: [],
             venderName: "",
             currentContentIndex: "",
@@ -742,8 +753,6 @@ export default {
             showStoreList: false,
             checkedStoreList: [], // 已选的门店
             shopId: "",
-            shopIds: [], // 门店列表
-            venderNames: [], // 门店类别
           }, this);
         }
       }
