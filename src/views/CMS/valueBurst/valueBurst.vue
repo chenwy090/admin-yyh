@@ -211,6 +211,60 @@
     </div>
     <burst-detail ref="burstDetail" />
     <burst-edit ref="burstEdit" :show="showEdit" />
+     <Modal
+        v-model="showRepeatModal"
+        title="新增数据重复">
+        <Table
+            border
+            :columns="repeatColumns"
+            :data="repeatList"
+            sortable="custom"
+            ref="table"
+            @on-selection-change="handleSelect"
+          >
+            <template slot-scope="params" slot="action">
+              <!--<Button v-if="row.status==='0'"-->
+              <!--type="success"-->
+              <!--style="margin-right: 5px"-->
+              <!--size="small"-->
+              <!--@click="edit(row)"-->
+              <!--&gt;编辑</Button>-->
+              <Button
+                type="text"
+                style="margin-right: 5px;color:#21b6b8"
+                size="small"
+                @click="apiSelectById(params.row.id)"
+              >查看</Button>
+              <Button
+                v-if="params.row.statusTxt !== '已上架'"
+                type="text"
+                style="margin-right: 5px;color:#ed4014"
+                size="small"
+                @click="doEdit(params.row.id)"
+              >编辑</Button>
+
+              <Button
+                v-if="params.row.status!==0"
+                type="text"
+                style="margin-right: 5px;color: #2d8cf0"
+                size="small"
+                @click="apiUpdown(params.row.id, params.row.status)"
+              >{{["","下架","上架"][params.row.status]}}</Button>
+              <!-- status:  1   2下架  2  1上架 -->
+              <Button
+                v-if="params.row.status==0"
+                type="error"
+                style="margin-right: 5px"
+                size="small"
+                @click="confirmDel(params.row.id, params.row.title)"
+              >删除</Button>
+            </template>
+
+            <template slot-scope="{ row }" slot="time">
+              <div>{{row.startTime}}-{{row.endTime}}</div>
+            </template>
+          </Table>
+    </Modal>
   </div>
 </template>
 
@@ -231,6 +285,8 @@ export default {
   mixins: [comm],
   data() {
     return {
+      repeatList: [],
+      showRepeatModal: false,
       currentTitle: "",
       showEdit: 0,
       tab: {
@@ -337,6 +393,32 @@ export default {
           key: "updateTime"
         }
       ],
+      repeatColumns: [
+        {
+          title: "ID",
+          width: 200,
+          align: "center",
+          key: "id"
+        },
+        {
+          title: "优惠券名称",
+          width: 200,
+          align: "center",
+          key: "title"
+        },
+        {
+          title: "投放位置",
+          width: 150,
+          align: "center",
+          key: "orderByName"
+        },
+        {
+          title: "推荐时间",
+          width: 300,
+          align: "center",
+          slot: "time"
+        }
+      ],
       daterange: [], // 时间
       searchForm: {
         startTime: "",
@@ -396,6 +478,11 @@ export default {
     };
   },
   methods: {
+    dataRepeat(list) {
+      console.log(list, 456);
+      this.repeatList = list;
+      this.showRepeatModal = true;
+    },
     addItem() {
       this.currentTitle = "新增";
       this.showEdit = Math.random();
