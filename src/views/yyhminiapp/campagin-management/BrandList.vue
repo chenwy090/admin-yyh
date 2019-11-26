@@ -1,0 +1,126 @@
+<template>
+  <!-- 优惠券 -->
+  <div class="coupon-list-box">
+    <Modal
+      v-model="isShow"
+      title="品牌列表"
+      width="900"
+      footer-hide
+      :closable="true"
+      :mask-closable="false"
+      @on-cancel="closeDialog"
+      :styles="{top: '20px'}"
+    >
+      <div>
+        <!-- <Tabs type="card" v-model="compName">
+          <TabPane v-for="(tab,k) in tabs" :key="k" :label="tab.label" :name="tab.compName"></TabPane>
+        </Tabs>-->
+        <component
+          :is="compName"
+          :tab="tab"
+          :checked="checked"
+          @closeDialog="closeDialog"
+          @seclectedTr-event="selectedTrCallBack"
+        ></component>
+      </div>
+    </Modal>
+  </div>
+</template>
+<script>
+import { postRequest } from "@/libs/axios";
+
+import CompBrandList from "./CompBrandList";
+// import CompSuperMarketList from "./CompSuperMarketList";
+
+export default {
+  name: "coupon-list",
+  components: {
+    CompBrandList
+    // CompSuperMarketList
+  },
+  computed: {
+    tab() {
+      return this.tabs[this.compName];
+    }
+  },
+  watch: {
+    compName() {
+      console.log("watch:compName", this.compName);
+    }
+  },
+  props: {
+    checked: {
+      type: Array,
+      default: () => []
+    }
+  },
+  data() {
+    return {
+      isShow: true,
+      compName: "CompBrandList",
+      tabs: {
+        CompBrandList: {
+          id: Math.random(),
+          name: "xxx",
+          couponType: 1,
+          label: "品牌",
+          compName: "CompBrandList",
+          url: "/campagin/listGoodBrand"
+        }
+      }
+    };
+  },
+
+  methods: {
+    // 关闭商户选择框
+    cancel() {
+      this.closeDialog();
+    },
+    closeDialog() {
+      //关闭对话框清除表单数据
+      // this.$refs.formValidate.resetFields();
+      this.$emit(`update:showBrandList`, false);
+    },
+    //确定选择商户
+    selectedTrCallBack(choice) {
+      choice.couponType = this.tab.couponType;
+
+      // console.log("choice",JSON.stringify(choice));
+
+      this.$emit("seclectedTr-event", choice);
+    },
+    // 全局提示
+    msgOk(txt) {
+      this.$Message.info({
+        content: txt,
+        duration: 3
+      });
+    },
+    msgErr(txt) {
+      this.$Message.error({
+        content: txt,
+        duration: 3
+      });
+    }
+  }
+};
+</script>
+
+<style scoped>
+.form > div {
+  display: inline-block;
+}
+</style>
+
+<style lang="less">
+.bussiness-list-box {
+  /*调整table cell间隔和行高*/
+  .ivu-table-cell {
+    padding-left: 1px;
+    padding-right: 1px;
+  }
+  .ivu-table-small td {
+    height: 30px;
+  }
+}
+</style>

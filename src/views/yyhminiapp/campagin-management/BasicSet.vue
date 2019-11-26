@@ -7,7 +7,6 @@
       >
         <Steps :current="0">
           <Step title="基础设置" content="进行中"></Step>
-
           <Step title="规则设置" content="待进行"></Step>
         </Steps>
       </div>
@@ -303,39 +302,42 @@
                 style="margin-left: 3%"
               >已选择</Tag>
             </FormItem>
-            <FormItem label="品类、品牌" required>
-              <Select
-                v-model="edit_info.firstClassCode"
-                style="width:150px"
-                clearable
-                @on-change="get2"
-              >
-                <Option
-                  v-for="(item, index) in list1"
-                  :key="index"
-                  :value="item.classCode"
-                >{{ item.className }}</Option>
-              </Select>
 
-              <Select
-                v-model="edit_info.secondClassCode"
-                style="width:150px"
-                clearable
-                @on-change="get3"
-              >
-                <Option
-                  v-for="(item, index) in list2"
-                  :key="index"
-                  :value="item.classCode"
-                >{{ item.className }}</Option>
-              </Select>
-              <Select v-model="edit_info.threeClassCode" style="width:150px" clearable>
-                <Option
-                  v-for="(item, index) in list3"
-                  :key="index"
-                  :value="item.classCode"
-                >{{ item.className }}</Option>
-              </Select>
+            <!-- :rules="{ required: true, validator: validateRewardRules }" -->
+            <FormItem label="品类" prop="categoryList">
+              <Button
+                type="dashed"
+                size="small"
+                @click="handleAdd"
+                icon="md-add"
+                style="width:100px;"
+              ></Button>
+            </FormItem>
+            <FormItem>
+              <Category
+                v-for="(item, index) in edit_info.categoryList"
+                :key="index"
+                :data="item"
+                :index="index"
+                @del="del"
+              ></Category>
+            </FormItem>
+
+            <FormItem label="品牌">
+              <Row>
+                <Col span="10">
+                  <Button type="success" @click="handleChoose">点击按钮选择品牌</Button>
+                  <div>
+                    <Input
+                      v-model="edit_info.brandNames"
+                      type="textarea"
+                      style="width:300px;resize: none;"
+                      :autosize="{minRows: 8,maxRows: 8}"
+                      disabled
+                    ></Input>
+                  </div>
+                </Col>
+              </Row>
             </FormItem>
 
             <FormItem v-if="edit_info.ticketName">
@@ -446,6 +448,13 @@
     <div v-if="receiveRuleSetPage">
       <receiveRuleSet :camp_pageStatus="camp_pageStatus" @changeStatus="showReceiveRuleSetStatus"></receiveRuleSet>
     </div>
+
+    <BrandList
+      v-if="showBrandList"
+      :showBrandList.sync="showBrandList"
+      @seclectedTr-event="selectedBrandItem"
+      :checked="edit_info.brandIds"
+    ></BrandList>
   </div>
 </template>
 
@@ -466,11 +475,19 @@ import receiveRuleSet from "./receiveRuleManagement";
 
 import EditorBar from "@/components/EditorBar";
 
+// 品类
+import Category from "./Category";
+
+// 品牌列表
+import BrandList from "./BrandList";
+
 export default {
   name: "BasicSet",
   components: {
     receiveRuleSet,
-    EditorBar
+    EditorBar,
+    BrandList,
+    Category
   },
   props: {
     camp_Info: Object
@@ -478,7 +495,7 @@ export default {
   data() {
     return {
       receiveRuleSetPage: false,
-
+      showBrandList: false,
       list1: [],
       list2: [],
       list3: [],
@@ -487,6 +504,7 @@ export default {
         firstClassCode: "",
         secondClassCode: "",
         threeClassCode: "",
+        categoryList: [],
         appid: "",
         campType: "57",
         couponType: "",
@@ -508,7 +526,10 @@ export default {
         ChangeEndDate: "",
         ChangeStart: "",
         ChangeEnd: "",
-        discountDetail: "" //优惠券详情（富文本）
+        discountDetail: "", //优惠券详情（富文本）
+        brandNames: "",
+        brandIds: [],
+        brandCodes: []
       },
       edit_loading: false,
       userToken: "",
@@ -639,6 +660,40 @@ export default {
     this.userToken = { jwttoken: localStorage.getItem("jwttoken") };
   },
   methods: {
+    handleAdd() {
+      this.edit_info.categoryList.push({
+        _id: Math.random(),
+        id: "",
+        firstClassCode: "",
+        secondClassCode: "",
+        threeClassCode: ""
+      });
+
+      console.log(this.edit_info.categoryList);
+    },
+    del(index) {
+      console.log("del categoryList:", index);
+      this.edit_info.categoryList.splice(index, 1);
+    },
+    handleChoose() {
+      this.showBrandList = true;
+    },
+    selectedBrandItem(data) {
+      console.log("selectedBrandItem----", data);
+      // let { id, brandCode, brandName } = data;
+      // templateId 券模板id templateName 券模板名称
+      let brandNames = [];
+      let brandIds = [];
+      let brandCodes = [];
+      data.forEach(item => {
+        brandNames.push(item.brandName);
+        brandIds.push(item.id);
+        brandCodes.push(item.brandCode);
+      });
+      this.edit_info.brandNames = brandNames.join(",");
+      this.edit_info.brandIds = brandIds;
+      this.edit_info.brandCodes = brandCodes;
+    },
     init() {
       this.camp_pageStatus = this.getStore("camp_pageStatus");
       console.log(this.camp_pageStatus);
@@ -650,6 +705,7 @@ export default {
         this.addInfo();
       } else if (this.camp_pageStatus == "edit") {
         this.editInfo();
+        this.queryXX();
       }
     },
     //新增
@@ -675,7 +731,8 @@ export default {
         ChangeStartDate: "",
         ChangeEndDate: "",
         ChangeStart: "",
-        ChangeEnd: ""
+        ChangeEnd: "",
+        categoryList: []
       };
       this.currentChooseID = "";
       this.currentChooseName = "";
@@ -688,7 +745,11 @@ export default {
 
     //编辑
     editInfo() {
-      this.edit_info = this.camp_Info;
+      this.edit_info = {
+        ...this.edit_info,
+        ...this.camp_Info
+      };
+      this.edit_info.categoryList = [];
       this.uploadList = [{ url: this.camp_Info.imgUrl }];
       this.uploadList1 = [{ url: this.camp_Info.couponImg }];
       this.uploadList2 = [{ url: this.camp_Info.couponSimpleImg }];
@@ -753,6 +814,48 @@ export default {
       console.log(this.edit_info.ChangeDateType);
 
       this.isCheckDisabled = true;
+    },
+
+    async queryXX() {
+      let url = "/campagin/selectCampaignByCampId";
+      let { code, msg, classListList, brandList } = await postRequest(url, {
+        campId: this.campId
+      });
+      let categoryList = [];
+      classListList.forEach(arr => {
+        arr.sort((item1, item2) => {
+          return item1.sort - item2.sort;
+        });
+        let obj = {};
+        arr.forEach(item => {
+          if (item.sort == 1) {
+            obj.firstClassCode = item.classCode;
+          }
+          if (item.sort == 2) {
+            obj.secondClassCode = item.classCode;
+          }
+          if (item.sort == 3) {
+            obj._id = Math.random();
+            obj.id = item.id;
+            obj.threeClassCode = item.classCode;
+          }
+        });
+        categoryList.push(obj);
+      });
+
+      this.edit_info.categoryList = categoryList;
+
+      let brandIds = [];
+      let brandNames = [];
+      let brandCodes = [];
+      brandList.forEach(item => {
+        brandIds.push(item.id);
+        brandNames.push(item.brandName);
+        brandCodes.push(item.brandCode);
+      });
+      this.edit_info.brandNames = brandNames.join(",");
+      this.edit_info.brandIds = brandIds;
+      this.edit_info.brandCodes = brandCodes;
     },
 
     statusCheckChange() {
@@ -842,51 +945,72 @@ export default {
       }
       // const reqParams = this.edit_info;
 
-      const reqParams = {
-        campId: this.campId,
-        appid: this.edit_info.appid,
-        campType: this.edit_info.campType,
-        couponType: this.edit_info.couponType,
-        ticketTemplateId: this.edit_info.ticketTemplateId,
-        name: this.edit_info.name,
-        couponValueDesc: this.edit_info.couponValueDesc
-          .replace(/\t/g, "")
-          .replace(/\n/g, "\\n"),
-        doorsillDesc: this.edit_info.doorsillDesc
-          .replace(/\t/g, "")
-          .replace(/\n/g, "\\n"),
-        dateType: this.edit_info.dateType,
-        startDate: this.edit_info.startDate,
-        endDate: this.edit_info.endDate,
-        rules: this.edit_info.rules.replace(/\t/g, "").replace(/\n/g, "\\n"),
-        useDesc: this.edit_info.useDesc
-          .replace(/\t/g, "")
-          .replace(/\n/g, "\\n"),
-        status: this.edit_info.status,
-        ticketName: this.edit_info.ticketName,
-        couponImg: this.edit_info.couponImg,
-        couponSimpleImg: this.edit_info.couponSimpleImg,
-        imgUrl: this.edit_info.imgUrl,
-        discountDetail: this.edit_info.discountDetail // 优惠券详情(富文本)
-      };
+      this.$refs["edit_info"].validate(async valid => {
+        console.log(
+          "categoryList:",
+          JSON.stringify(this.edit_info.categoryList)
+        );
 
-      this.add_loading = true;
-      postRequest(this.getUrl, reqParams).then(res => {
-        this.add_loading = false;
+        // 品类 "goodsClassIds":[1,2],
+        // 品牌 "goodsBrandIds":[1,2]
 
-        if (res.code == 200) {
-          this.isCheckDisabled = true;
-
-          this.$Message.info(this.msg);
-          if (this.camp_pageStatus === "add") {
-            this.campId = res.campId;
-          }
-          setTimeout(() => {
-            this.nextInfo();
-          }, 1200);
-        } else {
-          this.$Message.error(res.msg);
+        if (!valid) {
+          this.msgErr("数据校验失败");
+          return;
         }
+
+        let goodsClassIds = this.edit_info.categoryList.map(item => item.id);
+        let goodsBrandIds = this.edit_info.brandIds;
+        const reqParams = {
+          goodsClassIds,
+          goodsBrandIds,
+          campId: this.campId,
+          appid: this.edit_info.appid,
+          campType: this.edit_info.campType,
+          couponType: this.edit_info.couponType,
+          ticketTemplateId: this.edit_info.ticketTemplateId,
+          name: this.edit_info.name,
+          couponValueDesc: this.edit_info.couponValueDesc
+            .replace(/\t/g, "")
+            .replace(/\n/g, "\\n"),
+          doorsillDesc: this.edit_info.doorsillDesc
+            .replace(/\t/g, "")
+            .replace(/\n/g, "\\n"),
+          dateType: this.edit_info.dateType,
+          startDate: this.edit_info.startDate,
+          endDate: this.edit_info.endDate,
+          rules: this.edit_info.rules.replace(/\t/g, "").replace(/\n/g, "\\n"),
+          useDesc: this.edit_info.useDesc
+            .replace(/\t/g, "")
+            .replace(/\n/g, "\\n"),
+          status: this.edit_info.status,
+          ticketName: this.edit_info.ticketName,
+          couponImg: this.edit_info.couponImg,
+          couponSimpleImg: this.edit_info.couponSimpleImg,
+          imgUrl: this.edit_info.imgUrl,
+          discountDetail: this.edit_info.discountDetail // 优惠券详情(富文本)
+        };
+
+        // return;
+
+        this.add_loading = true;
+        postRequest(this.getUrl, reqParams).then(res => {
+          this.add_loading = false;
+
+          if (res.code == 200) {
+            this.isCheckDisabled = true;
+
+            this.$Message.info(this.msg);
+            if (this.camp_pageStatus === "add") {
+              this.campId = res.campId;
+            }
+            setTimeout(() => {
+              this.nextInfo();
+            }, 1200);
+          } else {
+            this.$Message.error(res.msg);
+          }
+        });
       });
     },
 
@@ -1026,6 +1150,11 @@ export default {
       getRequest("/miniapp/miniapp-info/store").then(res => {
         if (res.code == 200) {
           this.appId_info = res.data;
+
+          console.log(
+            "appId_info this.edit_info.categoryList: ",
+            this.edit_info.categoryList
+          );
         } else {
           this.$Message.error(res.msg);
         }
@@ -1112,48 +1241,6 @@ export default {
 
     // 选择模版end--------------------------------
 
-    //一级分类
-    async get1() {
-      const url = "/campagin/selectGoodClassByCode";
-      let { code, msg, data } = await postRequest(url, {});
-      if (code == 200) {
-        this.list1 = data;
-        this.list2 = [];
-        this.list3 = [];
-
-        this.secondClassCode = "";
-        this.threeClassCode = "";
-      } else {
-        this.msgErr(msg);
-      }
-    },
-    //二级分类
-    async get2() {
-      const url = "/campagin/selectGoodClassByCode";
-      let { code, msg, data } = await postRequest(url, {
-        parentCode: this.edit_info.firstClassCode
-      });
-      if (code == 200) {
-        this.list2 = data;
-        this.list3 = [];
-        this.threeClassCode = "";
-      } else {
-        this.msgErr(msg);
-      }
-    },
-    //三级分类
-    async get3() {
-      const url = "/campagin/selectGoodClassByCode";
-      let { code, msg, data } = await postRequest(url, {
-        parentCode: this.edit_info.secondClassCode
-      });
-      if (code == 200) {
-        this.list3 = data;
-      } else {
-        this.msgErr(msg);
-      }
-    },
-
     //品牌
     async getBrandList() {
       const url = "/campagin/listGoodBrand";
@@ -1185,7 +1272,6 @@ export default {
   },
   mounted() {
     this.init();
-    this.get1();
     this.getBrandList();
   }
 };
