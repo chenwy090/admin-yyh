@@ -189,6 +189,22 @@
                 </Alert>
               </FormItem>
 
+              <FormItem label="品类" prop="categoryList">
+                <div v-for="(item, index) in edit_info.categoryList" :key="index">
+                  <Tag>{{item.firstClassName}}</Tag>
+                  <Tag>{{item.secondClassName}}</Tag>
+                  <Tag>{{item.threeClassName}}</Tag>
+                </div>
+              </FormItem>
+
+              <FormItem label="品牌">
+                <Row>
+                  <Col span="10">
+                    <Tag v-for="(item, index) in edit_info.brandNames" :key="index">{{item}}</Tag>
+                  </Col>
+                </Row>
+              </FormItem>
+
               <FormItem label="活动/领券规则">
                 <Input
                   type="textarea"
@@ -200,7 +216,7 @@
                 />
               </FormItem>
 
-              <FormItem label="领券规则">
+              <FormItem label="券使用说明">
                 <Input
                   type="textarea"
                   v-model="edit_info.useDesc"
@@ -515,6 +531,10 @@ export default {
     // 基础设置---------------------------------------------------------------------------------------------
         receiveRuleSetPage: false,
         edit_info: {
+           categoryList: [],
+           brandNames: [],
+           brandIds: [],
+           brandCodes: [],
           appid: "",
           campType: "",
           couponType: "",
@@ -719,7 +739,7 @@ export default {
         this.edit_info.startDate = this.camp_Info.startDate || "";
         this.edit_info.endDate = this.camp_Info.endDate || "";
 
-        this.edit_info.useDesc = this.camp_Info.useDesc;
+        this.edit_info.useDesc = this.camp_Info.useDesc.replace(/\\n/g,"\n");
 
     this.edit_info.ChangeDateType = this.camp_Info.ChangeDateType;
     this.edit_info.ChangeStartDate = this.camp_Info.ChangeStartDate;

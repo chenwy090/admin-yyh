@@ -2162,7 +2162,7 @@ export default {
 </script>
 
 
-<style>
+<style  lang="less" scoped>
 .form {
   width: 900px;
 }

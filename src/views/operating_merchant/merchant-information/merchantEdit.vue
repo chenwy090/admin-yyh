@@ -86,9 +86,9 @@
                     <div style="width:100px; float:left">
                       <ImgCutter
                         :label="'选择图片'"
-                        :boxWidth="600"
+                        :boxWidth="800"
                         :boxHeight="500"
-                        :rate="1"
+                        :rate="2"
                         v-on:cutDown="cutDownArr"
                       >
                         <button
@@ -1930,7 +1930,7 @@ export default {
 </script>
 
 
-<style>
+<style  lang="less" scoped>
 .form {
   width: 900px;
 }
