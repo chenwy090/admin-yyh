@@ -68,12 +68,12 @@
         <FormItem label="投放门店: " required>
           <RadioGroup v-model="form.putShop" @on-change="changeRadio()">
             <Radio :disabled="addOrEdit == 3" :label="0">全国</Radio>
-            <Radio :disabled="addOrEdit == 3" :label="1" style="margin-left:20px">零售商</Radio>
+            <!-- <Radio :disabled="addOrEdit == 3" :label="1" style="margin-left:20px">零售商</Radio> -->
             <Radio :disabled="addOrEdit == 3" :label="2" style="margin-left:20px">城市</Radio>
             <Radio :disabled="addOrEdit == 3" :label="3" style="margin-left:20px">自定义门店</Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem label="选择零售商: " v-if="form.putShop == 1" required>
+        <FormItem label="选择零售商: " v-if="form.putShop == 0 || form.putShop == 2" required>
           <Button
             type="primary"
             icon="md-add"
@@ -770,10 +770,13 @@
           this.msgErr("请输入投放门店");
           return;
         } else {
-          if (this.form.putShop == 1) {
-            if (!this.retailer) {
-              this.msgErr("请选择零售商");
-              return;
+          if (this.form.putShop == 0 || this.form.putShop == 2) {
+            for (let i = 0; i < this.retailer.length; i++) {
+              let num = i+1;
+              if(!this.retailer[i].venderId) {
+                this.msgErr("第" + num + "条零售商没有选择");
+                return;
+              }
             }
           }
           if (this.form.putShop == 2) {
