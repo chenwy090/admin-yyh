@@ -377,6 +377,9 @@ export default {
         if(res.code == 200){
           this.msgOk('操作成功')
           this.search()
+          if(type == -1) {
+            this.lowTxt = ''
+          }
           this.lowDisplay = false
         }else {
           this.msgErr(res.msg)
