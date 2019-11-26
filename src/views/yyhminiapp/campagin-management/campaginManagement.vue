@@ -1098,7 +1098,6 @@ export default {
         code: code
       }).then(res => {
         if (res.code == 200) {
-         
           if (res.data || res.data.noOverallCommonConfigList) {
             let arr = res.data.noOverallCommonConfigList || [];
             this.formShareModal.shareData = arr.filter(
@@ -1775,8 +1774,11 @@ export default {
     },
 
     // 查看详情对话框
-    detailsDisplayFn(row) {
+    async detailsDisplayFn(row) {
+      let res = await this.queryXX(row.campId);
+
       const rowData = {
+        ...res,
         appid: row.appid,
         campId: row.campId,
         campType: row.campType,
@@ -1810,6 +1812,54 @@ export default {
       };
       this.camp_Info3 = rowData;
       this.detailsDisplay = true;
+    },
+
+    async queryXX(campId) {
+      let url = "/campagin/selectCampaignByCampId";
+      let { code, msg, classListList, brandList } = await postRequest(url, {
+        campId
+      });
+      let categoryList = [];
+      classListList.forEach(arr => {
+        arr.sort((item1, item2) => {
+          return item1.sort - item2.sort;
+        });
+        let obj = {};
+        arr.forEach(item => {
+          if (item.sort == 1) {
+            obj.firstClassCode = item.classCode;
+            obj.firstClassName = item.className;
+          }
+          if (item.sort == 2) {
+            obj.secondClassCode = item.classCode;
+            obj.secondClassName = item.className;
+          }
+          if (item.sort == 3) {
+            obj._id = Math.random();
+            obj.id = item.id;
+            obj.threeClassCode = item.classCode;
+            obj.threeClassName = item.className;
+          }
+        });
+        categoryList.push(obj);
+      });
+
+      let brandIds = [];
+      let brandNames = [];
+      let brandCodes = [];
+      brandList.forEach(item => {
+        brandIds.push(item.id);
+        brandNames.push(item.brandName);
+        brandCodes.push(item.brandCode);
+      });
+      // brandNames = brandNames.join(",");
+
+      return {
+        brandIds,
+        brandNames,
+        brandCodes,
+        categoryList
+      };
     },
 
     // 查看详情组件

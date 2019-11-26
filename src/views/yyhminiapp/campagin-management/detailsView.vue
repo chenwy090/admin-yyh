@@ -189,6 +189,22 @@
                 </Alert>
               </FormItem>
 
+              <FormItem label="品类" prop="categoryList">
+                <div v-for="(item, index) in edit_info.categoryList" :key="index">
+                  <Tag>{{item.firstClassName}}</Tag>
+                  <Tag>{{item.secondClassName}}</Tag>
+                  <Tag>{{item.threeClassName}}</Tag>
+                </div>
+              </FormItem>
+
+              <FormItem label="品牌">
+                <Row>
+                  <Col span="10">
+                    <Tag v-for="(item, index) in edit_info.brandNames" :key="index">{{item}}</Tag>
+                  </Col>
+                </Row>
+              </FormItem>
+
               <FormItem label="活动/领券规则">
                 <Input
                   type="textarea"
@@ -515,6 +531,10 @@ export default {
     // 基础设置---------------------------------------------------------------------------------------------
         receiveRuleSetPage: false,
         edit_info: {
+           categoryList: [],
+           brandNames: "",
+           brandIds: [],
+           brandCodes: [],
           appid: "",
           campType: "",
           couponType: "",
