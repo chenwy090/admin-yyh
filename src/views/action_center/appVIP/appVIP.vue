@@ -411,7 +411,8 @@ export default {
           setTimeout(() => {
             this.$Modal.warning({
               title: '提示',
-              content: res.msg
+              content: res.msg,
+              okText: "我知道了",
             });
           }, 1000);
         }
