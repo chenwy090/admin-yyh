@@ -865,7 +865,7 @@
       // 下载
       downloadDoc() {
         // window.location.href = baseUrl+`/system/sys-shop-info/downloadTemplateShop`
-        window.location.href = "/document/shop-20191119150247.docx";
+        window.location.href = "/document/shop-20191119150247.xlsx";
       },
 
       // 全局提示
