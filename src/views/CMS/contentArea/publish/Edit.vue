@@ -189,13 +189,15 @@
         ></CompCheckBoxCity>
       </FormItem>
       <FormItem label="标题：" prop="title" :rules="{ required: true, message: '请输入标题' }">
-        <Input
-          style="display:inline-block;width:200px"
-          v-model="formData.title"
-          :maxlength="13"
-          placeholder="请输入标题"
-          clearable
-        />
+        <Tooltip trigger="focus" title="提醒" content="最多26个汉字" placement="right">
+          <Input
+            style="display:inline-block;width:300px"
+            v-model="formData.title"
+            :maxlength="26"
+            placeholder="请输入标题"
+            clearable
+          />
+        </Tooltip>
       </FormItem>
 
       <FormItem label="类型：" prop="sourceType" :rules="{ required: true, message: '请输入类型' }">
@@ -526,6 +528,7 @@ export default {
         this.formData = data;
         // const { sourceType, tags = [], citys = [], coupons = [] } = data;
         let {
+          isAutoplay,
           images,
           smallImg,
           coverImg,
@@ -536,7 +539,7 @@ export default {
           describe,
           contentAuthor
         } = data;
-
+        isAutoplay = +isAutoplay; //bollean --> number
         images = images || [];
         tags = tags || [];
         citys = citys || [];
@@ -547,6 +550,7 @@ export default {
 
         // this.contentAuthor = contentAuthor;
 
+        this.formData.isAutoplay = isAutoplay;
         this.formData.newDescribe = describe;
 
         let imagesFlag = true;

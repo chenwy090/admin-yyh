@@ -192,13 +192,10 @@ export default {
     },
     handleSubmit(name) {
       this.$refs[name].validate(valid => {
-        console.log("valid", valid);
         if (!valid) {
-          this.msgErr("数据验证失败！");
-          return;
+          return this.msgErr("数据验证失败！");
         }
 
-        // 核销扫码首页配置
         const url = "/page/module/layout/savePreferential";
 
         //清洗数据
@@ -207,6 +204,8 @@ export default {
         postRequest(url, formData).then(res => {
           if (res.code == 200) {
             this.msgOk("保存成功");
+            // 更新页面数据
+            this.getData();
           } else {
             this.msgErr(res.msg);
           }
