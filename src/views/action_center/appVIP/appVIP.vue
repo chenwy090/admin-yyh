@@ -45,12 +45,17 @@
                 :disabled="row.status == 1"
                 @click="editInfo(row.id)"
               >编辑</Button>
-              <Button type="text" size="small" v-if="row.status != 1" @click="upLow(row.id, 1)">上架</Button>
+              <Button
+                type="text"
+                size="small"
+                v-if="row.status != 1"
+                @click="upLow(row.id, row.surplusCount)"
+              >上架</Button>
               <Button type="text" size="small" v-else @click="lowDisplay = true;lowId = row.id">下架</Button>
               <Button
                 type="text"
                 size="small"
-                :disabled="row.status == 1"
+                :disabled="row.status != 0 "
                 @click="delAppVipFn(row.id, 2)"
               >删除</Button>
             </template>
@@ -136,7 +141,7 @@
       <div style="margin-top: 20px;overflow: hidden;">
         <div style="float: right;" slot="footer">
           <Button style="margin-right: 20px" @click="lowDisplay = false">取消</Button>
-          <Button type="primary" @click="upLow(lowId, -1)">确定</Button>
+          <Button type="primary" @click="updateType(lowId, -1)">确定</Button>
         </div>
       </div>
     </Modal>
@@ -367,8 +372,29 @@ export default {
       })
     },
 
-    // 上下架
-    upLow(id,type) {
+    // 上架
+    upLow(id,surplusCount) {
+        if(surplusCount < 5000) {
+          // 少于5000提示
+          this.$Modal.confirm({
+            title: "提示",
+            content: "当前活动中优惠券数量少于5000张",
+            okText: "继续上架",
+            cancelText: '取消',
+            onOk: () => {
+              this.updateType(id,1)
+            },
+            onCancel: () => {
+              
+            }
+          });
+        }else {
+          this.updateType(id,1)
+        }
+    },
+
+    // 修改活动状态
+    updateType(id,type) {
       if(type == -1 && !this.lowTxt) {
         this.msgErr('请输入下架原因')
         return
@@ -382,7 +408,12 @@ export default {
           }
           this.lowDisplay = false
         }else {
-          this.msgErr(res.msg)
+          setTimeout(() => {
+            this.$Modal.warning({
+              title: '提示',
+              content: res.msg
+            });
+          }, 1000);
         }
       })
     },
