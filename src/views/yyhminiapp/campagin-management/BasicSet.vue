@@ -303,6 +303,13 @@
               >已选择</Tag>
             </FormItem>
 
+            <FormItem v-if="edit_info.ticketName">
+              <Alert style="width:500px">
+                <Row>模版ID：{{edit_info.ticketTemplateId}}</Row>
+                <Row>模版名称：{{edit_info.ticketName}}</Row>
+              </Alert>
+            </FormItem>
+
             <!-- :rules="{ required: true, validator: validateRewardRules }" -->
             <FormItem label="品类" prop="categoryList">
               <Button
@@ -326,25 +333,12 @@
             <FormItem label="品牌">
               <Row>
                 <Col span="10">
-                  <Button type="success" @click="handleChoose">点击按钮选择品牌</Button>
-                  <div>
-                    <Input
-                      v-model="edit_info.brandNames"
-                      type="textarea"
-                      style="width:300px;resize: none;"
-                      :autosize="{minRows: 8,maxRows: 8}"
-                      disabled
-                    ></Input>
+                  <Button type="success" size="small" @click="handleChoose">点击按钮选择品牌</Button>
+                  <div style="width:300px;">
+                    <Tag v-for="(item, index) in edit_info.brandNames" :key="index">{{item}}</Tag>
                   </div>
                 </Col>
               </Row>
-            </FormItem>
-
-            <FormItem v-if="edit_info.ticketName">
-              <Alert style="width:500px">
-                <Row>模版ID：{{edit_info.ticketTemplateId}}</Row>
-                <Row>模版名称：{{edit_info.ticketName}}</Row>
-              </Alert>
             </FormItem>
 
             <FormItem label="活动/领券规则" required>
@@ -527,7 +521,7 @@ export default {
         ChangeStart: "",
         ChangeEnd: "",
         discountDetail: "", //优惠券详情（富文本）
-        brandNames: "",
+        brandNames: [],
         brandIds: [],
         brandCodes: []
       },
@@ -661,6 +655,9 @@ export default {
   },
   methods: {
     handleAdd() {
+       //修改后才能保存
+      this.isCheckDisabled = false;
+
       this.edit_info.categoryList.push({
         _id: Math.random(),
         id: "",
@@ -679,6 +676,9 @@ export default {
       this.showBrandList = true;
     },
     selectedBrandItem(data) {
+      //修改后才能保存
+      this.isCheckDisabled = false;
+
       console.log("selectedBrandItem----", data);
       // let { id, brandCode, brandName } = data;
       // templateId 券模板id templateName 券模板名称
@@ -690,7 +690,7 @@ export default {
         brandIds.push(item.id);
         brandCodes.push(item.brandCode);
       });
-      this.edit_info.brandNames = brandNames.join(",");
+      this.edit_info.brandNames = brandNames;
       this.edit_info.brandIds = brandIds;
       this.edit_info.brandCodes = brandCodes;
     },
@@ -853,7 +853,7 @@ export default {
         brandNames.push(item.brandName);
         brandCodes.push(item.brandCode);
       });
-      this.edit_info.brandNames = brandNames.join(",");
+      this.edit_info.brandNames = brandNames;
       this.edit_info.brandIds = brandIds;
       this.edit_info.brandCodes = brandCodes;
     },

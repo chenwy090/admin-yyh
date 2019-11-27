@@ -55,18 +55,18 @@ export default {
   methods: {
     seteditor() {
       this.editor = new E(this.$refs.toolbar, this.$refs.editor);
-      this.editor.customConfig.pasteTextHandle = function(content) {
-        // content 即粘贴过来的内容（html 或 纯文本），可进行自定义处理然后返回
-        if (content == "" && !content) return "";
-        var str = content;
-        str = str.replace(/<xml>[\s\S]*?<\/xml>/gi, "");
-        str = str.replace(/<\/?[^>]*>/g, "");
-        str = str.replace(/[ | ]*\n/g, "\n");
-        str = str.replace(/&nbsp;/gi, "");
-        console.log("****", content);
-        console.log("****", str);
-        return str;
-      };
+      // this.editor.customConfig.pasteTextHandle = function(content) {
+      //   // content 即粘贴过来的内容（html 或 纯文本），可进行自定义处理然后返回
+      //   if (content == "" && !content) return "";
+      //   var str = content;
+      //   str = str.replace(/<xml>[\s\S]*?<\/xml>/gi, "");
+      //   str = str.replace(/<\/?[^>]*>/g, "");
+      //   str = str.replace(/[ | ]*\n/g, "\n");
+      //   str = str.replace(/&nbsp;/gi, "");
+      //   console.log("****", content);
+      //   console.log("****", str);
+      //   return str;
+      // };
       // 配置菜单
       this.editor.customConfig.menus = [
         "head", // 标题
@@ -78,7 +78,7 @@ export default {
         "link", // 插入链接
         "list", // 列表
         "justify", // 对齐方式
-        // "image", // 插入图片
+        "image", // 插入图片
         "table", // 表格
         "undo", // 撤销
         "redo" // 重复
