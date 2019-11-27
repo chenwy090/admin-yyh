@@ -425,9 +425,8 @@
               placeholder="请输入"
               style="width:320px"
             ></InputNumber>
-            <span v-if="item.name== '上限'">&nbsp;&nbsp;U贝</span>
             <span v-if="item.name== '倍数'">&nbsp;倍</span>
-            <span v-if="item.name!= '倍数'&&item.name!= '上限'">&nbsp;&nbsp;%</span>
+            <span v-else>&nbsp;&nbsp;U贝</span>
           </FormItem>
           <FormItem>
             <Button style="float: left;" type="primary" @click="shareSave('shareModal')">保存</Button>

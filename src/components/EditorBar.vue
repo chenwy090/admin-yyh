@@ -12,6 +12,8 @@
 import { uploadFileRequest } from "@/libs/axios";
 import { uploadOperationImage2AliOssURl } from "@/api/index";
 import E from "wangeditor";
+import allMenus from "./editorBar/menus";
+
 export default {
   name: "EditorBar",
   data() {
@@ -28,6 +30,10 @@ export default {
   },
   // props: ["content"],
   props: {
+    menus: {
+      type: Array,
+      default: () => []
+    },
     content:String,
     disabled:null,
   },
@@ -74,10 +80,12 @@ export default {
         "fontSize", // 字号
         "fontName", // 字体
         "underline", // 下划线
+        'strikeThrough',  // 删除线
         "foreColor", // 文字颜色
         "link", // 插入链接
         "list", // 列表
         "justify", // 对齐方式
+        'emoticon',  // 表情
         "image", // 插入图片
         "table", // 表格
         "undo", // 撤销
