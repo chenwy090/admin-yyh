@@ -24,30 +24,33 @@
                 >{{ item }}</Option>
               </Select>
             </div>
-            <div v-show="pushRange == 2" class="store-wrap">
-              <span class="mgr-10">选择城市</span>
-              <div class="mgt-10 dsp-ib" v-for="(el,i) in cityItems" :key="'L27' + i">
-                <Select
-                  class="mgr-10"
-                  v-model="el.province"
-                  style="width:150px"
-                  clearable
-                  @on-change="getcitylist($event, i)"
-                >
-                  <Option
-                    v-for="(item, index) in provincelist"
-                    :key="'line36'+index"
-                    :value="item.provinceName"
-                  >{{ item.provinceName }}</Option>
-                </Select>
-                <Select v-model="cityItems[i].city" style="width:150px" clearable>
-                  <Option
-                    v-for="(item, index) in cityItems[i].citylist"
-                    :key="'line48'+index"
-                    :value="item.cityName"
-                  >{{ item.cityName }}</Option>
-                </Select>
-                <Icon @click="addCityItem(i)" type="md-add" class="pointer mgl-10 fz-26" /><Icon v-if="i!== 0" @click="removeCityItem(i)" type="md-remove" class="pointer mgl-10 fz-26" />
+            <div v-show="pushRange == 2" class="store-wrap flex">
+              <div class="mgr-10" style="width: 5em;margin-top: 17px;">选择城市</div>
+              <div class="flex-1">
+                <div class="mgt-10" v-for="(el,i) in cityItems" :key="'L27' + i">
+                  <Select
+                    class="mgr-10"
+                    v-model="el.province"
+                    style="width:150px"
+                    clearable
+                    @on-change="getcitylist($event, i)"
+                  >
+                    <Option
+                      v-for="(item, index) in provincelist"
+                      :key="'line36'+index"
+                      :value="item.provinceName"
+                    >{{ item.provinceName }}</Option>
+                  </Select>
+                  <Select v-model="cityItems[i].city" style="width:150px" clearable>
+                    <Option
+                      v-for="(item, index) in cityItems[i].citylist"
+                      :key="'line48'+index"
+                      :value="item.cityName"
+                    >{{ item.cityName }}</Option>
+                  </Select>
+                  <Icon @click="addCityItem(i)" type="md-add" class="pointer mgl-10 fz-26" /><Icon v-if="i!== 0" @click="removeCityItem(i)" type="md-remove" class="pointer mgl-10 fz-26" />
+                </div>
+
               </div>
             </div>
             <div v-show="pushRange == 3" class="mgt-10">

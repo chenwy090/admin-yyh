@@ -614,11 +614,11 @@ export default {
       // let query = util.g_json2query({id, status});
       let { code, msg, data } = await postRequest(url, { id, status });
       if (code == 200) {
-        let msg = "下架成功";
+        let _msg = "下架成功";
         if (status == 2) {
-          msg = "上架成功";
+          _msg = "上架成功";
         }
-        this.msgOk(msg);
+        this.msgOk(_msg);
         this.getList();
       } else {
         this.msgErr(msg);
