@@ -657,7 +657,7 @@
               <EditorBar
                 v-model="edit_info.discountDetail"
                 :content="edit_info.discountDetail"
-                style="width:500px;margin:0;"
+                style="width:600px;margin:0;"
                 @on-change="change"
                 @on-blur="blur"
               ></EditorBar>
@@ -1152,7 +1152,8 @@ export default {
         fullAmout: 0,
         decreaseAmount: 0,
         displayText: "",
-        discountDetail: ""
+        discountDetail: "",
+        newDiscountDetail: "" //富文本中转
       },
       edit_loading: false,
       userToken: "",
@@ -1316,7 +1317,8 @@ export default {
         fullAmout: 0,
         decreaseAmount: 0,
         displayText: "",
-        discountDetail: "" // 优惠券图文详情（富文本）
+        discountDetail: "", // 优惠券图文详情（富文本）
+        newDiscountDetail: "" //富文本中转
       };
     },
     //编辑
@@ -1329,12 +1331,16 @@ export default {
           // console.log(res);
           if (res.code == 200) {
             var that = this;
-            let { thirdUrl } = res.data;
+            let { thirdUrl, discountDetail: newDiscountDetail } = res.data;
             res.data.thirdUrl = thirdUrl || "";
+            //富文本中转处理
+            res.data.newDiscountDetail = newDiscountDetail || "";
             this.edit_info = {
               ...this.edit_info,
               ...res.data
             };
+
+            newDiscountDetail;
             this.edit_info.useDesc = this.edit_info.useDesc.replace(
               /\\n/g,
               "\n"
@@ -1993,7 +1999,8 @@ export default {
         decreaseAmount: this.edit_info.decreaseAmount,
         displayText: this.edit_info.displayText,
         merchantList: this.add_info.merchantList,
-        discountDetail: this.edit_info.discountDetail, // 优惠券图文详情（富文本）
+        // discountDetail: this.edit_info.discountDetail, // 优惠券图文详情（富文本）
+        discountDetail: this.edit_info.newDiscountDetail, // 优惠券图文详情（富文本）
         payCouponMerchantType: this.edit_info.payCouponMerchantType
       };
 
@@ -2181,11 +2188,11 @@ export default {
     change(val) {
       // console.log("change:", val);
       // console.log("data:",this.edit_info.discountDetail);
-      this.edit_info.discountDetail = val;
+      this.edit_info.newDiscountDetail = val;
     },
     blur(val) {
       // console.log("blur:", val);
-      this.edit_info.discountDetail = val;
+      this.edit_info.newDiscountDetail = val;
     }
   },
   mounted() {

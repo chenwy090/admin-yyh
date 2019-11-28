@@ -368,7 +368,7 @@
                 :content="edit_info.discountDetail"
                 @on-change="change"
                 @on-blur="blur"
-                style="width:400px;margin:0;"
+                style="width:500px;margin:0;"
               ></EditorBar>
             </FormItem>
 
@@ -521,6 +521,7 @@ export default {
         ChangeStart: "",
         ChangeEnd: "",
         discountDetail: "", //优惠券详情（富文本）
+        newDiscountDetail: "", //中转数据
         brandNames: [],
         brandIds: [],
         brandCodes: []
@@ -671,6 +672,7 @@ export default {
     del(index) {
       console.log("del categoryList:", index);
       this.edit_info.categoryList.splice(index, 1);
+      this.isCheckDisabled = false;
     },
     handleChoose() {
       this.showBrandList = true;
@@ -811,6 +813,8 @@ export default {
       this.edit_info.ChangeStart = this.camp_Info.changeStart;
       this.edit_info.ChangeEnd = this.camp_Info.changeEnd;
       this.edit_info.discountDetail = this.camp_Info.discountDetail;
+      this.edit_info.newDiscountDetail = this.camp_Info.discountDetail;
+      
       console.log(this.edit_info.ChangeDateType);
 
       this.isCheckDisabled = true;
@@ -988,7 +992,8 @@ export default {
           couponImg: this.edit_info.couponImg,
           couponSimpleImg: this.edit_info.couponSimpleImg,
           imgUrl: this.edit_info.imgUrl,
-          discountDetail: this.edit_info.discountDetail // 优惠券详情(富文本)
+          // discountDetail: this.edit_info.discountDetail // 优惠券详情(富文本)
+          discountDetail: this.edit_info.newDiscountDetail // 优惠券详情(富文本)
         };
 
         // return;
@@ -1225,12 +1230,12 @@ export default {
     change(val) {
       // console.log("change:", val);
       // console.log("data:",this.edit_info.discountDetail);
-      this.edit_info.discountDetail = val;
+      this.edit_info.newDiscountDetail = val;
       this.isCheckDisabled = false;
     },
     blur(val) {
       // console.log("blur:", val);
-      this.edit_info.discountDetail = val;
+      this.edit_info.newDiscountDetail = val;
       this.isCheckDisabled = false;
     },
 
