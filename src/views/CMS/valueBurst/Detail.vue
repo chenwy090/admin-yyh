@@ -172,7 +172,7 @@ export default {
 
 .store-wrap{
   min-height: 150px;
-  max-height: 280px;
+  max-height: 281px;
   overflow: auto;
   margin-bottom: 10px;
 }

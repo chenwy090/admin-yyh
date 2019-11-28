@@ -319,11 +319,12 @@ export default {
       setTimeout(() => {
         this.$Spin.hide();
       }, 6000);
-      let { code, msg, data } = await postRequest(url, e);
+      const resData = await postRequest(url, e);
+      let { code, msg, data } = resData;
       if (code == 200) {
         this.$Spin.hide();
-        if (data.faildata) {
-          let _msg = data.faildata.join(',')
+        if (resData.faildata && Array.isArray(resData.faildata) && resData.faildata.length > 0) {
+          let _msg = resData.faildata.join(',')
           this.$Modal.info({
             title: "提示",
             content: _msg

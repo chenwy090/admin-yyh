@@ -182,8 +182,8 @@
                 @click="apiUpdown(params.row.id, params.row.status)"
               >{{["","下架","上架"][params.row.status]}}</Button>
               <!-- status:  1   2下架  2  1上架 -->
+                <!-- v-if="params.row.status==0" -->
               <Button
-                v-if="params.row.status==0"
                 type="error"
                 style="margin-right: 5px"
                 size="small"
