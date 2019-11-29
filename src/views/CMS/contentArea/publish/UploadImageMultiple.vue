@@ -100,7 +100,7 @@ export default {
         //   this.uploadList.push(item);
         // }
         let arr = JSON.stringify(this.uploadList);
-        console.log("watch defaultList uploadList:", arr);
+        // console.log("watch defaultList uploadList:", arr);
       },
       immediate: true
     }
@@ -150,37 +150,37 @@ export default {
   methods: {
     changeImageSort(ev, index) {
       this.idx = index;
-      let fileItem = this.uploadList[index];
+      let arr = this.uploadList;
+      let fileItem = arr[index];
 
       let { value } = ev.target;
       value = value.replace(/\D/g, "");
-      if (!/^[1-9]\d*$|^$/.test(value)) {
-        value = "";
-        // ev.target.value = "";
-      }
+ 
+      fileItem.sort = value;
+      fileItem.msg = "";
 
-      let sort = value;
-      let msg = "请输入排序";
-      if (sort.length) {
+      if (value.length == 0) {
+        fileItem.msg = "请输入排序";
+      } else {
         //验证sort是否重复
-        let isRepeat = false;
-        for (let i = 0; i < this.uploadList.length; i++) {
-          let item = this.uploadList[i];
-          if (item._id == fileItem._id) continue;
-          if (item.sort == sort) {
-            isRepeat = true;
-            break;
+        //清空所有错误信息
+        arr.forEach(item => {
+          item.isRepeat = false;
+          item.msg = item.sort === "" ? "请输入排序" : "";
+        });
+
+        for (let i = 0; i < arr.length; i++) {
+          let item = arr[i];
+          if (item.sort == "" || item.isRepeat) continue;
+          for (let j = i + 1; j < arr.length; j++) {
+            if (item.sort == arr[j].sort) {
+              item.isRepeat = arr[j].isRepeat = true;
+              item.msg = arr[j].msg = `${item.sort}重复了`;
+            }
           }
         }
-
-        msg = isRepeat ? "排序不能重复" : "";
       }
-      let newFileItem = { ...fileItem, msg, sort };
-      this.uploadList.splice(index, 1, newFileItem);
-
-      // console.log("change sort : newFileItem ", JSON.stringify(newFileItem));
-
-      let images = JSON.parse(JSON.stringify(this.uploadList));
+      let images = JSON.parse(JSON.stringify(arr));
       this.$emit("updateImages", images);
     },
     handleView(imgUrl) {
