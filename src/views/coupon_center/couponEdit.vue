@@ -1703,10 +1703,10 @@ export default {
           this.edit_info.displayText =
             "满" +
             this.edit_info.fullAmout +
-            "减" +
-            this.edit_info.decreaseAmount;
+            "元减" +
+            this.edit_info.decreaseAmount +
+            "元";
         }
-
         if (
           this.edit_info.couponType == "4" ||
           this.edit_info.couponType == "5" ||
