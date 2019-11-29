@@ -339,7 +339,7 @@
                   </div>
                 </Col>
               </Row>
-            </FormItem> -->
+            </FormItem>-->
 
             <FormItem label="活动/领券规则" required>
               <Input
@@ -656,7 +656,7 @@ export default {
   },
   methods: {
     handleAdd() {
-       //修改后才能保存
+      //修改后才能保存
       this.isCheckDisabled = false;
 
       this.edit_info.categoryList.push({
@@ -814,7 +814,7 @@ export default {
       this.edit_info.ChangeEnd = this.camp_Info.changeEnd;
       this.edit_info.discountDetail = this.camp_Info.discountDetail;
       this.edit_info.newDiscountDetail = this.camp_Info.discountDetail;
-      
+
       console.log(this.edit_info.ChangeDateType);
 
       this.isCheckDisabled = true;
@@ -949,74 +949,69 @@ export default {
       }
       // const reqParams = this.edit_info;
 
-      this.$refs["edit_info"].validate(async valid => {
-        console.log(
-          "categoryList:",
-          JSON.stringify(this.edit_info.categoryList)
-        );
+      // this.$refs["edit_info"].validate(async valid => {
+      // console.log("categoryList:", JSON.stringify(this.edit_info.categoryList));
+      // 品类 "goodsClassIds":[1,2],
+      // 品牌 "goodsBrandIds":[1,2]
 
-        // 品类 "goodsClassIds":[1,2],
-        // 品牌 "goodsBrandIds":[1,2]
+      // if (!valid) {
+      //   this.msgErr("数据校验失败");
+      //   return;
+      // }
+      let goodsClassIds = this.edit_info.categoryList.map(item => item.id);
+      let goodsBrandIds = this.edit_info.brandIds;
+      const reqParams = {
+        goodsClassIds,
+        goodsBrandIds,
+        campId: this.campId,
+        appid: this.edit_info.appid,
+        campType: this.edit_info.campType,
+        couponType: this.edit_info.couponType,
+        ticketTemplateId: this.edit_info.ticketTemplateId,
+        name: this.edit_info.name,
+        couponValueDesc: this.edit_info.couponValueDesc
+          .replace(/\t/g, "")
+          .replace(/\n/g, "\\n"),
+        doorsillDesc: this.edit_info.doorsillDesc
+          .replace(/\t/g, "")
+          .replace(/\n/g, "\\n"),
+        dateType: this.edit_info.dateType,
+        startDate: this.edit_info.startDate,
+        endDate: this.edit_info.endDate,
+        rules: this.edit_info.rules.replace(/\t/g, "").replace(/\n/g, "\\n"),
+        useDesc: this.edit_info.useDesc
+          .replace(/\t/g, "")
+          .replace(/\n/g, "\\n"),
+        status: this.edit_info.status,
+        ticketName: this.edit_info.ticketName,
+        couponImg: this.edit_info.couponImg,
+        couponSimpleImg: this.edit_info.couponSimpleImg,
+        imgUrl: this.edit_info.imgUrl,
+        // discountDetail: this.edit_info.discountDetail // 优惠券详情(富文本)
+        discountDetail: this.edit_info.newDiscountDetail // 优惠券详情(富文本)
+      };
 
-        if (!valid) {
-          this.msgErr("数据校验失败");
-          return;
-        }
+      // console.log("save:reqParams==>", reqParams);
+      // return;
+      this.add_loading = true;
+      postRequest(this.getUrl, reqParams).then(res => {
+        this.add_loading = false;
 
-        let goodsClassIds = this.edit_info.categoryList.map(item => item.id);
-        let goodsBrandIds = this.edit_info.brandIds;
-        const reqParams = {
-          goodsClassIds,
-          goodsBrandIds,
-          campId: this.campId,
-          appid: this.edit_info.appid,
-          campType: this.edit_info.campType,
-          couponType: this.edit_info.couponType,
-          ticketTemplateId: this.edit_info.ticketTemplateId,
-          name: this.edit_info.name,
-          couponValueDesc: this.edit_info.couponValueDesc
-            .replace(/\t/g, "")
-            .replace(/\n/g, "\\n"),
-          doorsillDesc: this.edit_info.doorsillDesc
-            .replace(/\t/g, "")
-            .replace(/\n/g, "\\n"),
-          dateType: this.edit_info.dateType,
-          startDate: this.edit_info.startDate,
-          endDate: this.edit_info.endDate,
-          rules: this.edit_info.rules.replace(/\t/g, "").replace(/\n/g, "\\n"),
-          useDesc: this.edit_info.useDesc
-            .replace(/\t/g, "")
-            .replace(/\n/g, "\\n"),
-          status: this.edit_info.status,
-          ticketName: this.edit_info.ticketName,
-          couponImg: this.edit_info.couponImg,
-          couponSimpleImg: this.edit_info.couponSimpleImg,
-          imgUrl: this.edit_info.imgUrl,
-          // discountDetail: this.edit_info.discountDetail // 优惠券详情(富文本)
-          discountDetail: this.edit_info.newDiscountDetail // 优惠券详情(富文本)
-        };
+        if (res.code == 200) {
+          this.isCheckDisabled = true;
 
-        // return;
-
-        this.add_loading = true;
-        postRequest(this.getUrl, reqParams).then(res => {
-          this.add_loading = false;
-
-          if (res.code == 200) {
-            this.isCheckDisabled = true;
-
-            this.$Message.info(this.msg);
-            if (this.camp_pageStatus === "add") {
-              this.campId = res.campId;
-            }
-            setTimeout(() => {
-              this.nextInfo();
-            }, 1200);
-          } else {
-            this.$Message.error(res.msg);
+          this.$Message.info(this.msg);
+          if (this.camp_pageStatus === "add") {
+            this.campId = res.campId;
           }
-        });
+          setTimeout(() => {
+            this.nextInfo();
+          }, 1200);
+        } else {
+          this.$Message.error(res.msg);
+        }
       });
+      // });
     },
 
     dataProcessing() {

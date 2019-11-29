@@ -1707,7 +1707,6 @@ export default {
             this.edit_info.decreaseAmount +
             "元";
         }
-
         if (
           this.edit_info.couponType == "4" ||
           this.edit_info.couponType == "5" ||
