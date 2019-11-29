@@ -189,7 +189,7 @@
                 </Alert>
               </FormItem>
 
-              <FormItem label="品类" prop="categoryList">
+              <!-- <FormItem label="品类" prop="categoryList">
                 <div v-for="(item, index) in edit_info.categoryList" :key="index">
                   <Tag>{{item.firstClassName}}</Tag>
                   <Tag>{{item.secondClassName}}</Tag>
@@ -203,7 +203,7 @@
                     <Tag v-for="(item, index) in edit_info.brandNames" :key="index">{{item}}</Tag>
                   </Col>
                 </Row>
-              </FormItem>
+              </FormItem> -->
 
               <FormItem label="活动/领券规则">
                 <Input
