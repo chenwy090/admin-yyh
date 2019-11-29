@@ -11,14 +11,14 @@
       :styles="{top: '20px'}"
     >
       <div style="min-height: 240px">
-        <row v-if="false">
+        <row v-if="true">
           <Form ref="searchItem" :model="searchData" inline :label-width="70" class="search-form">
             <FormItem label="商户编号">
               <Input
                 type="text"
                 v-model="searchData.shopId"
                 clearable
-                placeholder="请输入商户编号"
+                placeholder="请输入shopId"
                 style="width: 150px"
               />
             </FormItem>
@@ -27,11 +27,11 @@
                 type="text"
                 v-model="searchData.shopName"
                 clearable
-                placeholder="请输入商户名称"
-                style="width: 150px"
+                placeholder="请输入商户名称shopName"
+                style="width: 180px"
               />
             </FormItem>
-            <FormItem style label="所在地区">
+            <!-- <FormItem style label="所在地区">
               <Select
                 v-model="searchData.provinceCode"
                 style="width:150px"
@@ -63,9 +63,9 @@
                   :value="item.areaCode"
                 >{{item.areaName}}</Option>
               </Select>
-            </FormItem>
+            </FormItem> -->
             <FormItem style="margin-left:-35px;" class="br">
-              <Button @click="search" type="primary" icon="ios-search">搜索</Button>
+              <Button @click="doSearch" type="primary" icon="ios-search">搜索</Button>
               <Button @click="reset">重置</Button>
             </FormItem>
           </Form>
@@ -139,6 +139,7 @@ export default {
   },
   data() {
     return {
+      currentShopList: [],
       isShow: true,
       //选中的数据
       choices: [
@@ -217,16 +218,16 @@ export default {
   methods: {
     handleChecked() {
       this.hasChecked.forEach(el=>{
-        this.tableData.forEach((ell,ii)=>{
+        this.currentShopList.forEach((ell,ii)=>{
           if (el.shopId == ell.shopId) {
-            this.tableData[ii]._checked = true;
+            this.currentShopList[ii]._checked = true;
           }
         });
       })
     },
     // //确定选择商户
     selectMerchant() {
-      this.choices = this.shopLists.filter(item => item._checked);
+      this.choices = this.currentShopList.filter(item => item._checked);
       let choices = [];
       this.choices.forEach((el,i) =>{
         delete el._checked;
@@ -235,10 +236,10 @@ export default {
 
       if (this.choices.length) {
         this.$emit("storeSelect", choices);
-        if (Array.isArray(this.shopLists)) {
-          this.shopLists.forEach((el, i) => {
+        if (Array.isArray(this.currentShopList)) {
+          this.currentShopList.forEach((el, i) => {
             if (el._checked === true) {
-              this.shopLists[i]._checked = false
+              this.currentShopList[i]._checked = false
             }
           })
         }
@@ -251,33 +252,25 @@ export default {
       let cur = (this.page.pageNum - 1) * this.page.pageSize;
       this.tableData = this.tableData.map((item, index) => {
         item._checked = false;
-        this.shopLists[cur + index]._checked = false;
+        this.currentShopList[cur + index]._checked = false;
         for (let i = 0; i < selection.length; i++) {
           if (item.shopId == selection[i].shopId) {
             item._checked = true;
-            this.shopLists[cur + index]._checked = true;
+            this.currentShopList[cur + index]._checked = true;
           }
         }
         return item;
       });
     },
     handleOnRowDbclick(row, index) {
-      let { _checked } = row;
+      // let { _checked } = row;
 
-      _checked = !_checked;
-      row._checked = _checked;
-      this.tableData.splice(index, 1, row);
+      // _checked = !_checked;
+      // row._checked = _checked;
+      // this.tableData.splice(index, 1, row);
       
-      let cur = (this.page.pageNum - 1) * this.page.pageSize;
-      this.shopLists.splice(cur + index, 1, row);
-      console.log(
-        this.tableData.map(item =>
-          JSON.stringify({
-            shopId: item.shopId,
-            _checked: item._checked
-          })
-        )
-      );
+      // let cur = (this.page.pageNum - 1) * this.page.pageSize;
+      // this.currentShopList.splice(cur + index, 1, row);
     },
 
     //获取省份信息数据
@@ -318,25 +311,42 @@ export default {
     cancel() {
       this.closeDialog();
     },
-    search() {
+    doSearch(reset) {
+      // 
+      this.page.pageNum = 1;
+      // 重置 currentShopList 全不选
+      this.currentShopList = JSON.parse(JSON.stringify(this.shopLists));
+      if (reset !== true) {
+        this.handleChecked();
+      }
+      this.currentShopList = this.currentShopList.filter(el=>{
+        if (
+          (this.searchData.shopName? el.shopName.indexOf(this.searchData.shopName) !== -1: true) &&
+          (this.searchData.shopId? el.shopId.indexOf(this.searchData.shopId) !== -1 : true)
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      console.log(this.currentShopList, this.searchData);
+      
       this.queryTableData();
     },
     // 分页（点击第几页）
     changeCurrent(pageNum) {
-      this.queryTableData(pageNum);
+      this.page.pageNum = pageNum;
+      this.queryTableData();
     },
     // 获取商户列表
-    async queryTableData(pageNum) {
-      if (! Array.isArray(this.shopLists)) {
+    async queryTableData() {
+      if (! Array.isArray(this.currentShopList)) {
         return;
       }
-      if (typeof pageNum === 'number') {
-        this.page.pageNum = pageNum;
-      }
       let cur = (this.page.pageNum - 1) * this.page.pageSize;
-      this.tableData = this.shopLists.slice(cur, cur + this.page.pageSize);
+      this.tableData = this.currentShopList.slice(cur, cur + this.page.pageSize);
 
-      this.page.total = this.shopLists.length; //列表总数
+      this.page.total = this.currentShopList.length; //列表总数
     },
     closeDialog() {
       //关闭对话框清除表单数据
@@ -361,7 +371,7 @@ export default {
         total: 0 //数据总数
       };
       //重新查询一遍
-      this.queryTableData();
+      this.doSearch(true);
     },
     // 全局提示
     msgOk(txt) {
@@ -378,9 +388,9 @@ export default {
     }
   },
   mounted() {
+    this.currentShopList = JSON.parse(JSON.stringify(this.shopLists));
     this.queryTableData();
     this.getprovincelist();
-    console.log(this.hasChecked);
     this.handleChecked();
   }
 };

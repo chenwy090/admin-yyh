@@ -38,15 +38,15 @@
                     <Option
                       v-for="(item, index) in provincelist"
                       :key="'line36'+index"
-                      :value="item.provinceName"
-                    >{{ item.provinceName }}</Option>
+                      :value="item"
+                    >{{ item }}</Option>
                   </Select>
                   <Select v-model="cityItems[i].city" style="width:150px" clearable>
                     <Option
                       v-for="(item, index) in cityItems[i].citylist"
                       :key="'line48'+index"
-                      :value="item.cityName"
-                    >{{ item.cityName }}</Option>
+                      :value="item"
+                    >{{ item }}</Option>
                   </Select>
                   <Icon @click="addCityItem(i)" type="md-add" class="pointer mgl-10 fz-26" /><Icon v-if="i!== 0" @click="removeCityItem(i)" type="md-remove" class="pointer mgl-10 fz-26" />
                 </div>
@@ -319,11 +319,12 @@ export default {
       setTimeout(() => {
         this.$Spin.hide();
       }, 6000);
-      let { code, msg, data } = await postRequest(url, e);
+      const resData = await postRequest(url, e);
+      let { code, msg, data } = resData;
       if (code == 200) {
         this.$Spin.hide();
-        if (data.faildata) {
-          let _msg = data.faildata.join(',')
+        if (resData.faildata && Array.isArray(resData.faildata) && resData.faildata.length > 0) {
+          let _msg = resData.faildata.join(',')
           this.$Modal.info({
             title: "提示",
             content: _msg
@@ -521,7 +522,8 @@ export default {
     },
     //获取省份信息数据
     getprovincelist() {
-      const url = "/system/area/province/list";
+      // const url = "/system/area/province/list"; // all
+      const url = "/system/sys-shop-info/shop/provice"; // 门店所在省
       postRequest(url).then(res => {
         if (res.code == 200) {
           this.provincelist = res.data;
@@ -537,13 +539,14 @@ export default {
         this.city = "";
         return (this.citylist = []);
       }
-      let i = util.findIndex(this.provincelist, "provinceName", provinceName);
-      if (i === -1) {
-        console.warn("未找到该 provinceName");
-        return;
-      }
-      const url = "/system/area/city/" + this.provincelist[i].provinceCode;
-      getRequest(url).then(res => {
+      // let i = util.findIndex(this.provincelist, "provinceName", provinceName);
+      // if (i === -1) {
+      //   console.warn("未找到该 provinceName");
+      //   return;
+      // }
+      // const url = "/system/area/city/" + this.provincelist[i].provinceCode; // old
+      const url = "/system/sys-shop-info/shop/city";
+      postRequest(url, {province: provinceName}).then(res => {
         if (res.code == 200) {
           if (typeof index === 'number') {
             this.cityItems[index].citylist = res.data;
