@@ -311,7 +311,7 @@
             </FormItem>
 
             <!-- :rules="{ required: true, validator: validateRewardRules }" -->
-            <FormItem label="品类" prop="categoryList">
+            <!-- <FormItem label="品类" prop="categoryList">
               <Button
                 type="dashed"
                 size="small"
@@ -339,7 +339,7 @@
                   </div>
                 </Col>
               </Row>
-            </FormItem>
+            </FormItem> -->
 
             <FormItem label="活动/领券规则" required>
               <Input
