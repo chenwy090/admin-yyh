@@ -198,8 +198,6 @@ export default {
             resData.forEach((el,i)=>{
               resData[i].couponKind = this.couponSearchData.couponType;
             })
-          } else {
-            console.log('line202 不是个数组')
           }
           this.$emit('couponSelect', resData);
           this.closeDialog();

@@ -332,6 +332,8 @@ export default {
         } else {
           this.msgOk("新增成功");
           this.$parent.getList();
+          
+          this.okAndClose();
         }
       } else if (msg == '数据重复') {
         this.$parent.dataRepeat(data);
@@ -357,6 +359,8 @@ export default {
         this.$Spin.hide();
         this.msgOk("编辑成功");
         this.$parent.getList();
+
+        this.okAndClose();
       } else if (typeof msg === 'string') {
         this.$Spin.hide();
         this.msgErr(msg);
@@ -368,6 +372,12 @@ export default {
         this.$Spin.hide();
       }
     },
+    okAndClose() {
+      this.hotCouponVoList = [];
+      this.shopReqList = [];
+      this.pushRange = "";
+      this.modalShow = false;
+    },
     showCouponFn(i) {
       this.currentContentIndex = i;
       if (Array.isArray(this.hotCouponVoList) && this.hotCouponVoList[i]) {
@@ -377,7 +387,6 @@ export default {
     },
     selectedCoupon(arr) {
       let e = arr[0];
-      console.log(e);
       if (!e) {
         return;
       }
@@ -396,7 +405,6 @@ export default {
         obj.title = e.title;
         this.hotCouponVoList.splice(this.currentContentIndex, 1, obj);
       }
-      console.log(this.hotCouponVoList);
     },
     chooseStore() {
       this.checkedStoreList = this.shopReqList;
@@ -511,6 +519,8 @@ export default {
         params.hotCouponVoList[0].pushPlatformList.forEach((el,i)=>{
           if (el === true) {
             pushPlatformList.push(this.clientTypeList[i].value);
+          } else if (typeof el === 'number') {
+            pushPlatformList.push(el)
           }
         })
         if (pushPlatformList.length < 1) {
@@ -521,10 +531,6 @@ export default {
       } else {
         this.apiAdd(JSON.parse(JSON.stringify(params)));
       }
-      this.hotCouponVoList = [];
-      this.shopReqList = [];
-      this.pushRange = "";
-      this.modalShow = false;
     },
     remove(i) {
       this.hotCouponVoList.splice(i, 1);
