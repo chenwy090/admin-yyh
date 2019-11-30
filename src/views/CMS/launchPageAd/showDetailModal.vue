@@ -174,7 +174,7 @@
     };
 </script>
 
-<style scoped>
+<style  lang="less" scoped>
   .modal {
     position: absolute;
     top: 0;

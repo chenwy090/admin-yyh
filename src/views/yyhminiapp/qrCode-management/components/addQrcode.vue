@@ -361,7 +361,7 @@ export default {
           title: "所属商户",
           align: "center",
           minWidth: 140,
-          key: "merchantName"
+          key: "merchantNames"
         }
       ],
       // 商户列表

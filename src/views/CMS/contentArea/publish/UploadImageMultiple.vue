@@ -1,15 +1,29 @@
 <template>
-  <div>
+  <div class="zex-upload-box">
     <span class="label">{{label}}</span>
+    <!-- <div>uploadList:{{uploadList}} ---changeImageSort:{{changeImageSort}}</div> -->
+
     <div class="demo-upload-list" v-for="(item, index) in uploadList" :key="index">
-      <img :src="item.imgUrl" />
-      <div class="demo-upload-list-cover">
-        <Icon type="ios-eye-outline" @click.native="handleView(item.imgUrl)"></Icon>
-        <Icon type="ios-trash-outline" @click.native="handleRemove(item,index)"></Icon>
+      <div class="item">
+        <img :src="item.imgUrl" />
+        <div class="demo-upload-list-cover">
+          <Icon type="ios-eye-outline" @click.native="handleView(item.imgUrl)"></Icon>
+          <Icon type="ios-trash-outline" @click.native="handleRemove(item,index)"></Icon>
+        </div>
+      </div>
+      <div class="imgSort">
+        <!--  style="display:inline-block;width:80px" v-model="item.sort"  @on-change="xxx($event,index)" -->
+        <Input
+          size="small"
+          v-model="item.sort"
+          placeholder="请输入排序"
+          @input.native="changeImageSort($event,index)"
+        />
+        <span class="error-msg">{{item.msg}}</span>
       </div>
     </div>
-    <!-- :default-file-list="defaultList"  :default-file-list="defaultList"-->
-    <div style="display: inline-block;">
+    <!-- :default-file-list="defaultList"  :default-file-list="defaultList" :defaultList="defaultList"-->
+    <div class="btn-upload">
       <Upload
         ref="upload"
         type="drag"
@@ -19,7 +33,7 @@
         :format="['gif','jpg','jpeg','png']"
         :on-format-error="handleFormatError"
         :show-upload-list="false"
-        :defaultList="defaultList"
+        :default-file-list="defaultList"
         :before-upload="handleBeforeUpload"
         :on-success="handleUploadSuccess"
         :max-size="2048"
@@ -79,14 +93,14 @@ export default {
   watch: {
     defaultList: {
       handler: function() {
-        // console.log("watch", JSON.stringify(this.defaultList));
-        this.uploadList = [];
-        for (let i = 0; i < this.defaultList.length; i++) {
-          let item = this.defaultList[i];
-          this.uploadList.push(item);
-        }
-
-        console.log("uploadList:", this.uploadList);
+        this.uploadList = JSON.parse(JSON.stringify(this.defaultList));
+        // this.uploadList = [];
+        // for (let i = 0; i < this.defaultList.length; i++) {
+        //   let item = this.defaultList[i];
+        //   this.uploadList.push(item);
+        // }
+        let arr = JSON.stringify(this.uploadList);
+        // console.log("watch defaultList uploadList:", arr);
       },
       immediate: true
     }
@@ -125,8 +139,42 @@ export default {
       console.log("mounted:", this.uploadList);
     }
   },
-
   methods: {
+    changeImageSort(ev, index) {
+      this.idx = index;
+      let arr = this.uploadList;
+      let fileItem = arr[index];
+
+      let { value } = ev.target;
+      value = value.replace(/\D/g, "");
+ 
+      fileItem.sort = value;
+      fileItem.msg = "";
+
+      if (value.length == 0) {
+        fileItem.msg = "请输入排序";
+      } else {
+        //验证sort是否重复
+        //清空所有错误信息
+        arr.forEach(item => {
+          item.isRepeat = false;
+          item.msg = item.sort === "" ? "请输入排序" : "";
+        });
+
+        for (let i = 0; i < arr.length; i++) {
+          let item = arr[i];
+          if (item.sort == "" || item.isRepeat) continue;
+          for (let j = i + 1; j < arr.length; j++) {
+            if (item.sort == arr[j].sort) {
+              item.isRepeat = arr[j].isRepeat = true;
+              item.msg = arr[j].msg = `${item.sort}重复了`;
+            }
+          }
+        }
+      }
+      let images = JSON.parse(JSON.stringify(arr));
+      this.$emit("updateImages", images);
+    },
     handleView(imgUrl) {
       this.imgUrl = imgUrl;
       this.visible = true;
@@ -135,10 +183,10 @@ export default {
       this.uploadList.splice(index, 1);
 
       let images = JSON.parse(JSON.stringify(this.uploadList));
-      images = images.map((item, index) => {
-        item.sort = index;
-        return item;
-      });
+      // images = images.map((item, index) => {
+      //   item.sort = index;
+      //   return item;
+      // });
       this.$emit("remove", images);
     },
     handleBeforeUpload(file) {
@@ -176,16 +224,38 @@ export default {
     handleMaxSize(file) {
       this.$Message.error("图片不大于2M");
     },
+    createSort(arr) {
+      arr = JSON.parse(JSON.stringify(arr));
+      console.log("this.uploadList arr:", arr);
+
+      let max = -1;
+      if (arr.length == 0) {
+        max = 1;
+      } else if (arr.length == 1) {
+        max = Number(arr[0].sort) + 1;
+      } else {
+        arr.sort((obj1, obj2) => obj2.sort - obj1.sort);
+        max = Number(arr[0].sort) + 1;
+      }
+
+      max = max || 1;
+      console.log("max===>", max);
+
+      return max;
+    },
     handleUploadSuccess(res, file, fileList) {
       if (res.code == 200) {
         let imgUrl = res.image_url;
-        this.uploadList.push({ imgUrl });
+        let sort = this.createSort(this.uploadList);
+        let _id = Math.random();
+        let msg = "";
+        this.uploadList.push({ _id, msg, imgUrl, sort });
 
         let images = JSON.parse(JSON.stringify(this.uploadList));
-        images = images.map((item, index) => {
-          item.sort = index;
-          return item;
-        });
+        // images = images.map((item, index) => {
+        //   item.sort = index;
+        //   return item;
+        // });
 
         this.$emit("uploadSuccess", {
           fileUploadType: this.fileUploadType,
@@ -213,40 +283,76 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style  lang="less" scoped>
+.zex-upload-box {
+  margin-bottom: 30px;
+}
 .label {
   float: left;
   height: 90px;
 }
-.demo-upload-list {
+
+.btn-upload {
   display: inline-block;
-  /* float: left; */
   width: 90px;
-  height: 90px;
+  height: 150px;
+}
+.demo-upload-list {
+  position: relative;
+  // display: inline-block;
+  float: left;
+  width: 90px;
+  height: 150px;
   text-align: center;
-  line-height: 90px;
+  // line-height: 90px;
   border: 1px solid transparent;
   border-radius: 4px;
-  overflow: hidden;
+  // overflow: hidden;
   background: #fff;
+  // border: 1px solid red;
   position: relative;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+
   margin-right: 4px;
+
+  .item {
+    position: relative;
+    width: 90px;
+    height: 90px;
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+
+    .demo-upload-list-cover {
+      display: none;
+      position: absolute;
+      line-height: 90px;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.6);
+    }
+  }
+
+  .imgSort {
+    position: relative;
+    // left: 0;
+    // bottom: -30px;
+    width: 80px;
+    height: 30px;
+    // background: yellow;
+    .error-msg {
+      position: absolute;
+      left: 0;
+      top: 26px;
+      color: red;
+    }
+  }
 }
-.demo-upload-list img {
-  width: 100%;
-  height: 100%;
-}
-.demo-upload-list-cover {
-  display: none;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(0, 0, 0, 0.6);
-}
-.demo-upload-list:hover .demo-upload-list-cover {
+.demo-upload-list .item:hover .demo-upload-list-cover {
   display: block;
 }
 .demo-upload-list-cover i {

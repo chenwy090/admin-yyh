@@ -869,3 +869,51 @@ export const getAbnormalPayment = params => {
     }
     return postRequest(url, params)
 }
+
+//--------------------------------------app专享 --------------------------
+
+// 获取优惠券列表
+export const getAppVipList = (data, pageNum ) => {
+    return postRequest(`/exclusive/list?pageNum=${pageNum}&pageSize=10`, data)
+}
+
+// 获取优惠券列表
+export const getCoupon = (type,name,pageNum) => {
+    return postRequest(`/exclusive/selectCouponList?type=${type}&name=${name}&pageNum=${pageNum}&pageSize=10`)
+}
+
+// 获取所有零售商列表
+export const getRetailerInfoList = () => {
+    return postRequest(`/system/sys-shop-info/getRetailerInfoList`)
+}
+
+// 新增
+export const addAppVip = (data) => {
+    return uploadformData(`/exclusive/add`,data)
+}
+
+// 编辑
+export const editAppVip = (data) => {
+    return uploadformData(`/exclusive/edit`,data)
+}
+
+// 查询优惠券详情
+export const getCouponData = (id) => {
+    return postRequest(`/exclusive/selectCouponById?id=${id}`)
+}
+
+// 查询活动详情
+export const getAppVipInfo = (id) => {
+    return postRequest(`/exclusive/selectById?id=${id}`)
+}
+
+// 上下架
+export const updateStatus = (id, status, reason) => {
+    return postRequest(`/exclusive/updateStatus?id=${id}&status=${status}&reason=${reason}`)
+}
+
+// 删除
+export const delAppVip = (id) => {
+    return postRequest(`/exclusive/delete?id=${id}`)
+}
+

@@ -12,6 +12,8 @@
 import { uploadFileRequest } from "@/libs/axios";
 import { uploadOperationImage2AliOssURl } from "@/api/index";
 import E from "wangeditor";
+import allMenus from "./editorBar/menus";
+
 export default {
   name: "EditorBar",
   data() {
@@ -26,17 +28,31 @@ export default {
       }
     };
   },
-  props: ["content"],
+  // props: ["content"],
+  props: {
+    menus: {
+      type: Array,
+      default: () => []
+    },
+    content:String,
+    disabled:null,
+  },
   watch: {
     content(newOne, oldOne) {
-      if (newOne.indexOf("<!--") !== -1) {
-        var strArr1 = newOne.split("<!--");
-        var strArr2 = strArr1[1].split("-->");
-        newOne = strArr1[0] + strArr2[1];
-        this.$emit("on-change", newOne);
+      if(newOne){
+        if (newOne.indexOf("<!--") !== -1) {
+          var strArr1 = newOne.split("<!--");
+          var strArr2 = strArr1[1].split("-->");
+          newOne = strArr1[0] + strArr2[1];
+          this.$emit("on-change", newOne);
+        }
       }
       this.editor.txt.text(newOne);
-    }
+      // this.disabled 传1过来表示禁用
+      if(this.disabled == 1) {
+        this.editor.$textElem.attr('contenteditable', false)
+      }
+    },
   },
   mounted() {
     this.seteditor();
@@ -45,18 +61,18 @@ export default {
   methods: {
     seteditor() {
       this.editor = new E(this.$refs.toolbar, this.$refs.editor);
-      this.editor.customConfig.pasteTextHandle = function(content) {
-        // content 即粘贴过来的内容（html 或 纯文本），可进行自定义处理然后返回
-        if (content == "" && !content) return "";
-        var str = content;
-        str = str.replace(/<xml>[\s\S]*?<\/xml>/gi, "");
-        str = str.replace(/<\/?[^>]*>/g, "");
-        str = str.replace(/[ | ]*\n/g, "\n");
-        str = str.replace(/&nbsp;/gi, "");
-        console.log("****", content);
-        console.log("****", str);
-        return str;
-      };
+      // this.editor.customConfig.pasteTextHandle = function(content) {
+      //   // content 即粘贴过来的内容（html 或 纯文本），可进行自定义处理然后返回
+      //   if (content == "" && !content) return "";
+      //   var str = content;
+      //   str = str.replace(/<xml>[\s\S]*?<\/xml>/gi, "");
+      //   str = str.replace(/<\/?[^>]*>/g, "");
+      //   str = str.replace(/[ | ]*\n/g, "\n");
+      //   str = str.replace(/&nbsp;/gi, "");
+      //   console.log("****", content);
+      //   console.log("****", str);
+      //   return str;
+      // };
       // 配置菜单
       this.editor.customConfig.menus = [
         "head", // 标题
@@ -64,11 +80,13 @@ export default {
         "fontSize", // 字号
         "fontName", // 字体
         "underline", // 下划线
+        'strikeThrough',  // 删除线
         "foreColor", // 文字颜色
         "link", // 插入链接
         "list", // 列表
         "justify", // 对齐方式
-        // "image", // 插入图片
+        'emoticon',  // 表情
+        "image", // 插入图片
         "table", // 表格
         "undo", // 撤销
         "redo" // 重复

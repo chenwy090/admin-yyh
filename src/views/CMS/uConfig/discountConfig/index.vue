@@ -90,19 +90,21 @@ export default {
         { type: "merchant", label: "商户模块" }
       ],
       formData: {
-        id: "",
         //超市券模块
         supermarket: {
+          id: "",
           mainTitle: "超市优惠", //主标题：超市优惠 必填，最多填写10个字节；
-          subTitle: "subTitle" //副标题：大家都在领  最多填写30个字节；
+          subTitle: "" //副标题：大家都在领  最多填写30个字节；
         },
         //周边券模块
         coupon: {
+          id: "",
           mainTitle: "周边福利", //主标题：周边福利
           subTitle: "" //副标题：大家都在领
         },
         //商户模块
         merchant: {
+          id: "",
           mainTitle: "精选商户", //主标题：精选商户
           subTitle: "" //副标题：
         }
@@ -110,7 +112,7 @@ export default {
     };
   },
   created() {
-    // this.getData();
+    this.getData();
   },
   methods: {
     setSubTitleRules(type) {
@@ -150,18 +152,14 @@ export default {
       this.linkTo("cms");
     },
     async getData() {
-      const url = "/page/module/layout/getCommonSetting";
-      //  平台分红：4
-      const { type, site } = this.tab;
-      //  site 页面位置，1：首页、2：首页-平台分红
-      let { code, msg, data } = await postRequest(url, { type, site });
+      const url = "/page/module/layout/getPreferential";
+      let { code, msg, data } = await postRequest(url);
       if (code == 200) {
-        // this.formData = data;
+        this.formData = data;
       } else {
         this.msgErr(msg);
       }
     },
-
     validateEmpty(msg, len = 20) {
       return function(rule, value, callback) {
         value += "";
@@ -194,19 +192,20 @@ export default {
     },
     handleSubmit(name) {
       this.$refs[name].validate(valid => {
-        console.log("valid", valid);
         if (!valid) {
-          this.msgErr("数据验证失败！");
-          return;
+          return this.msgErr("数据验证失败！");
         }
-        // 核销扫码首页配置
-        const url = "/page/module/layout/saveCommonSetting";
+
+        const url = "/page/module/layout/savePreferential";
 
         //清洗数据
         let formData = JSON.parse(JSON.stringify(this.formData));
+
         postRequest(url, formData).then(res => {
           if (res.code == 200) {
             this.msgOk("保存成功");
+            // 更新页面数据
+            this.getData();
           } else {
             this.msgErr(res.msg);
           }

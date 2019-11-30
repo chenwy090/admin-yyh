@@ -17,7 +17,8 @@
 </template>
 <script>
 import Tab1 from "./Tab1";
-import Tab2 from "./Tab2";
+// import Tab2 from "./Tab2";
+import Tab2 from "../../valueBurst/valueBurst";
 import Tab3 from "./Tab3";
 import Tab4 from "./Tab4";
 import Tab5 from "./Tab5";
@@ -49,6 +50,8 @@ export default {
         this.linkTo("platformBonus");
       }
       console.log("watch:compName", this.compName);
+      console.log(this.tabs);
+      console.log(this.tabs[this.compName]);
     }
   },
   data() {

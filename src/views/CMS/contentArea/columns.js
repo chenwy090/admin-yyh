@@ -21,10 +21,10 @@ export default [
         width: 500,
         slot: "content",
         render: (h, params) => {
-            let { title, content = "", images } = params.row;
-
-            // let reg = /(?<=>)[^<>]+(?=<)/g;
-            let reg =/<[^<>]+>/g
+            let { title, content, images } = params.row;
+            content = content || "";
+            let reg = /(?<=>)[^<>]+(?=<)/g;
+            // let reg =/<[^<>]+>/g
             let arr = content.match(reg) || [];
 
             content = arr.join("");

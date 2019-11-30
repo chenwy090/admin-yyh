@@ -39,14 +39,9 @@
                                     <Option v-for="item in tradeTypeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
                                 </Select>
                             </FormItem>
-                            <!--<FormItem label="套餐：" span="24"  style="width:20%">-->
-                            <!--<Select v-model="searchForm.expandType" style="width:100%">-->
-                            <!--<Option v-for="item in expandTypeList" :value="item.value" :key="item.value">{{ item.label }}</Option>-->
-                            <!--</Select>-->
-                            <!--</FormItem>-->
-                            <FormItem label="交易时间：" span="35"  style="width:40%">
+                            <!-- <FormItem label="交易时间：" span="35"  style="width:40%">
                                 <DatePicker :value="searchForm.tradeTimeRange" type="datetimerange" placeholder="请选择交易时间" style="width: 200px"></DatePicker>
-                            </FormItem>
+                            </FormItem> -->
                             <FormItem span="20" :label-width="1" style="width:23%">
                                 <Button type="primary" class="submit" icon="ios-search" @click="search('searchForm')" style="margin-right: 5px">搜索</Button>
                                 <!--<Button type="primary" icon="ios-search" @click="search">搜索</Button>-->
@@ -303,7 +298,7 @@
                     "payType": '',
                     "channelNo": '',
                     "tradeType": '',
-                    tradeTimeRange: ['', ''],
+                    // tradeTimeRange: ['', ''],
                     current: 1,
                     pageSize: 10
                 },
@@ -375,7 +370,7 @@
                 this.searchForm.payType= '';
                 this.searchForm.channelNo= '';
                 this.searchForm.tradeType= '';
-                this.searchForm.tradeTimeRange= ['', '']
+                // this.searchForm.tradeTimeRange= ['', '']
                 this.searchForm.current = 1;
                 this.current= 1;
                 this.loadTableData();

@@ -125,7 +125,7 @@ export const columns9 = [
         title: "所属商户",
         align: "center",
         minWidth: 140,
-        key: "merchantName"
+        key: "merchantNames"
     }
 ];
 // 超市券

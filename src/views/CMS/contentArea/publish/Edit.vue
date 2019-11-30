@@ -62,38 +62,50 @@
         </Col>
       </Row>
       <Alert type="warning">视频/图片/GIF(1个视频/1个GIF/15张以内图片) 图片（不大于2M,GIF/JPG/JPEG/PNG）</Alert>
-      <!-- :rules="{ required: true, message: '请上传图片类型' }" -->
-      <FormItem
-        label="图片类型："
-        prop="contentType"
-        :rules="{ required: true, validator: validateImages }"
-      >
+      <!-- :rules="{ required: true, message: '请上传图片类型' }" 
+      :rules="{ required: true, validator: validateImages }"-->
+      <FormItem label="图片类型：" prop="contentType">
         <RadioGroup v-model="formData.contentType" @on-change="changeContentType">
           <Radio v-for="item in contentTypeList" :label="item.value" :key="item.value">
             <span>{{item.label}}</span>
           </Radio>
         </RadioGroup>
       </FormItem>
-      <FormItem :label-width="10">
+      <FormItem
+        :label-width="10"
+        prop="images"
+        :rules="{ required: true, validator: validateImages }"
+      >
         <UploadImageMultiple
           :defaultList="formData.images"
           @remove="removeImages"
+          @updateImages="removeImages"
           @uploadSuccess="imagesUploadSuccess"
         ></UploadImageMultiple>
+      </FormItem>
+
+      <FormItem label="轮播类型：" v-if="formData.images.length>1">
+        <Select v-model="formData.isAutoplay" style="width:200px;" @on-change="changeContentType">
+          <Option
+            v-for="item in autoplayOptions"
+            :key="item.value"
+            :value="item.value"
+          >{{ item.label }}</Option>
+        </Select>
       </FormItem>
 
       <Divider />
       <Alert type="warning">选择图片（不大2M,GIF/JPG/JPEG/PNG）</Alert>
       <Row type="flex" justify="start">
         <Col span="8">
-        <FormItem label="U社区封面：" prop="smallImg" :rules="{ required: true, message: '请上传图片' }">
-          <UploadImage
-                  :fileUploadType="'smallImg'"
-                  :defaultList="formData.defaultSmallImgList"
-                  @remove="removeSmallImg"
-                  @uploadSuccess="smallImgUploadSuccess"
-          ></UploadImage>
-        </FormItem>
+          <FormItem label="U社区封面：" prop="smallImg" :rules="{ required: true, message: '请上传图片' }">
+            <UploadImage
+              :fileUploadType="'smallImg'"
+              :defaultList="formData.defaultSmallImgList"
+              @remove="removeSmallImg"
+              @uploadSuccess="smallImgUploadSuccess"
+            ></UploadImage>
+          </FormItem>
         </Col>
         <Col span="8">
           <FormItem label="列表封面：" prop="coverImg" :rules="{ required: true, message: '请上传图片' }">
@@ -105,7 +117,6 @@
             ></UploadImage>
           </FormItem>
         </Col>
-
       </Row>
 
       <FormItem label="内容时长：" prop="duration" :rules="{ required: true, message: '请输入内容时长' }">
@@ -117,7 +128,7 @@
         />&nbsp;秒
       </FormItem>
       <Divider />
-      <FormItem label="优惠券(非必填)：">
+      <!-- <FormItem label="优惠券(非必填)：">
         <Input
           style="width:230px"
           v-model="formData.templateName"
@@ -126,6 +137,46 @@
         >
           <Button @click="handleChooseCoupon" slot="append">选择</Button>
         </Input>
+      </FormItem>-->
+
+      <FormItem
+        label="优惠券(非必填)："
+        prop="coupons"
+        :rules="{ required: true, validator: validateCoupons }"
+      >
+        <Button type="primary" icon="md-add-circle" size="small" @click="addCoupons">新增</Button>
+      </FormItem>
+
+      <FormItem>
+        <div v-for="(item,index) in formData.coupons" :key="item._id" style="margin-top:20px;">
+          <Row type="flex">
+            <Col style="width:250px;">
+              <Input
+                style="width:230px;"
+                v-model="item.couponName"
+                :placeholder="`点击按钮选择优惠券`"
+                disabled
+              >
+                <Button @click="handleChooseCoupon(index)" slot="append">选择</Button>
+              </Input>
+            </Col>
+            <Col span="2">
+              <div class="couponSort">
+                <!-- v-model="item.sort" @on-change="xxx($event,index)" -->
+                <Input
+                  style="display:inline-block;width:100px"
+                  v-model="item.sort"
+                  placeholder="请输入排序"
+                  @input.native="changeCouponSort($event,index)"
+                />
+                <span class="error-msg">{{item.msg}}</span>
+              </div>
+            </Col>
+            <Col span="2">
+              <Button type="error" icon="md-trash" size="small" @click="delCoupon(index,item)">删除</Button>
+            </Col>
+          </Row>
+        </div>
       </FormItem>
 
       <!-- 适用城市 -->
@@ -138,13 +189,15 @@
         ></CompCheckBoxCity>
       </FormItem>
       <FormItem label="标题：" prop="title" :rules="{ required: true, message: '请输入标题' }">
-        <Input
-          style="display:inline-block;width:200px"
-          v-model="formData.title"
-          :maxlength="13"
-          placeholder="请输入标题"
-          clearable
-        />
+        <Tooltip trigger="focus" title="提醒" content="最多26个汉字" placement="right">
+          <Input
+            style="display:inline-block;width:300px"
+            v-model="formData.title"
+            :maxlength="26"
+            placeholder="请输入标题"
+            clearable
+          />
+        </Tooltip>
       </FormItem>
 
       <FormItem label="类型：" prop="sourceType" :rules="{ required: true, message: '请输入类型' }">
@@ -306,7 +359,11 @@ export default {
       selectedTagList: [],
       showCouponList: false,
       submitDisabled: false,
-
+      // isAutoplay   1 -自动  0 -手动
+      autoplayOptions: [
+        { value: 0, label: "手动轮播" },
+        { value: 1, label: "自动轮播" }
+      ],
       //contentType 1-Gif  2-图片轮播  3-视频 区分一下 提交的时候什么图片类型
       contentTypeList: [
         { value: 1, label: "Gif" },
@@ -321,6 +378,8 @@ export default {
       },
       ruleValidate: {},
       item: {},
+
+      couponIndex: -1,
       formData: {
         id: "", //内容id
         userId: "", //发布用户id
@@ -332,6 +391,7 @@ export default {
           userId: "",
           weekPublishNum: ""
         },
+        isAutoplay: 0,
         images: [
           /*{imgUrl}*/
         ], //图片
@@ -379,6 +439,83 @@ export default {
     }
   },
   methods: {
+    changeCouponSort(ev, index) {
+      this.couponIndex = index;
+      let { coupons: arr } = this.formData;
+      let coupon = arr[index];
+
+      let { value } = ev.target;
+
+      value = value.replace(/\D/g, "");
+
+      coupon.sort = value;
+      coupon.msg = "";
+
+      if (value.length == 0) {
+        coupon.msg = "请输入排序";
+      } else {
+        //验证sort是否重复
+        //清空所有错误信息
+        arr.forEach(item => {
+          item.isRepeat = false;
+          item.msg = item.sort === "" ? "请输入排序" : "";
+        });
+
+        for (let i = 0; i < arr.length; i++) {
+          let item = arr[i];
+          if (item.sort == "" || item.isRepeat) continue;
+          for (let j = i + 1; j < arr.length; j++) {
+            if (item.sort == arr[j].sort) {
+              item.isRepeat = arr[j].isRepeat = true;
+              item.msg = arr[j].msg = `${item.sort}重复了`;
+            }
+          }
+        }
+      }
+      //修改 couponsFlag 状态
+      // 判断是否有小于等于 0 的sort
+      let couponsFlag = arr.some(item => {
+        return item.sort <= 0;
+      });
+
+      this.formData.couponsFlag = !couponsFlag;
+      this.formData.coupons = JSON.parse(JSON.stringify(arr));
+
+      console.log("change sort : newCoupon ", JSON.stringify(arr));
+    },
+    addCoupons() {
+      let arr = JSON.parse(JSON.stringify(this.formData.coupons));
+
+      let max = -1;
+      if (arr.length == 0) {
+        max = 1;
+      } else if (arr.length == 1) {
+        max = Number(arr[0].sort) + 1;
+      } else {
+        arr.sort((obj1, obj2) => obj2.sort - obj1.sort);
+        max = Number(arr[0].sort) + 1;
+      }
+
+      max = max || 1;
+
+      this.formData.coupons.push({
+        _id: Math.random(),
+        couponId: "",
+        couponName: "",
+        couponType: 1,
+        sort: max,
+        msg: ""
+      });
+
+      console.log(
+        "add this.formData.coupons:",
+        JSON.stringify(this.formData.coupons)
+      );
+    },
+    delCoupon(index) {
+      console.log("delrules:", index);
+      this.formData.coupons.splice(index, 1);
+    },
     changeContentType(type) {
       console.log(type);
     },
@@ -390,23 +527,49 @@ export default {
         // data:[{id,name,sort}]
         this.formData = data;
         // const { sourceType, tags = [], citys = [], coupons = [] } = data;
-        const {
+        let {
+          isAutoplay,
+          images,
           smallImg,
           coverImg,
           sourceType,
-          tags = [],
-          citys = [],
-          coupons = [],
+          tags,
+          citys,
+          coupons,
           describe,
           contentAuthor
         } = data;
+        isAutoplay = +isAutoplay; //bollean --> number
+        images = images || [];
+        tags = tags || [];
+        citys = citys || [];
+        coupons = coupons || [];
 
         this.citys = citys;
         this.tags = tags;
 
         // this.contentAuthor = contentAuthor;
 
+        this.formData.isAutoplay = isAutoplay;
         this.formData.newDescribe = describe;
+
+        let imagesFlag = true;
+        // images 图片
+        this.formData.images = images.map(item => {
+          item._id = Math.random();
+          item.msg = "";
+          if (item.sort === undefined) {
+            item.sort = -1;
+            item.msg = "请输入排序";
+            imagesFlag = false;
+          }
+          return item;
+        });
+
+        console.log("defaultList images ", imagesFlag, this.formData.images);
+
+        // 有非法数据 不允许提交
+        this.formData.imagesFlag = imagesFlag;
 
         let defaultSmallImgList = [];
         if (smallImg) {
@@ -420,8 +583,21 @@ export default {
         this.formData.defaultSmallImgList = defaultSmallImgList;
         this.formData.defaultCoverImgList = defaultCoverImgList;
 
-        let couponNames = coupons.map(({ couponName }) => couponName).join(",");
-        this.formData.templateName = couponNames;
+        let couponsFlag = true;
+        this.formData.coupons = coupons.map(item => {
+          item._id = Math.random();
+          item.msg = "";
+          if (item.sort === undefined) {
+            item.sort = -1;
+            item.msg = "请输入排序";
+            couponsFlag = false;
+          }
+          return item;
+        });
+        // 有非法数据 不允许提交
+        this.formData.couponsFlag = couponsFlag;
+
+        // this.formData.templateName = couponNames;
 
         // this.tagList.forEach(tag => {
         //   tag._checked = false;
@@ -535,9 +711,8 @@ export default {
       console.log("removeImages", images);
     },
     imagesUploadSuccess({ images }) {
-        console.log(1);
-        this.formData.images = images;
-      console.log("imagesUploadSuccess", this.formData.images);
+      this.formData.images = images;
+      console.log("imagesUploadSuccess", images);
     },
 
     removeCoverImg() {
@@ -548,17 +723,17 @@ export default {
       this.formData.smallImg = "";
       this.formData.defaultSmallImgList = [];
     },
-    coverImgUploadSuccess({ imgUrl,coverImgHeight,coverImgWidth }) {
+    coverImgUploadSuccess({ imgUrl, coverImgHeight, coverImgWidth }) {
       this.formData.coverImg = imgUrl;
-        this.formData.coverImgHeight = coverImgHeight;
-        this.formData.coverImgWidth = coverImgWidth;
+      this.formData.coverImgHeight = coverImgHeight;
+      this.formData.coverImgWidth = coverImgWidth;
       this.formData.defaultCoverImgList = [{ imgUrl }];
     },
-    smallImgUploadSuccess({ imgUrl,coverImgHeight,coverImgWidth }) {
-        console.log(1);
-        this.formData.smallImg = imgUrl;
-        // this.formData.coverImgHeight = coverImgHeight;
-        // this.formData.coverImgWidth = coverImgWidth;
+    smallImgUploadSuccess({ imgUrl, coverImgHeight, coverImgWidth }) {
+      console.log(1);
+      this.formData.smallImg = imgUrl;
+      // this.formData.coverImgHeight = coverImgHeight;
+      // this.formData.coverImgWidth = coverImgWidth;
       this.formData.defaultSmallImgList = [{ imgUrl }];
     },
     updateTagList(data) {
@@ -568,18 +743,31 @@ export default {
     selectedCouponItem(data) {
       console.log("selectedCouponItem----", data);
       let { couponType, id: couponId, name: couponName } = data;
+
+      let { coupons } = this.formData;
+
+      // 判断是否重复
+      let r = coupons.some(item => item.couponId == couponId);
+      if (r) {
+        return this.msgErr("券已存在，请不要重复添加！");
+      }
       // templateId 券模板id templateName 券模板名称
 
-      this.formData.templateName = couponName;
+      // this.formData.templateName = couponName;
+      // this.formData.coupons = this.coupons = [
+      //   { couponId, couponName, couponType }
+      // ];
+      let coupon = coupons[this.couponIndex];
+      let newCoupon = { ...coupon, couponId, couponName, couponType };
+      this.formData.coupons.splice(this.couponIndex, 1, newCoupon);
 
-      this.formData.coupons = this.coupons = [
-        { couponId, couponName, couponType }
-      ];
+      console.log("coupon:", JSON.stringify(coupon));
+      console.log("newCoupon:", JSON.stringify(newCoupon));
     },
-    handleChooseCoupon() {
+    handleChooseCoupon(index) {
+      this.couponIndex = index;
       this.showCouponList = true;
     },
-
     change(val) {
       console.log("change:", val);
       this.formData.newDescribe = val;
@@ -597,7 +785,7 @@ export default {
       this.$refs[name].validate(valid => {
         console.log("valid", valid);
         if (!valid) {
-          // this.msgErr("数据验证失败！");
+          this.msgErr("数据验证失败！");
           return;
         }
 
@@ -619,7 +807,6 @@ export default {
         });
 
         console.log("submit formData:", formData);
-
         postRequest(url, formData).then(res => {
           if (res.code == 200) {
             this.msgOk("保存成功");
@@ -631,13 +818,46 @@ export default {
       });
     },
 
+    // validateImages(rule, value, callback) {
+    //   console.log("validateImages", rule, value);
+    //   if (!value.length) {
+    //     return callback("请上传图片");
+    //   }
+    //   if (!this.formData.imagesFlag) {
+    //     return callback("请输入大于等于1的排序字段");
+    //   }
+    //   callback();
+    // },
     validateImages(rule, value, callback) {
       console.log("validateImages", rule, value);
-      if (!this.formData.contentType) {
-        return callback("请选择图片类型");
-      }
+
       if (!this.formData.images.length) {
         return callback("请上传图片");
+      }
+      let r = this.formData.images.some(item => {
+        return item.sort === "" || item.msg !== "";
+      });
+      if (r) {
+        return callback("图片排序设置错误");
+      }
+      callback();
+    },
+    validateCoupons(rule, value, callback) {
+      console.log("validateCoupons", rule, value);
+      // if (!value.length) {
+      //   return callback("请选择优惠券");
+      // }couponName
+      if (!this.formData.couponsFlag) {
+        return callback("请输入大于等于1的排序字段");
+      }
+
+      let r = this.formData.coupons.some(item => {
+        console.log("formData.coupons item", JSON.stringify(item));
+
+        return item.couponName === "" || item.sort === "" || item.msg !== "";
+      });
+      if (r) {
+        return callback("添加优惠券错误，请选择优惠券或填入正确的排序字段");
       }
 
       callback();
@@ -650,7 +870,7 @@ export default {
       callback();
     },
     validateTags(rule, value, callback) {
-      console.log("validateCitys", rule, value);
+      console.log("validateTags", rule, value);
       if (!this.tags.length) {
         return callback("请选择标签");
       }
@@ -672,6 +892,18 @@ export default {
 <style lang="less" scoped>
 .marginLeft20 {
   margin-left: 20px;
+}
+
+.publish-edit {
+  .couponSort {
+    position: relative;
+    .error-msg {
+      position: absolute;
+      left: 0;
+      top: 26px;
+      color: red;
+    }
+  }
 }
 </style>
 

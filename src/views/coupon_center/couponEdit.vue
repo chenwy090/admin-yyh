@@ -636,7 +636,7 @@
           </Row>
           <Row class="box">
             <Col span="4" class="left-text">
-              <span style="color:red">*</span>券使用说明
+              <span style="color:red">*</span>领取规则
             </Col>
             <Col span="16">
               <Tooltip trigger="focus" title="提醒" content="最多1000个汉字" placement="right">
@@ -649,6 +649,18 @@
                   :maxlength="1000"
                 />
               </Tooltip>
+            </Col>
+          </Row>
+          <Row class="box">
+            <Col span="4" class="left-text">优惠券图文详情</Col>
+            <Col span="16">
+              <EditorBar
+                v-model="edit_info.discountDetail"
+                :content="edit_info.discountDetail"
+                style="width:600px;margin:0;"
+                @on-change="change"
+                @on-blur="blur"
+              ></EditorBar>
             </Col>
           </Row>
           <Row class="box">
@@ -856,13 +868,14 @@ import { formatDate, checkImageWH } from "@/libs/date";
 import { baseUrl, uploadOperationImage2AliOssURl } from "@/api/index";
 import ImgCutter from "@/components/ImgCutter.vue";
 import { checkImage, uniqueArray } from "@/libs/date";
+import EditorBar from "@/components/EditorBar";
 
 // 商户列表
 import BusinessList from "./BusinessList";
 
 export default {
   name: "BasicSet",
-  components: { ImgCutter, BusinessList },
+  components: { ImgCutter, BusinessList, EditorBar },
   props: {
     // couponEdit_info: Object
 
@@ -876,9 +889,7 @@ export default {
           couponKind: 1,
           originalPrice: "",
           price: "",
-          couponPutChannelVOList: [],
-          couponSaleAfterVOList: [],
-          couponPutChannelList: [1],
+          couponPutChannelList: [],
           couponSaleAfterList: [],
           thirdUrl: "",
           // 是否活动券 （默认否）0-否，1-是   isActivityCoupon
@@ -1140,7 +1151,9 @@ export default {
         stockCount: 0,
         fullAmout: 0,
         decreaseAmount: 0,
-        displayText: ""
+        displayText: "",
+        discountDetail: "",
+        newDiscountDetail: "" //富文本中转
       },
       edit_loading: false,
       userToken: "",
@@ -1159,7 +1172,7 @@ export default {
 
   created() {
     this.userToken = { jwttoken: localStorage.getItem("jwttoken") };
-    // this.init();
+    this.init();
   },
   methods: {
     handleChangeCouponKind() {
@@ -1173,17 +1186,17 @@ export default {
     },
     //确定选择商户
     /*selectMerchant() {
-      if (this.selectedMerchantList && this.selectedMerchantList.length > 0) {
-        for (var obj of this.selectedMerchantList) {
-          this.add_info.merchantList.push(obj);
+        if (this.selectedMerchantList && this.selectedMerchantList.length > 0) {
+          for (var obj of this.selectedMerchantList) {
+            this.add_info.merchantList.push(obj);
+          }
+          var afterArr = uniqueArray(this.add_info.merchantList, "merchantId");
+          this.add_info.merchantList = afterArr;
+          this.merchantTabDisplay = false;
+        } else {
+          this.msgErr("至少选一个商户");
         }
-        var afterArr = uniqueArray(this.add_info.merchantList, "merchantId");
-        this.add_info.merchantList = afterArr;
-        this.merchantTabDisplay = false;
-      } else {
-        this.msgErr("至少选一个商户");
-      }
-    },*/
+      },*/
     couponSourceChange(couponSource) {
       console.log("couponSourceChange:", couponSource);
       if (couponSource === 0) {
@@ -1303,85 +1316,85 @@ export default {
         stockCount: 0,
         fullAmout: 0,
         decreaseAmount: 0,
-        displayText: ""
+        displayText: "",
+        discountDetail: "", // 优惠券图文详情（富文本）
+        newDiscountDetail: "" //富文本中转
       };
     },
     //编辑
-    async gitEditInfo() {
+    gitEditInfo() {
       const { templateId } = this.couponEdit_info;
       const url = `/merchantCouponTemplate/selectByTemplateId?templateId=${templateId}`;
-
       // const url = `/merchantCouponTemplate/selectByTemplateId`;
-      const res = await postRequest(url);
+      postRequest(url)
+        .then(res => {
+          // console.log(res);
+          if (res.code == 200) {
+            var that = this;
+            let { thirdUrl, discountDetail: newDiscountDetail } = res.data;
+            res.data.thirdUrl = thirdUrl || "";
+            //富文本中转处理
+            res.data.newDiscountDetail = newDiscountDetail || "";
+            this.edit_info = {
+              ...this.edit_info,
+              ...res.data
+            };
 
-      // console.log(res);
-      if (res.code == 200) {
-        var that = this;
-        let { thirdUrl } = res.data;
-        res.data.thirdUrl = thirdUrl || "";
-        this.edit_info = {
-          ...this.edit_info,
-          ...res.data
-        };
+            newDiscountDetail;
+            this.edit_info.useDesc = this.edit_info.useDesc.replace(
+              /\\n/g,
+              "\n"
+            );
 
-        let {
-          couponType,
-          couponSaleAfterVOList,
-          couponPutChannelVOList,
-          merchantList
-        } = res.data;
-        couponSaleAfterVOList = couponSaleAfterVOList || [];
-        couponPutChannelVOList = couponPutChannelVOList || [];
-        merchantList = merchantList || [];
+            this.edit_info.couponType = String(res.data.couponType);
+            this.edit_info.couponSaleAfterList = [];
+            res.data.couponSaleAfterVOList.forEach(function(v, i) {
+              that.edit_info.couponSaleAfterList.push(v.code);
+            });
+            // that.edit_info.couponPutChannelList = [];
+            // that.edit_info.couponPutChannelList.splice(0,that.edit_info.couponPutChannelList.length);
+            let couponPutChannelList = res.data.couponPutChannelVOList.map(
+              item => item.code
+            );
 
-        this.edit_info.couponType = String(couponType);
-        let couponSaleAfterList = couponSaleAfterVOList.map(
-          item => item.code
-        );
-        that.edit_info.couponSaleAfterList = couponSaleAfterList
-        // that.edit_info.couponPutChannelList = [];
-        // that.edit_info.couponPutChannelList.splice(0,that.edit_info.couponPutChannelList.length);
-        let couponPutChannelList = couponPutChannelVOList.map(
-          item => item.code
-        );
-        that.edit_info.couponPutChannelList = couponPutChannelList;
-        console.log(
-          "edit_info.couponPutChannelList:--->",
-          couponPutChannelList
-        );
-        this.uploadList = [{ url: this.edit_info.couponSmallImg }];
-        this.uploadList1 = [{ url: this.edit_info.couponBigImg }];
-        this.edit_info.merchantList = merchantList;
+            that.edit_info.couponPutChannelList = couponPutChannelList;
+            this.uploadList = [{ url: this.edit_info.couponSmallImg }];
+            this.uploadList1 = [{ url: this.edit_info.couponBigImg }];
+            this.edit_info.merchantList = this.edit_info.merchantList;
 
-        this.imgSrc1 = this.edit_info.couponSmallImg;
-        this.imgSrc2 = this.edit_info.couponBigImg;
-        this.imgSrc3 = this.edit_info.couponSimpleImg;
-        if (this.edit_info.couponKind == 2) {
-          // this.edit_info.price = this.edit_info.price / 100;
-        } else {
-          this.edit_info.price = 0;
-        }
+            this.imgSrc1 = this.edit_info.couponSmallImg;
+            this.imgSrc2 = this.edit_info.couponBigImg;
+            this.imgSrc3 = this.edit_info.couponSimpleImg;
 
-        this.edit_info.ticketMoney = this.edit_info.ticketMoney / 100;
-        //console.info("this.edit_info.ticketMoney" + this.edit_info.ticketMoney);
-        //console.info("this.edit_info.ticketMoney" + this.edit_info.ticketMoney);
+            if (this.edit_info.couponKind == 2) {
+              // this.edit_info.price = this.edit_info.price / 100;
+            } else {
+              this.edit_info.price = 0;
+            }
 
-        this.edit_info.ticketDiscount = this.edit_info.ticketDiscount / 10;
-        this.edit_info.couponKind = this.edit_info.couponKind - 0;
-        this.edit_info.useDateType =
-          this.edit_info.useDateType == 1 ? "1" : "2";
-        if (this.camp_pageStatus == "copy") {
-          // 卡券活动时间、有效期、发布总量
-          this.edit_info.startDate = "";
-          this.edit_info.endDate = "";
-          this.edit_info.useStartDate = "";
-          this.edit_info.useEndDate = "";
-          this.edit_info.stockCount = null;
-        }
-      } else {
-        this.msgErr(res.msg);
-      }
-      // console.log(err, 'operating_merchant/merchant-customer/merchant-customer-add, Line929')
+            this.edit_info.ticketMoney = this.edit_info.ticketMoney / 100;
+            //console.info("this.edit_info.ticketMoney" + this.edit_info.ticketMoney);
+            //console.info("this.edit_info.ticketMoney" + this.edit_info.ticketMoney);
+
+            this.edit_info.ticketDiscount = this.edit_info.ticketDiscount / 10;
+            this.edit_info.couponKind = this.edit_info.couponKind - 0;
+            this.edit_info.useDateType =
+              this.edit_info.useDateType == 1 ? "1" : "2";
+            if (this.camp_pageStatus == "copy") {
+              // 卡券活动时间、有效期、发布总量
+              this.edit_info.startDate = "";
+              this.edit_info.endDate = "";
+              this.edit_info.useStartDate = "";
+              this.edit_info.useEndDate = "";
+              this.edit_info.stockCount = null;
+            }
+          } else {
+            this.msgErr(res.msg);
+          }
+        })
+        .catch(err => {
+          // console.log(err, 'operating_merchant/merchant-customer/merchant-customer-add, Line929')
+        });
     },
     //编辑
     statusCheckChange() {
@@ -1424,8 +1437,10 @@ export default {
         (this.camp_pageStatus == "copy" || this.camp_pageStatus == "edit") &&
         this.couponEdit_info.templateId
       ) {
-        let url = `/merchant/merchantCouponRelation/selectByTemplateId?templateId=${this.couponEdit_info.templateId}`;
-        postRequest(url).then(res => {
+        postRequest(
+          "/merchant/merchantCouponRelation/selectByTemplateId?templateId=" +
+            this.couponEdit_info.templateId
+        ).then(res => {
           if (res.code == 200) {
             that.add_info = res.data;
             // that.edit_info = res.data;
@@ -1435,11 +1450,11 @@ export default {
             // that.bsUploadList.push(obj);
             var roleIdList = [];
             /*if (res.data.roleIdList){
-                          for (var o of res.data.roleIdList){
-                              roleIdList.push(parseInt(o))
-                          }
-                      }
-                      this.add_info.roleIdList = roleIdList;*/
+                            for (var o of res.data.roleIdList){
+                                roleIdList.push(parseInt(o))
+                            }
+                        }
+                        this.add_info.roleIdList = roleIdList;*/
             that.add_info.templateId = that.templateId;
           } else {
             this.$Message.error(res.msg);
@@ -1615,6 +1630,7 @@ export default {
           this.$Message.error("请选择优惠类型");
           return;
         }
+        console.log(this.edit_info.originalPrice);
         if (!this.edit_info.originalPrice || !this.edit_info.price) {
           this.$Message.error("请填写原价和售卖价");
           return;
@@ -1687,10 +1703,10 @@ export default {
           this.edit_info.displayText =
             "满" +
             this.edit_info.fullAmout +
-            "减" +
-            this.edit_info.decreaseAmount;
+            "元减" +
+            this.edit_info.decreaseAmount +
+            "元";
         }
-
         if (
           this.edit_info.couponType == "4" ||
           this.edit_info.couponType == "5" ||
@@ -1934,9 +1950,9 @@ export default {
       }
 
       /*if(this.camp_pageStatus == "edit"){
-          this.new_ticketMoney = this.edit_info.ticketMoney;
-          this.new_ticketDiscount = this.edit_info.ticketDiscount;
-      }*/
+            this.new_ticketMoney = this.edit_info.ticketMoney;
+            this.new_ticketDiscount = this.edit_info.ticketDiscount;
+        }*/
 
       this.reqParams = {
         // ...this.edit_info，
@@ -1970,7 +1986,9 @@ export default {
         couponBigImg: this.edit_info.couponBigImg,
         couponSimpleImg: this.edit_info.couponSimpleImg,
         buyNotes: this.edit_info.buyNotes,
-        useDesc: this.edit_info.useDesc,
+        useDesc: this.edit_info.useDesc
+          .replace(/\t/g, "")
+          .replace(/\n/g, "\\n"),
         getLimit: this.edit_info.getLimit,
         stockCount: this.edit_info.stockCount,
         status: this.edit_info.status,
@@ -1981,7 +1999,9 @@ export default {
         decreaseAmount: this.edit_info.decreaseAmount,
         displayText: this.edit_info.displayText,
         merchantList: this.add_info.merchantList,
-        payCouponMerchantType:this.edit_info.payCouponMerchantType
+        // discountDetail: this.edit_info.discountDetail, // 优惠券图文详情（富文本）
+        discountDetail: this.edit_info.newDiscountDetail, // 优惠券图文详情（富文本）
+        payCouponMerchantType: this.edit_info.payCouponMerchantType
       };
 
       if (this.camp_pageStatus === "add") {
@@ -2162,18 +2182,29 @@ export default {
           this.imgSrc3 = "";
         }
       });
+    },
+
+    // 富文本
+    change(val) {
+      // console.log("change:", val);
+      // console.log("data:",this.edit_info.discountDetail);
+      this.edit_info.newDiscountDetail = val;
+    },
+    blur(val) {
+      // console.log("blur:", val);
+      this.edit_info.newDiscountDetail = val;
     }
   },
   mounted() {
-    this.init();
-    // console.log("mounted: couponEdit_info ", this.couponEdit_info);
-    // console.log("mounted: edit_info", this.edit_info);
+    // this.init();
+    console.log("mounted:", this.couponEdit_info);
+    console.log("mounted:", this.edit_info);
   }
 };
 </script>
 
 
-<style>
+<style  lang="less" scoped>
 .form {
   width: 900px;
 }

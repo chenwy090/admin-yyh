@@ -1,40 +1,39 @@
 <template>
-<div>
-  <div class="demo-upload-list" v-for="(item,index) in uploadList" :key="index">
-        <template>
-            <img :src="item.img_url">
-            <div class="demo-upload-list-cover">
-                <Icon type="ios-eye-outline" @click.native="handleView(item)"></Icon>
-                <Icon type="ios-trash-outline" @click.native="handleRemove(index)"></Icon>
-            </div>
-        </template>
-      
-    </div>
-     <Upload   
-        ref="upload"
-         :defaultList="uploadList"                
-         accept="image" 
-        :show-upload-list="false"
-        :on-success="handleSuccess"
-        :format="['jpg','jpeg','png']"
-        :max-size="1024"
-        :on-format-error="handleFormatError"
-        :on-exceeded-size="handleMaxSize"
-        type="drag"
-      :headers="userToken"
-        :action="actionUrl"
-          :before-upload="handleBeforeUpload"
-         style="display: inline-block;width:78px">
-        <div style="width: 78px;height:78px;line-height: 58px" >
-            <Icon type="ios-camera" size="36" style="margin-top: 24px"></Icon>
+  <div>
+    <div class="demo-upload-list" v-for="(item,index) in uploadList" :key="index">
+      <template>
+        <img :src="item.img_url" />
+        <div class="demo-upload-list-cover">
+          <Icon type="ios-eye-outline" @click.native="handleView(item)"></Icon>
+          <Icon type="ios-trash-outline" @click.native="handleRemove(index)"></Icon>
         </div>
-    
+      </template>
+    </div>
+    <Upload
+      ref="upload"
+      :defaultList="uploadList"
+      accept="image"
+      :show-upload-list="false"
+      :on-success="handleSuccess"
+      :format="['jpg','jpeg','png']"
+      :max-size="1024"
+      :on-format-error="handleFormatError"
+      :on-exceeded-size="handleMaxSize"
+      type="drag"
+      :headers="userToken"
+      :action="actionUrl"
+      :before-upload="handleBeforeUpload"
+      style="display: inline-block;width:78px"
+    >
+      <div style="width: 78px;height:78px;line-height: 58px">
+        <Icon type="ios-camera" size="36" style="margin-top: 24px"></Icon>
+      </div>
     </Upload>
-      
-   <Modal title="查看图片" v-model="visible">
-      <img :src="imgName" v-if="visible" style="width: 100%">
+
+    <Modal title="查看图片" v-model="visible">
+      <img :src="imgName" v-if="visible" style="width: 100%" />
     </Modal>
-</div>
+  </div>
 </template>
 <script>
 import {
@@ -58,10 +57,10 @@ export default {
       uptoken: {},
       actionUrl: uploadOperationImage2AliOssURl,
       fileList: [],
-      userToken:"",
+      userToken: ""
     };
   },
-    created: function() {
+  created: function() {
     this.userToken = { jwttoken: localStorage.getItem("jwttoken") };
   },
   methods: {
@@ -77,7 +76,6 @@ export default {
         img_url: res.image_url
       };
       this.uploadList.push(obj);
-     
 
       this.$emit("handleSuccess", this.uploadList); //传递给父组件
     },
@@ -109,7 +107,7 @@ export default {
   mounted() {}
 };
 </script>
-<style>
+<style  lang="less" scoped>
 .demo-upload-list {
   display: inline-block;
   width: 78px;
