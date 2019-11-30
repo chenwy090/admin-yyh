@@ -460,11 +460,12 @@
 
     <!-- 1 领优惠基础设置 -->
     <div v-if="basicSetPage">
-      <basicSet @changeStatus="showbasicSetStatus" :camp_Info="camp_Info"></basicSet>
+      <basicSet :basicSetPage.sync="basicSetPage" @changeStatus="showbasicSetStatus" :camp_Info="camp_Info"></basicSet>
     </div>
 
     <!-- 2 要优惠拼团设置  [领优惠---规则设置]-->
-    <div v-if="grabInfoSetPage"> 
+
+    <div v-if="grabInfoSetPage">
       <!-- showGgrabInfoSet =>this.grabInfoSetPage = e; -->
       <grabInfoSet :campId="campId" @changeStatus="showGgrabInfoSet"></grabInfoSet>
     </div>
@@ -1078,7 +1079,7 @@ export default {
     };
   },
 
-  created: function() {
+  created() {
     this.userToken = { jwttoken: localStorage.getItem("jwttoken") };
   },
   methods: {
@@ -1090,14 +1091,11 @@ export default {
       this.getchannel();
     },
     share(code) {
-      console.log(111);
       if (!code) {
         return;
       }
       this.formShareModal.shareData = [];
-      postRequest("/commonConfig/queryConfigByCode", {
-        code: code
-      }).then(res => {
+      postRequest("/commonConfig/queryConfigByCode", { code }).then(res => {
         if (res.code == 200) {
           if (res.data || res.data.noOverallCommonConfigList) {
             let arr = res.data.noOverallCommonConfigList || [];
