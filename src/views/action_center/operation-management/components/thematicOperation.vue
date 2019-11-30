@@ -560,6 +560,9 @@ export default {
         const {showType,pagePath} = this.editData;
         this.showType = showType;
 
+        //showType 专题活动   2   大C任务h5链接  4
+       if(showType == 4){
+         
         //"http://apph5.52iuh.cn/big/activity.html?id=12"
         const oUrl = new URL(pagePath);
         const {hostname,pathname} = oUrl;
@@ -567,12 +570,12 @@ export default {
        
         this.pagePath = `${hostname}${pathname}`;
         this.editData.assignmentId = id;
-
+ }
         // this.editData.sort = this.editData.sort + ''
         this.specialTopic = this.thematicItem.topicName
+     
       }
     },
-
 // 获取小程序app
     getMiniAppFn() {
       getMiniApp().then(res => {

@@ -144,7 +144,6 @@ export default {
         // customInsert: (insertImg, result, editor) => {
         //   // 图片上传成功，插入图片的回调
         //   var url = result.data;
-        //   debugger
         //   insertImg(url);
         // }
       };
