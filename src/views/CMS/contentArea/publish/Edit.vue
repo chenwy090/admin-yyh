@@ -71,17 +71,17 @@
           </Radio>
         </RadioGroup>
       </FormItem>
-      <FormItem :label-width="10">
+      <FormItem
+        :label-width="10"
+        prop="images"
+        :rules="{ required: true, validator: validateImages }"
+      >
         <UploadImageMultiple
           :defaultList="formData.images"
           @remove="removeImages"
           @updateImages="removeImages"
           @uploadSuccess="imagesUploadSuccess"
         ></UploadImageMultiple>
-      </FormItem>
-
-      <FormItem prop="images" :rules="{ required: true, validator: validateImages }">
-        <!-- <Button type="primary" icon="md-add-circle" size="small" @click="addCoupons">新增</Button> -->
       </FormItem>
 
       <FormItem label="轮播类型：" v-if="formData.images.length>1">
@@ -441,48 +441,47 @@ export default {
   methods: {
     changeCouponSort(ev, index) {
       this.couponIndex = index;
-      let { coupons } = this.formData;
-      let coupon = coupons[index];
+      let { coupons: arr } = this.formData;
+      let coupon = arr[index];
 
       let { value } = ev.target;
 
       value = value.replace(/\D/g, "");
 
-      if (!/^[1-9]\d*$|^$/.test(value)) {
-        value = "";
-      }
+      coupon.sort = value;
+      coupon.msg = "";
 
-      let sort = value;
-      let msg = "请输入排序";
-      if (sort.length) {
+      if (value.length == 0) {
+        coupon.msg = "请输入排序";
+      } else {
         //验证sort是否重复
-        let isRepeat = false;
-        for (let i = 0; i < coupons.length; i++) {
-          let item = coupons[i];
-          if (item._id == coupon._id) continue;
-          if (item.sort == sort) {
-            isRepeat = true;
-            break;
+        //清空所有错误信息
+        arr.forEach(item => {
+          item.isRepeat = false;
+          item.msg = item.sort === "" ? "请输入排序" : "";
+        });
+
+        for (let i = 0; i < arr.length; i++) {
+          let item = arr[i];
+          if (item.sort == "" || item.isRepeat) continue;
+          for (let j = i + 1; j < arr.length; j++) {
+            if (item.sort == arr[j].sort) {
+              item.isRepeat = arr[j].isRepeat = true;
+              item.msg = arr[j].msg = `${item.sort}重复了`;
+            }
           }
         }
-
-        msg = isRepeat ? "排序不能重复" : "";
       }
-
-      console.log("sort", sort);
-
-      let newCoupon = { ...coupon, msg, sort };
-      this.formData.coupons.splice(index, 1, newCoupon);
-
       //修改 couponsFlag 状态
       // 判断是否有小于等于 0 的sort
-      let couponsFlag = this.formData.coupons.some(item => {
+      let couponsFlag = arr.some(item => {
         return item.sort <= 0;
       });
 
       this.formData.couponsFlag = !couponsFlag;
+      this.formData.coupons = JSON.parse(JSON.stringify(arr));
 
-      console.log("change sort : newCoupon ", JSON.stringify(newCoupon));
+      console.log("change sort : newCoupon ", JSON.stringify(arr));
     },
     addCoupons() {
       let arr = JSON.parse(JSON.stringify(this.formData.coupons));
@@ -504,7 +503,8 @@ export default {
         couponId: "",
         couponName: "",
         couponType: 1,
-        sort: max
+        sort: max,
+        msg: ""
       });
 
       console.log(
@@ -786,7 +786,7 @@ export default {
         console.log("valid", valid);
         if (!valid) {
           this.msgErr("数据验证失败！");
-          // return;
+          return;
         }
 
         //清洗数据
@@ -818,14 +818,48 @@ export default {
       });
     },
 
+    // validateImages(rule, value, callback) {
+    //   console.log("validateImages", rule, value);
+    //   if (!value.length) {
+    //     return callback("请上传图片");
+    //   }
+    //   if (!this.formData.imagesFlag) {
+    //     return callback("请输入大于等于1的排序字段");
+    //   }
+    //   callback();
+    // },
     validateImages(rule, value, callback) {
       console.log("validateImages", rule, value);
-      // if (!this.formData.contentType) {
-      //   return callback("请选择图片类型");
-      // }
+
       if (!this.formData.images.length) {
         return callback("请上传图片");
       }
+      let r = this.formData.images.some(item => {
+        return item.sort === "" || item.msg !== "";
+      });
+      if (r) {
+        return callback("图片排序设置错误");
+      }
+      callback();
+    },
+    validateCoupons(rule, value, callback) {
+      console.log("validateCoupons", rule, value);
+      // if (!value.length) {
+      //   return callback("请选择优惠券");
+      // }couponName
+      if (!this.formData.couponsFlag) {
+        return callback("请输入大于等于1的排序字段");
+      }
+
+      let r = this.formData.coupons.some(item => {
+        console.log("formData.coupons item", JSON.stringify(item));
+
+        return item.couponName === "" || item.sort === "" || item.msg !== "";
+      });
+      if (r) {
+        return callback("添加优惠券错误，请选择优惠券或填入正确的排序字段");
+      }
+
       callback();
     },
     validateCitys(rule, value, callback) {
@@ -851,27 +885,6 @@ export default {
         }
         callback();
       };
-    },
-
-    validateImages(rule, value, callback) {
-      console.log("validateImages", rule, value);
-      if (!value.length) {
-        return callback("请上传图片");
-      }
-      if (!this.formData.imagesFlag) {
-        return callback("请输入大于等于1的排序字段");
-      }
-      callback();
-    },
-    validateCoupons(rule, value, callback) {
-      console.log("validateCoupons", rule, value);
-      // if (!value.length) {
-      //   return callback("请选择优惠券");
-      // }
-      if (!this.formData.couponsFlag) {
-        return callback("请输入大于等于1的排序字段");
-      }
-      callback();
     }
   }
 };
