@@ -1,5 +1,6 @@
 
 <template>
+  <!-- 领优惠---规则设置 -->
   <div class="search">
     <Card>
       <p slot="title">要优惠----拼团设置</p>
@@ -8,7 +9,7 @@
               <Button type="error"  @click="removeInfo()"  v-if="status =='edit'" >删除拼团设置</Button>
       </a>-->
       <a href="#" slot="extra">
-        <Button type="dashed" icon="md-arrow-round-back" @click="goback()">返回</Button>
+        <Button type="dashed" icon="md-arrow-round-back" @click="goback">返回</Button>
       </a>
 
       <p>
@@ -280,7 +281,7 @@
               <Button
                 type="dashed"
                 icon="md-arrow-round-back"
-                @click="goback()"
+                @click="goback"
                 style="width:220px; margin-right:30px;"
               >返回</Button>
             </FormItem>

@@ -477,8 +477,7 @@ export default {
       let couponsFlag = arr.some(item => {
         return item.sort <= 0;
       });
-
-      this.formData.couponsFlag = !couponsFlag;
+      // this.formData.couponsFlag = !couponsFlag;
       this.formData.coupons = JSON.parse(JSON.stringify(arr));
 
       console.log("change sort : newCoupon ", JSON.stringify(arr));
@@ -595,7 +594,7 @@ export default {
           return item;
         });
         // 有非法数据 不允许提交
-        this.formData.couponsFlag = couponsFlag;
+        // this.formData.couponsFlag = couponsFlag;
 
         // this.formData.templateName = couponNames;
 
@@ -844,16 +843,23 @@ export default {
     },
     validateCoupons(rule, value, callback) {
       console.log("validateCoupons", rule, value);
-      // if (!value.length) {
-      //   return callback("请选择优惠券");
-      // }couponName
-      if (!this.formData.couponsFlag) {
+
+      let arr = this.formData.coupons;
+
+      if (arr.length == 0) {
+        return callback();
+      }
+
+      //修改 couponsFlag 状态
+      // 判断是否有小于等于 0 的sort
+      let couponsFlag = arr.some(item => {
+        return item.sort <= 0;
+      });
+      if (couponsFlag) {
         return callback("请输入大于等于1的排序字段");
       }
 
-      let r = this.formData.coupons.some(item => {
-        console.log("formData.coupons item", JSON.stringify(item));
-
+      let r = arr.some(item => {
         return item.couponName === "" || item.sort === "" || item.msg !== "";
       });
       if (r) {

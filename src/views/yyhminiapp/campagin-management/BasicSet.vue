@@ -1,5 +1,6 @@
 
 <template>
+  <!-- 编辑/新增 领优惠---基础设置 -->
   <div>
     <div v-if="!receiveRuleSetPage">
       <div
@@ -362,6 +363,7 @@
               />
             </FormItem>
 
+            <!-- <FormItem label="优惠券详情" required>{{edit_info.newDiscountDetail}}</FormItem> -->
             <FormItem label="优惠券详情" required>
               <EditorBar
                 v-model="edit_info.discountDetail"
@@ -651,9 +653,13 @@ export default {
     };
   },
 
-  created: function() {
+  created() {
     this.userToken = { jwttoken: localStorage.getItem("jwttoken") };
+    // console.log("camp_Info", this.camp_Info);
   },
+  // beforeDestroy() {
+  //   alert("beforeDestroy");
+  // },
   methods: {
     handleAdd() {
       //修改后才能保存
@@ -734,7 +740,9 @@ export default {
         ChangeEndDate: "",
         ChangeStart: "",
         ChangeEnd: "",
-        categoryList: []
+        categoryList: [],
+        discountDetail: "",
+        newDiscountDetail: ""
       };
       this.currentChooseID = "";
       this.currentChooseName = "";
@@ -1062,7 +1070,9 @@ export default {
       if (e.type == 1) {
         this.$emit("changeStatus", false);
       }
+      this.$emit(`update:basicSetPage`, true);
       this.receiveRuleSetPage = e.Return;
+      // this.edit_info = JSON.parse(JSON.stringify(this.edit_info));
     },
 
     goback() {

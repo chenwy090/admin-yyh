@@ -462,6 +462,7 @@
       getWebankOperationPage: function(form) {
         this.TableLoading = true;
         getOperationList(form, this.current).then(res => {
+          
           // console.log(res);
           if (res.code == 200) {
             this.banner_list = res.data.records;

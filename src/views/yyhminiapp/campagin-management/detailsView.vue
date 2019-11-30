@@ -203,7 +203,7 @@
                     <Tag v-for="(item, index) in edit_info.brandNames" :key="index">{{item}}</Tag>
                   </Col>
                 </Row>
-              </FormItem> -->
+              </FormItem>-->
 
               <FormItem label="活动/领券规则">
                 <Input
@@ -231,7 +231,7 @@
                   v-model="edit_info.discountDetail"
                   :content="edit_info.discountDetail"
                   :disabled="1"
-                  style="width:400px;margin:0;"
+                  style="width:500px;margin:0;"
                 ></EditorBar>
               </FormItem>
             </Form>
@@ -504,13 +504,7 @@
 </template>
 
 <<script>
-import {
-    getRequest,
-    postRequest,
-    putRequest,
-    deleteRequest,
-    uploadFileRequest
-  } from "@/libs/axios";
+import { getRequest, postRequest } from "@/libs/axios";
 import { baseUrl, uploadOperationImage2AliOssURl } from "@/api/index";
 import { formatDate } from "@/libs/date";
 import EditorBar from "@/components/EditorBar";

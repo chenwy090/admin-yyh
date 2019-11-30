@@ -194,9 +194,11 @@ export default {
       // 保存 关闭优惠券选择对话框
       campaginDisplayFn () {
           let resData = JSON.parse(JSON.stringify(this.formValidate.specialTopicCouponList));
-          resData.forEach((el,i)=>{
-            resData[i].couponKind = this.couponSearchData.couponType;
-          })
+          if (Array.isArray(resData)) {
+            resData.forEach((el,i)=>{
+              resData[i].couponKind = this.couponSearchData.couponType;
+            })
+          }
           this.$emit('couponSelect', resData);
           this.closeDialog();
           this.CampaginList = [];

@@ -332,13 +332,18 @@ export default {
         } else {
           this.msgOk("新增成功");
           this.$parent.getList();
+          
+          this.okAndClose();
         }
       } else if (msg == '数据重复') {
         this.$parent.dataRepeat(data);
         this.$Spin.hide();
-      } else {
+      } else if(typeof msg === 'string') {
         this.$Spin.hide();
         this.msgErr(msg);
+      } else {
+        this.$parent.dataRepeat(data);
+        this.$Spin.hide();
       }
     },
 
@@ -354,32 +359,51 @@ export default {
         this.$Spin.hide();
         this.msgOk("编辑成功");
         this.$parent.getList();
-      } else {
+
+        this.okAndClose();
+      } else if (typeof msg === 'string') {
         this.$Spin.hide();
         this.msgErr(msg);
+      } else if (msg == '数据重复') {
+        this.$parent.dataRepeat(data);
+        this.$Spin.hide();
+      } else {
+        this.$parent.dataRepeat(data);
+        this.$Spin.hide();
       }
+    },
+    okAndClose() {
+      this.hotCouponVoList = [];
+      this.shopReqList = [];
+      this.pushRange = "";
+      this.modalShow = false;
     },
     showCouponFn(i) {
       this.currentContentIndex = i;
-      if (Array.isArray(this.hotCouponVoList) && this.hotCouponVoList[0]) {
-        this.checkedData = this.hotCouponVoList[0];
+      if (Array.isArray(this.hotCouponVoList) && this.hotCouponVoList[i]) {
+        this.checkedData = this.hotCouponVoList[i];
       }
       this.showChooseCoupon = true;
     },
     selectedCoupon(arr) {
       let e = arr[0];
+      if (!e) {
+        return;
+      }
       if (typeof e === "object" && "campId" in e) {
         // 超市券
-        this.hotCouponVoList[this.currentContentIndex].couponKind = 1;
-        this.hotCouponVoList[this.currentContentIndex].templateId = e.campId;
-        this.hotCouponVoList[this.currentContentIndex].title = e.name;
+        let obj = JSON.parse(JSON.stringify(this.hotCouponVoList[this.currentContentIndex]));
+        obj.couponKind = 1;
+        obj.templateId = e.campId;
+        obj.title = e.name;
+        this.hotCouponVoList.splice(this.currentContentIndex, 1, obj);
       } else {
         // 周边券
-        this.hotCouponVoList[this.currentContentIndex].couponKind =
-          e.couponKind;
-        this.hotCouponVoList[this.currentContentIndex].templateId =
-          e.templateId;
-        this.hotCouponVoList[this.currentContentIndex].title = e.title;
+        let obj = JSON.parse(JSON.stringify(this.hotCouponVoList[this.currentContentIndex]));
+        obj.couponKind = e.couponKind;
+        obj.templateId = e.templateId;
+        obj.title = e.title;
+        this.hotCouponVoList.splice(this.currentContentIndex, 1, obj);
       }
     },
     chooseStore() {
@@ -495,6 +519,8 @@ export default {
         params.hotCouponVoList[0].pushPlatformList.forEach((el,i)=>{
           if (el === true) {
             pushPlatformList.push(this.clientTypeList[i].value);
+          } else if (typeof el === 'number') {
+            pushPlatformList.push(el)
           }
         })
         if (pushPlatformList.length < 1) {
@@ -505,10 +531,6 @@ export default {
       } else {
         this.apiAdd(JSON.parse(JSON.stringify(params)));
       }
-      this.hotCouponVoList = [];
-      this.shopReqList = [];
-      this.pushRange = "";
-      this.modalShow = false;
     },
     remove(i) {
       this.hotCouponVoList.splice(i, 1);
