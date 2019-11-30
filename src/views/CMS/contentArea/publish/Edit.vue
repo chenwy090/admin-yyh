@@ -477,7 +477,7 @@ export default {
       let couponsFlag = arr.some(item => {
         return item.sort <= 0;
       });
-      this.formData.couponsFlag = !couponsFlag;
+      // this.formData.couponsFlag = !couponsFlag;
       this.formData.coupons = JSON.parse(JSON.stringify(arr));
 
       console.log("change sort : newCoupon ", JSON.stringify(arr));
@@ -594,7 +594,7 @@ export default {
           return item;
         });
         // 有非法数据 不允许提交
-        this.formData.couponsFlag = couponsFlag;
+        // this.formData.couponsFlag = couponsFlag;
 
         // this.formData.templateName = couponNames;
 
@@ -843,7 +843,7 @@ export default {
     },
     validateCoupons(rule, value, callback) {
       console.log("validateCoupons", rule, value);
-  
+
       let arr = this.formData.coupons;
 
       if (arr.length == 0) {
@@ -855,8 +855,7 @@ export default {
       let couponsFlag = arr.some(item => {
         return item.sort <= 0;
       });
-
-      if (!couponsFlag) {
+      if (couponsFlag) {
         return callback("请输入大于等于1的排序字段");
       }
 

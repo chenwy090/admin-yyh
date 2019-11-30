@@ -1,5 +1,6 @@
 
 <template>
+  <!-- 编辑/新增 领优惠---基础设置 -->
   <div>
     <div v-if="!receiveRuleSetPage">
       <div
