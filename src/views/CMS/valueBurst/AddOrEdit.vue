@@ -556,6 +556,19 @@ export default {
         }
       });
     },
+    /**
+     * 编辑时得到已填写的城市
+     */
+    getProvinceAndCity(arr){
+      let obj = {};
+      arr.forEach(el=>{
+        obj[el.province + '-' + el.city] = {
+          province: el.province,
+          city: el.city,
+        }
+      })
+      return Object.values(obj);
+    },
     // 在父级调用的 别删： 编辑时回填操作
     alreadyGetDetail(data) {
       // 数据清洗
@@ -638,7 +651,16 @@ export default {
         this.venderName = data.shopReqList[0].venderName;
       } else if (data.pushRange == 2) {
         this.province = data.shopReqList[0].province;
-        // this.getcitylist(this.province); // alert(debugger选择城市改造之后 这里就有问题了 ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+        this.cityItems = this.getProvinceAndCity(data.shopReqList).map(el => {
+          return {
+            city: el.city,
+            province: el.province,
+            citylist: [],
+          }
+        });
+        this.cityItems.forEach((el, i) => {
+          this.getcitylist(el.province, i)
+        })
         this.city = data.shopReqList[0].city;
       } else if (data.pushRange == 3) {
         this.shopReqList = data.shopReqList;
