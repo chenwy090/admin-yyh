@@ -139,14 +139,6 @@ export default {
       console.log("mounted:", this.uploadList);
     }
   },
-  renderError(createElement, err) {
-    console.log("ssssrenderError");
-    return createElement("div", err.stack);
-    //return createElement("div",{},err.stack);
-  },
-  errorCaptured() {
-    console.log("11errorCaptured");
-  },
   methods: {
     changeImageSort(ev, index) {
       this.idx = index;

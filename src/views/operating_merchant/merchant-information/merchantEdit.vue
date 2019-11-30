@@ -61,16 +61,14 @@
             </Row>
 
             <Row class="box">
-              <Col span="2" class="left-text">
-                <span style="color:red">*</span> 商户门店图片
-              </Col>
-              <Button
-                type="primary"
-                icon="md-add-circle"
-                size="small"
-                style="margin-left:250px"
-                @click="addImgArr()"
-              >增加</Button>
+              <div style="overflow:hidden;">
+                <Col span="2" class="left-text">
+                  <span style="color:red">*</span> 商户门店图片
+                </Col>
+                <Col span="2">
+                  <Button type="primary" icon="md-add-circle" size="small" @click="addImgArr()">增加</Button>
+                </Col>
+              </div>
               <Card
                 v-for="(item, index) in edit_info.merchantShopImageList"
                 :key="index"
@@ -89,6 +87,7 @@
                         :boxWidth="800"
                         :boxHeight="500"
                         :rate="2"
+                        :inerBox="{w:686,h:343}"
                         v-on:cutDown="cutDownArr"
                       >
                         <button
@@ -105,7 +104,7 @@
                       size="small"
                       style="margin-left:20px"
                       @click="delImgArr(index)"
-                      v-if="index !=0"
+                      v-if="index!=0"
                     >删除</Button>
                     <br />
                     <div class="left-text">
@@ -1225,8 +1224,7 @@ export default {
     // 新增商户门店图片
     addImgArr() {
       if (this.edit_info.merchantShopImageList.length == 8) {
-        this.msgErr("最多只能增加8张");
-        return;
+        return this.msgErr("最多只能增加8张");
       }
       this.edit_info.merchantShopImageList.push({ imgUrl: "" });
     },
@@ -1262,8 +1260,12 @@ export default {
         reqParams
       ).then(res => {
         if (res.code == 200) {
-          this.edit_info.merchantShopImageList[this.imgArrIndex].imgUrl =
-            res.image_url;
+          // this.edit_info.merchantShopImageList[this.imgArrIndex].imgUrl =
+          //   res.image_url;
+
+          this.edit_info.merchantShopImageList.splice(this.imgArrIndex, 1, {
+            imgUrl: res.image_url
+          });
         } else {
           this.$Message.error(res.msg);
         }
@@ -1308,7 +1310,8 @@ export default {
         shopIdList: [],
         operatingStatus: "",
         telephone: "",
-        merchantShopImageList: [{ imgUrl: "" }]
+        // merchantShopImageList: [{ imgUrl: "" }]
+        merchantShopImageList: []
       };
     },
 
@@ -1586,7 +1589,20 @@ export default {
 
     //保存
     campagin_add() {
-      console.info(JSON.stringify(this.edit_info));
+      console.info("xxxxx campagin_add", JSON.stringify(this.edit_info));
+
+      let len = this.edit_info.merchantShopImageList.length;
+      if (len == 0) {
+        return this.$Message.error("请上传商户门店图片");
+      }
+
+      let r = this.edit_info.merchantShopImageList.some(
+        item => item.imgUrl === ""
+      );
+      if (r) {
+        return this.$Message.error("商户门店图片不能为空");
+      }
+
       for (var i = 0; i < this.edit_info.merchantProfileList.length; i++) {
         if (this.edit_info.merchantProfileList[i].profile === "") {
           this.$Message.error("官网简介" + [i + 1] + "的商户简介不能为空");
