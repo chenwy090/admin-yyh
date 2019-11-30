@@ -87,6 +87,7 @@
                         :boxWidth="800"
                         :boxHeight="500"
                         :rate="2"
+                        :inerBox="{w:686,h:343}"
                         v-on:cutDown="cutDownArr"
                       >
                         <button
