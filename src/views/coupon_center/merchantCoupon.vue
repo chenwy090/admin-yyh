@@ -1,18 +1,20 @@
 <template>
   <div class="search">
+    <!-- <Row v-if="!couponEditPage&&!couponDetailPage"> -->
     <Row v-if="!couponEditPage">
-      <!--  <div
-        style="width: 90%;background: #fff;box-shadow:0 6px 6px -4px rgba(0,0,0,.2);z-index: 5;position:fixed; padding:14px"
-      >
-         <Alert show-icon v-if="merchantId">
-           商户编号 :  <span style="color:red">{{merchantId}}</span>
-            <span slot="desc"></span>
-          </Alert>
-      </div>-->
       <div style>
         <Card>
           <Row>
             <Form ref="searchItem" :model="searchItem" inline :label-width="70" class="search-form">
+              <FormItem label="卡券ID">
+                <Input
+                  type="text"
+                  v-model="searchItem.templateId"
+                  clearable
+                  placeholder="请输入卡券ID"
+                  style="width: 200px"
+                />
+              </FormItem>
               <FormItem label="标题">
                 <Input
                   type="text"
@@ -51,6 +53,8 @@
                     <Option value="4">体验券</Option>
                     <Option value="5">换购券</Option>
                     <Option value="6">赠品券</Option>
+                    <Option value="7">代金券</Option>
+                    <Option value="8">团购券</Option>
                   </Select>
                 </FormItem>
                 <FormItem label="卡券状态">
@@ -61,6 +65,7 @@
                     style="width: 200px"
                   >
                     <Option value>所有</Option>
+                    <Option value="创建">创建</Option>
                     <Option value="待发布">待发布</Option>
                     <Option value="进行中">进行中</Option>
                     <Option value="已结束">已结束</Option>
@@ -102,8 +107,10 @@
 
             <Button @click="queryTableData" icon="md-refresh">刷新</Button>
             <!-- 排序导入  排序导出 -->
-            <Button type="success" class="marginLeft20" @click="upload">排序导入</Button>
-            <Button type="success" class="marginLeft20" @click="download">排序导出</Button>
+            <Button type="success" class="marginLeft20" @click="upload(1)">排序导入</Button>
+            <Button type="success" class="marginLeft20" @click="download(1)">排序导出</Button>
+            <Button type="success" class="marginLeft20" @click="upload(2)">分享奖励导入</Button>
+            <Button type="success" class="marginLeft20" @click="download(2)">分享奖励导出</Button>
           </Row>
 
           <Row>
@@ -155,27 +162,79 @@
               </template>
 
               <template slot-scope="{ row }" slot="operate">
+                <!-- 
+                  各状态对应操作：
+                    创建：上架、编辑、删除、复制、分享奖励、查看
+                    待发布：下架、追加、复制、分享奖励、查看
+                    进行中：下架、追加、复制、分享奖励、查看
+                已结束：上架、编辑（过期自动下架的无编辑操作 ，只有手动下架有编辑操作）、复制、分享奖励、查看-->
                 <Button
                   type="text"
                   size="small"
                   style="color:#2db7f5"
                   @click="editInfo(row)"
-                  v-if="row.templateStatus == '待发布' "
+                  v-if="row.templateStatus == '创建' ||row.templateStatus == '已结束(手动下架)'"
                 >编辑</Button>
-                <!--<Button type="text" size="small" style="color:#ed4014" @click="" v-if="row.templateStatus == '待发布' ">删除</Button>-->
+                <Button
+                  type="text"
+                  size="small"
+                  style="color:#ed4014"
+                  @click="removeInfo(row.templateId)"
+                  v-if="row.templateStatus == '创建' "
+                >删除</Button>
+                <Button
+                  type="text"
+                  size="small"
+                  style="color:red"
+                  @click="upStatus(row.templateId)"
+                  v-if="row.templateStatus == '创建'||row.templateStatus == '已结束(手动下架)'"
+                >上架</Button>
                 <Button
                   type="text"
                   size="small"
                   style="color:red"
                   @click="inputUpdateAccountStatus(row)"
-                  v-if="row.templateStatus == '进行中' "
+                  v-if="row.templateStatus == '待发布'||row.templateStatus == '进行中'"
                 >下架</Button>
                 <!--<Button type="text" size="small" style="color:blue" @click="" v-if="row.templateStatus == '进行中' || row.templateStatus == '已结束' ">查看明细</Button>-->
-                <!--<Button type="text" size="small" style="color:red" @click="inputAppendStockCountStatus(row)" v-if="row.templateStatus == '进行中' ">追加</Button>-->
-                <!--<Button type="text" size="small" style="color:green" @click="" >复制</Button>-->
+                <Button
+                  type="text"
+                  size="small"
+                  style="color:red"
+                  @click="inputAppendStockCountStatus(row)"
+                  v-if="row.templateStatus == '待发布'||row.templateStatus == '进行中'"
+                >追加</Button>
+                <Button type="text" size="small" style="color:#2db7f5" @click="setTag(row)">打标签</Button>
+                <Button
+                  type="text"
+                  size="small"
+                  style="color:green"
+                  @click="editInfo(row,'copy')"
+                >复制</Button>
+
                 <!--changeStatus(row)-->
                 <Button type="text" size="small" style="color:red" @click="share(row)">分享奖励</Button>
-                <Button type="text" size="small" style="color:#2db7f5" @click="setTag(row)">打标签</Button>
+                <Button
+                  type="text"
+                  size="small"
+                  style="color:#2d8cf0"
+                  @click="detailInfo(row.templateId)"
+                >查看详情</Button>
+              </template>
+              <template slot-scope="{ row }" slot="templateStatus">
+                <Tooltip max-width="300" placement="left-start">
+                  <Button>{{row.templateStatus}}</Button>
+                  <div slot="content">
+                    <div v-if="row.couponOperationLogList">
+                      <div v-for="(item,index) in row.couponOperationLogList" :key="index">
+                        <p>操作人：{{item.operator}}</p>
+                        <p>操作时间:{{item.operationTime}}</p>
+                        <!-- 下架原因： -->
+                        <p>{{item.afterOperation}}</p>
+                      </div>
+                    </div>
+                  </div>
+                </Tooltip>
               </template>
             </Table>
           </Row>
@@ -196,12 +255,41 @@
     <div v-if="couponEditPage">
       <couponEdit @changeStatus="showbasicSetStatus" :couponEdit_info="couponEdit_info"></couponEdit>
     </div>
+    <!-- <div v-if="couponDetailPage">
+      <couponDetail
+        ref="modalDetail"
+        @changeStatus="showbasicSetStatus"
+        :couponEdit_info="couponEdit_info"
+      ></couponDetail>
+    </div>-->
+
+    <Drawer
+      v-model="couponDetailPage"
+      :closable="true"
+      :mask-closable="true"
+      width="800"
+      :styles="styles"
+    >
+      <p slot="header" style="color:#f60;text-align:center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>查看详情</span>
+      </p>
+
+      <!-- @changeStatus="showbasicSetStatus" -->
+      <couponDetail
+        ref="modalDetail"
+        v-if="couponDetailPage"
+        :couponDetailPage.sync="couponDetailPage"
+        :couponEdit_info="couponEdit_info"
+        @refresh="refresh"
+      ></couponDetail>
+    </Drawer>
 
     <Modal v-model="bigImgDialog" title="查看大图" width="600" @on-cancel="bigImgCancel">
       <img style="width: 100%" :src="big_Image_url" />
     </Modal>
-
-    <Modal title="上架/下架" v-model="updateTemplateStatusDisplay" :mask-closable="false" footer-hide>
+    <!-- 上架/下架 -->
+    <Modal title="下架" v-model="updateTemplateStatusDisplay" :mask-closable="false" footer-hide>
       <Form ref="formCustom" :model="formCustom" :label-width="80" style="margin-top:20px">
         <span>提示：已售卖或领用的卡券仍可有效使用。</span>
         <FormItem label="填写原因" required>
@@ -223,30 +311,17 @@
     </Modal>
     <Modal title="追加" v-model="appendStockCountDisplay" :mask-closable="false" footer-hide>
       <Form ref="formCustom" :model="formCustom" :label-width="80" style="margin-top:20px">
-        <FormItem label="已发布">
-          <Input
-            type="text"
-            v-model="formCustom.stockCount"
-            clearable
-            placeholder="请输入..."
-            style="width: 200px"
-          />
-          <span>张</span>
-        </FormItem>
-
-        <FormItem label="剩余库存">
-          <Input
-            type="text"
-            v-model="formCustom.surplusCount"
-            clearable
-            placeholder="请输入..."
-            style="width: 200px"
-          />
-          <span>张</span>
-        </FormItem>
+        <FormItem label="已发布">{{formCustom.stockCount}}张</FormItem>
+        <FormItem label="剩余库存">{{formCustom.surplusCount}}张</FormItem>
         <FormItem label="追加" required>
-          <Input type="textarea" :rows="2" v-model="formCustom.appendCount" style="width:300px"></Input>
-          <span>张</span>
+          <Input
+            type="text"
+            v-model="formCustom.appendCount"
+            style="width:100px"
+            placeholder="请输入..."
+            clearable
+          ></Input>
+          <span>&nbsp;张</span>
         </FormItem>
 
         <FormItem>
@@ -285,6 +360,7 @@
       v-if="showFileImport"
       :showFileImport.sync="showFileImport"
       @refresh="queryTableData"
+      :upType="upType"
     ></FileImport>
 
     <SetTag
@@ -294,6 +370,7 @@
       :tagData="tagData"
       @refresh="queryTableData"
     ></SetTag>
+    <modalDetail ref="modalDetail" :descConfig="descConfig" :show="modalDetailData.show" />
   </div>
 </template>
 
@@ -312,18 +389,87 @@ import couponEdit from "./couponEdit";
 import FileImport from "./FileImport";
 import SetTag from "./SetTag";
 
+import modalDetail from "@/components/ModalDetail";
+import couponDetail from "./couponDetail";
+
+import { postJson } from "@/libs/axios";
+import { baseUrl } from "@/api/index";
+
 export default {
   name: "merchant-information",
   components: {
+    modalDetail,
     couponEdit,
     FileImport,
-    SetTag
+    SetTag,
+    couponDetail
   },
   props: {
     merchantId: String
   },
+  watch: {
+    logDialogModal() {
+      console.log("xxxx11111,logDialogModal:", this.logDialogModal);
+    }
+  },
   data() {
     return {
+      logDialogModal: false,
+      styles: {
+        height: "calc(100% - 55px)",
+        overflow: "auto",
+        paddingBottom: "53px",
+        position: "static"
+      },
+      upType: "",
+      descConfig: [
+        ["templateId", "优惠券模板ID"],
+        ["merchantNames", "商户名称，多个商户"],
+        ["title", "优惠标题"],
+        ["couponSource", "来源"],
+        ["userOpenWithCoupon", "使用打开方式"],
+        ["thirdUrl", "第三方Url"],
+        ["subTitle", "优惠副标题"],
+        ["couponTypeName", "优惠类型"],
+        ["couponKind", "收费类型"],
+        ["employeeId", "专属客服"],
+        ["couponKindName", "优惠券种类"],
+        ["price", "售卖价"],
+        ["originalPrice", "原价"],
+        ["couponSaleAfterList", "售后条件"],
+        ["isActivityCouponName", "是否为活动券"],
+        ["couponPutChannelList", "投放渠道"],
+        ["price", "购买价格，单位分"],
+        ["label", "优惠标签-预留字段"],
+        ["startDate", "活动开始时间"],
+        ["endDate", "活动结束时间"],
+        ["useDateTypeName", "用券有效期类型"],
+        ["useStartDate", "用券开始时间"],
+        ["useEndDate", " 用券结束时间"],
+        ["addDaysUseStart", "加X天开始生效（相对领券日期）"],
+        ["addDaysUseEnd", "加Y天结束用券（相对领券日期）"],
+        ["couponSmallImg", "优惠券缩略图"],
+        ["couponBigImg", "优惠券详情图"],
+        ["couponSimpleImg", "优惠券简图"],
+        ["buyNotes", "购买须知"],
+        ["useDesc", "券使用说明"],
+        ["getLimit", "用户限领数量"],
+        ["stockCount", "库存数量"],
+        ["isNewName", "是否新标签"],
+        ["isHotName", "是否热标签"],
+        // ['isActivityCoupon', '是否活动券：0-不是活动券, 1-活动券'],
+        // ['orderBy', '人工排序字段：顺序排序，创建时前端表单默认9999'],
+        ["statusName", "状态"]
+        // ['receiveCount', '被领取的数量'],
+        // ['surplusCount', '剩余库存'],
+      ],
+      modalDetailData: {
+        show: true,
+        data: {
+          _id: "周边券详情",
+          name: "查看详情呀"
+        }
+      },
       id: "", // templateId
       showFileImport: false,
       //打标签 已打标签、未打标签
@@ -337,6 +483,7 @@ export default {
         shareData: []
       },
       couponEditPage: false,
+      couponDetailPage: false,
       updateTemplateStatusDisplay: false,
       appendStockCountDisplay: false,
       shareDisplay: false,
@@ -344,6 +491,7 @@ export default {
       dropDownContent: "展开",
       dropDownIcon: "ios-arrow-down",
       searchItem: {
+        templateId: "",
         title: "",
         // 是否有标签 0-未打标签 1-已打标签
         isTag: "",
@@ -393,13 +541,22 @@ export default {
           title: "适用商户",
           key: "merchantNames",
           align: "center",
-          width: 150
+          minWidth: 200,
+          render: (h, params) => {
+            let { merchantNames } = params.row;
+            let arr = merchantNames.split(",");
+            let str = arr[0];
+            if (arr.length > 1) {
+              str = `${str}。。。`;
+            }
+            return <div title={arr}>{str}</div>;
+          }
         },
         {
           title: "来源",
           key: "source",
           align: "center",
-          width: 150
+          width: 100
         },
 
         {
@@ -410,20 +567,23 @@ export default {
           render: (h, params) => {
             const row = params.row;
             const color = "blue";
-            const text =
-              row.couponType == "1"
-                ? "立减券"
-                : row.couponType == "2"
-                ? "折扣券"
-                : row.couponType == "3"
-                ? "满减券"
-                : row.couponType == "4"
-                ? "体验券"
-                : row.couponType == "5"
-                ? "换购券"
-                : row.couponType == "6"
-                ? "赠品券"
-                : "未知类型";
+
+            var obj = {
+              1: "立减券",
+              2: "折扣券",
+              3: "满减券",
+              4: "体验券",
+              5: "换购券",
+              6: "赠品券",
+              7: "代金券",
+              8: "团购券"
+            };
+
+            let text = obj[row.couponType];
+
+            if (!text) {
+              text = "未知类型";
+            }
 
             return h(
               "Tag",
@@ -474,7 +634,7 @@ export default {
         },
         {
           title: "状态",
-          key: "templateStatus",
+          slot: "templateStatus",
           align: "center",
           width: 150
         },
@@ -495,12 +655,67 @@ export default {
     init() {
       this.queryTableData();
     },
-
-    upload() {
-      this.showFileImport = true;
+    showDetail(templateId) {
+      console.log(templateId, "549");
+      // /merchantCouponTemplate/selectByTemplateId
+      this.modalDetailData.show = true;
+      // this.modalDetailData.data = {
+      //   templateId: '优惠券模板ID',
+      //   title: '优惠标题',
+      //   subTitle: '优惠副标题',
+      //   couponType: '优惠类型',
+      //   employeeId: '专属客服',
+      //   couponKind: '优惠券种类',
+      //   price: '购买价格，单位分',
+      //   label: '优惠标签-预留字段',
+      //   startDate: '活动开始时间',
+      //   endDate: '活动结束时间',
+      //   useDateType: '用券有效期类型',
+      //   useStartDate: '用券开始时间',
+      //   useEndDate: ' 用券结束时间',
+      //   couponSmallImg: '优惠券缩略图',
+      //   couponBigImg: '优惠券详情图',
+      //   buyNotes: '购买须知',
+      //   useDesc: '券使用说明',
+      //   getLimit: '用户限领数量',
+      //   stockCount: '库存数量',
+      //   isActivityCoupon: '是否活动券：0-不是活动券, 1-活动券',
+      //   orderBy: '人工排序字段：顺序排序，创建时前端表单默认9999',
+      //   status: '状态：0.创建, 1.上架,-1.下架',
+      //   couponSimpleImg: '优惠券简图',
+      //   merchantNames: '商户名称，多个商户',
+      //   receiveCount: '被领取的数量',
+      //   surplusCount: '剩余库存',
+      //   source: '来源',
+      //   userOpenWithCoupon: '使用打开方式',
+      //   thirdUrl: '第三方Url',
+      // }
+      const url = `/merchantCouponTemplate/selectByTemplateId?templateId=${templateId}`;
+      postRequest(url, { templateId })
+        .then(res => {
+          // console.log(res);
+          if (res.code == 200) {
+            this.$refs.modalDetail.showByFather(res.data);
+          } else {
+            this.msgErr(res.msg);
+          }
+        })
+        .catch(err => {
+          // console.log(err, 'operating_merchant/merchant-customer/merchant-customer-add, Line929')
+        });
+      this.$refs.modalDetail.showByFather();
     },
-    async download() {
-      const url = "/template/sort/excel/download";
+    upload(type) {
+      this.showFileImport = true;
+      this.upType = type;
+    },
+    async download(type) {
+      let url;
+      if (type == 1) {
+        url = "/template/sort/excel/download";
+      } else {
+        url = "/merchantCouponTemplate/exportShareRewardExcel";
+      }
 
       const res = await downloadSteam(url);
 
@@ -546,6 +761,7 @@ export default {
     //	刷新页面
     refresh() {
       this.searchItem = {
+        templateId: "",
         title: "",
         // 是否有标签 0-未打标签 1-已打标签
         isTag: "",
@@ -576,6 +792,7 @@ export default {
       this.TableLoading = true;
 
       const reqParams = {
+        templateId: this.searchItem.templateId,
         title: this.searchItem.title,
         isTag: this.searchItem.isTag,
         merchantNames: this.searchItem.merchantNames,
@@ -660,9 +877,17 @@ export default {
     },
     // 更新账户
     updateTemplateAppendCountFn() {
+      let { appendCount } = this.formCustom;
+
+      let integerReg = /^[0-9]\d*$/;
+
+      if (!integerReg.test(appendCount)) {
+        return this.msgErr("请输入数字");
+      }
+
       const reqParams = {
         templateId: this.formCustom.templateId,
-        appendCount: this.formCustom.appendCount,
+        appendCount,
         //remark: this.formCustom.remark,
         type: this.formCustom.type
       };
@@ -687,30 +912,41 @@ export default {
       });
     },
 
-    // 传值到审核对话框
+    // 传值到审核对话框  下架
     inputUpdateAccountStatus(row) {
       this.formCustom.templateId = row.templateId;
       this.formCustom.type = "优惠券管理";
-      this.formCustom.status = "-1";
+      this.formCustom.status = -1; //下架状态, -1:下架
       this.updateTemplateStatusDisplay = true;
+    },
+    // 传值到审核对话框  上架
+    upStatus(templateId) {
+      // this.formCustom.templateId = row.templateId;
+      // this.formCustom.type = "优惠券管理";
+      // this.formCustom.status = "1";
+      // this.updateTemplateStatusDisplay = true;
+
+      this.setStore("camp_pageStatus", "上架");
+      this.couponEdit_info = templateId;
+      this.couponDetailPage = true; //显示 couponDetail组件！！
+      this.couponEditPage = false;
     },
 
     // 更新账户
     updateTemplateStatusFn(item) {
-      const reqParams = {
-        templateId: this.formCustom.templateId,
-        status: this.formCustom.status,
-        remark: this.formCustom.remark,
-        type: this.formCustom.type
-      };
-      postRequest(
-        "/merchantCouponTemplate/updStatus/?templateId=" +
-          this.formCustom.templateId +
-          "&status=-1",
-        reqParams
-      ).then(res => {
+      // 券模板id  下架状态, -1:下架   //下架原因
+      let { templateId, status, remark, type } = this.formCustom;
+
+      remark = remark.trim();
+      if (remark.length == 0) {
+        return this.msgErr("请填写下架原因");
+      }
+
+      const reqParams = { templateId, status, remark, type };
+      const url = "/merchantCouponTemplate/downShelf";
+      postRequest(url, reqParams).then(res => {
         if (res.code == 200) {
-          this.msgOk("更新成功");
+          this.msgOk("下架成功");
           this.updateTemplateStatusDisplay = false;
           //this.getList({});
           // 清空输入框
@@ -728,20 +964,35 @@ export default {
     //新增
     addInfo() {
       this.setStore("camp_pageStatus", "add");
-
+      this.couponEdit_info = {};
       this.couponEdit_info.merchantId = this.merchantId;
       this.couponEditPage = true;
     },
 
     //编辑
-    editInfo(item) {
-      this.setStore("camp_pageStatus", "edit");
+    editInfo(item, type) {
+      if (type) {
+        this.setStore("camp_pageStatus", "copy");
+      } else {
+        this.setStore("camp_pageStatus", "edit");
+      }
+
       this.couponEdit_info = item;
       this.couponEditPage = true;
     },
 
+    //查看详情
+    detailInfo(item) {
+      this.setStore("camp_pageStatus", "查看详情");
+      this.couponEdit_info = item;
+      this.couponDetailPage = true;
+      this.couponEditPage = false;
+
+      // this.$refs.modalDetail.rowDate(item);
+    },
     showbasicSetStatus(e) {
       this.couponEditPage = e;
+      this.couponDetailPage = e;
       this.queryTableData();
     },
 
@@ -814,7 +1065,7 @@ export default {
       });
     },
     //删除
-    removeInfo(item) {
+    removeInfo(templateId) {
       const self = this;
 
       this.$Modal.confirm({
@@ -822,22 +1073,21 @@ export default {
         content: `删除后不可恢复，是否继续删除？`,
         onOk: function() {
           self.$Loading.start();
-          getRequest("/merchantCouponTemplate/edit/" + item.templateId).then(
-            res => {
-              self.loading = false;
+          const url = "/merchantCouponTemplate/delete";
+          getRequest(url, { templateId }).then(res => {
+            self.loading = false;
 
-              if (res.code == "200") {
-                self.$Message.info("删除成功！");
+            if (res.code == "200") {
+              self.$Message.info("删除成功！");
 
-                setTimeout(() => {
-                  self.pageNum = 1;
-                  self.queryTableData();
-                }, 1200);
-              } else {
-                self.$Message.error(res.msg);
-              }
+              setTimeout(() => {
+                self.pageNum = 1;
+                self.queryTableData();
+              }, 1200);
+            } else {
+              self.$Message.error(res.msg);
             }
-          );
+          });
         },
         onCancel: () => {
           self.$Message.info("点击了取消");

@@ -1,5 +1,6 @@
 
 <template>
+  <!-- 编辑/新增 领优惠---基础设置 -->
   <div>
     <div v-if="!receiveRuleSetPage">
       <div
@@ -7,7 +8,6 @@
       >
         <Steps :current="0">
           <Step title="基础设置" content="进行中"></Step>
-
           <Step title="规则设置" content="待进行"></Step>
         </Steps>
       </div>
@@ -195,7 +195,37 @@
                 <p>选择优惠券详情图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
               </div>
             </FormItem>
-
+            <FormItem label="首页缩略图">
+              <div
+                style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
+                v-for="(item, index) in uploadList2"
+                :key="index"
+              >
+                <img :src="item.url" style="width:100%" />
+              </div>
+              <div style="display: inline-block;">
+                <Upload
+                  ref="upload"
+                  :defaultList="uploadList2"
+                  type="drag"
+                  :format="['jpg','jpeg','png','bmp']"
+                  :on-success="handleSucces2"
+                  :action="url"
+                  accept="image"
+                  :max-size="1024"
+                  :headers="userToken"
+                  style="display: inline-block;width:90px;"
+                  @on-change="statusCheckChange"
+                  :on-exceeded-size="handleMaxSize"
+                  :show-upload-list="false"
+                >
+                  <div style="width: 90px;height:90px;line-height: 90px;">
+                    <Icon type="ios-camera" size="20" />
+                  </div>
+                </Upload>
+                <p>选择首页缩略图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
+              </div>
+            </FormItem>
             <!-- <FormItem label="兑换时间类型" required>
               <Select
                 v-model="edit_info.ChangeDateType"
@@ -281,6 +311,37 @@
               </Alert>
             </FormItem>
 
+            <!-- :rules="{ required: true, validator: validateRewardRules }" -->
+            <!-- <FormItem label="品类" prop="categoryList">
+              <Button
+                type="dashed"
+                size="small"
+                @click="handleAdd"
+                icon="md-add"
+                style="width:100px;"
+              ></Button>
+            </FormItem>
+            <FormItem>
+              <Category
+                v-for="(item, index) in edit_info.categoryList"
+                :key="index"
+                :data="item"
+                :index="index"
+                @del="del"
+              ></Category>
+            </FormItem>
+
+            <FormItem label="品牌">
+              <Row>
+                <Col span="10">
+                  <Button type="success" size="small" @click="handleChoose">点击按钮选择品牌</Button>
+                  <div style="width:300px;">
+                    <Tag v-for="(item, index) in edit_info.brandNames" :key="index">{{item}}</Tag>
+                  </div>
+                </Col>
+              </Row>
+            </FormItem>-->
+
             <FormItem label="活动/领券规则" required>
               <Input
                 type="textarea"
@@ -300,6 +361,17 @@
                 :autosize="{minRows: 4,maxRows: 8}"
                 @on-change="statusCheckChange"
               />
+            </FormItem>
+
+            <!-- <FormItem label="优惠券详情" required>{{edit_info.newDiscountDetail}}</FormItem> -->
+            <FormItem label="优惠券详情" required>
+              <EditorBar
+                v-model="edit_info.discountDetail"
+                :content="edit_info.discountDetail"
+                @on-change="change"
+                @on-blur="blur"
+                style="width:500px;margin:0;"
+              ></EditorBar>
             </FormItem>
 
             <FormItem label="状态" required placeholder="请选择状态">
@@ -372,6 +444,13 @@
     <div v-if="receiveRuleSetPage">
       <receiveRuleSet :camp_pageStatus="camp_pageStatus" @changeStatus="showReceiveRuleSetStatus"></receiveRuleSet>
     </div>
+
+    <BrandList
+      v-if="showBrandList"
+      :showBrandList.sync="showBrandList"
+      @seclectedTr-event="selectedBrandItem"
+      :checked="edit_info.brandIds"
+    ></BrandList>
   </div>
 </template>
 
@@ -390,10 +469,21 @@ import { formatDate, checkImageWH } from "@/libs/date";
 
 import receiveRuleSet from "./receiveRuleManagement";
 
+import EditorBar from "@/components/EditorBar";
+
+// 品类
+import Category from "./Category";
+
+// 品牌列表
+import BrandList from "./BrandList";
+
 export default {
   name: "BasicSet",
   components: {
-    receiveRuleSet
+    receiveRuleSet,
+    EditorBar,
+    BrandList,
+    Category
   },
   props: {
     camp_Info: Object
@@ -401,8 +491,16 @@ export default {
   data() {
     return {
       receiveRuleSetPage: false,
+      showBrandList: false,
+      list1: [],
+      list2: [],
+      list3: [],
 
       edit_info: {
+        firstClassCode: "",
+        secondClassCode: "",
+        threeClassCode: "",
+        categoryList: [],
         appid: "",
         campType: "57",
         couponType: "",
@@ -418,11 +516,17 @@ export default {
         ticketTemplateId: "",
         useDesc: "",
         couponImg: "",
+        couponSimpleImg: "",
         ChangeDateType: "",
         ChangeStartDate: "",
         ChangeEndDate: "",
         ChangeStart: "",
-        ChangeEnd: ""
+        ChangeEnd: "",
+        discountDetail: "", //优惠券详情（富文本）
+        newDiscountDetail: "", //中转数据
+        brandNames: [],
+        brandIds: [],
+        brandCodes: []
       },
       edit_loading: false,
       userToken: "",
@@ -431,6 +535,7 @@ export default {
       url: uploadOperationImage2AliOssURl,
       uploadList: [],
       uploadList1: [],
+      uploadList2: [],
       camp_pageStatus: "",
       getUrl: "",
       msg: "",
@@ -548,10 +653,55 @@ export default {
     };
   },
 
-  created: function() {
+  created() {
     this.userToken = { jwttoken: localStorage.getItem("jwttoken") };
+    // console.log("camp_Info", this.camp_Info);
   },
+  // beforeDestroy() {
+  //   alert("beforeDestroy");
+  // },
   methods: {
+    handleAdd() {
+      //修改后才能保存
+      this.isCheckDisabled = false;
+
+      this.edit_info.categoryList.push({
+        _id: Math.random(),
+        id: "",
+        firstClassCode: "",
+        secondClassCode: "",
+        threeClassCode: ""
+      });
+
+      console.log(this.edit_info.categoryList);
+    },
+    del(index) {
+      console.log("del categoryList:", index);
+      this.edit_info.categoryList.splice(index, 1);
+      this.isCheckDisabled = false;
+    },
+    handleChoose() {
+      this.showBrandList = true;
+    },
+    selectedBrandItem(data) {
+      //修改后才能保存
+      this.isCheckDisabled = false;
+
+      console.log("selectedBrandItem----", data);
+      // let { id, brandCode, brandName } = data;
+      // templateId 券模板id templateName 券模板名称
+      let brandNames = [];
+      let brandIds = [];
+      let brandCodes = [];
+      data.forEach(item => {
+        brandNames.push(item.brandName);
+        brandIds.push(item.id);
+        brandCodes.push(item.brandCode);
+      });
+      this.edit_info.brandNames = brandNames;
+      this.edit_info.brandIds = brandIds;
+      this.edit_info.brandCodes = brandCodes;
+    },
     init() {
       this.camp_pageStatus = this.getStore("camp_pageStatus");
       console.log(this.camp_pageStatus);
@@ -563,6 +713,7 @@ export default {
         this.addInfo();
       } else if (this.camp_pageStatus == "edit") {
         this.editInfo();
+        this.queryXX();
       }
     },
     //新增
@@ -583,11 +734,15 @@ export default {
         startDate: "",
         useDesc: "",
         couponImg: "",
+        couponSimpleImg: "",
         ChangeDateType: "",
         ChangeStartDate: "",
         ChangeEndDate: "",
         ChangeStart: "",
-        ChangeEnd: ""
+        ChangeEnd: "",
+        categoryList: [],
+        discountDetail: "",
+        newDiscountDetail: ""
       };
       this.currentChooseID = "";
       this.currentChooseName = "";
@@ -595,13 +750,19 @@ export default {
       this.isCheckDisabled = true;
       this.uploadList = [];
       this.uploadList1 = [];
+      this.uploadList2 = [];
     },
 
     //编辑
     editInfo() {
-      this.edit_info = this.camp_Info;
+      this.edit_info = {
+        ...this.edit_info,
+        ...this.camp_Info
+      };
+      this.edit_info.categoryList = [];
       this.uploadList = [{ url: this.camp_Info.imgUrl }];
       this.uploadList1 = [{ url: this.camp_Info.couponImg }];
+      this.uploadList2 = [{ url: this.camp_Info.couponSimpleImg }];
       this.edit_info.appid = this.camp_Info.appid;
       this.campId = this.camp_Info.campId;
 
@@ -659,9 +820,54 @@ export default {
       this.edit_info.ChangeEndDate = this.camp_Info.changeEndDate;
       this.edit_info.ChangeStart = this.camp_Info.changeStart;
       this.edit_info.ChangeEnd = this.camp_Info.changeEnd;
+      this.edit_info.discountDetail = this.camp_Info.discountDetail;
+      this.edit_info.newDiscountDetail = this.camp_Info.discountDetail;
+
       console.log(this.edit_info.ChangeDateType);
 
       this.isCheckDisabled = true;
+    },
+
+    async queryXX() {
+      let url = "/campagin/selectCampaignByCampId";
+      let { code, msg, classListList, brandList } = await postRequest(url, {
+        campId: this.campId
+      });
+      let categoryList = [];
+      classListList.forEach(arr => {
+        arr.sort((item1, item2) => {
+          return item1.sort - item2.sort;
+        });
+        let obj = {};
+        arr.forEach(item => {
+          if (item.sort == 1) {
+            obj.firstClassCode = item.classCode;
+          }
+          if (item.sort == 2) {
+            obj.secondClassCode = item.classCode;
+          }
+          if (item.sort == 3) {
+            obj._id = Math.random();
+            obj.id = item.id;
+            obj.threeClassCode = item.classCode;
+          }
+        });
+        categoryList.push(obj);
+      });
+
+      this.edit_info.categoryList = categoryList;
+
+      let brandIds = [];
+      let brandNames = [];
+      let brandCodes = [];
+      brandList.forEach(item => {
+        brandIds.push(item.id);
+        brandNames.push(item.brandName);
+        brandCodes.push(item.brandCode);
+      });
+      this.edit_info.brandNames = brandNames;
+      this.edit_info.brandIds = brandIds;
+      this.edit_info.brandCodes = brandCodes;
     },
 
     statusCheckChange() {
@@ -751,7 +957,20 @@ export default {
       }
       // const reqParams = this.edit_info;
 
+      // this.$refs["edit_info"].validate(async valid => {
+      // console.log("categoryList:", JSON.stringify(this.edit_info.categoryList));
+      // 品类 "goodsClassIds":[1,2],
+      // 品牌 "goodsBrandIds":[1,2]
+
+      // if (!valid) {
+      //   this.msgErr("数据校验失败");
+      //   return;
+      // }
+      let goodsClassIds = this.edit_info.categoryList.map(item => item.id);
+      let goodsBrandIds = this.edit_info.brandIds;
       const reqParams = {
+        goodsClassIds,
+        goodsBrandIds,
         campId: this.campId,
         appid: this.edit_info.appid,
         campType: this.edit_info.campType,
@@ -774,9 +993,14 @@ export default {
         status: this.edit_info.status,
         ticketName: this.edit_info.ticketName,
         couponImg: this.edit_info.couponImg,
-        imgUrl: this.edit_info.imgUrl
+        couponSimpleImg: this.edit_info.couponSimpleImg,
+        imgUrl: this.edit_info.imgUrl,
+        // discountDetail: this.edit_info.discountDetail // 优惠券详情(富文本)
+        discountDetail: this.edit_info.newDiscountDetail // 优惠券详情(富文本)
       };
 
+      // console.log("save:reqParams==>", reqParams);
+      // return;
       this.add_loading = true;
       postRequest(this.getUrl, reqParams).then(res => {
         this.add_loading = false;
@@ -795,6 +1019,7 @@ export default {
           this.$Message.error(res.msg);
         }
       });
+      // });
     },
 
     dataProcessing() {
@@ -845,7 +1070,9 @@ export default {
       if (e.type == 1) {
         this.$emit("changeStatus", false);
       }
+      this.$emit(`update:basicSetPage`, true);
       this.receiveRuleSetPage = e.Return;
+      // this.edit_info = JSON.parse(JSON.stringify(this.edit_info));
     },
 
     goback() {
@@ -899,6 +1126,26 @@ export default {
           this.uploadList1.push(obj);
         } else {
           this.uploadList1[0].url = res.image_url;
+        }
+
+        this.$Message.info("上传图片成功");
+      } else {
+        this.$Message.error("上传图片失败，请重新上传");
+      }
+      this.statusCheckChange();
+    },
+    //上传couponImg图片
+    handleSucces2(res, file) {
+      if (res.code == 200) {
+        this.edit_info.couponSimpleImg = res.image_url;
+
+        if (this.uploadList2.length == 0) {
+          let obj = {
+            url: res.image_url
+          };
+          this.uploadList2.push(obj);
+        } else {
+          this.uploadList2[0].url = res.image_url;
         }
 
         this.$Message.info("上传图片成功");
@@ -982,12 +1229,55 @@ export default {
       this.edit_info.ticketTemplateId = this.currentChooseID;
       this.edit_info.ticketName = this.currentChooseName;
       this.res_Modal_show = false;
-    }
+    },
+
+    // 富文本
+    change(val) {
+      // console.log("change:", val);
+      // console.log("data:",this.edit_info.discountDetail);
+      this.edit_info.newDiscountDetail = val;
+      this.isCheckDisabled = false;
+    },
+    blur(val) {
+      // console.log("blur:", val);
+      this.edit_info.newDiscountDetail = val;
+      this.isCheckDisabled = false;
+    },
 
     // 选择模版end--------------------------------
+
+    //品牌
+    async getBrandList() {
+      const url = "/campagin/listGoodBrand";
+      let { code, msg, data } = await postRequest(url, {
+        brandCode: "",
+        brandName: "",
+        pageNum: 1,
+        pageSize: 10
+      });
+      if (code == 200) {
+        this.list3 = data;
+      } else {
+        this.msgErr(msg);
+      }
+    },
+    // 全局提示
+    msgOk(txt) {
+      this.$Message.info({
+        content: txt,
+        duration: 3
+      });
+    },
+    msgErr(txt) {
+      this.$Message.error({
+        content: txt,
+        duration: 3
+      });
+    }
   },
   mounted() {
     this.init();
+    this.getBrandList();
   }
 };
 </script>

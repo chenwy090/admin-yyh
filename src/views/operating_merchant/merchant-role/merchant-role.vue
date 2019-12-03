@@ -1,217 +1,273 @@
 <template>
-    <div>
-        <div v-if="!merchantRolePage">
-            <Card :bordered="false">
-                <Row class="operation">
-                    <Button type="primary" icon="md-add" @click="addInfo">新增</Button>
-                    <Button icon="md-refresh" @click="search">刷新</Button>
-                </Row>
-                <div>
-                    <!-- 列表 -->
-                    <Table border width="100%" :columns="columns" :data="roleList" :loading="TableLoading">
-                        <template slot-scope="{ row }" slot="action">
-                            <Button
-                                    type="text"
-                                    size="small"
-                                    style="color: #f39913"
-                                    v-if="row.status == '0'"
-                                    @click="stop(row)"
-                            >停用</Button>
-                            <Button
-                                    type="text"
-                                    size="small"
-                                    style="color: #368029"
-                                    v-if="row.status == '1'"
-                                    @click="use(row)"
-                            >启用</Button>
-                            <Button
-                                    type="text"
-                                    size="small"
-                                    style="color:#2db7f5"
-                                    @click="editInfo(row)"
-                            >编辑</Button>
-                            <!--<Button type="text" size="small" style="color:#ed4014"
-                                    @click="delete(row.id)">删除</Button>-->
-                        </template>
-                    </Table>
-                    <!-- 用户列表 -->
-                </div>
-                <!-- 分页器 -->
-                <Row type="flex" justify="end" class="page">
-                    <Page
-                            :total="totalSize"
-                            show-total
-                            show-elevator
-                            :current="current"
-                            @on-change="changeCurrent"
-                    ></Page>
-                </Row>
-                <!-- 分页器 -->
-            </Card>
+  <div>
+    <div v-if="!merchantRolePage">
+      <Card :bordered="false">
+        <Row class="operation">
+          <Button type="primary" icon="md-add" @click="addInfo">新增</Button>
+          <Button icon="md-refresh" @click="search">刷新</Button>
+        </Row>
+        <div>
+          <!-- 列表 -->
+          <Table border width="100%" :columns="columns" :data="roleList" :loading="TableLoading">
+            <template slot-scope="{ row }" slot="action">
+              <Button
+                type="text"
+                size="small"
+                style="color: #f39913"
+                v-if="row.status == '0'"
+                @click="stop(row)"
+              >停用</Button>
+              <Button
+                type="text"
+                size="small"
+                style="color: #368029"
+                v-if="row.status == '1'"
+                @click="use(row)"
+              >启用</Button>
+              <Button type="text" size="small" style="color:#2db7f5" @click="editInfo(row)">编辑</Button>
+              <!--<Button type="text" size="small" style="color:#ed4014"
+              @click="delete(row.id)">删除</Button>-->
+            </template>
+          </Table>
+          <!-- 用户列表 -->
         </div>
-
-        <!-- 启用、停用 -->
-        <Modal
-                v-model="stopDisplay"
-                title="启用/停用原因"
-                width="600"
-                footer-hide
-                :closable="false"
-                :mask-closable="false"
-        >
-            <Divider style="margin-top: -10px">角色编号：{{stopRemark.roleId}}</Divider>
-            <Row>
-                <Input
-                        type="textarea"
-                        style="width:100%"
-                        v-model="stopRemark.remark"
-                        placeholder="200个字符以内原因"
-                        clearable
-                        :rows="2"
-                />
-            </Row>
-            <Row style="margin:10px 0 0 456px">
-                <Button type="text" @click="stopDisplay = false">取消</Button>
-                <Button type="primary" @click="addStopOrUse">{{stopRemark.title}}</Button>
-            </Row>
-            <div>
-                <Divider>操作日志</Divider>
-                <Table height="350" :columns="remarkColumns" :data="remarkList"></Table>
-            </div>
-
-        </Modal>
-        <!-- 启用、停用 -->
-
-        <!-- 新增修改 -->
-        <Modal
-                v-model="addDisplay"
-                :title="add_info.title"
-                width="800"
-                footer-hide
-                :closable="false"
-                :mask-closable="false"
-        >
-            <Divider style="margin-top: 10px" v-if="add_info.id != ''">角色编号：{{add_info.id}}</Divider>
-            <Row class="box">
-                <Col span="4" class="left-text"><span style="color:red">*</span>角色类型名称</Col>
-                <Col span="10">
-                    <Tooltip trigger="focus" title="提醒" content="最多10个汉字" placement="right">
-                        <Input
-                                type="text"
-                                v-model="add_info.name"
-                                style="width:300px"
-                                placeholder="请输入角色类型名称"
-                                @on-change="checkName"
-                                :maxlength="10"
-                        />
-                    </Tooltip>
-                </Col>
-            </Row>
-            <Row class="box" style="margin-top: 10px">
-                <Col span="4" class="left-text"><span style="color:red">*</span>分配权限</Col>
-                <Col span="10">
-                    <Row class="box">
-                        <Col span="10">
-                            功能
-                        </Col>
-                        <Col span="10">
-                            权限
-                        </Col>
-                    </Row>
-                    <Row class="box">
-                        <Divider />
-                        <div style="width: 400px; float: left; margin-bottom: 10px;">
-                            <Checkbox
-                                    :indeterminate="indeterminateCoupon"
-                                    :value="checkAllCoupon"
-                                    @click.prevent.native="handleCheckAllCoupon"
-                                    style="float: left; margin-top: 2px; margin-right: 50px"
-                            >优惠券管理</Checkbox>
-                            <CheckboxGroup v-model="checkAllGroupCoupon" @on-change="checkAllGroupChangeCoupon" style="float: left; margin-left: -13px;">
-                                <Checkbox label="1001">浏览</Checkbox>
-                                <Checkbox label="1002">新建/编辑</Checkbox>
-                                <Checkbox label="1003">下架</Checkbox>
-                            </CheckboxGroup>
-                        </div>
-                        <Divider />
-                        <div style="width: 400px; float: left; margin-bottom: 10px;">
-                            <Checkbox
-                                    :indeterminate="indeterminateUse"
-                                    :value="checkAllUse"
-                                    @click.prevent.native="handleCheckAllUse"
-                                    style="float: left; margin-top: 2px; margin-right: 50px"
-                            >核销管理</Checkbox>
-                            <CheckboxGroup v-model="checkAllGroupUse" @on-change="checkAllGroupChangeUse" style="float: left">
-                                <Checkbox label="2001">核销</Checkbox>
-                                <Checkbox label="2002">核销记录</Checkbox>
-                                <Checkbox label="2003">赠券</Checkbox>
-                            </CheckboxGroup>
-                        </div>
-                        <Divider />
-                        <div style="width: 400px; float: left; margin-bottom: 10px;">
-                            <Checkbox
-                                    :indeterminate="indeterminateCustomer"
-                                    :value="checkAllCustomer"
-                                    @click.prevent.native="handleCheckAllCustomer"
-                                    style="float: left; margin-top: 2px; margin-right: 50px"
-                            >精准拓客</Checkbox>
-                            <CheckboxGroup v-model="checkAllGroupCustomer" @on-change="checkAllGroupChangeCustomer" style="float: left">
-                                <Checkbox label="3001">浏览</Checkbox>
-                                <Checkbox label="3002">拓客</Checkbox>
-                                <Checkbox label="3003">拓客数据</Checkbox>
-                            </CheckboxGroup>
-                        </div>
-                        <Divider />
-                        <div style="width: 400px; float: left; margin-bottom: 10px;">
-                            <Checkbox
-                                    :indeterminate="indeterminateIm"
-                                    :value="checkAllIm"
-                                    @click.prevent.native="handleCheckAllIm"
-                                    style="float: left; margin-top: 2px; margin-right: 50px"
-                            >客服中心</Checkbox>
-                            <CheckboxGroup v-model="checkAllGroupIm" @on-change="checkAllGroupChangeIm" style="float: left">
-                                <Checkbox label="4001">私信</Checkbox>
-                                <Checkbox label="4002">发券</Checkbox>
-                            </CheckboxGroup>
-                        </div>
-                        <Divider />
-                        <div style="width: 400px; float: left; margin-bottom: 10px;">
-                            <Checkbox
-                                    :indeterminate="indeterminateAssignment"
-                                    :value="checkAllAssignment"
-                                    @click.prevent.native="handleCheckAllAssignment"
-                                    style="float: left; margin-top: 2px; margin-right: 50px"
-                            >商户任务</Checkbox>
-                            <CheckboxGroup v-model="checkAllGroupAssignment" @on-change="checkAllGroupChangeAssignment" style="float: left">
-                                <Checkbox label="5001">任务管理</Checkbox>
-                            </CheckboxGroup>
-                        </div>
-                        <Divider />
-                        <div style="width: 400px; float: left; margin-bottom: 10px;">
-                            <Checkbox
-                                    :indeterminate="indeterminateReserveCenter"
-                                    :value="checkAllReserveCenter"
-                                    @click.prevent.native="handleCheckAllReserveCenter"
-                                    style="float: left; margin-top: 2px; margin-right: 50px"
-                            >预约中心</Checkbox>
-                            <CheckboxGroup v-model="checkAllGroupReserveCenter" @on-change="checkAllGroupChangeReserveCenter" style="float: left">
-                                <Checkbox label="6001">查看</Checkbox>
-                            </CheckboxGroup>
-                        </div>
-                        <Divider />
-                    </Row>
-
-
-                </Col>
-            </Row>
-            <Row style="margin:10px 0 0 456px">
-                <Button type="text" @click="addDisplay = false">取消</Button>
-                <Button type="primary" @click="createOrUpdate">{{add_info.title}}</Button>
-            </Row>
-        </Modal>
-        <!-- 新增修改 -->
-
+        <!-- 分页器 -->
+        <Row type="flex" justify="end" class="page">
+          <Page
+            :total="totalSize"
+            show-total
+            show-elevator
+            :current="current"
+            @on-change="changeCurrent"
+          ></Page>
+        </Row>
+        <!-- 分页器 -->
+      </Card>
     </div>
+
+    <!-- 启用、停用 -->
+    <Modal
+      v-model="stopDisplay"
+      title="启用/停用原因"
+      width="600"
+      footer-hide
+      :closable="false"
+      :mask-closable="false"
+    >
+      <Divider style="margin-top: -10px">角色编号：{{stopRemark.roleId}}</Divider>
+      <Row>
+        <Input
+          type="textarea"
+          style="width:100%"
+          v-model="stopRemark.remark"
+          placeholder="200个字符以内原因"
+          clearable
+          :rows="2"
+        />
+      </Row>
+      <Row style="margin:10px 0 0 456px">
+        <Button type="text" @click="stopDisplay = false">取消</Button>
+        <Button type="primary" @click="addStopOrUse">{{stopRemark.title}}</Button>
+      </Row>
+      <div>
+        <Divider>操作日志</Divider>
+        <Table height="350" :columns="remarkColumns" :data="remarkList"></Table>
+      </div>
+    </Modal>
+    <!-- 启用、停用 -->
+
+    <!-- 新增修改 -->
+    <Modal
+      v-model="addDisplay"
+      :title="add_info.title"
+      width="800"
+      footer-hide
+      :closable="false"
+      :mask-closable="false"
+    >
+      <Divider style="margin-top: 10px" v-if="add_info.id != ''">角色编号：{{add_info.id}}</Divider>
+      <Row class="box">
+        <Col span="4" class="left-text">
+          <span style="color:red">*</span>角色类型名称
+        </Col>
+        <Col span="10">
+          <Tooltip trigger="focus" title="提醒" content="最多10个汉字" placement="right">
+            <Input
+              type="text"
+              v-model="add_info.name"
+              style="width:300px"
+              placeholder="请输入角色类型名称"
+              @on-change="checkName"
+              :maxlength="10"
+            />
+          </Tooltip>
+        </Col>
+      </Row>
+      <Row class="box" style="margin-top: 10px">
+        <Col span="4" class="left-text">
+          <span style="color:red">*</span>分配权限
+        </Col>
+        <Col span="10">
+          <Row class="box">
+            <Col span="10">功能</Col>
+            <Col span="10">权限</Col>
+          </Row>
+          <Row class="box">
+            <Divider />
+            <div style="width: 400px; float: left; margin-bottom: 10px;">
+              <Checkbox
+                :indeterminate="indeterminateCoupon"
+                :value="checkAllCoupon"
+                @click.prevent.native="handleCheckAllCoupon"
+                style="float: left; margin-top: 2px; margin-right: 50px"
+              >优惠券管理</Checkbox>
+              <CheckboxGroup
+                v-model="checkAllGroupCoupon"
+                @on-change="checkAllGroupChangeCoupon"
+                style="float: left; margin-left: -13px;"
+              >
+                <Checkbox label="1001">浏览</Checkbox>
+                <Checkbox label="1002">新建/编辑</Checkbox>
+                <Checkbox label="1003">下架</Checkbox>
+              </CheckboxGroup>
+            </div>
+            <Divider />
+            <div style="width: 400px; float: left; margin-bottom: 10px;">
+              <Checkbox
+                :indeterminate="indeterminateUse"
+                :value="checkAllUse"
+                @click.prevent.native="handleCheckAllUse"
+                style="float: left; margin-top: 2px; margin-right: 50px"
+              >核销管理</Checkbox>
+              <CheckboxGroup
+                v-model="checkAllGroupUse"
+                @on-change="checkAllGroupChangeUse"
+                style="float: left"
+              >
+                <Checkbox label="2001">核销</Checkbox>
+                <Checkbox label="2002">核销记录</Checkbox>
+                <Checkbox label="2003">赠券</Checkbox>
+              </CheckboxGroup>
+            </div>
+            <Divider />
+            <div style="width: 400px; float: left; margin-bottom: 10px;">
+              <Checkbox
+                :indeterminate="indeterminateCustomer"
+                :value="checkAllCustomer"
+                @click.prevent.native="handleCheckAllCustomer"
+                style="float: left; margin-top: 2px; margin-right: 50px"
+              >精准拓客</Checkbox>
+              <CheckboxGroup
+                v-model="checkAllGroupCustomer"
+                @on-change="checkAllGroupChangeCustomer"
+                style="float: left"
+              >
+                <Checkbox label="3001">浏览</Checkbox>
+                <Checkbox label="3002">拓客</Checkbox>
+                <Checkbox label="3003">拓客数据</Checkbox>
+              </CheckboxGroup>
+            </div>
+            <Divider />
+            <div style="width: 400px; float: left; margin-bottom: 10px;">
+              <Checkbox
+                :indeterminate="indeterminateIm"
+                :value="checkAllIm"
+                @click.prevent.native="handleCheckAllIm"
+                style="float: left; margin-top: 2px; margin-right: 50px"
+              >客服中心</Checkbox>
+              <CheckboxGroup
+                v-model="checkAllGroupIm"
+                @on-change="checkAllGroupChangeIm"
+                style="float: left"
+              >
+                <Checkbox label="4001">私信</Checkbox>
+                <Checkbox label="4002">发券</Checkbox>
+              </CheckboxGroup>
+            </div>
+            <Divider />
+            <div style="width: 400px; float: left; margin-bottom: 10px;">
+              <Checkbox
+                :indeterminate="indeterminateAssignment"
+                :value="checkAllAssignment"
+                @click.prevent.native="handleCheckAllAssignment"
+                style="float: left; margin-top: 2px; margin-right: 50px"
+              >商户任务</Checkbox>
+              <CheckboxGroup
+                v-model="checkAllGroupAssignment"
+                @on-change="checkAllGroupChangeAssignment"
+                style="float: left"
+              >
+                <Checkbox label="5001">任务管理</Checkbox>
+              </CheckboxGroup>
+            </div>
+            <Divider />
+            <div style="width: 400px; float: left; margin-bottom: 10px;">
+              <Checkbox
+                :indeterminate="indeterminateReserveCenter"
+                :value="checkAllReserveCenter"
+                @click.prevent.native="handleCheckAllReserveCenter"
+                style="float: left; margin-top: 2px; margin-right: 50px"
+              >预约中心</Checkbox>
+              <CheckboxGroup
+                v-model="checkAllGroupReserveCenter"
+                @on-change="checkAllGroupChangeReserveCenter"
+                style="float: left"
+              >
+                <Checkbox label="6001">查看</Checkbox>
+              </CheckboxGroup>
+            </div>
+            <Divider />
+            <div style="width: 400px; float: left; margin-bottom: 10px;">
+              <!-- indeterminateCheckAllMerchantFund: true,
+              checkAllMerchant: false,
+              checkAllMerchantFund: [/*"7001"*/]-->
+              <Checkbox
+                :indeterminate="indeterminateCheckAllMerchantFund"
+                :value="checkAllMerchant"
+                @click.prevent.native="handleCheckAllMerchantFund"
+                style="float: left; margin-top: 2px; margin-right: 50px"
+              >我的收入</Checkbox>
+              <CheckboxGroup
+                v-model="checkAllMerchantFund"
+                @on-change="checkAllMerchantFundChange"
+                style="float: left"
+              >
+                <Checkbox label="7001">查看</Checkbox>
+              </CheckboxGroup>
+            </div>
+            <Divider />
+            <div style="width: 400px; float: left; margin-bottom: 10px;">
+              <!-- 
+                  订单管理 "查看", "8001" checkAllMerchantOrder ：8001
+                indeterminateCheckAllMerchantOrder: false,
+                checkAllReserveMerchantOrder: false,
+                checkAllMerchantOrder: [/*"8001"*/]
+              -->
+              <Checkbox
+                :indeterminate="indeterminateCheckAllMerchantOrder"
+                :value="checkAllReserveMerchantOrder"
+                @click.prevent.native="handleCheckAllReserveMerchantOrder"
+                style="float: left; margin-top: 2px; margin-right: 50px"
+              >订单管理</Checkbox>
+              <CheckboxGroup
+                v-model="checkAllMerchantOrder"
+                @on-change="checkAllMerchantOrderChange"
+                style="float: left"
+              >
+                <Checkbox label="8001">查看</Checkbox>
+              </CheckboxGroup>
+            </div>
+            <Divider />
+          </Row>
+        </Col>
+      </Row>
+      <Row style="margin:10px 0 0 456px">
+        <Button type="text" @click="addDisplay = false">取消</Button>
+        <Button type="primary" @click="createOrUpdate">{{add_info.title}}</Button>
+      </Row>
+    </Modal>
+    <!-- 新增修改 -->
+  </div>
 </template>
 
 <<script>
@@ -246,6 +302,16 @@
                 indeterminateReserveCenter: false,
                 checkAllReserveCenter: false,
                 checkAllGroupReserveCenter: [],
+                //我的收入 "我的收入", "查看", "7001"
+                indeterminateCheckAllMerchantFund: false,
+                checkAllMerchant: false,
+                checkAllMerchantFund: [/*"7001"*/],
+                
+                //订单管理  "查看", "8001"  checkAllMerchantOrder ：8001
+                indeterminateCheckAllMerchantOrder: false,
+                checkAllReserveMerchantOrder: false,
+                checkAllMerchantOrder: [/*"8001"*/],
+
                 stopRemark: {
                     roleId: '',
                     remark: '',
@@ -354,7 +420,15 @@
                     this.msgErr('名称不能为空')
                     return
                 }
-                if (this.checkAllGroupCoupon.length == 0 && this.checkAllGroupUse.length == 0 && this.checkAllGroupCustomer.length == 0 && this.checkAllGroupIm.length == 0 && this.checkAllGroupAssignment.length == 0 && this.checkAllGroupReserveCenter.length == 0){
+                if (this.checkAllGroupCoupon.length == 0 
+                    && this.checkAllGroupUse.length == 0 
+                    && this.checkAllGroupCustomer.length == 0 
+                    && this.checkAllGroupIm.length == 0 
+                    && this.checkAllGroupAssignment.length == 0 
+                    && this.checkAllGroupReserveCenter.length == 0
+                    && this.checkAllMerchantFund.length == 0
+                    && this.checkAllMerchantOrder.length == 0){
+
                     this.msgErr('至少选择一个权限')
                     return
                 }
@@ -367,6 +441,9 @@
                     checkAllGroupIm: this.checkAllGroupIm,
                     checkAllGroupAssignment: this.checkAllGroupAssignment,
                     checkAllGroupReserveCenter: this.checkAllGroupReserveCenter,
+                    checkAllMerchantFund: this.checkAllMerchantFund,
+                    checkAllMerchantOrder: this.checkAllMerchantOrder,
+
                 };
                 console.info(JSON.stringify(reqParam))
                 postRequest('/merchant/MerchantRoleInfo/add', reqParam).then(res => {
@@ -536,6 +613,61 @@
                     this.checkAllReserveCenter = false;
                 }
             },
+
+            handleCheckAllMerchantFund () {
+                if (this.indeterminateCheckAllMerchantFund) {
+                    this.checkAllMerchant = false;
+                } else {
+                    this.checkAllMerchant = !this.checkAllMerchant;
+                }
+                this.indeterminateCheckAllMerchantFund = false;
+
+                if (this.checkAllMerchant) {
+                    this.checkAllMerchantFund = ['7001'];
+                } else {
+                    this.checkAllMerchantFund = [];
+                }
+            },
+             checkAllMerchantFundChange (data) {
+                if (data.length === 1) {
+                    this.indeterminateCheckAllMerchantFund = false;
+                    this.checkAllMerchant = true;
+                } else if (data.length > 0) {
+                    this.indeterminateCheckAllMerchantFund = true;
+                    this.checkAllMerchant = false;
+                } else {
+                    this.indeterminateCheckAllMerchantFund = false;
+                    this.checkAllMerchant = false;
+                }
+            },
+
+
+             handleCheckAllReserveMerchantOrder () {
+                if (this.indeterminateCheckAllMerchantOrder) {
+                    this.checkAllReserveMerchantOrder = false;
+                } else {
+                    this.checkAllReserveMerchantOrder = !this.checkAllReserveMerchantOrder;
+                }
+                this.indeterminateCheckAllMerchantOrder = false;
+
+                if (this.checkAllReserveMerchantOrder) {
+                    this.checkAllMerchantOrder = ['8001'];
+                } else {
+                    this.checkAllMerchantOrder = [];
+                }
+            },
+             checkAllMerchantOrderChange (data) {
+                if (data.length === 1) {
+                    this.indeterminateCheckAllMerchantOrder = false;
+                    this.checkAllReserveMerchantOrder = true;
+                } else if (data.length > 0) {
+                    this.indeterminateCheckAllMerchantOrder = true;
+                    this.checkAllReserveMerchantOrder = false;
+                } else {
+                    this.indeterminateCheckAllMerchantOrder = false;
+                    this.checkAllReserveMerchantOrder = false;
+                }
+            },
             checkName() {
 
             },
@@ -638,6 +770,8 @@
                 this.checkAllGroupIm = [];
                 this.checkAllGroupAssignment = [];
                 this.checkAllGroupReserveCenter = [];
+                this.checkAllMerchantFund = [];//我的收入
+                this.checkAllMerchantOrder = [];//订单管理
                 this.addDisplay = true;
             },
             //编辑
@@ -662,6 +796,9 @@
                             this.checkAllGroupIm = res.data.checkAllGroupIm;
                             this.checkAllGroupAssignment = res.data.checkAllGroupAssignment;
                             this.checkAllGroupReserveCenter = res.data.checkAllGroupReserveCenter;
+                            this.checkAllMerchantFund = res.data.checkAllMerchantFund;
+                            this.checkAllMerchantOrder = res.data.checkAllMerchantOrder;
+                            
                         } else {
                             this.$Message.error(res.msg);
                         }
@@ -702,7 +839,7 @@
     };
 </script>
 <style lang="less" scoped>
-    .operation {
-        margin-bottom: 2vh;
-    }
+.operation {
+  margin-bottom: 2vh;
+}
 </style>

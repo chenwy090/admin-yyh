@@ -381,7 +381,7 @@
           title: "所属商户",
           align: "center",
           minWidth: 140,
-          key: "merchantName"
+          key: "merchantNames"
         }
       ],
       // 超市券
@@ -836,7 +836,6 @@
               this.getStaffListFn({});
               this.cancel();
               this.failList=res.data;
-              //console.log(">>>>>>>>>>>>>>>"+this.failList);
               if(this.failList!=null){
                 this.failDisplay = true;
               }

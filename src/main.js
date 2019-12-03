@@ -42,10 +42,6 @@ Vue.prototype.setStore = setStore;
 Vue.prototype.getStore = getStore;
 Vue.prototype.removeStore = removeStore;
 
-
-
-
-
 /* eslint-disable no-new */
 new Vue({
     el: '#app',

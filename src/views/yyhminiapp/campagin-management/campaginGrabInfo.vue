@@ -1,5 +1,6 @@
 
 <template>
+  <!-- 领优惠---基础设置 -->
   <div class="search">
     <div v-if="!campaginManagementPage">
       <div
@@ -21,20 +22,20 @@
 
           <Alert show-icon>
             <span style="margin-left: 1%">
-            活动ID :
-            <span style="color:red">{{campId}}</span>
-          </span>
+              活动ID :
+              <span style="color:red">{{campId}}</span>
+            </span>
             <span style="margin-left: 20%">
               设置总天数 :
               <span style="color:red">{{daySum}}</span>
             </span>
             <span style="margin-left: 20%">
               库存数量 :
-               <span style="color:red"  v-if=" stockCount !=  '999999999'"> {{stockCount}}</span>
-            <span style="color:red"  v-if=" stockCount ==  '999999999'">无限制</span>
+              <span style="color:red" v-if=" stockCount !=  '999999999'">{{stockCount}}</span>
+              <span style="color:red" v-if=" stockCount ==  '999999999'">无限制</span>
             </span>
-<br>
-            <span style="line-height: 2" >
+            <br />
+            <span style="line-height: 2">
               <span style="color:red">注意：每个设置的限制数量，必须乘于设置总天数，并且小于库存数量</span>
             </span>
 
@@ -61,9 +62,8 @@
                                 :min="1"
                                 @on-change="statusCheckChange"
                               ></InputNumber>
-                                  <span style="color:red">&nbsp;&nbsp; 张</span>
+                              <span style="color:red">&nbsp;&nbsp; 张</span>
                             </Tooltip>
-
                           </FormItem>
                         </Col>
                         <Col span="8">
@@ -74,7 +74,7 @@
                               style="width: 120px"
                               v-model="item.timeStart"
                               :steps="[1, 60,60]"
-                                @on-change="statusCheckChange"
+                              @on-change="statusCheckChange"
                             ></TimePicker>
                           </FormItem>
                         </Col>
@@ -85,10 +85,9 @@
                               placeholder="请选择时间"
                               style="width: 120px"
                               v-model="item.timeEnd"
-                                 :disabled-minutes="[0]"
+                              :disabled-minutes="[0]"
                               :disabled-seconds="[0]"
-                            :steps="[1, 59,59]"
-
+                              :steps="[1, 59,59]"
                               @on-change="statusCheckChange"
                             ></TimePicker>
                           </FormItem>
@@ -115,7 +114,12 @@
             </FormItem>
 
             <FormItem :label-width="220">
-              <Alert type="warning" show-icon v-if="isCheckDisabled == true" style="width:220px">修改后才能保存</Alert>
+              <Alert
+                type="warning"
+                show-icon
+                v-if="isCheckDisabled == true"
+                style="width:220px"
+              >修改后才能保存</Alert>
               <Button
                 type="primary"
                 @click="campaginGrabInfoEdit()"
@@ -364,7 +368,7 @@ export default {
     // 跳转列表
 
     goback() {
-      this.$emit("changeStatus", { Return: false,isNext:true });
+      this.$emit("changeStatus", { Return: false, isNext: true });
     }
   },
   mounted() {

@@ -15,7 +15,7 @@
         <Card>
           <p slot="title">领优惠---规则设置</p>
           <a href="#" slot="extra">
-            <Button type="dashed" icon="md-arrow-round-back" @click="goback()">返回上一层</Button>
+            <Button type="dashed" icon="md-arrow-round-back" @click="goback">返回上一层</Button>
           </a>
 
           <Alert show-icon>

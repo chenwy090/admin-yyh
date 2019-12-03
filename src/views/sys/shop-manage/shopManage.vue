@@ -3,52 +3,47 @@
     <div v-if="!addStorePage">
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline ref="store_data" :model="store_data">
-              <FormItem label="门店店号:" :label-width="85" prop="shopId">
-                <Input
-                  style="width:200px"
-                  type="text"
-                  v-model="store_data.shopId"
-                  placeholder="请输入门店店号"
-                  @on-change="changeData"
-                ></Input>
-              </FormItem>
-              <span v-if="drop">
-              <FormItem label="门店名称:" :label-width="85" prop="shopName">
-                <Input
-                  style="width:200px"
-                  type="text"
-                  v-model="store_data.shopName"
-                  placeholder="请输入门店名称:"
-                  @on-change="changeData"
-                ></Input>
-              </FormItem>
-              <FormItem label="零售商名称:" :label-width="85" prop="venderName">
-                <Input
-                  style="width:200px"
-                  type="text"
-                  v-model="store_data.venderName"
-                  placeholder="请输入零售商名称:"
-                  @on-change="changeData"
-                ></Input>
-              </FormItem>
-              </span>
-              <FormItem style="margin-left:35px;" class="br">
-                <Button type="primary" icon="md-search" @click="queryTableList">查询</Button>
-                <Button icon="md-refresh" @click="handleReset('store_data');changeDisplay = true">重置</Button>
-                <a class="drop-down"  style="margin-left:10px" @click="dropDown">
-                  {{dropDownContent}}
-                  <Icon :type="dropDownIcon"></Icon>
-                </a>
-              </FormItem>
+          <FormItem label="门店店号:" :label-width="85" prop="shopId">
+            <Input
+              style="width:200px"
+              type="text"
+              v-model="store_data.shopId"
+              placeholder="请输入门店店号"
+              @on-change="changeData"
+            ></Input>
+          </FormItem>
+          <span v-if="drop">
+            <FormItem label="门店名称:" :label-width="85" prop="shopName">
+              <Input
+                style="width:200px"
+                type="text"
+                v-model="store_data.shopName"
+                placeholder="请输入门店名称:"
+                @on-change="changeData"
+              ></Input>
+            </FormItem>
+            <FormItem label="零售商名称:" :label-width="85" prop="venderName">
+              <Input
+                style="width:200px"
+                type="text"
+                v-model="store_data.venderName"
+                placeholder="请输入零售商名称:"
+                @on-change="changeData"
+              ></Input>
+            </FormItem>
+          </span>
+          <FormItem style="margin-left:35px;" class="br">
+            <Button type="primary" icon="md-search" @click="queryTableList">查询</Button>
+            <Button icon="md-refresh" @click="handleReset('store_data');changeDisplay = true">重置</Button>
+            <a class="drop-down" style="margin-left:10px" @click="dropDown">
+              {{dropDownContent}}
+              <Icon :type="dropDownIcon"></Icon>
+            </a>
+          </FormItem>
           <Row type="flex" justify="start">
             <Col span="24">
               <FormItem style="margin-bottom: 0;">
-                <Button
-                  type="success"
-                  icon="md-add"
-                  @click="addStore"
-                  style="width: 120px;"
-                >新增门店</Button>
+                <Button type="success" icon="md-add" @click="addStore" style="width: 120px;">新增门店</Button>
               </FormItem>
               <FormItem style="margin-bottom: 0;">
                 <Button
@@ -64,7 +59,6 @@
                   icon="md-arrow-round-down"
                   style="width: 120px;"
                   @click="deriveFn"
-                  
                 >导出门店信息</Button>
                 <!-- :disabled="changeDisplay" deriveShopXls-->
               </FormItem>
@@ -74,7 +68,7 @@
         </Form>
       </Card>
       <!-- 导入门店列表 -->
-      <Modal v-model="uploadShopModal" width="700" >
+      <Modal v-model="uploadShopModal" width="700">
         <p slot="header" style="text-align:center">
           <span>导入门店列表</span>
         </p>
@@ -86,7 +80,6 @@
               class="upload-excel"
               enctype="multipart/form-data"
             >
-          
               <Upload
                 style="float: left;margin-right:30px"
                 ref="uploadGoodsFileItem"
@@ -96,7 +89,7 @@
                 :on-format-error="handleItemFormatError"
                 :before-upload="handleBeforeItemUpload"
                 :on-remove="handleItemRemove"
-                :headers= "uploadToken"
+                :headers="uploadToken"
               >
                 <i-button type="success" icon="ios-cloud-upload-outline">上传文件</i-button>
               </Upload>
@@ -104,12 +97,12 @@
               <!-- <a
                 style="text-decoration: underline;font-size: 12px;padding-left: 10px;float:left;;"
                 href="http://image.sweetmartmarketing.com/wx_mini/PW8PhlzUiW.xlsx"
-              >下载模板</a> -->
+              >下载模板</a>-->
               <Button type="text" style="color:#2d8cf0" @click="downloadTemplet">点击下载模板</Button>
               <!-- <Button icon="ios-cloud-upload-outline" @click="downloadTemplet">下载模板</Button> -->
             </FormItem>
           </Form>
-        </div> 
+        </div>
         <!-- <Upload action="//jsonplaceholder.typicode.com/posts/">
             <Button icon="ios-cloud-upload-outline">上传</Button>
         </Upload>-->
@@ -119,7 +112,7 @@
         </div>
       </Modal>
       <!-- 导入门店列表 -->
-      <Card :bordered="false" >
+      <Card :bordered="false">
         <!-- 列表 -->
         <div>
           <Table
@@ -130,7 +123,12 @@
             :loading="TableLoading"
           >
             <template slot-scope="{ row, index }" slot="action">
-              <Button type="primary" size="small" style="margin-right: 5px" @click="editStore(row)">编辑</Button>
+              <Button
+                type="primary"
+                size="small"
+                style="margin-right: 5px"
+                @click="editStore(row)"
+              >编辑</Button>
               <Button type="error" size="small" @click="inputDeleteStore(row.shopId)">删除</Button>
             </template>
             <template slot-scope="{ row }" slot="enabled">
@@ -173,7 +171,7 @@
     <!-- 删除用户对话框 -->
     <!-- 导出门店对话框 -->
     <Modal v-model="deriveDisplay" title="导出门店">
-      <Alert type="warning" show-icon >全部不输入为导出全部门店</Alert>
+      <Alert type="warning" show-icon>全部不输入为导出全部门店</Alert>
       <Form inline ref="deriveForm" :model="deriveForm">
         <FormItem label="门店店号:" :label-width="85" prop="shopId">
           <Input
@@ -203,9 +201,9 @@
           ></Input>
         </FormItem>
       </Form>
-        <div slot="footer">
-          <Button type="primary" size="large" long @click="deriveShopXls">导出门店</Button>
-        </div>
+      <div slot="footer">
+        <Button type="primary" size="large" long @click="deriveShopXls">导出门店</Button>
+      </div>
     </Modal>
     <!-- 导出门店对话框 -->
   </div>
@@ -214,7 +212,7 @@
 <script>
 import addStore from "./components/addStore";
 import { getShopList, delShop, getXls, upXls } from "@/api/sys";
-import { baseUrl, downloadUrl } from "@/api/index";
+import { baseUrl } from "@/api/index";
 export default {
   name: "store-management",
   components: {
@@ -228,7 +226,6 @@ export default {
       TableLoading: false, // 加载动画
       columns6: [
         //门店列表
-
         {
           title: "操作",
           key: "operation",
@@ -335,7 +332,7 @@ export default {
           minWidth: 165,
           align: "center",
           slot: "updateTime"
-        },
+        }
       ],
       store_data: {
         shopId: "", //知而行门店号
@@ -358,16 +355,16 @@ export default {
       listStatus: 1, // 列表状态， 1：获取列表 2：搜索
       uploadToken: {}, // 上传门店时需要的token
       // -----------------
-      action_item: baseUrl+'/system/sys-shop-info/importShopInfo',
-      add_item_data : [],
+      action_item: baseUrl + "/system/sys-shop-info/importShopInfo",
+      add_item_data: [],
 
       closeBtn: false, // 关闭门店按钮显示
-      changeDisplay:true, // 搜索改变数据后显示导出
-      deriveDisplay:false, // 导出门店对话框
+      changeDisplay: true, // 搜索改变数据后显示导出
+      deriveDisplay: false, // 导出门店对话框
       deriveForm: {
-        shopId : '',
-        venderName : '',
-        shopName : ''
+        shopId: "",
+        venderName: "",
+        shopName: ""
       }
     };
   },
@@ -375,26 +372,25 @@ export default {
     this.getShopListFn();
   },
   methods: {
-
-//子组件传参
+    //子组件传参
     showStatus: function(e) {
       this.addStorePage = e;
       this.getShopListFn();
     },
-// 搜索
+    // 搜索
     queryTableList: function() {
       this.listStatus = 2;
       this.current = 1;
       this.getWebankMallPage(this.store_data);
     },
-// 获取列表
+    // 获取列表
     getShopListFn() {
       this.listStatus = 1;
       this.current = 1;
       this.getWebankMallPage({});
     },
 
-//封装获取列表
+    //封装获取列表
     getWebankMallPage: function(data) {
       // 加载动画
       this.TableLoading = true;
@@ -417,14 +413,14 @@ export default {
         }
       });
     },
-    
-// 新增门店
+
+    // 新增门店
     addStore: function() {
       this.addStorePage = true;
       this.type = 1;
     },
 
-// 传值到编辑门店
+    // 传值到编辑门店
     editStore: function(row) {
       this.addStorePage = true;
       this.type = 2;
@@ -434,13 +430,13 @@ export default {
       this.storeItem = row;
     },
 
-// 传值到删除
+    // 传值到删除
     inputDeleteStore(id) {
       this.delShopId = id;
       this.delShopDisplay = true;
     },
 
-// 删除
+    // 删除
     deleteStore: function() {
       delShop(this.delShopId).then(res => {
         if (res.code == 200) {
@@ -452,10 +448,10 @@ export default {
         }
       });
     },
-//重置
+    //重置
     handleReset: function(name) {
       this.$refs[name].resetFields();
-      if(name == 'store_data') {
+      if (name == "store_data") {
         this.getShopListFn();
       }
     },
@@ -463,7 +459,6 @@ export default {
     setVender: function(v) {
       this.store_data.appid = v.value;
     },
-
 
     // 导入门店
     // importStore: function() {
@@ -511,10 +506,8 @@ export default {
     //   // });
     // },
 
-
-// 分页
+    // 分页
     changeCurrent: function(current) {
-
       this.current = current;
       if (this.listStatus == 1) {
         this.getWebankMallPage({});
@@ -537,7 +530,7 @@ export default {
       });
     },
 
-// 导出门店弹框
+    // 导出门店弹框
     deriveFn() {
       this.deriveForm.shopId = "";
       this.deriveForm.venderName = "";
@@ -545,9 +538,10 @@ export default {
       this.deriveDisplay = true;
     },
 
-//导出门店
+    //导出门店
     deriveShopXls() {
-      window.location.href =baseUrl+
+      window.location.href =
+        baseUrl +
         `/system/sys-shop-info/downloadShopInfoList?` +
         "&shopId=" +
         this.deriveForm.shopId +
@@ -564,8 +558,7 @@ export default {
       this.deriveForm.shopName = "";
     },
 
-
-// 阻止默认上传
+    // 阻止默认上传
     // handleUpload(file) {
     //   this.file = file;
     //   return false;
@@ -573,28 +566,28 @@ export default {
 
     // =-------------------------------------------------
 
-//传值到导入门店弹框
+    //传值到导入门店弹框
     upShopXls() {
       this.uploadShopModal = true;
       this.closeBtn = false;
       this.uploadToken = {
-        'jwttoken': localStorage.getItem("jwttoken")
+        jwttoken: localStorage.getItem("jwttoken")
       };
     },
 
-// 导入门店
+    // 导入门店
     handleItemRemove(file) {
       this.add_item_data = [];
     },
     handleItemSuccess(res, file) {
       // console.log(res);
-      
-      if(res.code == 200){
+
+      if (res.code == 200) {
         this.closeBtn = true;
-        this.msgOk('上传成功')
-        this.getShopListFn()
+        this.msgOk("上传成功");
+        this.getShopListFn();
       } else {
-        this.msgErr(res.msg)
+        this.msgErr(res.msg);
       }
       // if (res.code != 200) {
       //   this.$Message.error(res.msg);
@@ -619,7 +612,7 @@ export default {
     // 下载模板
     downloadTemplet() {
       // window.location.href = baseUrl+`/system/sys-shop-info/downloadTemplateShop`
-      window.location.href = downloadUrl+"/document/shop_import.xlsx"
+      window.location.href = "/document/shop_import.xlsx";
     },
 
     dropDown() {
@@ -635,7 +628,7 @@ export default {
 
     changeData() {
       this.changeDisplay = false;
-    },
+    }
 
     // 导出门店对话框状态改变触发函数
     // changeUpload(status) {

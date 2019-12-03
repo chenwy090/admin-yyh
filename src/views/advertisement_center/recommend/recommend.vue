@@ -44,7 +44,8 @@
             <Card :bordered="false">
                 <Row class="operation">
                     <Button type="primary" icon="md-add" @click="addStaff">添加优惠券</Button>
-                    <Button  @click="searchConflict">检查冲突券</Button>
+                    <!--<Button  @click="searchConflict">检查冲突券</Button>-->
+                    <Button  @click="downLoad">冲突券下载</Button>
                 </Row>
                 <div>
                     <!-- 冠名活动列表 -->
@@ -246,11 +247,11 @@
         <formView ref="form" @closeFormModal-event="closeFormModal" ></formView>
         </Modal>
 
-        
+
 
 
         <div v-if="searchConflictDisplay">
-            
+
             <Modal
                 v-model="searchConflictDisplay"
                 title="检查冲突券"
@@ -260,13 +261,14 @@
                >
                <conflictView ref="table"></conflictView>
           </Modal>
-          
+
         </div>
-               
+
     </div>
 </template>
 
 <script>
+    import { postRequest,downloadSteam} from "@/libs/axios";
     import {
         getRecomondList,
         eidtStatus,
@@ -328,6 +330,12 @@
                         minWidth: 160,
                         key: "distributeChannel",
                         slot:"channel"
+                    },
+                    {
+                        title: "已曝光量",
+                        align: "center",
+                        minWidth: 100,
+                        key: "actualExposureCount",
                     },
 
                     {
@@ -885,6 +893,29 @@
              closeConflictModal:function(){
                 this.searchConflictDisplay = false;
             },
+            downLoad(){
+                var url = '/couponrecommend/conflict/excel/download';
+                downloadSteam(url,null).then(res => {
+                    const content = res.data;
+                    const { filename } = res.headers;
+
+                    const blob = new Blob([content], { type: "application/vnd.ms-excel" });
+                    const oA = document.createElement("a");
+                    if ("download" in oA) {
+                        // 非IE下载
+                        oA.download = decodeURI(filename);
+                        oA.style.display = "none";
+                        oA.href = URL.createObjectURL(blob);
+                        document.body.appendChild(oA);
+                        oA.click();
+                        URL.revokeObjectURL(oA.href); // 释放URL 对象
+                        document.body.removeChild(oA);
+                    } else {
+                        // IE10+下载
+                        navigator.msSaveBlob(blob, filename);
+                    }
+                });
+            }
         },
         mounted() {
             this.init();

@@ -911,7 +911,7 @@ export default {
 }
 </script>
 
-<style>
+<style  lang="less" scoped>
     .form > div {
         display: inline-block;
     }

@@ -160,7 +160,7 @@
 		},
 		mounted() {
 	
-	
+      this.$Spin.hide();
 	
 		}
 	};

@@ -9,13 +9,13 @@ import { baseUrl } from "@/api/index";
 // 超时设定
 axios.defaults.timeout = 15000;
 
-axios.interceptors.response.use(function(response) {
+axios.interceptors.response.use(function (response) {
 
     if (response.headers.jwttoken) {
         window.localStorage.setItem("jwttoken", response.headers.jwttoken);
     }
     return response;
-}, function(error) {
+}, function (error) {
     Message.error('请求超时');
     return Promise.reject(error);
 });
@@ -35,12 +35,13 @@ axios.interceptors.response.use(response => {
             break;
         case '403':
             // 没有权限
-            if (data.message !== null) {
-                Message.error(data.message);
+            let msg = data.message || data.msg;
+            if (msg) {
+                Message.error(msg);
             } else {
                 Message.error("未知错误");
             }
-            break;
+            return response;
         default:
             let filename = response.headers["filename"];
             if (filename) {
@@ -63,7 +64,7 @@ export const loginRequest = (url, params) => {
         method: 'post',
         url: baseUrl + `${url}`,
         data: params,
-        transformRequest: [function(data) {
+        transformRequest: [function (data) {
             let ret = '';
             for (let it in data) {
                 ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&';
@@ -90,7 +91,7 @@ export const getRequest = (url, params) => {
 };
 
 
-export const getSyncRequest = async(url, params) => {
+export const getSyncRequest = async (url, params) => {
     let jwttoken = getStore('jwttoken');
     return await axios({
         method: 'get',
@@ -102,7 +103,7 @@ export const getSyncRequest = async(url, params) => {
     });
 };
 
-export const postSyncRequest = async(url, params) => {
+export const postSyncRequest = async (url, params) => {
     let jwttoken = getStore("jwttoken");
     return await axios({
         method: 'post',
@@ -153,7 +154,7 @@ export const putRequest = (url, params) => {
         method: 'put',
         url: baseUrl + `${url}`,
         data: params,
-        transformRequest: [function(data) {
+        transformRequest: [function (data) {
             let ret = '';
             for (let it in data) {
                 ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&';

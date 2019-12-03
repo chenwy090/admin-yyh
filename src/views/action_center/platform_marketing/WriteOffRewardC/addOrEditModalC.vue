@@ -346,7 +346,6 @@ export default {
               var that = this;
               e.forEach(function(v, i) {
                   that.couponObj.forEach(function(value, index) {
-                      debugger
                       if (v.templateId === (value.templateId || value.id)) {
                           that.couponObj.splice(index, 1);
                       }

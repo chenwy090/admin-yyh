@@ -1,7 +1,7 @@
 const webpack = require("webpack");
 module.exports = {
     // baseUrl: '/zex-mgr',
-    outputDir: 'dist', // 输出文件目录
+    outputDir: 'zex-mgr', // 输出文件目录
     configureWebpack: {
         // 配置 webpack plugins
         plugins: [
