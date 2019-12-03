@@ -1,22 +1,33 @@
 #要优惠admin管理后台
 
 ## 打包：
-开发环境api
+开发环境
 npm run build
 
-测试环境api
+测试环境
 npm run test
 
-生产环境api
+生产环境要运维操作，前端保证release分支上的代码为需要发布的代码即可
 npm run pro
+
+Jenkins发布：
+[j.iuuzu.com](http://j.iuuzu.com)
+
+New_Test_Front
+
+New_Dev_Front
 
 #分支说明：#
 
-`master`（发线上）和生产环境保持一致
+`release`（发线上）
 [http://crm.52iuh.com](http://crm.52iuh.com/)
 
-`dev`（发测试）
-[http://crmt.52iuh.cn](http://crmt.52iuh.cn/)
+`test`（发测试）
+[http://192.168.31.205:9999](http://192.168.31.205:9999/)
+等同
+[http://crmt.52ash.cn](http://crmt.52ash.cn/)
+
+`master`保持和生产环境代码一致
 
 
 ### 项目简介
