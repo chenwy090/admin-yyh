@@ -1330,7 +1330,6 @@ export default {
         .then(res => {
           // console.log(res);
           if (res.code == 200) {
-            debugger;
             var that = this;
             let {
               thirdUrl,
@@ -1381,7 +1380,6 @@ export default {
             }
 
             this.edit_info.ticketMoney = this.edit_info.ticketMoney / 100;
-            debugger;
             //console.info("this.edit_info.ticketMoney" + this.edit_info.ticketMoney);
             //console.info("this.edit_info.ticketMoney" + this.edit_info.ticketMoney);
 
@@ -1402,7 +1400,10 @@ export default {
           }
         })
         .catch(err => {
-          // console.log(err, 'operating_merchant/merchant-customer/merchant-customer-add, Line929')
+          console.log(
+            err,
+            "try catch operating_merchant/merchant-customer/merchant-customer-add, Line929"
+          );
         });
     },
     //编辑
