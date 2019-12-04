@@ -1331,7 +1331,14 @@ export default {
           // console.log(res);
           if (res.code == 200) {
             var that = this;
-            let { thirdUrl, discountDetail: newDiscountDetail } = res.data;
+            let {
+              thirdUrl,
+              discountDetail: newDiscountDetail,
+              couponSaleAfterVOList
+            } = res.data;
+
+            res.data.couponSaleAfterVOList = couponSaleAfterVOList || [];
+
             res.data.thirdUrl = thirdUrl || "";
             //富文本中转处理
             res.data.newDiscountDetail = newDiscountDetail || "";
@@ -1393,7 +1400,10 @@ export default {
           }
         })
         .catch(err => {
-          // console.log(err, 'operating_merchant/merchant-customer/merchant-customer-add, Line929')
+          console.log(
+            err,
+            "try catch operating_merchant/merchant-customer/merchant-customer-add, Line929"
+          );
         });
     },
     //编辑
@@ -1964,7 +1974,7 @@ export default {
         originalPrice: this.edit_info.originalPrice,
         price: this.edit_info.price,
         couponPutChannelList: this.edit_info.newCouponPutChannelList,
-        couponSaleAfterList: this.edit_info.newCouponSaleAfterList || [],
+
         thirdUrl: this.edit_info.thirdUrl.trim(),
         // 是否活动券 （默认否）0-否，1-是   isActivityCoupon
         isActivityCoupon: this.edit_info.isActivityCoupon,
@@ -2003,6 +2013,11 @@ export default {
         discountDetail: this.edit_info.newDiscountDetail, // 优惠券图文详情（富文本）
         payCouponMerchantType: this.edit_info.payCouponMerchantType
       };
+
+      if (this.reqParams.couponKind != 1) {
+        this.reqParams.couponSaleAfterList =
+          this.edit_info.newCouponSaleAfterList || [];
+      }
 
       if (this.camp_pageStatus === "add") {
         this.getUrl = "/merchantCouponTemplate/add";
