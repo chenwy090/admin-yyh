@@ -1260,12 +1260,12 @@ export default {
         reqParams
       ).then(res => {
         if (res.code == 200) {
-          // this.edit_info.merchantShopImageList[this.imgArrIndex].imgUrl =
-          //   res.image_url;
+          this.edit_info.merchantShopImageList[this.imgArrIndex].imgUrl =
+            res.image_url;
 
-          this.edit_info.merchantShopImageList.splice(this.imgArrIndex, 1, {
-            imgUrl: res.image_url
-          });
+          // this.edit_info.merchantShopImageList.splice(this.imgArrIndex, 1, {
+          //   imgUrl: res.image_url
+          // });
         } else {
           this.$Message.error(res.msg);
         }
