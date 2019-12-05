@@ -1633,7 +1633,6 @@ export default {
         this.$Message.error("请选择收费类型");
         return;
       }
-      console.log(1111);
       if (!this.edit_info.couponKind) {
         this.$Message.error("请选择优惠类型");
         return;
@@ -1773,7 +1772,7 @@ export default {
         });
       }
       this.edit_info.newCouponPutChannelList = [];
-      if (!this.edit_info.couponPutChannelList) {
+      if (!this.edit_info.couponPutChannelList.length) {
         this.$Message.error("请选择投放渠道");
         return;
       } else {
@@ -1788,6 +1787,7 @@ export default {
             return r;
           });
         });
+        
         this.edit_info.newCouponPutChannelList = newCouponPutChannelList;
       }
       this.edit_info.startDate = formatDate(
@@ -1966,7 +1966,6 @@ export default {
             this.new_ticketMoney = this.edit_info.ticketMoney;
             this.new_ticketDiscount = this.edit_info.ticketDiscount;
         }*/
-
       this.reqParams = {
         // ...this.edit_info，
 
