@@ -170,7 +170,7 @@
             <span style="color:red">&nbsp;&nbsp; 张</span>
           </FormItem>
           <!-- <FormItem label="领取规则：" :rules="{ required: true}">{{edit_info.useDesc}}</FormItem> -->
-          <FormItem label="领取规则：" >
+          <FormItem label="领取规则：">
             <Input
               type="textarea"
               v-model="edit_info.useDesc"
@@ -188,7 +188,7 @@
               style="width:400px;margin:0;"
             ></EditorBar>
           </FormItem>
-          <FormItem label="备注：" :rules="{ required: true}">{{edit_info.remark}}</FormItem>
+          <FormItem label="备注：" required>{{edit_info.remark}}</FormItem>
         </Form>
 
         <Row
@@ -231,404 +231,404 @@
 </template>
 
 <script>
-  import { postJson, postRequest } from "@/libs/axios";
-  import { baseUrl } from "@/api/index";
-  import logModal from "./logInfo";
-  import EditorBar from "@/components/EditorBar";
-  export default {
-    name: "BasicSet",
-    props: {
-      couponEdit_info: String,
-      couponDetailPage: {
-        type: Boolean,
-        default: true
-      }
-    },
-    components: { logModal, EditorBar },
-    data() {
-      return {
-        logDialogModal: false,
-        //乐刻需求新增begin--------------------------
-        // 优惠券来源 0-平台自营券 1-第三方券
-        // couponSource: "0",
-        couponSourceList: [
-          {
-            value: 0,
-            label: "平台自营券"
-          },
-          {
-            value: 1,
-            label: "第三方券"
-          }
-        ],
-        couponKindList: [
-          {
-            value: 1,
-            label: "免费券"
-          },
-          {
-            value: 2,
-            label: "付费券"
-          }
-        ],
-        couponSaleAfterList: [
-          {
-            code: 1,
-            value: "随时退"
-          },
-          {
-            code: 2,
-            value: "过期退"
-          }
-        ],
-        couponPutChannelList: [
-          {
-            code: 1,
-            value: "常规券"
-          },
-          {
-            code: 2,
-            value: "精准拓客"
-          },
-          {
-            code: 3,
-            value: "平台拓客"
-          },
-          {
-            code: 4,
-            value: "客服补偿"
-          },
-          {
-            code: 5,
-            value: "抽奖团"
-          },
-          {
-            code: 6,
-            value: "超值爆抢"
-          },
-          {
-            code: 7,
-            value: "专题活动"
-          },
-          {
-            code: 8,
-            value: "赏U任务"
-          },
-          {
-            code: 9,
-            value: "核销赠券"
-          }
-        ],
-        // 券码类型  0-平台生成券码
-        // couponCodeType: "0",
-        couponCodeTypeList: [
-          {
-            value: 0,
-            label: "平台生成券码"
-          }
-        ],
-        // 立即使用打开方式 0-打开详情 1-跳转第三方
-        // userOpenWithCoupon: "0",
-        userOpenWithCouponList: [
-          {
-            value: 0,
-            label: "打开详情"
-          }
-          // {
-          //   value: 1,
-          //   label: "跳转第三方"
-          // }
-        ],
-        // thirdUrl: "",
+import { postJson, postRequest } from "@/libs/axios";
+import { baseUrl } from "@/api/index";
+import logModal from "./logInfo";
+import EditorBar from "@/components/EditorBar";
+export default {
+  name: "BasicSet",
+  props: {
+    couponEdit_info: String,
+    couponDetailPage: {
+      type: Boolean,
+      default: true
+    }
+  },
+  components: { logModal, EditorBar },
+  data() {
+    return {
+      logDialogModal: false,
+      //乐刻需求新增begin--------------------------
+      // 优惠券来源 0-平台自营券 1-第三方券
+      // couponSource: "0",
+      couponSourceList: [
+        {
+          value: 0,
+          label: "平台自营券"
+        },
+        {
+          value: 1,
+          label: "第三方券"
+        }
+      ],
+      couponKindList: [
+        {
+          value: 1,
+          label: "免费券"
+        },
+        {
+          value: 2,
+          label: "付费券"
+        }
+      ],
+      couponSaleAfterList: [
+        {
+          code: 1,
+          value: "随时退"
+        },
+        {
+          code: 2,
+          value: "过期退"
+        }
+      ],
+      couponPutChannelList: [
+        {
+          code: 1,
+          value: "常规券"
+        },
+        {
+          code: 2,
+          value: "精准拓客"
+        },
+        {
+          code: 3,
+          value: "平台拓客"
+        },
+        {
+          code: 4,
+          value: "客服补偿"
+        },
+        {
+          code: 5,
+          value: "抽奖团"
+        },
+        {
+          code: 6,
+          value: "超值爆抢"
+        },
+        {
+          code: 7,
+          value: "专题活动"
+        },
+        {
+          code: 8,
+          value: "赏U任务"
+        },
+        {
+          code: 9,
+          value: "核销赠券"
+        }
+      ],
+      // 券码类型  0-平台生成券码
+      // couponCodeType: "0",
+      couponCodeTypeList: [
+        {
+          value: 0,
+          label: "平台生成券码"
+        }
+      ],
+      // 立即使用打开方式 0-打开详情 1-跳转第三方
+      // userOpenWithCoupon: "0",
+      userOpenWithCouponList: [
+        {
+          value: 0,
+          label: "打开详情"
+        }
+        // {
+        //   value: 1,
+        //   label: "跳转第三方"
+        // }
+      ],
+      // thirdUrl: "",
 
-        //乐刻需求新增end--------------------------
-        formShareModal: {
-          shareData: []
+      //乐刻需求新增end--------------------------
+      formShareModal: {
+        shareData: []
+      },
+      imgSrc1: null,
+      imgSrc2: null,
+      imgSrc3: null,
+      receiveRuleSetPage: false,
+      visible: false,
+      imgName: "",
+      merchantTabDisplay: false, // 商户选择框显示
+      userInfoDisplay: false, //用户选择显示框
+      selectedMerchantList: [], //选中的商户列表
+      searchItem: {
+        merchantId: "",
+        name: "",
+        provinceId: "",
+        cityId: "",
+        areaId: ""
+      },
+      columnsSelectMerchant: [
+        {
+          title: "商户编号",
+          align: "center",
+          key: "merchantId"
         },
-        imgSrc1: null,
-        imgSrc2: null,
-        imgSrc3: null,
-        receiveRuleSetPage: false,
-        visible: false,
-        imgName: "",
-        merchantTabDisplay: false, // 商户选择框显示
-        userInfoDisplay: false, //用户选择显示框
-        selectedMerchantList: [], //选中的商户列表
-        searchItem: {
-          merchantId: "",
-          name: "",
-          provinceId: "",
-          cityId: "",
-          areaId: ""
-        },
-        columnsSelectMerchant: [
-          {
-            title: "商户编号",
-            align: "center",
-            key: "merchantId"
-          },
-          {
-            title: "商户名称",
-            align: "center",
-            key: "merchantName"
-          }
-          // {
-          //   title: "地址",
-          //   align: "center",
-          //   minWidth: 300,
-          //   key: "address"
-          // },
-        ],
-        current: 1,
-        totalSize: 0, //总条数
-        pageNum: 1, //开始条数
-        TableLoading: false,
-        pageStatus: "",
+        {
+          title: "商户名称",
+          align: "center",
+          key: "merchantName"
+        }
+        // {
+        //   title: "地址",
+        //   align: "center",
+        //   minWidth: 300,
+        //   key: "address"
+        // },
+      ],
+      current: 1,
+      totalSize: 0, //总条数
+      pageNum: 1, //开始条数
+      TableLoading: false,
+      pageStatus: "",
+      merchantList: [],
+      provincelist: [],
+      citylist: [],
+      arealist: [],
+      userToken: {}, //用户token
+      edit_info: {
+        // 是否活动券 （默认否）0-否，1-是   isActivityCoupon
+        isActivityCoupon: 0,
+        orderBy: "",
         merchantList: [],
-        provincelist: [],
-        citylist: [],
-        arealist: [],
-        userToken: {}, //用户token
-        edit_info: {
-          // 是否活动券 （默认否）0-否，1-是   isActivityCoupon
-          isActivityCoupon: 0,
-          orderBy: "",
-          merchantList: [],
-          couponSaleAfterList: [],
-          startDate: "",
-          endDate: "",
-          useStartDate: "",
-          useEndDate: "",
-          addDaysUseStart: "",
-          addDaysUseEnd: "",
-          new_ticketMoney: 0,
-          couponKind: 1,
-          ticketMoney: 0,
-          price: 0,
-          ticketDiscount: 0,
-          new_ticketDiscount: 0,
-          getLimit: 0,
-          stockCount: 0,
-          fullAmout: 0,
-          decreaseAmount: 0,
-          displayText: ""
-        },
-        edit_loading: false,
-        userToken: "",
-        campId: "",
-        imgUrl: "",
-        uploadList: [],
-        uploadList1: [],
-        camp_pageStatus: "",
-        getUrl: "",
-        msg: "",
-        isCheckDisabled: false,
-        reqParams: {}
-      };
+        couponSaleAfterList: [],
+        startDate: "",
+        endDate: "",
+        useStartDate: "",
+        useEndDate: "",
+        addDaysUseStart: "",
+        addDaysUseEnd: "",
+        new_ticketMoney: 0,
+        couponKind: 1,
+        ticketMoney: 0,
+        price: 0,
+        ticketDiscount: 0,
+        new_ticketDiscount: 0,
+        getLimit: 0,
+        stockCount: 0,
+        fullAmout: 0,
+        decreaseAmount: 0,
+        displayText: ""
+      },
+      edit_loading: false,
+      userToken: "",
+      campId: "",
+      imgUrl: "",
+      uploadList: [],
+      uploadList1: [],
+      camp_pageStatus: "",
+      getUrl: "",
+      msg: "",
+      isCheckDisabled: false,
+      reqParams: {}
+    };
+  },
+
+  created() {
+    this.userToken = { jwttoken: localStorage.getItem("jwttoken") };
+    this.init();
+  },
+  methods: {
+    init() {
+      this.camp_pageStatus = this.getStore("camp_pageStatus");
+      this.editInfo();
     },
-
-    created() {
-      this.userToken = { jwttoken: localStorage.getItem("jwttoken") };
-      this.init();
+    showLog() {
+      this.logDialogModal = true;
+      // this.$nextTick(() => {
+      //   this.$refs["logModal"].resetRow(this.couponEdit_info);
+      // });
     },
-    methods: {
-      init() {
-        this.camp_pageStatus = this.getStore("camp_pageStatus");
-        this.editInfo();
-      },
-      showLog() {
-        this.logDialogModal = true;
-        // this.$nextTick(() => {
-        //   this.$refs["logModal"].resetRow(this.couponEdit_info);
-        // });
-      },
-      colseModal() {
-        this.logDialogModal = false;
-      },
-      //编辑
-      editInfo() {
-        postJson(
-          baseUrl +
-            "/merchantCouponTemplate/selectByTemplateId?templateId=" +
-            this.couponEdit_info,
-          {}
-        )
-          .then(res => {
-            // console.log(res);
-            if (res.code == 200) {
-              this.edit_info = res.data;
-              this.edit_info.useDesc = res.data.useDesc.replace(/\\n/g,"\n")
-              this.uploadList = [{ url: this.edit_info.couponSmallImg }];
-              this.uploadList1 = [{ url: this.edit_info.couponBigImg }];
-              this.edit_info.merchantList = this.edit_info.merchantList;
-              this.edit_info.couponType = String(res.data.couponType);
-              this.imgSrc1 = this.edit_info.couponSmallImg;
-              this.imgSrc2 = this.edit_info.couponBigImg;
-              this.imgSrc3 = this.edit_info.couponSimpleImg;
-
-              if (this.edit_info.couponKind == 2) {
-                // this.edit_info.price = this.edit_info.price;
-              } else {
-                this.edit_info.price = 0;
-              }
-
-              this.edit_info.ticketMoney = this.edit_info.ticketMoney / 100;
-              //console.info("this.edit_info.ticketMoney" + this.edit_info.ticketMoney);
-              //console.info("this.edit_info.ticketMoney" + this.edit_info.ticketMoney);
-
-              this.edit_info.ticketDiscount = this.edit_info.ticketDiscount / 10;
-              this.edit_info.couponKind = this.edit_info.couponKind - 0;
-
-              this.edit_info.couponKind =
-                this.edit_info.couponKind == 1 ? "1" : "2";
-              this.edit_info.useDateType =
-                this.edit_info.useDateType == 1 ? "1" : "2";
-            } else {
-              this.msgErr(res.msg);
-            }
-          })
-          .catch(err => {
-            // console.log(err, 'operating_merchant/merchant-customer/merchant-customer-add, Line929')
-          });
-      },
-      upStatus() {
-        //templateId 券模板id 上架状态, 1:上架
-        const reqParams = {
-          templateId: this.couponEdit_info,
-          status: 1,
-          type: "优惠券管理"
-        };
-        const url = "/merchantCouponTemplate/upShelf";
-        postRequest(url, reqParams).then(res => {
+    colseModal() {
+      this.logDialogModal = false;
+    },
+    //编辑
+    editInfo() {
+      postJson(
+        baseUrl +
+          "/merchantCouponTemplate/selectByTemplateId?templateId=" +
+          this.couponEdit_info,
+        {}
+      )
+        .then(res => {
+          // console.log(res);
           if (res.code == 200) {
-            this.msgOk("更新成功");
-            this.updateTemplateStatusDisplay = false;
-            //this.getList({});
-            // 清空输入框
-            this.goback();
+            this.edit_info = res.data;
+            this.edit_info.useDesc = res.data.useDesc.replace(/\\n/g, "\n");
+            this.uploadList = [{ url: this.edit_info.couponSmallImg }];
+            this.uploadList1 = [{ url: this.edit_info.couponBigImg }];
+            this.edit_info.merchantList = this.edit_info.merchantList;
+            this.edit_info.couponType = String(res.data.couponType);
+            this.imgSrc1 = this.edit_info.couponSmallImg;
+            this.imgSrc2 = this.edit_info.couponBigImg;
+            this.imgSrc3 = this.edit_info.couponSimpleImg;
+
+            if (this.edit_info.couponKind == 2) {
+              // this.edit_info.price = this.edit_info.price;
+            } else {
+              this.edit_info.price = 0;
+            }
+
+            this.edit_info.ticketMoney = this.edit_info.ticketMoney / 100;
+            //console.info("this.edit_info.ticketMoney" + this.edit_info.ticketMoney);
+            //console.info("this.edit_info.ticketMoney" + this.edit_info.ticketMoney);
+
+            this.edit_info.ticketDiscount = this.edit_info.ticketDiscount / 10;
+            this.edit_info.couponKind = this.edit_info.couponKind - 0;
+
+            this.edit_info.couponKind =
+              this.edit_info.couponKind == 1 ? "1" : "2";
+            this.edit_info.useDateType =
+              this.edit_info.useDateType == 1 ? "1" : "2";
           } else {
             this.msgErr(res.msg);
           }
+        })
+        .catch(err => {
+          // console.log(err, 'operating_merchant/merchant-customer/merchant-customer-add, Line929')
         });
-      },
-      msgErr(txt) {
-        this.$Message.error({
-          content: txt,
-          duration: 3
-        });
-      },
-      // 全局提示
-      msgOk(txt) {
-        this.$Message.info({
-          content: txt,
-          duration: 3
-        });
-      },
-      // goback() {
-      //   this.$emit("changeStatus", false);
-      // }
-
-      close() {
-        // this.$emit("changeStatus", false);
-        this.$emit("update:couponDetailPage", false);
-      }
     },
-    mounted() {
-      // this.init();
+    upStatus() {
+      //templateId 券模板id 上架状态, 1:上架
+      const reqParams = {
+        templateId: this.couponEdit_info,
+        status: 1,
+        type: "优惠券管理"
+      };
+      const url = "/merchantCouponTemplate/upShelf";
+      postRequest(url, reqParams).then(res => {
+        if (res.code == 200) {
+          this.msgOk("上架成功");
+          this.updateTemplateStatusDisplay = false;
+          //this.getList({});
+          // 清空输入框
+          this.refresh();
+        } else {
+          this.msgErr(res.msg);
+        }
+      });
+    },
+    msgErr(txt) {
+      this.$Message.error({
+        content: txt,
+        duration: 3
+      });
+    },
+    // 全局提示
+    msgOk(txt) {
+      this.$Message.info({
+        content: txt,
+        duration: 3
+      });
+    },
+    refresh() {
+      this.close();
+      this.$emit("refresh");
+    },
+    close() {
+      // this.$emit("changeStatus", false);
+      this.$emit("update:couponDetailPage", false);
     }
-  };
+  },
+  mounted() {
+    // this.init();
+  }
+};
 </script>
 
 
 <style>
-  .form {
-    width: 900px;
-  }
-  .form > div {
-    display: inline-block;
-  }
-  .demo-upload-list {
-    display: inline-block;
-    width: 80px;
-    height: 80px;
-    text-align: center;
-    line-height: 60px;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    overflow: hidden;
-    background: #fff;
-    position: relative;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-    margin-right: 4px;
-  }
-  .demo-upload-list img {
-    width: 100%;
-    height: 100%;
-  }
-  .demo-upload-list-cover {
-    display: none;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.6);
-  }
-  .demo-upload-list:hover .demo-upload-list-cover {
-    display: block;
-  }
-  .demo-upload-list-cover i {
-    color: #fff;
-    font-size: 20px;
-    cursor: pointer;
-    margin: 0 2px;
-  }
-  .imgSrc_box {
-    float: left;
-    width: 90px;
-    height: 90px;
-    line-height: 90px;
-    margin-right: 10px;
-    border: 1px dashed #dcdee2;
-    background: #fff;
-  }
+.form {
+  width: 900px;
+}
+.form > div {
+  display: inline-block;
+}
+.demo-upload-list {
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+  text-align: center;
+  line-height: 60px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fff;
+  position: relative;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  margin-right: 4px;
+}
+.demo-upload-list img {
+  width: 100%;
+  height: 100%;
+}
+.demo-upload-list-cover {
+  display: none;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+.demo-upload-list:hover .demo-upload-list-cover {
+  display: block;
+}
+.demo-upload-list-cover i {
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  margin: 0 2px;
+}
+.imgSrc_box {
+  float: left;
+  width: 90px;
+  height: 90px;
+  line-height: 90px;
+  margin-right: 10px;
+  border: 1px dashed #dcdee2;
+  background: #fff;
+}
 
-  .left-text {
-    text-align: right;
-    vertical-align: middle;
-    float: left;
-    font-size: 12px;
-    color: #515a6e;
-    line-height: 1;
-    padding: 10px 12px 10px 0;
-    box-sizing: border-box;
-  }
-  .box {
-    margin-bottom: 20px;
-  }
-  .left-text {
-    text-align: right;
-    vertical-align: middle;
-    float: left;
-    font-size: 12px;
-    color: #515a6e;
-    line-height: 1;
-    padding: 10px 12px 10px 0;
-    box-sizing: border-box;
-  }
-  /* .ivu-form-item {
+.left-text {
+  text-align: right;
+  vertical-align: middle;
+  float: left;
+  font-size: 12px;
+  color: #515a6e;
+  line-height: 1;
+  padding: 10px 12px 10px 0;
+  box-sizing: border-box;
+}
+.box {
+  margin-bottom: 20px;
+}
+.left-text {
+  text-align: right;
+  vertical-align: middle;
+  float: left;
+  font-size: 12px;
+  color: #515a6e;
+  line-height: 1;
+  padding: 10px 12px 10px 0;
+  box-sizing: border-box;
+}
+/* .ivu-form-item {
       margin-bottom: 0;
     } */
-  .demo-drawer-footer {
-    width: 100%;
-    position: fixed;
-    z-index: 111;
-    bottom: 0;
-    left: 0;
-    border-top: 1px solid #e8e8e8;
-    padding: 10px 16px;
-    text-align: right;
-    background: #fff;
-  }
+.demo-drawer-footer {
+  width: 100%;
+  position: fixed;
+  z-index: 111;
+  bottom: 0;
+  left: 0;
+  border-top: 1px solid #e8e8e8;
+  padding: 10px 16px;
+  text-align: right;
+  background: #fff;
+}
 </style>
 
