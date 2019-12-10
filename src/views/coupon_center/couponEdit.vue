@@ -1659,11 +1659,11 @@
       addMerchantList() {
         //couponKind 1 免费券 | 2 付费券
         const { couponKind } = this.edit_info;
-        if (couponKind == 1) {
+        if (couponKind == 1 || couponKind == 3) {
           this.merchantTabDisplay = true;
           this.selectedMerchantList = [];
           this.getMerchantListFn();
-        } else if (couponKind == 2 || couponKind == 3) {
+        } else if (couponKind == 2) {
           this.showBusinessList = true;
         } else {
           this.msgErr("请选择收费类型");

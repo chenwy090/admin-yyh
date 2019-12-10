@@ -51,12 +51,21 @@
           </FormItem>
 
           <FormItem label="标题：" required>{{edit_info.title}}</FormItem>
-          <FormItem label="收费类型：" required>{{couponKindList[edit_info.couponKind-1].label}}</FormItem>
+          <FormItem label="收费类型：" required>
+            <RadioGroup v-model="edit_info.couponKind">
+                <Radio
+                  v-for="item in couponKindList"
+                  disabled
+                  :key="item.value"
+                  :label="item.value"
+                >{{item.label}}</Radio>
+              </RadioGroup>
+          </FormItem>
 
           <template v-if="edit_info.couponKind==1">
             <FormItem label="优惠类型：" required>{{edit_info.couponTypeName}}</FormItem>
           </template>
-          <template v-if="edit_info.couponKind==2">
+          <template v-if="edit_info.couponKind==2 || edit_info.couponKind==3">
             <FormItem label="优惠类型：" required>
               <Row>
                 <Row>{{edit_info.couponTypeName}}</Row>
@@ -67,6 +76,7 @@
                   <span style="color:red;margin-left: 20px">*</span>
                   售卖价 {{edit_info.price}}
                   <span>&nbsp;&nbsp; 元</span>
+                  <span style="margin-left:10px">优惠力度：{{discountNum}} 折</span>
                 </Row>
               </Row>
             </FormItem>
@@ -103,14 +113,24 @@
             </FormItem>
           </template>
 
-          <template v-if="edit_info.couponKind==2">
+          <template v-if="edit_info.couponKind==2 || edit_info.couponKind==3">
             <FormItem label="售后条件：" required>
-              <span
-                v-for="(item,index) in edit_info.couponSaleAfterVOList"
-                :key="index"
-              >{{item.value}}&nbsp;&nbsp;</span>
+              <RadioGroup v-model="edit_info.enableSaleAfter">
+                <Radio disabled :label="1">支持退款</Radio>
+                <Radio disabled :label="0">不支持退款</Radio>
+              </RadioGroup>
+              <div v-if="edit_info.enableSaleAfter == 1">
+                <span
+                  v-for="(item,index) in edit_info.couponSaleAfterVOList"
+                  :key="index"
+                >{{item.value}}&nbsp;&nbsp;</span>
+              </div>
             </FormItem>
           </template>
+
+          <div v-if="edit_info.couponKind==3">
+            <FormItem label="商户分账金额：" required>{{edit_info.merchantLedger}}</FormItem>
+          </div>
 
           <FormItem label="活动开始时间：" required>{{edit_info.startDate}}</FormItem>
           <FormItem label="活动结束时间：" required>{{edit_info.endDate}}</FormItem>
@@ -247,6 +267,7 @@ export default {
   components: { logModal, EditorBar },
   data() {
     return {
+      discountNum:0, // 优惠力度显示
       logDialogModal: false,
       //乐刻需求新增begin--------------------------
       // 优惠券来源 0-平台自营券 1-第三方券
@@ -268,7 +289,11 @@ export default {
         },
         {
           value: 2,
-          label: "付费券"
+          label: "付费券(商户自营)"
+        },
+        {
+          value: 3,
+          label: "付费券(平台自营)"
         }
       ],
       couponSaleAfterList: [
@@ -466,23 +491,26 @@ export default {
             this.imgSrc2 = this.edit_info.couponBigImg;
             this.imgSrc3 = this.edit_info.couponSimpleImg;
 
-            if (this.edit_info.couponKind == 2) {
-              // this.edit_info.price = this.edit_info.price;
-            } else {
-              this.edit_info.price = 0;
-            }
+            // if (this.edit_info.couponKind == 2) {
+            //   // this.edit_info.price = this.edit_info.price;
+            // } else {
+            //   this.edit_info.price = 0;
+            // }
 
             this.edit_info.ticketMoney = this.edit_info.ticketMoney / 100;
             //console.info("this.edit_info.ticketMoney" + this.edit_info.ticketMoney);
             //console.info("this.edit_info.ticketMoney" + this.edit_info.ticketMoney);
 
             this.edit_info.ticketDiscount = this.edit_info.ticketDiscount / 10;
-            this.edit_info.couponKind = this.edit_info.couponKind - 0;
+            // this.edit_info.couponKind = this.edit_info.couponKind - 0;
 
-            this.edit_info.couponKind =
-              this.edit_info.couponKind == 1 ? "1" : "2";
-            this.edit_info.useDateType =
-              this.edit_info.useDateType == 1 ? "1" : "2";
+            // this.edit_info.couponKind =
+            //   this.edit_info.couponKind == 1 ? "1" : "2";
+            // this.edit_info.useDateType =
+            //   this.edit_info.useDateType == 1 ? "1" : "2";
+            // 计算优惠力度
+            let num = (this.edit_info.price / this.edit_info.originalPrice) * 10;
+            this.discountNum = num.toFixed(2);
           } else {
             this.msgErr(res.msg);
           }
