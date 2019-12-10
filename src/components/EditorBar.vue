@@ -15,6 +15,7 @@ import E from "wangeditor";
 import allMenus from "./editorBar/menus";
 
 const filterEmptyHtmlTag = html => {
+  html = html.trim();
   // console.log(1, html);
   var reg = /<([a-z]+?)(?:\s+?[^>]*?)?>\s*?<\/\1>/gi;
   html = html.replace(reg, "");
