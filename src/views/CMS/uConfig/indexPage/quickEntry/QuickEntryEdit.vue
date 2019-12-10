@@ -7,7 +7,7 @@
         ref="form"
         :model="formData"
         :rules="ruleValidate"
-        :label-width="100"
+        :label-width="130"
       >
         <FormItem label="标题：" prop="title" :rules="{ required: true, message: '请输入标题' }">
           <Tooltip trigger="focus" title="提醒" content="最多20个汉字" placement="right">
@@ -44,7 +44,65 @@
           </Select>
         </FormItem>
 
-        <template v-if="showContent">
+        <template v-if="formData.type == 1">
+          <FormItem
+            :label="`${contentLabel}：`"
+            :prop="`content`"
+            :rules="{ requierd: true, validator: validateContent }">
+            <Input style="width:80%" v-model="formData.content" :placeholder="`点击按钮选择${contentLabel}`" disabled>
+            <Button @click="handleChoose" slot="append">选择</Button>
+            </Input>
+          </FormItem>
+        </template>
+
+        <template v-if="formData.type == 3 || formData.type == 4">
+          <FormItem
+            :label="`${contentLabel}：`"
+            :prop="`content`"
+            :rules="{ requierd: true, validator: validateContent }">
+            <Input style="width:80%" v-model="formData.content" placeholder="请输入内容" clearable />
+          </FormItem>
+        </template>
+
+        <template v-if="formData.type == 6">
+          <FormItem :label="`${contentLabel}：`" :prop="`content`"
+            :rules="{ requierd: true, validator: validateContent }">
+            <Row>
+              <Col span="5">
+              <Select v-model="formData.value" style="width:120px" placeholder="请选择主行业"
+                @on-change="getIndustrySecendList()">
+                <Option v-for="item in mainIndustryList" :value="item.id" :key="item.id">{{ item.name }}</Option>
+              </Select>
+              </Col>
+              <Col span="5">
+              <Select v-model="formData.value1" style="width:120px" placeholder="请选择二级行业">
+                <Option v-for="item in secendIndustryList" :value="item.id" :key="item.id">{{ item.name }}</Option>
+              </Select>
+              </Col>
+            </Row>
+          </FormItem>
+          <FormItem :label="`标签：`" :prop="`tags`">
+            <Row class="tags-list" v-for="(items,index) in tagsList" :key="items.key">
+              <Col span="5">
+              <Select v-model="items.value" style="width:120px" placeholder="请选择所属模块"
+                @on-change="getIndustrySecendList()">
+                <Option v-for="item in mainIndustryList" :value="item.id" :key="item.id">{{ item.name }}</Option>
+              </Select>
+              </Col>
+              <Col span="5">
+              <Select v-model="items.value1" style="width:120px" placeholder="请选择标签">
+                <Option v-for="item in secendIndustryList" :value="item.id" :key="item.id">{{ item.name }}</Option>
+              </Select>
+              </Col>
+              <Col span="5">
+                <Icon v-if="index == 0" @click="tagsAdd" class="tag-add" size="30" color="#2d8cf0" type="ios-add-circle-outline" />
+                <Icon v-if="index != 0" @click="tagsRemove(index)" class="tag-remove" size="30" color="#ffb08f" type="ios-remove-circle-outline" />
+              </Col>
+            </Row>
+          </FormItem>
+        </template>
+
+        <!-- <template v-if="showContent">
           <FormItem
             :label="`${contentLabel}：`"
             :prop="`content`"
@@ -100,7 +158,7 @@
               </Col>
             </Row>
           </FormItem>
-        </template>
+        </template> -->
       </Form>
     </div>
     <div class="demo-drawer-footer">
@@ -211,7 +269,13 @@ export default {
       showThematicActivities: false,
       mainIndustryList: [],
       secendIndustryList: [],
-      mainIndustryId: ""
+      mainIndustryId: "",
+      tagsList: [
+        {
+          key: Date.now(),
+          value:''
+        }
+      ],
     };
   },
   methods: {
@@ -357,7 +421,17 @@ export default {
       } else {
         callback();
       }
-    }
+    },
+    // 标签
+    tagsAdd(){
+      this.tagsList.push({
+        key:Date.now(),
+        value:''
+      })
+    },
+    tagsRemove(index){
+      this.tagsList.splice(index, 1);
+    },
   }
 };
 </script>
@@ -374,5 +448,14 @@ export default {
   padding: 10px 16px;
   text-align: right;
   background: #fff;
+}
+.tags-list{
+  margin-bottom: 1vh;
+}
+.tag-add{
+  cursor: pointer;
+}
+.tag-remove{
+  cursor: pointer;
 }
 </style>
