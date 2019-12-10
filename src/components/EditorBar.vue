@@ -15,21 +15,23 @@ import E from "wangeditor";
 import allMenus from "./editorBar/menus";
 
 const filterEmptyHtmlTag = html => {
-  // console.log(1, html);
+  console.log(1, html);
   var reg = /<([a-z]+?)(?:\s+?[^>]*?)?>\s*?<\/\1>/gi;
   html = html.replace(reg, "");
-  // console.log(2, html);
+  console.log(2, html);
   // <p></p><p>&nbsp;</p><p></p>
 
   let arr = [
     "<p>&nbsp;</p>",
     "<p>&nbsp; &nbsp;</p>",
-    "<p></p><p>&nbsp;</p><p></p>"
+    "<p></p><p>&nbsp;</p><p></p>",
+    "<p><br></p>",
+    "<p><br></p >"
   ];
   if (arr.includes(html)) {
     html = "";
   }
-  // console.log(3, html);
+  console.log(3, html);
   return html;
 };
 
