@@ -1,7 +1,10 @@
 <template>
   <!-- Withdrawal - switch -->
   <div style="margin-bottom: 20px;">
-    <h3>提现-开关</h3>
+    <Row>
+      <h3>提现-开关</h3>
+      <Button size="small" icon="md-refresh" class="marginLeft20" @click="refresh">刷新</Button>
+    </Row>
     <div>
       <Table border width="100%" :columns="columns" :data="tableData" :loading="tableLoading">
         <template slot-scope="{ row }" slot="action">
@@ -129,6 +132,10 @@ export default {
     this.queryTableData();
   },
   methods: {
+    // 刷新搜索
+    refresh() {
+      this.queryTableData();
+    },
     switchStatusChange(status) {
       // console.log("开关状态：" + status);
       this.formData.status = status ? 0 : 1;

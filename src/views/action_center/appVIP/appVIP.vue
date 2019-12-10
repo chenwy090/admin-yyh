@@ -9,9 +9,9 @@
           <FormItem label="投放门店: " :label-width="85">
             <Select v-model="searchData.putShop" style="width:200px">
               <Option value="0">全国</Option>
-              <Option value="1">零售商</Option>
-              <Option value="2">城市</Option>
-              <Option value="3">自定义门店</Option>
+              <!-- <Option value="1">零售商</Option> -->
+              <Option value="1">城市</Option>
+              <Option value="2">自定义门店</Option>
             </Select>
           </FormItem>
           <FormItem label="优惠券: " :label-width="85">
