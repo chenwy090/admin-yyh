@@ -548,7 +548,7 @@
           </Row>
           <Row class="box">
             <Col span="4" class="left-text">
-              <span style="color:red">*</span>跳转标签
+              跳转标签
             </Col>
             <Col span="20">
               <Button type="primary" @click="addJumpTag()">增加跳转标签</Button>
@@ -986,6 +986,13 @@
         }
         let num = (this.edit_info.price / this.edit_info.originalPrice) * 10;
         this.discountNum = num.toFixed(2);
+      },
+      ["edit_info.originalPrice"](val) {
+        if (this.edit_info.price == "") {
+          return;
+        }
+        let num = (this.edit_info.price / this.edit_info.originalPrice) * 10;
+        this.discountNum = num.toFixed(2);
       }
     },
     data() {
@@ -1010,16 +1017,16 @@
         couponKindList: [
           {
             value: 1,
-            label: "免费券"
-          },
-          {
-            value: 2,
-            label: "付费券(商户自营)"
+            label: "免费"
           },
           {
             value: 3,
-            label: "付费券(平台自营)"
-          }
+            label: "收费(平台自营)"
+          },
+          {
+            value: 2,
+            label: "收费(商户自营)"
+          },
         ],
         couponSaleAfterList: [
           {
@@ -1447,6 +1454,9 @@
           res.data.thirdUrl = thirdUrl || "";
           //富文本中转处理
           res.data.newDiscountDetail = newDiscountDetail || "";
+          // 跳转标签
+          this.edit_info.couponTagRelationList = res.data.merchantCouponTagVOList
+
           this.edit_info = {
             ...this.edit_info,
             ...res.data
@@ -1649,11 +1659,11 @@
       addMerchantList() {
         //couponKind 1 免费券 | 2 付费券
         const { couponKind } = this.edit_info;
-        if (couponKind == 1) {
+        if (couponKind == 1 || couponKind == 3) {
           this.merchantTabDisplay = true;
           this.selectedMerchantList = [];
           this.getMerchantListFn();
-        } else if (couponKind == 2 || couponKind == 3) {
+        } else if (couponKind == 2) {
           this.showBusinessList = true;
         } else {
           this.msgErr("请选择收费类型");
@@ -2140,13 +2150,15 @@
         };
 
         // 跳转标签处理
-        for (let z = 0; z < this.edit_info.couponTagRelationList.length; z++) {
+        this.reqParams.couponTagRelationList = this.edit_info.couponTagRelationList //跳转标签列表
+        for (let z = 0; z < this.reqParams.couponTagRelationList.length; z++) {
           for (let j = 0; j < this.jumpTagList.length; j++) {
-            if(this.edit_info.couponTagRelationList[z].tagId == this.jumpTagList[j].tagId) {
-              this.edit_info.couponTagRelationList[z].tagName = this.jumpTagList[j].tagName
+            if(this.reqParams.couponTagRelationList[z].tagId == this.jumpTagList[j].tagId) {
+              this.reqParams.couponTagRelationList[z].tagName = this.jumpTagList[j].tagName
             }
           }
         }
+
 
         if (this.reqParams.couponKind != 1) {
           this.reqParams.enableSaleAfter = this.edit_info.enableSaleAfter;

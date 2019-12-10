@@ -236,6 +236,14 @@
                   </div>
                 </Tooltip>
               </template>
+              <template slot-scope="{ row }" slot="updateBy">
+                <span v-if="row.templateStatus == '创建'">{{row.createBy}}</span>
+                <span v-else>{{row.updateBy}}</span>
+              </template>
+              <template slot-scope="{ row }" slot="updateTime">
+                <span v-if="row.templateStatus == '创建'">{{row.createTime}}</span>
+                <span v-else>{{row.updateTime}}</span>
+              </template>
             </Table>
           </Row>
           <Row type="flex" justify="end" class="page">
@@ -624,13 +632,15 @@ export default {
           title: "操作人",
           key: "updateBy",
           align: "center",
-          width: 150
+          width: 150,
+          slot:"updateBy"
         },
         {
           title: "操作时间",
           key: "updateTime",
           align: "center",
-          width: 150
+          width: 150,
+          slot:"updateTime"
         },
         {
           title: "状态",
