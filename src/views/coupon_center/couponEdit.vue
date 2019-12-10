@@ -1017,16 +1017,16 @@
         couponKindList: [
           {
             value: 1,
-            label: "免费券"
-          },
-          {
-            value: 2,
-            label: "付费券(商户自营)"
+            label: "免费"
           },
           {
             value: 3,
-            label: "付费券(平台自营)"
-          }
+            label: "收费(平台自营)"
+          },
+          {
+            value: 2,
+            label: "收费(商户自营)"
+          },
         ],
         couponSaleAfterList: [
           {
