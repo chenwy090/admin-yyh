@@ -40,3 +40,10 @@ export const commonTagOpenAndCloseCommonTag = (body) => {
 }
 
 
+//查询周边券跳转标签
+export const commonTagMerchantCouponTages = () => {
+  return getRequest(`/commonTag/merchantCouponTages`)
+}
+
+
+

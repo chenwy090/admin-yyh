@@ -20,15 +20,8 @@
       </Row>
 
       <!-- 用户列表 -->
-      <Table
-      :loading="TableLoading"
-      border
-      :columns="tableColumns"
-      :data="table_list"
-      sortable="custom"
-      @on-row-click="selectRow"
-      highlight-row
-      ref="table">
+      <Table :loading="TableLoading" border :columns="tableColumns" :data="table_list" sortable="custom"
+        @on-row-click="selectRow" highlight-row ref="table">
         <template slot-scope="{ row }" slot="operate">
           <Button type="text" size="small" style="color:#2db7f5" @click="editLabelDisplayFn(row)">申请付款</Button>
         </template>
@@ -68,7 +61,7 @@
   ]
 
   export default {
-    name:'merchant',
+    name: 'merchant',
     data() {
       return {
         searchForm: {},
@@ -102,7 +95,7 @@
 
         }
       },
-      selectRow(item){
+      selectRow(item) {
         this.$emit('on-row-select', item)
       }
     },

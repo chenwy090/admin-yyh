@@ -3,30 +3,30 @@
     <Card>
       <Form ref="searchForm" :model="searchForm" inline :label-width="70" class="search-form">
         <Form-item label="结算单号" prop="labelName">
-          <Input v-model="searchForm.labelName" placeholder="请输入结算单号" style="width: auto" />
+          <Input v-model="searchForm.labelName" placeholder="请输入结算单号" style="width: 200px" />
         </Form-item>
 
         <FormItem label="结算周期">
-          <DatePicker type="daterange" placeholder="请选择结算周期" v-model="searchForm.date"></DatePicker>
+          <DatePicker type="daterange" placeholder="请选择结算周期" v-model="searchForm.date" style="width: 200px"></DatePicker>
         </FormItem>
 
         <Form-item label="品牌名称" prop="labelName">
-          <Input v-model="searchForm.labelName" placeholder="请输入品牌名称" style="width: auto" />
+          <Input v-model="searchForm.labelName" placeholder="请输入品牌名称" style="width: 200px" />
         </Form-item>
 
         <Form-item label="商户名称" prop="labelName">
-          <Input v-model="searchForm.labelName" placeholder="请输入商户名称" style="width: auto" />
+          <Input v-model="searchForm.labelName" placeholder="请输入商户名称" style="width: 200px" />
         </Form-item>
 
         <Form-item label="状态" prop="status">
-          <Select v-model="searchForm.status" placeholder="请选择" clearable style="width: 200px;">
+          <Select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 200px;">
             <Option value="">全部</Option>
             <Option value="1">已启用</Option>
             <Option value="0">已禁用</Option>
           </Select>
         </Form-item>
 
-        <Form-item style="margin-left:-35px;" class="br">
+        <Form-item class="br">
           <Button @click="search" type="primary" icon="ios-search">搜索</Button>
           <Button @click="resetForm('searchForm')">重置</Button>
         </Form-item>
