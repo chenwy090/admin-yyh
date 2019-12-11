@@ -3,7 +3,7 @@
     <Card>
       <Form ref="searchForm" :model="searchForm" inline :label-width="70" class="search-form">
         <Form-item label="标签名称" prop="tag">
-          <Input v-model="searchForm.tag" placeholder="请输入标签名称" style="width: auto" />
+          <Input v-model="searchForm.tag" placeholder="请输入标签名称" style="width: 200px" />
         </Form-item>
         <Form-item label="标签状态" prop="disabled">
           <Select v-model="searchForm.disabled" placeholder="请选择" clearable style="width: 200px;">
@@ -23,7 +23,7 @@
         </Form-item>
       </Form>
     </Card>
-    <Card>
+    <Card style="margin-top: 1vh;">
       <Row class="operation">
         <Button type="primary" icon="md-add" @click="addLabelDisplayFn">新增标签</Button>
         <Button @click="search" icon="md-refresh">刷新</Button>
