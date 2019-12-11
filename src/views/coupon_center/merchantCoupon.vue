@@ -173,6 +173,7 @@
                   size="small"
                   style="color:#2db7f5"
                   @click="editInfo(row)"
+                  :disabled="row.status == -1 && row.templateStatus == '已结束(手动下架)'"
                   v-if="row.templateStatus == '创建' ||row.templateStatus == '已结束(手动下架)'"
                 >编辑</Button>
                 <Button
