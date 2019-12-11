@@ -255,6 +255,7 @@ export default {
       if (this.formData.type == 6) {
         this.getIndustryMaindList();
         this.getIndustrySecendList();
+        this.getCommonTagInitData();
       }
       this.contentLabel = this.typeOption[this.formData.type];
       this.formData.content = "";
