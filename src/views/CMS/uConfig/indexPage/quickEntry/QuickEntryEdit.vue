@@ -84,14 +84,14 @@
           <FormItem :label="`标签：`" :prop="`tags`">
             <Row class="tags-list" v-for="(items,index) in tagsList" :key="items.key">
               <Col span="5">
-              <Select v-model="items.value" style="width:120px" placeholder="请选择所属模块"
+              <Select v-model="items.moduleId" disabled style="width:120px" placeholder="请选择所属模块"
                 @on-change="getIndustrySecendList()">
-                <Option v-for="item in mainIndustryList" :value="item.id" :key="item.id">{{ item.name }}</Option>
+                <Option v-for="item in tagsModuleList" :value="item.id" :key="item.id">{{ item.moduleName }}</Option>
               </Select>
               </Col>
               <Col span="5">
-              <Select v-model="items.value1" style="width:120px" placeholder="请选择标签">
-                <Option v-for="item in secendIndustryList" :value="item.id" :key="item.id">{{ item.name }}</Option>
+              <Select filterable v-model="items.tagId" style="width:120px" placeholder="请选择标签">
+                <Option v-for="item in tagsSelectList" :disabled="item.disabled" :value="item.tagId" :key="item.tagId">{{ item.tagName }}</Option>
               </Select>
               </Col>
               <Col span="5">
@@ -178,11 +178,17 @@ import { postRequest, getRequest } from "@/libs/axios";
 
 import UploadImage from "../UploadImage";
 import ThematicActivities from "./ThematicActivities";
+import {
+  commonTagGetModuleInfo,
+  commonTagMerchantCouponTages,
+} from '@/api/basicData';
 
 export default {
   name: "quick-entry-edit",
   inject: ["typeOption", "msgOk", "msgErr"],
-  created() {},
+  created() {
+
+  },
   components: {
     UploadImage,
     ThematicActivities
@@ -205,7 +211,8 @@ export default {
             iconUrl: "",
             defaultIconUrlList: [],
             hotUrl: "",
-            defaultHotUrlList: []
+            defaultHotUrlList: [],
+            tagIds:[]
           }
         };
       }
@@ -218,7 +225,7 @@ export default {
         return true;
       }
       return false;
-    }
+    },
   },
   watch: {
     action: {
@@ -228,6 +235,14 @@ export default {
         if (this.formData.type == 6) {
           this.getIndustryMaindList();
           this.getIndustrySecendList();
+          this.getCommonTagInitData();
+          this.tagsList = data.tagIds.map( v=> {
+            return {
+              key: Math.random() * 100000,
+              moduleId:4,
+              tagId: v,
+            }
+          } )
         }
         console.log("this.formData:", JSON.stringify(this.formData));
         console.log("typeOption:", JSON.stringify(this.typeOption));
@@ -245,7 +260,21 @@ export default {
       this.formData.content = "";
       this.formData.value = "";
       this.formData.value1 = "";
-    }
+    },
+    // 选择的标签不能再选择
+    tagsList:{
+      handler(val, oldVal){
+        if(val instanceof Array){
+          let list = val.map( v => v.tagId)
+          this.tagsSelectList.forEach(item => {
+            this.$set(item, 'disabled', list.indexOf(item.tagId) !== -1)
+          })
+        }
+        console.info(this.tagsSelectList)
+      },
+      deep: true,
+      immediate: true
+    },
   },
   data() {
     return {
@@ -270,13 +299,19 @@ export default {
       mainIndustryList: [],
       secendIndustryList: [],
       mainIndustryId: "",
+      tagsModuleList:[],
+      tagsSelectList: [],
       tagsList: [
         {
-          key: Date.now(),
-          value:''
+          key: Math.random() * 100000,
+          moduleId:4,
+          tagId: '',
         }
       ],
     };
+  },
+  mounted(){
+
   },
   methods: {
     //查询所有一级行业列表
@@ -366,6 +401,12 @@ export default {
           // 快捷入口配置项添加或编辑
           const url = "/page/module/layout/saveQuickItem";
 
+          // 添加标签
+          if(this.formData.type == 6){
+            let tagIds = this.tagsList.map(v => v.tagId).filter(v => v);
+            oForm.tagIds = tagIds
+          }
+
           let { code, msg } = await postRequest(url, oForm);
 
           if (code == 200) {
@@ -423,10 +464,32 @@ export default {
       }
     },
     // 标签
+    getCommonTagInitData(){
+      commonTagGetModuleInfo().then(res => {
+        if (res && res.code == 200) {
+          this.tagsModuleList = res.data.records
+        } else {
+          this.$Message.error(res.msg);
+        }
+      })
+
+      commonTagMerchantCouponTages().then(res => {
+        if (res && res.code == 200) {
+          this.tagsSelectList = res.data
+          // 触发一次 tagsList watch
+          if(this.formData.type == 6){
+            this.tagsList = [...this.tagsList]
+          }
+        } else {
+          this.$Message.error(res.msg);
+        }
+      })
+    },
     tagsAdd(){
       this.tagsList.push({
-        key:Date.now(),
-        value:''
+        key: Math.random() * 100000,
+        moduleId:4,
+        tagId: '',
       })
     },
     tagsRemove(index){

@@ -134,7 +134,10 @@
       return {
         searchForm: {
           page: 1,
-          size: 10
+          size: 10,
+          tag: '',
+          disabled: '',
+          moduleId: ''
         },
         searchFormRizhi: {
           page: 1,
@@ -310,7 +313,7 @@
       resetForm(name) {
         this.$refs[name].resetFields();
         if (name == "searchForm") {
-
+          this.getList();
         }
       },
       viewLabelDisplayFn(item) {
@@ -337,12 +340,10 @@
         }
       },
       editLabelDisplayFn(item) {
-        console.info(item)
         commonTagGetCommonTagInfo({
           tagId: item.id
         }).then(res => {
           if (res && res.code == 200) {
-            console.info(res)
             this.modalEditShow = true
             this.labelData = res.data;
             this.labelData.moduleId = item.moduleId
@@ -354,7 +355,7 @@
 
       },
       addLabelDisplayFn() {
-        // this.labelData = {}
+        this.labelData = {}
         this.modalAddShow = true
       },
       modalAddOk(name) {
