@@ -390,7 +390,10 @@
               <span style="color:red">*</span>适用商户
             </Col>
             <Col span="16">
-              <Button @click="addMerchantList">点击选择所需商户</Button>
+              <Button
+                @click="addMerchantList"
+                :disabled="edit_info.status == -1 && edit_info.statusName == '已结束(手动下架)' && edit_info.statusName != null && camp_pageStatus == 'edit'"
+              >点击选择所需商户</Button>
             </Col>
           </Row>
           <Row class="box">
@@ -547,12 +550,14 @@
             </Col>
           </Row>
           <Row class="box">
-            <Col span="4" class="left-text">
-              跳转标签
-            </Col>
+            <Col span="4" class="left-text">跳转标签</Col>
             <Col span="20">
               <Button type="primary" @click="addJumpTag()">增加跳转标签</Button>
-              <div style="margin:5px 0" v-for="(item, index) in edit_info.couponTagRelationList" :key="index">
+              <div
+                style="margin:5px 0"
+                v-for="(item, index) in edit_info.couponTagRelationList"
+                :key="index"
+              >
                 <Select v-model="item.tagId" style="width:200px">
                   <Option
                     v-for="(item1, index1) in jumpTagList"
@@ -560,7 +565,12 @@
                     :key="index1"
                   >{{ item1.tagName }}</Option>
                 </Select>
-                <Button shape="circle" icon="md-close" style="margin-left:10px" @click="delJumpTag(index)"></Button>
+                <Button
+                  shape="circle"
+                  icon="md-close"
+                  style="margin-left:10px"
+                  @click="delJumpTag(index)"
+                ></Button>
               </div>
             </Col>
           </Row>
@@ -1026,7 +1036,7 @@
           {
             value: 2,
             label: "收费(商户自营)"
-          },
+          }
         ],
         couponSaleAfterList: [
           {
@@ -1246,7 +1256,6 @@
     created() {
       this.userToken = { jwttoken: localStorage.getItem("jwttoken") };
       this.getJumpTagList();
-
       // this.init();
     },
     methods: {
@@ -1264,7 +1273,7 @@
       // 添加跳转标签
       addJumpTag() {
         let obj = {
-          tagId: "",
+          tagId: ""
           // tagName: ""
         };
         this.edit_info.couponTagRelationList.push(obj);
@@ -1286,17 +1295,17 @@
       },
       //确定选择商户
       /*selectMerchant() {
-              if (this.selectedMerchantList && this.selectedMerchantList.length > 0) {
-                for (var obj of this.selectedMerchantList) {
-                  this.add_info.merchantList.push(obj);
+                if (this.selectedMerchantList && this.selectedMerchantList.length > 0) {
+                  for (var obj of this.selectedMerchantList) {
+                    this.add_info.merchantList.push(obj);
+                  }
+                  var afterArr = uniqueArray(this.add_info.merchantList, "merchantId");
+                  this.add_info.merchantList = afterArr;
+                  this.merchantTabDisplay = false;
+                } else {
+                  this.msgErr("至少选一个商户");
                 }
-                var afterArr = uniqueArray(this.add_info.merchantList, "merchantId");
-                this.add_info.merchantList = afterArr;
-                this.merchantTabDisplay = false;
-              } else {
-                this.msgErr("至少选一个商户");
-              }
-            },*/
+              },*/
       couponSourceChange(couponSource) {
         console.log("couponSourceChange:", couponSource);
         if (couponSource === 0) {
@@ -1374,7 +1383,6 @@
       },
       init() {
         this.camp_pageStatus = this.getStore("camp_pageStatus");
-
         this.getprovincelist();
         this.getMerchantInfo();
         this.getCampInfo();
@@ -1455,7 +1463,7 @@
           //富文本中转处理
           res.data.newDiscountDetail = newDiscountDetail || "";
           // 跳转标签
-          this.edit_info.couponTagRelationList = res.data.merchantCouponTagVOList
+          this.edit_info.couponTagRelationList = res.data.merchantCouponTagVOList;
 
           this.edit_info = {
             ...this.edit_info,
@@ -1567,11 +1575,11 @@
               // that.bsUploadList.push(obj);
               var roleIdList = [];
               /*if (res.data.roleIdList){
-                                  for (var o of res.data.roleIdList){
-                                      roleIdList.push(parseInt(o))
-                                  }
-                              }
-                              this.add_info.roleIdList = roleIdList;*/
+                                    for (var o of res.data.roleIdList){
+                                        roleIdList.push(parseInt(o))
+                                    }
+                                }
+                                this.add_info.roleIdList = roleIdList;*/
               that.add_info.templateId = that.templateId;
             } else {
               this.$Message.error(res.msg);
@@ -2029,11 +2037,11 @@
         }
 
         // 验证跳转标签
-        if(this.edit_info.couponTagRelationList != []) {
+        if (this.edit_info.couponTagRelationList != []) {
           for (let i = 0; i < this.edit_info.couponTagRelationList.length; i++) {
-            let index = i + 1
-            if(!this.edit_info.couponTagRelationList[i].tagId) {
-              this.$Message.error("第" + index + '条的跳转标签没有选择');
+            let index = i + 1;
+            if (!this.edit_info.couponTagRelationList[i].tagId) {
+              this.$Message.error("第" + index + "条的跳转标签没有选择");
               return;
             }
           }
@@ -2092,9 +2100,9 @@
         }
 
         /*if(this.camp_pageStatus == "edit"){
-                  this.new_ticketMoney = this.edit_info.ticketMoney;
-                  this.new_ticketDiscount = this.edit_info.ticketDiscount;
-              }*/
+                    this.new_ticketMoney = this.edit_info.ticketMoney;
+                    this.new_ticketDiscount = this.edit_info.ticketDiscount;
+                }*/
         this.reqParams = {
           // ...this.edit_info，
 
@@ -2143,22 +2151,26 @@
           // discountDetail: this.edit_info.discountDetail, // 优惠券图文详情（富文本）
           discountDetail: this.edit_info.newDiscountDetail, // 优惠券图文详情（富文本）
           merchantLedger: this.edit_info.merchantLedger, // 商户分账金额
-          payCouponMerchantType: this.edit_info.payCouponMerchantType,
+          payCouponMerchantType: this.edit_info.payCouponMerchantType
           // couponTagRelationList: this.edit_info.couponTagRelationList //跳转标签列表
           // enableSaleAfter: this.edit_info.enableSaleAfter,
           // couponSaleAfterList: this.edit_info.enableSaleAfter == 1? this.edit_info.newCouponSaleAfterList : []
         };
 
         // 跳转标签处理
-        this.reqParams.couponTagRelationList = this.edit_info.couponTagRelationList //跳转标签列表
+        this.reqParams.couponTagRelationList = this.edit_info.couponTagRelationList; //跳转标签列表
         for (let z = 0; z < this.reqParams.couponTagRelationList.length; z++) {
           for (let j = 0; j < this.jumpTagList.length; j++) {
-            if(this.reqParams.couponTagRelationList[z].tagId == this.jumpTagList[j].tagId) {
-              this.reqParams.couponTagRelationList[z].tagName = this.jumpTagList[j].tagName
+            if (
+              this.reqParams.couponTagRelationList[z].tagId ==
+              this.jumpTagList[j].tagId
+            ) {
+              this.reqParams.couponTagRelationList[z].tagName = this.jumpTagList[
+                j
+              ].tagName;
             }
           }
         }
-
 
         if (this.reqParams.couponKind != 1) {
           this.reqParams.enableSaleAfter = this.edit_info.enableSaleAfter;
