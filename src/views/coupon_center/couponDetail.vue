@@ -538,14 +538,10 @@
           "/merchantCouponTemplate/qrcode?templateId=" + this.couponEdit_info,
           { responseType: "blob" }
         ).then(res => {
-          let blob = new Blob([res.data], {type: "application/vnd.ms-excel"});
-          this.QrImg = URL.createObjectURL(blob);
-          // console.log(URL.createObjectURL());
-        })
-        // .then(data => {
-        //   this.QrImg = data
-        //   console.log(this.QrImg);
-        // })
+          if (res.code == 200) {
+            this.QrImg = 'data:image/png;base64,' + res.data
+          }
+        });
       },
       upStatus() {
         //templateId 券模板id 上架状态, 1:上架
@@ -673,8 +669,8 @@
     box-sizing: border-box;
   }
   /* .ivu-form-item {
-                margin-bottom: 0;
-              } */
+                      margin-bottom: 0;
+                    } */
   .demo-drawer-footer {
     width: 100%;
     position: fixed;
