@@ -28,7 +28,7 @@
       <Row style="margin-left:15%;">
         <Form label-position="right" :label-width="150">
           <FormItem label="预览二维码：" required>
-            <img style="width:100px" src="https://image.52ash.cn/wx_mini/qSwTccb66J.jpg">
+            <img style="width:100px" :src="QrImg" />
           </FormItem>
           <FormItem
             label="优惠券来源："
@@ -261,7 +261,7 @@
 </template>
 
 <script>
-  import { postJson, postRequest } from "@/libs/axios";
+  import { postJson, postRequest, getRequest } from "@/libs/axios";
   import { baseUrl } from "@/api/index";
   import logModal from "./logInfo";
   import EditorBar from "@/components/EditorBar";
@@ -277,6 +277,7 @@
     components: { logModal, EditorBar },
     data() {
       return {
+        QrImg: null,
         discountNum: 0, // 优惠力度显示
         logDialogModal: false,
         //乐刻需求新增begin--------------------------
@@ -470,6 +471,7 @@
       init() {
         this.camp_pageStatus = this.getStore("camp_pageStatus");
         this.editInfo();
+        this.getQRImg();
       },
       showLog() {
         this.logDialogModal = true;
@@ -529,6 +531,21 @@
           .catch(err => {
             // console.log(err, 'operating_merchant/merchant-customer/merchant-customer-add, Line929')
           });
+      },
+      //获取二维码
+      getQRImg() {
+        getRequest(
+          "/merchantCouponTemplate/qrcode?templateId=" + this.couponEdit_info,
+          { responseType: "blob" }
+        ).then(res => {
+          let blob = new Blob([res.data], {type: "application/vnd.ms-excel"});
+          this.QrImg = URL.createObjectURL(blob);
+          // console.log(URL.createObjectURL());
+        })
+        // .then(data => {
+        //   this.QrImg = data
+        //   console.log(this.QrImg);
+        // })
       },
       upStatus() {
         //templateId 券模板id 上架状态, 1:上架
@@ -656,8 +673,8 @@
     box-sizing: border-box;
   }
   /* .ivu-form-item {
-        margin-bottom: 0;
-      } */
+                margin-bottom: 0;
+              } */
   .demo-drawer-footer {
     width: 100%;
     position: fixed;
