@@ -32,14 +32,16 @@
       <Table :loading="TableLoading" border :columns="tableColumns" :data="table_list" sortable="custom" ref="table">
         <template slot-scope="{ row }" slot="operate">
           <Button type="text" size="small" style="color:#2db7f5" @click="editLabelDisplayFn(row)">编辑</Button>
-          <Button v-if="row.disabled == 2" type="text" size="small" style="color:#21b6b8"
+          <Button v-if="row.disabled == 1" type="text" size="small" style="color:#21b6b8"
             @click="statusLabelDisplayFn(row)">启用</Button>
-          <Button v-if="row.disabled == 1" type="text" size="small" style="color:#ed4014"
+          <Button v-if="row.disabled == 2" type="text" size="small" style="color:#ed4014"
             @click="statusLabelDisplayFn(row)">禁用</Button>
+
+
         </template>
         <template slot-scope="{ row }" slot="disabled">
-          <Button v-if="row.disabled == 1" type="text" size="small" style="color: #5cadff;">启用</Button>
-          <Button v-if="row.disabled == 2" type="text" size="small" style="color: red;">禁用</Button>
+          <Tag v-if="row.disabled == 2" color="#5cadff">启用</Tag>
+          <Tag v-if="row.disabled == 1" color="red">禁用</Tag>
         </template>
         <template slot-scope="{ row }" slot="rizhi">
           <Button type="text" size="small" style="color:#2db7f5" @click="viewLabelDisplayFn(row)">查看</Button>
@@ -104,8 +106,15 @@
     <Modal v-model="modalViewShow" title="操作日志" :mask-closable="false" @on-cancel="modalViewShow = false" width="954">
 
       <Table :loading="TableLoadingRizhi" border :columns="tableColumnsRizhi" :data="table_list_rizhi" sortable="custom"
-        ref="tableRizhi"></Table>
-
+        ref="tableRizhi">
+        <template slot-scope="{ row }" slot="rizhi">
+          <Tag>{{row.operationType | operationType$}}</Tag>
+        </template>
+        <template slot-scope="{ row }" slot="remark">
+          <p v-if="row.remark" style="color: #ed4014;">{{row.remark}}</p>
+          <p v-if="!row.remark">无</p>
+        </template>
+      </Table>
 
       <Row type="flex" justify="end" class="page">
         <Page :total="totalSize2" show-total show-elevator @on-change="changeCurrent2" style="float: right"
@@ -249,15 +258,31 @@
           title: "操作",
           width: 190,
           align: "center",
-          key: 'operatorName',
+          key: 'operationType',
+          slot: 'rizhi',
         }, {
           title: "备注",
           width: 300,
           align: "center",
           key: 'remark',
+          slot: 'remark',
         }],
-
         moduleList: []
+      }
+    },
+    filters: {
+      operationType$: function (value) {
+        if (!value) return ''
+        switch (value) {
+          case 1:
+            return '新增';
+          case 2:
+            return '编辑';
+          case 3:
+            return '启用';
+          case 4:
+            return '禁用';
+        }
       }
     },
     mounted() {
@@ -323,7 +348,7 @@
       },
       statusLabelDisplayFn(item) {
         this.labelData = item;
-        if (item.disabled == 2) {
+        if (item.disabled == 1) {
           commonTagOpenAndCloseCommonTag({
             tagId: item.id,
             remark: '',
