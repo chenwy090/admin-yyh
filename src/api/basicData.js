@@ -11,7 +11,7 @@ import {
 
 //查询所有的module模块
 export const commonTagGetModuleInfo = () => {
-  return getRequest(`/commonTag/getModuleInfo?page=1&size=2`)
+  return getRequest(`/commonTag/getModuleInfo`)
 }
 
 //新增标签/编辑标签

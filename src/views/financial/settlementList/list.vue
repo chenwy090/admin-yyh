@@ -7,7 +7,8 @@
         </Form-item>
 
         <FormItem label="结算周期">
-          <DatePicker type="daterange" placeholder="请选择结算周期" v-model="searchForm.date" style="width: 200px"></DatePicker>
+          <DatePicker type="daterange" placeholder="请选择结算周期" v-model="searchForm.date" style="width: 200px">
+          </DatePicker>
         </FormItem>
 
         <Form-item label="品牌名称" prop="labelName">
@@ -40,10 +41,22 @@
       <!-- 用户列表 -->
       <Table :loading="TableLoading" border :columns="tableColumns" :data="table_list" sortable="custom" ref="table">
         <template slot-scope="{ row }" slot="operate">
+          <!-- 只有状态为"待处理、被驳回"状态时，才会显示"申请付款"按钮。 -->
           <Button type="text" size="small" style="color:#2db7f5" @click="editLabelDisplayFn(row)">申请付款</Button>
-          <Button type="text" size="small" style="color:#21b6b8" @click="statusLabelDisplayFn(row)">下载</Button>
-          <Button type="text" size="small" style="color:#21b6b8" @click="statusLabelDisplayFn(row)">重新生成</Button>
-          <Button type="text" size="small" style="color:#ed4014" @click="statusLabelDisplayFn(row)">删除</Button>
+          <Button type="text" size="small" style="color:#21b6b8" @click="settleBillDownload(row)">下载</Button>
+          <!-- 只有状态为"被驳回"状态时，才会显示"重新生成"按钮。 -->
+          <Button type="text" size="small" style="color:#21b6b8" @click="settleBillRegen(row)">重新生成</Button>
+          <!-- 只有状态为"待处理、被驳回"状态时，才会显示"删除"按钮。 -->
+          <Button type="text" size="small" style="color:#ed4014" @click="settleBillDelete(row)">删除</Button>
+        </template>
+        <template slot-scope="{ row }" slot="status">
+            <Tooltip placement="top">
+              <p>被驳回</p>
+              <div slot="content">
+                  <p>Display multiple lines of information</p>
+                  <p><i>Can customize the style</i></p>
+              </div>
+            </Tooltip>
         </template>
       </Table>
       <!-- 用户列表 -->
@@ -86,6 +99,12 @@
 </template>
 <script>
   import merchant from './merchant.vue';
+
+  import {
+    settleBillDownload,
+    settleBillRegen,
+    settleBillDelete,
+  } from '@/api/financial';
 
   const columns = [{
       title: "操作",
@@ -138,6 +157,7 @@
       title: "状态",
       width: 190,
       align: "center",
+      slot: "status"
     },
     {
       title: "生成方式",
@@ -240,11 +260,24 @@
           });
           return
         }
-        this.modalMerchantShow = false
-        this.modalAddData.name = '1111'
-        console.info(this.merchantData)
-      }
-
+        this.modalMerchantShow = false;
+        this.modalAddData.name = '1111';
+      },
+      editLabelDisplayFn(){
+        this.$Modal.confirm({
+          title: '申请付款',
+          content: '<p>您确认要提交申请付款吗？</p>',
+          onOk:()=> {
+            console.info('onOk')
+          },
+          onCancel:()=> {
+            console.info('onCancel')
+          },
+        })
+      },
+      settleBillDownload(){},
+      settleBillRegen(){},
+      settleBillDelete(){},
     },
   }
 

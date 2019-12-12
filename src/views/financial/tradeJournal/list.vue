@@ -2,42 +2,41 @@
   <div class="label_manage">
     <Card>
       <Form ref="searchForm" :model="searchForm" inline :label-width="70" class="search-form">
-        <Form-item label="订单号" prop="labelName">
-          <Input v-model="searchForm.labelName" placeholder="请输入订单号" style="width: 200px" />
+        <Form-item label="订单号" prop="orderNo">
+          <Input v-model="searchForm.orderNo" placeholder="请输入订单号" style="width: 200px" />
         </Form-item>
-        <Form-item label="微信单号" prop="labelName">
-          <Input v-model="searchForm.labelName" placeholder="请输入微信单号" style="width: 200px" />
+        <Form-item label="微信单号" prop="tradeNo">
+          <Input v-model="searchForm.tradeNo" placeholder="请输入微信单号" style="width: 200px" />
         </Form-item>
-        <Form-item label="优惠卷ID" prop="labelName">
-          <Input v-model="searchForm.labelName" placeholder="请输入微信单号" style="width: 200px" />
+        <Form-item label="优惠卷ID" prop="couponName">
+          <Input v-model="searchForm.couponName" placeholder="请输入微信单号" style="width: 200px" />
         </Form-item>
-        <Form-item label="品牌名称" prop="labelName">
-          <Input v-model="searchForm.labelName" placeholder="请输入品牌名称" style="width: 200px" />
+        <Form-item label="品牌名称" prop="brandName">
+          <Input v-model="searchForm.brandName" placeholder="请输入品牌名称" style="width: 200px" />
         </Form-item>
-        <Form-item label="商户名称" prop="labelName">
-          <Input v-model="searchForm.labelName" placeholder="请输入商户名称" style="width: 200px" />
+        <Form-item label="商户名称" prop="merchantName">
+          <Input v-model="searchForm.merchantName" placeholder="请输入商户名称" style="width: 200px" />
         </Form-item>
 
-        <Form-item label="支付方式" prop="status">
-          <Select v-model="searchForm.status" placeholder="请选择支付方式" clearable style="width: 200px;">
+        <Form-item label="支付方式" prop="payType">
+          <Select v-model="searchForm.payType" placeholder="请选择支付方式" clearable style="width: 200px;">
             <Option value="">全部</Option>
-            <Option value="1">已启用</Option>
-            <Option value="0">已禁用</Option>
+            <Option value="1">微信</Option>
+            <Option value="2">支付宝</Option>
           </Select>
         </Form-item>
-        <Form-item label="交易类型" prop="type">
-          <Select v-model="searchForm.type" placeholder="请选择交易类型" clearable style="width: 200px;">
-            <Option value="1">会员标签</Option>
-            <Option value="2">抽奖团标签</Option>
-            <Option value="3">超市券标签</Option>
-            <Option value="4">周边券标签</Option>
-            <Option value="5">内容标签</Option>
-            <Option value="6">赏U标签</Option>
+        <Form-item label="交易类型" prop="tradeType">
+          <Select v-model="searchForm.tradeType" placeholder="请选择交易类型" clearable style="width: 200px;">
+            <Option value="">全部</Option>
+            <Option value="1">支付</Option>
+            <Option value="2">退款</Option>
           </Select>
         </Form-item>
 
-        <FormItem label="交易时间">
-          <DatePicker type="daterange" placeholder="请选择交易时间" v-model="searchForm.date" style="width: 200px;"></DatePicker>
+        <FormItem label="交易时间" prop="datetimerange">
+          <DatePicker type="datetimerange" placeholder="请选择交易时间" v-model="searchForm.datetimerange"
+            @on-change=" [searchForm.tradeTimeStrat, searchForm.tradeTimeEnd] = $event " style="width: 275px;">
+          </DatePicker>
         </FormItem>
 
         <Form-item class="br">
@@ -63,115 +62,160 @@
   </div>
 </template>
 <script>
+  const columns = [{
+      title: "订单号",
+      width: 190,
+      align: "center",
+      key: 'orderNo'
+    },
+    {
+      title: "微信单号",
+      width: 190,
+      align: "center",
+      key: 'tradeNo'
+    },
+    {
+      title: "优惠卷ID",
+      width: 190,
+      align: "center",
+      key: 'couponId'
+    },
+    {
+      title: "优惠卷名称",
+      width: 190,
+      align: "center",
+      key: 'couponName'
+    },
+    {
+      title: "数量",
+      width: 190,
+      align: "right",
+      key: 'couponCount'
+    },
+    {
+      title: "品牌名称",
+      width: 190,
+      align: "center",
+      key: 'brandName'
+    },
+    {
+      title: "商户名称",
+      width: 190,
+      align: "center",
+      key: 'merchantName'
+    },
+    {
+      title: "交易金额（元）",
+      width: 190,
+      align: "right",
+      key: 'orderAmount'
+    },
+    {
+      title: "支付通消费（元）",
+      width: 190,
+      align: "right",
+      key: 'payChannelFee'
+    },
+    {
+      title: "平台分账含通消费（元）",
+      width: 190,
+      align: "right",
+      key: 'totalFee'
+    },
+    {
+      title: "商户分账（元）",
+      width: 190,
+      align: "right",
+      key: 'paidAmount'
+    },
+    {
+      title: "支付方式",
+      width: 190,
+      align: "center",
+      key: 'payType'
+    },
+    {
+      title: "交易类型",
+      width: 190,
+      align: "center",
+      key: 'tradeType'
+    },
+    {
+      title: "交易时间",
+      width: 190,
+      align: "center",
+      key: 'tradeTime'
+    },
+  ]
 
-  const columns = [
-          {
-            title: "订单号",
-            width: 190,
-            align: "center",
-          },
-          {
-            title: "微信单号",
-            width: 190,
-            align: "center",
-          },
-          {
-            title: "优惠卷ID",
-            width: 190,
-            align: "center",
-          },
-          {
-            title: "优惠卷名称",
-            width: 190,
-            align: "center",
-          },
-          {
-            title: "数量",
-            width: 190,
-            align: "right",
-          },
-          {
-            title: "品牌名称",
-            width: 190,
-            align: "center",
-          },
-          {
-            title: "商户名称",
-            width: 190,
-            align: "center",
-          },
-          {
-            title: "交易金额（元）",
-            width: 190,
-            align: "right",
-          },
-          {
-            title: "支付通消费（元）",
-            width: 190,
-            align: "right",
-          },
-          {
-            title: "平台分账含通消费（元）",
-            width: 190,
-            align: "right",
-          },
-          {
-            title: "商户分账（元）",
-            width: 190,
-            align: "right",
-          },
-          {
-            title: "支付方式",
-            width: 190,
-            align: "center",
-          },
-          {
-            title: "交易类型",
-            width: 190,
-            align: "center",
-          },
-          {
-            title: "交易时间",
-            width: 190,
-            align: "center",
-          },
-        ]
+  import {
+    billTransactionFlowList
+  } from '@/api/financial'
 
   export default {
     data() {
       return {
-        searchForm: {},
+        searchForm: {
+          pageNum: 1,
+          pageSize: 10,
+          datetimerange: '',
+          orderNo: '',
+          merchantName: '',
+          brandName: '',
+          tradeNo: '',
+          couponId: '',
+          payType: '',
+          tradeType: '',
+          tradeTimeStrat: '',
+          tradeTimeEnd: ''
+        },
 
         current: 1,
-        totalSize: 1, //总条数
+        totalSize: 0, //总条数
         // pageNum: 1, //开始条数
         TableLoading: false,
-        table_list: [{}],
+        table_list: [],
         tableColumns: columns,
       }
     },
+    mounted() {
+      this.getList()
+    },
     methods: {
       // 刷新
-      update() {
-        this.search();
-      },
       search() {
-
+        this.searchForm.pageNum = 1;
+        this.getList()
       },
       getList() {
-
+        this.TableLoading = true;
+        let body = {
+          ...this.searchForm
+        }
+        delete body.datetimerange
+        billTransactionFlowList(body).then(res => {
+          this.TableLoading = false;
+          if (res && res.code == 200) {
+            this.table_list = res.data.records
+            this.totalSize = res.data.total
+          } else {
+            this.$Message.error(res.msg);
+          }
+        })
       },
       changeCurrent(current) {
-
+        this.searchForm.pageNum = current;
+        this.getList();
       },
       // 重置form表单
       resetForm(name) {
         this.$refs[name].resetFields();
+        this.searchForm.tradeTimeStrat = '';
+        this.searchForm.tradeTimeEnd = '';
         if (name == "searchForm") {
 
         }
       },
-
     },
   }
 
