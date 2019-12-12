@@ -4,10 +4,6 @@
       <Row class="operation">
         <Form ref="searchForm" :model="searchForm" inline :label-width="70" class="search-form">
 
-          <Form-item label="品牌名称" prop="labelName">
-            <Input v-model="searchForm.labelName" placeholder="请输入品牌名称" style="width: auto" />
-          </Form-item>
-
           <Form-item label="商户名称" prop="labelName">
             <Input v-model="searchForm.labelName" placeholder="请输入商户名称" style="width: auto" />
           </Form-item>
@@ -38,33 +34,46 @@
   </div>
 </template>
 <script>
+  import {
+    getMerchantInfoList,
+  } from '@/api/financial';
+
   const columns = [{
-      title: "操作",
-      width: 100,
-      align: "left",
-      slot: "operate"
-    },
-    {
-      title: "品牌名称",
-      width: 190,
+      title: "商户编号",
       align: "center",
+      minWidth: 160,
+      key: "merchantId"
     },
     {
       title: "商户名称",
-      width: 190,
       align: "center",
+      width: 230,
+      key: "name"
     },
     {
-      title: "商户地址",
+      title: "地址",
       align: "center",
-    },
+      width: 340,
+      key: "address",
+      render: (h, params) => {
+        let address =
+          params.row.province +
+          params.row.city +
+          params.row.district +
+          params.row.address;
+        return h("span", address);
+      }
+    }
   ]
 
   export default {
     name: 'merchant',
     data() {
       return {
-        searchForm: {},
+        searchForm: {
+          pageNum: 1,
+          pageSize: 10,
+        },
 
         current: 1,
         totalSize: 1, //总条数
@@ -74,19 +83,30 @@
         tableColumns: columns,
       }
     },
+    mounted() {
+      this.getList()
+    },
     methods: {
-      // 刷新
-      update() {
-        this.search();
-      },
       search() {
-
+        this.searchForm.pageNum = 1;
+        this.getList()
       },
       getList() {
-
+        this.TableLoading = true;
+        this.$emit('on-row-select', null)
+        getMerchantInfoList(this.searchForm).then(res => {
+          this.TableLoading = false;
+          if (res && res.code == 200) {
+            this.table_list = res.data.records
+            this.totalSize = res.data.total
+          } else {
+            this.$Message.error(res.msg);
+          }
+        })
       },
       changeCurrent(current) {
-
+        this.searchForm.pageNum = current;
+        this.getList();
       },
       // 重置form表单
       resetForm(name) {

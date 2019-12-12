@@ -2,28 +2,30 @@
   <div class="label_manage">
     <Card>
       <Form ref="searchForm" :model="searchForm" inline :label-width="70" class="search-form">
-        <Form-item label="结算单号" prop="labelName">
-          <Input v-model="searchForm.labelName" placeholder="请输入结算单号" style="width: 200px" />
+        <Form-item label="结算单号" prop="billNo">
+          <Input v-model="searchForm.billNo" placeholder="请输入结算单号" style="width: 200px" />
         </Form-item>
 
-        <FormItem label="结算周期">
-          <DatePicker type="daterange" placeholder="请选择结算周期" v-model="searchForm.date" style="width: 200px">
+        <FormItem label="结算周期" prop="settleTime">
+          <DatePicker type="daterange" placeholder="请选择结算周期" v-model="searchForm.settleTime" style="width: 200px">
           </DatePicker>
         </FormItem>
 
-        <Form-item label="品牌名称" prop="labelName">
-          <Input v-model="searchForm.labelName" placeholder="请输入品牌名称" style="width: 200px" />
+        <Form-item label="品牌名称" prop="brandName">
+          <Input v-model="searchForm.brandName" placeholder="请输入品牌名称" style="width: 200px" />
         </Form-item>
 
-        <Form-item label="商户名称" prop="labelName">
-          <Input v-model="searchForm.labelName" placeholder="请输入商户名称" style="width: 200px" />
+        <Form-item label="商户名称" prop="merchantName">
+          <Input v-model="searchForm.merchantName" placeholder="请输入商户名称" style="width: 200px" />
         </Form-item>
 
-        <Form-item label="状态" prop="status">
-          <Select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 200px;">
-            <Option value="">全部</Option>
-            <Option value="1">已启用</Option>
-            <Option value="0">已禁用</Option>
+        <Form-item label="结算状态" prop="status">
+          <Select v-model="searchForm.status" placeholder="请选择结算状态" clearable style="width: 200px;">
+            <Option :value="0">全部</Option>
+            <Option :value="1">待处理</Option>
+            <Option :value="2">被驳回</Option>
+            <Option :value="3">待付款</Option>
+            <Option :value="4">已付款</Option>
           </Select>
         </Form-item>
 
@@ -41,22 +43,28 @@
       <!-- 用户列表 -->
       <Table :loading="TableLoading" border :columns="tableColumns" :data="table_list" sortable="custom" ref="table">
         <template slot-scope="{ row }" slot="operate">
+          <!-- 账单状态:1 待处理;2 被驳回;3 待付款 ;4 已付款 -->
           <!-- 只有状态为"待处理、被驳回"状态时，才会显示"申请付款"按钮。 -->
-          <Button type="text" size="small" style="color:#2db7f5" @click="editLabelDisplayFn(row)">申请付款</Button>
-          <Button type="text" size="small" style="color:#21b6b8" @click="settleBillDownload(row)">下载</Button>
+          <Button v-if="row.billStatus == 1 || row.billStatus == 2" type="text" size="small" style="color:#2db7f5"
+            @click="editLabelDisplayFn(row)">申请付款</Button>
+
           <!-- 只有状态为"被驳回"状态时，才会显示"重新生成"按钮。 -->
-          <Button type="text" size="small" style="color:#21b6b8" @click="settleBillRegen(row)">重新生成</Button>
+          <Button v-if="row.billStatus == 2" type="text" size="small" style="color:#21b6b8"
+            @click="settleBillRegen(row)">重新生成</Button>
+          <Button type="text" size="small" style="color:#21b6b8" @click="settleBillDownloadFun(row)">下载</Button>
           <!-- 只有状态为"待处理、被驳回"状态时，才会显示"删除"按钮。 -->
-          <Button type="text" size="small" style="color:#ed4014" @click="settleBillDelete(row)">删除</Button>
+          <Button v-if="row.billStatus == 1 || row.billStatus == 2" type="text" size="small" style="color:#ed4014"
+            @click="settleBillDelete(row)">删除</Button>
         </template>
         <template slot-scope="{ row }" slot="status">
-            <Tooltip placement="top">
-              <p>被驳回</p>
-              <div slot="content">
-                  <p>Display multiple lines of information</p>
-                  <p><i>Can customize the style</i></p>
-              </div>
-            </Tooltip>
+          <p v-if="!row.rejectReason">{{row.billStatusDesc}}</p>
+          <Tooltip v-if="row.rejectReason" placement="left" theme="light">
+            <p>{{row.billStatusDesc}}</p>
+            <div class="bohui-box" slot="content">
+              <p style="color: #ed4014;">{{row.rejectReason}}</p>
+              <p style="padding-left: 50px;margin-top: 5px;">{{row.rejectBy}} {{row.rejectTime}}</p>
+            </div>
+          </Tooltip>
         </template>
       </Table>
       <!-- 用户列表 -->
@@ -70,14 +78,14 @@
 
     <Modal v-model="modalAddShow" title="手动新增" :mask-closable="false" @on-cancel="modalAddShow = false">
       <Form :model="modalAddData" ref="modalAddForm2" :label-width="70" class="search-form" :rules="modalAddValidate">
-        <Form-item label="结算商户" prop="name">
-          <Input style="width:80%" v-model="modalAddData.name" :placeholder="`点击按钮选择结算商户`" disabled>
+        <Form-item label="结算商户" prop="merchantName">
+          <Input style="width:80%" v-model="modalAddData.merchantName" :placeholder="`点击按钮选择结算商户`" disabled>
           <Button @click="handleChoose" slot="append">选择</Button>
           </Input>
         </Form-item>
-        <Form-item label="结算周期" prop="date">
-          <DatePicker type="daterange" placeholder="请选择结算周期" v-model="modalAddData.date" style="width: 200px;">
-          </DatePicker>
+        <Form-item label="结算周期" prop="settleTime">
+          <DatePicker type="daterange" format="yyyy-MM-dd" v-model="modalAddData.settleTime" placeholder="请选择结算周期"
+            style="width: 200px"></DatePicker>
         </Form-item>
       </Form>
       <div slot="footer">
@@ -88,7 +96,7 @@
 
     <Modal width="900" v-model="modalMerchantShow" title="选择商户" :mask-closable="false"
       @on-cancel="modalMerchantShow = false">
-      <merchant @on-row-select=" merchantData = $event"></merchant>
+      <merchant v-if="modalMerchantShow" @on-row-select=" merchantData = $event"></merchant>
       <div slot="footer">
         <Button type="text" @click="modalMerchantShow = false">取消</Button>
         <Button type="primary" @click="modalMerchantOk()">保存</Button>
@@ -104,6 +112,10 @@
     settleBillDownload,
     settleBillRegen,
     settleBillDelete,
+
+    settleBillList,
+    settleBillSave,
+    settleBillApply,
   } from '@/api/financial';
 
   const columns = [{
@@ -117,62 +129,74 @@
       title: "结算单号",
       width: 190,
       align: "center",
+      key: 'billNo'
     },
     {
       title: "结算周期",
       width: 190,
       align: "center",
+      key: 'settlementCycle'
     },
     {
       title: "品牌名称",
       width: 190,
       align: "center",
+      key: 'brandName'
     },
     {
       title: "商户名称",
       width: 190,
       align: "center",
+      key: 'merchantName'
     },
     {
       title: "交易金额（元）",
       width: 190,
       align: "right",
+      key: 'realPay'
     },
     {
       title: "支付通消费（元）",
       width: 190,
       align: "right",
+      key: 'channelServiceCostFee'
     },
     {
       title: "平台分账含通消费（元）",
       width: 190,
       align: "right",
+      key: 'platformProfitFee'
     },
     {
       title: "商户分账（元）",
       width: 190,
       align: "right",
+      key: 'settleAmount'
     },
     {
       title: "状态",
       width: 190,
       align: "center",
-      slot: "status"
+      slot: "status",
+      key: 'billStatusDesc'
     },
     {
       title: "生成方式",
       width: 190,
       align: "center",
+      key: 'generateTypeDesc'
     },
     {
       title: "创建人",
       width: 190,
       align: "center",
+      key: 'createBy'
     },
     {
       title: "创建时间",
       width: 190,
       align: "center",
+      key: 'gmtCreate'
     },
   ]
 
@@ -182,28 +206,36 @@
     },
     data() {
       return {
-        searchForm: {},
+        searchForm: {
+          pageNum: 1,
+          pageSize: 10,
+          billNo: '',
+          brandName: '',
+          merchantName: '',
+          status: 0,
+          settleTime: [],
+        },
 
         current: 1,
         totalSize: 1, //总条数
         // pageNum: 1, //开始条数
         TableLoading: false,
-        table_list: [{}],
+        table_list: [],
         tableColumns: columns,
 
         loading: false,
         modalAddShow: false,
         modalAddData: {
-          name: '',
-          date2: [],
+          merchantName: '',
+          settleTime: [],
         },
         modalAddValidate: {
-          name: {
+          merchantName: {
             required: true,
             message: "商户不能为空",
             trigger: "change"
           },
-          date: {
+          settleTime: {
             required: true,
             message: "结算周期不能为空",
             validator: (rule, value, callback) => {
@@ -219,19 +251,33 @@
         merchantData: null,
       }
     },
+    mounted() {
+      this.getList()
+    },
     methods: {
-      // 刷新
-      update() {
-        this.search();
-      },
       search() {
-
+        this.searchForm.pageNum = 1;
+        this.getList()
       },
       getList() {
-
+        this.TableLoading = true;
+        let body = {
+          ...this.searchForm
+        };
+        delete body.daterange
+        settleBillList(body).then(res => {
+          this.TableLoading = false;
+          if (res && res.code == 200) {
+            this.table_list = res.data.records
+            this.totalSize = res.data.total
+          } else {
+            this.$Message.error(res.msg);
+          }
+        })
       },
       changeCurrent(current) {
-
+        this.searchForm.pageNum = current;
+        this.getList();
       },
       // 重置form表单
       resetForm(name) {
@@ -240,12 +286,27 @@
 
         }
       },
+      //手动添加结算清单
       addManualDisplayFn() {
         this.modalAddShow = true;
       },
       modalAddOk(name) {
         this.$refs[name].validate(valid => {
           console.info(valid)
+          if (!valid) return;
+          let body = JSON.parse(JSON.stringify(this.modalAddData))
+          let [startTime, endTime] = body.settleTime
+          body.settleTime = [startTime.substr(0, 10), endTime.substr(0, 10)];
+          delete body.merchantName
+          settleBillSave(body).then(res => {
+            this.modalAddShow = false;
+            if (res && res.code == 200) {
+              this.$Message.success('手动创建成功！');
+              this.search()
+            } else {
+              this.$Message.error(res.msg);
+            }
+          })
         })
       },
       //选择商户
@@ -261,23 +322,79 @@
           return
         }
         this.modalMerchantShow = false;
-        this.modalAddData.name = '1111';
+        this.modalAddData.merchantName = this.merchantData.name;
+        this.modalAddData.merchantId = this.merchantData.merchantId;
+
       },
-      editLabelDisplayFn(){
+      editLabelDisplayFn(item) {
         this.$Modal.confirm({
           title: '申请付款',
           content: '<p>您确认要提交申请付款吗？</p>',
-          onOk:()=> {
-            console.info('onOk')
+          onOk: () => {
+            settleBillApply({
+              id: item.id,
+              memo: ""
+            }).then(res => {
+              if (res && res.code == 200) {
+                this.$Message.success('申请付款成功！');
+                this.search()
+              } else {
+                this.$Message.error(res.msg);
+              }
+            })
           },
-          onCancel:()=> {
+          onCancel: () => {
             console.info('onCancel')
           },
         })
       },
-      settleBillDownload(){},
-      settleBillRegen(){},
-      settleBillDelete(){},
+      // TODO
+      settleBillDownloadFun(item) {
+        settleBillDownload(item.id).then(res => {
+          console.info(res)
+          let blob = new Blob([res.data], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+          let objectUrl = URL.createObjectURL(blob);
+          // window.open(objectUrl)
+        })
+      },
+      settleBillRegen(item) {
+        this.$Modal.confirm({
+          title: '重新生成"',
+          content: '<p>您确认要重新生成该结算单吗？</p>',
+          onOk: () => {
+            settleBillRegen(item.id).then(res => {
+              if (res && res.code == 200) {
+                this.$Message.success('重新生成"！');
+                this.search()
+              } else {
+                this.$Message.error(res.msg);
+              }
+            })
+          },
+          onCancel: () => {
+            console.info('onCancel')
+          },
+        })
+      },
+      settleBillDelete(item) {
+        this.$Modal.confirm({
+          title: '删除',
+          content: '<p>您确认要删除该结算单吗？</p>',
+          onOk: () => {
+            settleBillDelete(item.id).then(res => {
+              if (res && res.code == 200) {
+                this.$Message.success('删除成功！');
+                this.search()
+              } else {
+                this.$Message.error(res.msg);
+              }
+            })
+          },
+          onCancel: () => {
+            console.info('onCancel')
+          },
+        })
+      },
     },
   }
 
@@ -289,6 +406,12 @@
 
   .page {
     margin-top: 2vh;
+  }
+
+  .bohui-box{
+    padding: 5px;
+    font-size: 14px;
+    white-space: normal;
   }
 
 </style>
