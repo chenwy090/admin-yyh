@@ -26,19 +26,25 @@
         <div class="main">
             <div class="mian_head">
                 <div class="head_img">
-                    <img src="https://image.52ash.cn/wx_mini/NOOwbFPsDR.jpg" alt="">
+                    <img :src="couponData.couponBigImg" alt="">
                 </div>
                 <div class="head_txt">
                     <div class="head_title1">
-                        {{couponData.title1}}
-                        <span>{{couponData.couponType}}</span>
+                        {{couponData.title}}
+                        <span>{{couponData.couponTypeName}}</span>
+                        <div class="head_title1_left">
+                            <span v-for="(item, index) in couponData.couponSaleAfterVOList"
+                                :key="index"> <span v-if="index != 0">|</span>{{item.value}}</span>
+                        </div>
                     </div>
                     <div class="head_title2">
-                        {{couponData.title2}}
+                        {{couponData.remark}}
                     </div>
                     <div class="head_title3">
                         <div class="head_title3_txt">
-                            好友领券得XXXU贝 好友用券的XXXU贝
+                            <span>{{couponData.shareReward}}</span>
+                            <span>{{couponData.sharedReward}}</span>
+                            <span>{{couponData.firstLevelReward}}</span>
                         </div>
                         <div class="head_title3_button">
                             分享赚U贝
@@ -52,10 +58,10 @@
                 </div>
                 <div class="rule_main">
                     <div class="rule_time">
-                        活动时间：{{couponData.time}}
+                        活动时间：{{couponData.useStartDate | time}} — {{couponData.useEndDate | time}}
                     </div>
                     <div class="rule_main_txt">
-                        {{couponData.rule}}
+                        {{couponData.useDesc}}
                     </div>
                     <div class="rule_main_button">
                     </div>
@@ -78,12 +84,12 @@
                 </div>
             </div>
 
-            <div class="mian_rule" style="margin-top:15px;">
+            <div class="mian_rule" style="margin-top:15px;padding-bottom: 50px;" v-if="couponData.discountDetail">
                 <div class="rule_title">
                     优惠券详情
                 </div>
-                <div class="gps_main">
-                    11111
+                <div class="gps_main" v-html="couponData.discountDetail">
+                    {{couponData.discountDetail}}
                 </div>
             </div>
 
@@ -95,36 +101,42 @@
         el: "#container",
         data: function () {
             return {
-                jwttoken: null, //用户token
                 templateId: '', // 券id
                 couponData: {
-                    title1: '免费体验儿童街舞课',
-                    couponType: '赠品券',
-                    title2: 'D2M舞蹈教室免费体验儿童街舞',
-                    time: '2019.12.11——2020.01.31',
-                    rule: '舞蹈教室免费体验儿童街舞舞蹈教室免费体验儿童街舞舞蹈教室免费体验儿童街舞舞蹈教室免费体验儿童街舞舞蹈教室免费体验儿童街舞舞蹈教室免费体验儿童街舞舞蹈教室免费体验儿童街舞舞蹈教室免费体验儿童街舞舞蹈教室免费体验儿童街舞舞蹈教室免费体验儿童街舞舞蹈教室免费体验儿童街舞舞蹈教室免费体验儿童街舞舞蹈教室免费体验儿童街舞舞蹈教室免费体验儿童街舞'
+                    // title1: '免费体验儿童街舞课',
+                    // couponType: '赠品券',
+                    // title2: 'D2M舞蹈教室免费体验儿童街舞',
+                    // time: '2019.12.11——2020.01.31',
+                    // rule: '舞蹈教室免费体验童街舞',
+                    // details:'<p>支付券测试-请勿动<img src="https://image.52ash.cn/wx_mini/I3OqoTBwCr.jpg" style="max-width: 100%;"></p>'
                 },
             };
         },
+        filters: {
+            time(val) {
+                if (val) {
+                    let value = val.slice(0, 10)
+                    return value
+                }
+            }
+        },
         created: function () {
-            // this.templateId = this.getUrlKey("templateId",window.location.href)
-            this.jwttoken = {
-                jwttoken: localStorage.getItem("jwttoken")
-            };
-            this.templateId = '20191210652055'
-            this.getCouponData()
+            this.templateId = this.getUrlKey("templateId",window.location.href)
+            // this.templateId = '20191212040171'
+            // this.getCouponData()
             // console.log(this.templateId);
         },
         methods: {
             // 根据id获取数据
             getCouponData() {
-                console.log(123);
-                axios.post(
-                    'http://192.168.31.114:8088/zex-mgr/merchantCouponTemplate/selectByTemplateId?templateId=20191210652055', {
-                    'jwttoken': this.jwttoken
-                }).then(res => {
-
-                })
+                axios.get(
+                    `http://192.168.31.114:8088/zex-mgr/merchantCouponTemplate/getMerchantCouponDetail?templateId=${this.templateId}`
+                )
+                    .then(res => {
+                        if (res.data.code == 200) {
+                            this.couponData = res.data.data
+                        }
+                    })
             },
             // 获取url参数
             getUrlKey(name, url) {
@@ -191,13 +203,29 @@
         height: 5vh;
     } */
     .head_txt .head_title1 {
+        font-size: 0.3rem;
         height: 5vh;
         color: #ef913a;
         font-weight: 600;
+        overflow: hidden;
     }
 
     .head_txt .head_title1 span {
         color: #000;
+    }
+
+    .head_txt .head_title1 .head_title1_left {
+        float: right;
+        font-size: 0.2rem;
+        font-weight: normal;
+    }
+
+    .head_txt .head_title1 .head_title1_left span {
+        color: #848484;
+    }
+
+    .head_title1 .head_title1_left span:nth-child(1) {
+        margin-right: 5px;
     }
 
     .head_txt .head_title2 {
@@ -222,12 +250,12 @@
     }
 
     .head_title3 .head_title3_button {
+        font-size: 0.23rem !important;
         color: #fff;
-        padding: 3px;
+        padding: 6px;
         background-color: #e59591;
         float: right;
-        border-radius: 0 5px 5px 0;
-        margin-top: 4px;
+        border-radius: 0 6px 6px 0;
     }
 
     .main .mian_rule {
@@ -241,7 +269,7 @@
     }
 
     .mian_rule .rule_main {
-        padding: 3%;
+        padding: 3% 3% 0 3%;
         /* width: 100%; */
     }
 
@@ -249,13 +277,17 @@
         font-size: 0.3rem;
     }
 
+    .rule_main .rule_time {
+        font-size: 0.24rem !important;
+    }
+
     .rule_main .rule_main_txt {
         overflow: hidden;
     }
 
     .rule_main .rule_main_button {
-        width: 0.23rem;
-        height: 0.23rem;
+        width: 0.2rem;
+        height: 0.2rem;
         /* background-color: #000; */
         border-left: 1px solid #000;
         border-top: 1px solid #000;

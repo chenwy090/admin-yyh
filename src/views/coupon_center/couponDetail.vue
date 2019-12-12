@@ -535,8 +535,7 @@
       //获取二维码
       getQRImg() {
         getRequest(
-          "/merchantCouponTemplate/qrcode?templateId=" + this.couponEdit_info,
-          { responseType: "blob" }
+          "/merchantCouponTemplate/qrcode?templateId=" + this.couponEdit_info
         ).then(res => {
           if (res.code == 200) {
             this.QrImg = 'data:image/png;base64,' + res.data
