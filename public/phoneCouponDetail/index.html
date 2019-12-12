@@ -34,7 +34,10 @@
                         <span>{{couponData.couponTypeName}}</span>
                         <div class="head_title1_left">
                             <span v-for="(item, index) in couponData.couponSaleAfterVOList"
-                                :key="index"> <span v-if="index != 0">|</span>{{item.value}}</span>
+                                :key="index"> 
+                                <span v-if="index != 0">|</span>
+                                {{item.value}}
+                            </span>
                         </div>
                     </div>
                     <div class="head_title2">
