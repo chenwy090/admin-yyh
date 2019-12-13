@@ -8,8 +8,8 @@
         <Form-item label="标签状态" prop="disabled">
           <Select v-model="searchForm.disabled" placeholder="请选择" clearable style="width: 200px;">
             <Option value="">全部</Option>
-            <Option value="1">已启用</Option>
-            <Option value="0">已禁用</Option>
+            <Option value="2">已启用</Option>
+            <Option value="1">已禁用</Option>
           </Select>
         </Form-item>
         <Form-item label="所属模块" prop="moduleId">
