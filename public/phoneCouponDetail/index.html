@@ -30,7 +30,7 @@
                 </div>
                 <div class="head_txt">
                     <div class="head_title1">
-                        {{couponData.title}}
+                        {{couponData.displayText}}
                         <span>{{couponData.couponTypeName}}</span>
                         <div class="head_title1_left">
                             <span v-for="(item, index) in couponData.couponSaleAfterVOList"
@@ -41,7 +41,7 @@
                         </div>
                     </div>
                     <div class="head_title2">
-                        {{couponData.remark}}
+                        {{couponData.title}}
                     </div>
                     <div class="head_title3">
                         <div class="head_title3_txt">
@@ -61,7 +61,7 @@
                 </div>
                 <div class="rule_main">
                     <div class="rule_time">
-                        活动时间：{{couponData.useStartDate | time}} — {{couponData.useEndDate | time}}
+                        活动时间：{{couponData.startDate | time}} — {{couponData.endDate | time}}
                     </div>
                     <div class="rule_main_txt">
                         {{couponData.useDesc}}
@@ -76,14 +76,12 @@
                     适用门店
                 </div>
                 <div class="gps_main">
-                    <div class="gps_left">
-                        XXXXXXXXXXXX<br>
-                        XXXXXXXXXXXXXXXXXXXXXXXX<br>
-                        XXXXXXXXXXXXXXXXXXXXXXXX
+                    <div class="gps_left" v-for="(item, index) in couponData.merchantInfoVOList" :key="index">
+                        {{item.merchantName}}
                     </div>
-                    <div class="gps_right">
+                    <!-- <div class="gps_right">
                         1043.0km
-                    </div>
+                    </div> -->
                 </div>
             </div>
 
@@ -146,7 +144,7 @@
                 this.templateId = decodeURIComponent((new RegExp('[?|&]' + 'templateId' + '=' + '([^&;]+?)(&|#|;|$)').exec(
                     url) || [, ""])[1]
                     .replace(/\+/g, '%20')) || null
-
+                this.templateId = '20191212040171'
                 if (this.templateId) {
                     this.getCouponData()
                 }
@@ -311,7 +309,7 @@
         width: 65%;
         padding: 2%;
         font-size: 0.2rem;
-        border-right: 1px solid #ccc;
+        /* border-right: 1px solid #ccc; */
     }
 
     .gps_main .gps_right {
