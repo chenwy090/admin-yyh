@@ -4,8 +4,8 @@
       <Row class="operation">
         <Form ref="searchForm" :model="searchForm" inline :label-width="70" class="search-form">
 
-          <Form-item label="商户名称" prop="labelName">
-            <Input v-model="searchForm.labelName" placeholder="请输入商户名称" style="width: auto" />
+          <Form-item label="商户名称" prop="name">
+            <Input v-model="searchForm.name" placeholder="请输入商户名称" style="width: auto" />
           </Form-item>
 
           <Form-item style="margin-left:-35px;" class="br">
@@ -41,7 +41,7 @@
   const columns = [{
       title: "商户编号",
       align: "center",
-      minWidth: 160,
+      width: 150,
       key: "merchantId"
     },
     {
@@ -53,7 +53,6 @@
     {
       title: "地址",
       align: "center",
-      width: 340,
       key: "address",
       render: (h, params) => {
         let address =
@@ -112,7 +111,7 @@
       resetForm(name) {
         this.$refs[name].resetFields();
         if (name == "searchForm") {
-
+          this.search()
         }
       },
       selectRow(item) {

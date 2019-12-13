@@ -86,19 +86,19 @@
 
   const columns = [{
       title: "操作",
-      width: 250,
+      width: 160,
       align: "left",
       fixed: "left",
       slot: "operate"
     }, {
       title: "结算单号",
-      width: 190,
+      width: 140,
       align: "center",
       key: 'billNo'
     },
     {
       title: "结算周期",
-      width: 190,
+      width: 180,
       align: "center",
       key: 'settlementCycle'
     },
@@ -116,13 +116,13 @@
     },
     {
       title: "交易金额（元）",
-      width: 190,
+      width: 140,
       align: "right",
       key: 'realPay'
     },
     {
       title: "支付通消费（元）",
-      width: 190,
+      width: 140,
       align: "right",
       key: 'channelServiceCostFee'
     },
@@ -134,31 +134,31 @@
     },
     {
       title: "商户分账（元）",
-      width: 190,
+      width: 140,
       align: "right",
       key: 'settleAmount'
     },
     {
       title: "状态",
-      width: 190,
+      width: 100,
       align: "center",
       key: 'billStatusDesc'
     },
     {
       title: "生成方式",
-      width: 190,
+      width: 100,
       align: "center",
       key: 'generateTypeDesc'
     },
     {
       title: "结算付款单时间",
-      width: 190,
+      width: 150,
       align: "center",
       key: 'payTime'
     },
     {
       title: "创建人",
-      width: 190,
+      width: 100,
       align: "center",
       key: 'createBy'
     },

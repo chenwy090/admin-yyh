@@ -20,9 +20,9 @@
 
         <Form-item label="支付方式" prop="payType">
           <Select v-model="searchForm.payType" placeholder="请选择支付方式" clearable style="width: 200px;">
-            <Option value="">全部</Option>
-            <Option value="1">微信小程序</Option>
-            <Option value="2">微信app</Option>
+            <Option :value="0">全部</Option>
+            <Option :value="1">微信小程序</Option>
+            <Option :value="2">微信app</Option>
           </Select>
         </Form-item>
         <Form-item label="交易类型" prop="tradeType">
@@ -66,19 +66,19 @@
 <script>
   const columns = [{
       title: "订单号",
-      width: 190,
+      width: 160,
       align: "center",
       key: 'orderNo'
     },
     {
       title: "微信单号",
-      width: 190,
+      width: 134,
       align: "center",
       key: 'tradeNo'
     },
     {
       title: "优惠卷ID",
-      width: 190,
+      width: 100,
       align: "center",
       key: 'couponId'
     },
@@ -90,7 +90,7 @@
     },
     {
       title: "数量",
-      width: 190,
+      width: 100,
       align: "right",
       key: 'couponCount'
     },
@@ -109,13 +109,13 @@
     },
     {
       title: "交易金额（元）",
-      width: 190,
+      width: 150,
       align: "right",
       key: 'orderAmount'
     },
     {
       title: "支付通消费（元）",
-      width: 190,
+      width: 150,
       align: "right",
       key: 'payChannelFee'
     },
@@ -127,25 +127,25 @@
     },
     {
       title: "商户分账（元）",
-      width: 190,
+      width: 150,
       align: "right",
       key: 'paidAmount'
     },
     {
       title: "支付方式",
-      width: 190,
+      width: 100,
       align: "center",
       key: 'payTypeDesc'
     },
     {
       title: "交易类型",
-      width: 190,
+      width: 100,
       align: "center",
       key: 'tradeTypeDesc'
     },
     {
       title: "交易时间",
-      width: 190,
+      width: 150,
       align: "center",
       key: 'tradeTime'
     },
@@ -167,7 +167,7 @@
           brandName: '',
           tradeNo: '',
           couponId: '',
-          payType: '',
+          payType: 0,
           tradeType: '',
           tradeTimeStrat: '',
           tradeTimeEnd: ''

@@ -134,14 +134,14 @@
 
   const columns = [{
       title: "操作",
-      width: 250,
+      width: 240,
       align: "left",
       fixed: "left",
       slot: "operate"
     },
     {
       title: "结算单号",
-      width: 190,
+      width: 140,
       align: "center",
       key: 'billNo'
     },
@@ -165,13 +165,13 @@
     },
     {
       title: "交易金额（元）",
-      width: 190,
+      width: 140,
       align: "right",
       key: 'realPay'
     },
     {
       title: "支付通消费（元）",
-      width: 190,
+      width: 140,
       align: "right",
       key: 'channelServiceCostFee'
     },
@@ -183,32 +183,32 @@
     },
     {
       title: "商户分账（元）",
-      width: 190,
+      width: 140,
       align: "right",
       key: 'settleAmount'
     },
     {
       title: "状态",
-      width: 190,
+      width: 100,
       align: "center",
       slot: "status",
       key: 'billStatusDesc'
     },
     {
       title: "生成方式",
-      width: 190,
+      width: 100,
       align: "center",
       key: 'generateTypeDesc'
     },
     {
       title: "创建人",
-      width: 190,
+      width: 100,
       align: "center",
       key: 'createBy'
     },
     {
       title: "创建时间",
-      width: 190,
+      width: 150,
       align: "center",
       key: 'gmtCreate'
     },
@@ -319,7 +319,7 @@
       resetForm(name) {
         this.$refs[name].resetFields();
         if (name == "searchForm") {
-
+          this.search();
         }
       },
       changeDateTime(datetime, index) {
