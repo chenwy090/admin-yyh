@@ -48,7 +48,9 @@
     <Card style="margin-top: 1vh;">
       <!-- 用户列表 -->
       <Table :loading="TableLoading" border :columns="tableColumns" :data="table_list" sortable="custom" ref="table">
-
+        <template slot-scope="{ row }" slot="merchantName">
+          <p>{{ row.merchantName || '--' }}</p>
+        </template>
       </Table>
       <!-- 用户列表 -->
       <!-- 分页 -->
@@ -102,7 +104,8 @@
       title: "商户名称",
       width: 190,
       align: "center",
-      key: 'merchantName'
+      key: 'merchantName',
+      slot: 'merchantName'
     },
     {
       title: "交易金额（元）",
@@ -211,7 +214,7 @@
         this.searchForm.tradeTimeStrat = '';
         this.searchForm.tradeTimeEnd = '';
         if (name == "searchForm") {
-
+          this.search()
         }
       },
     },

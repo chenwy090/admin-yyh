@@ -879,7 +879,8 @@ export default {
         content: txt,
         duration: 3
       });
-    }
+    },
+
   },
   created() {
     this.getData1();
@@ -888,7 +889,8 @@ export default {
     this.userToken = {
       jwttoken: localStorage.getItem("jwttoken")
     };
-  }
+  },
+
 };
 </script>
 
