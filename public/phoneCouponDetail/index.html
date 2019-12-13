@@ -104,7 +104,7 @@
         el: "#container",
         data: function () {
             return {
-                baseUrl:'http://192.168.31.114:8088/zex-mgr', //接口地址
+                baseUrl:'', //接口地址
                 token:'', //用户登录信息
                 templateId: '', // 券id
                 couponData: {
@@ -135,7 +135,7 @@
             // 根据id获取数据
             getCouponData() {
                 axios.get(
-                    this.baseUrl + `/merchantCouponTemplate/getMerchantCouponDetail?templateId=${this.templateId}`,
+                    this.baseUrl + `zex-mgr/merchantCouponTemplate/getMerchantCouponDetail?templateId=${this.templateId}`,
                     {headers:{jwttoken:this.token}}
                 )
                     .then(res => {
@@ -153,9 +153,23 @@
                     window.location.href ) || [, ""])[1]
                     .replace(/\+/g, '%20')) || null
 
+                // 接口地址
+                let baseUrl = decodeURIComponent((new RegExp('[?|&]' + 'env' + '=' + '([^&;]+?)(&|#|;|$)').exec(
+                    window.location.href ) || [, ""])[1]
+                    .replace(/\+/g, '%20')) || null
+                if(baseUrl == 'dev') {
+                    this.baseUrl = 'http://192.168.31.114:8088/'
+                }else if(baseUrl == 'test') {
+                    this.baseUrl = 'http://192.168.31.134:8088/'
+                }else if(baseUrl == 'review') {
+                    this.baseUrl = 'http://192.168.31.123:8088/'
+                }else if(baseUrl == 'prod') {
+                    this.baseUrl = 'http://crm.52iuh.com:8088/'
+                }
+
                 // this.templateId = '20191212040171'
                 // this.token ='eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXNzd29yZCI6ImRmNDllYzQ4ZTU2NTIyZDExMTUxZmI5ZWNkNjgzYWVmIiwibG9naW5OYW1lIjoidGVzdCIsImV4cCI6MTU3NjIyODU5NiwidXNlcklkIjoiOTk5OSJ9.N8IGtJH6cS0SovOhHlYw68f_KWtbr6gHoaogrFstGVw'
-                if (this.templateId && this.token ) {
+                if (this.templateId && this.token &&  this.baseUrl) {
                     this.getCouponData()
                 }
 
