@@ -76,12 +76,14 @@
                     适用门店
                 </div>
                 <div class="gps_main">
-                    <div class="gps_left" v-for="(item, index) in couponData.merchantInfoVOList" :key="index">
-                        {{item.merchantName}}
+                    <div class="gps_left" >
+                        <span v-if="couponData.merchantInfoVOList">
+                            {{couponData.merchantInfoVOList[0].merchantName}}
+                        </span>
                     </div>
-                    <!-- <div class="gps_right">
+                    <div class="gps_right">
                         1043.0km
-                    </div> -->
+                    </div>
                 </div>
             </div>
 
@@ -102,6 +104,8 @@
         el: "#container",
         data: function () {
             return {
+                baseUrl:'http://192.168.31.114:8088/zex-mgr', //接口地址
+                token:'', //用户登录信息
                 templateId: '', // 券id
                 couponData: {
                     // title1: '免费体验儿童街舞课',
@@ -122,7 +126,7 @@
             }
         },
         created: function () {
-            this.getUrlKey("templateId",window.location.href)
+            this.getUrlKey()
             // this.templateId = '20191212040171'
             // this.getCouponData()
             // console.log(this.templateId);
@@ -131,7 +135,8 @@
             // 根据id获取数据
             getCouponData() {
                 axios.get(
-                    `http://192.168.31.114:8088/zex-mgr/merchantCouponTemplate/getMerchantCouponDetail?templateId=${this.templateId}`
+                    this.baseUrl + `/merchantCouponTemplate/getMerchantCouponDetail?templateId=${this.templateId}`,
+                    {headers:{jwttoken:this.token}}
                 )
                     .then(res => {
                         if (res.data.code == 200) {
@@ -140,12 +145,17 @@
                     })
             },
             // 获取url参数
-            getUrlKey(name, url) {
+            getUrlKey() {
                 this.templateId = decodeURIComponent((new RegExp('[?|&]' + 'templateId' + '=' + '([^&;]+?)(&|#|;|$)').exec(
-                    url) || [, ""])[1]
+                    window.location.href ) || [, ""])[1]
                     .replace(/\+/g, '%20')) || null
-                this.templateId = '20191212040171'
-                if (this.templateId) {
+                this.token = decodeURIComponent((new RegExp('[?|&]' + 'token' + '=' + '([^&;]+?)(&|#|;|$)').exec(
+                    window.location.href ) || [, ""])[1]
+                    .replace(/\+/g, '%20')) || null
+
+                // this.templateId = '20191212040171'
+                // this.token ='eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXNzd29yZCI6ImRmNDllYzQ4ZTU2NTIyZDExMTUxZmI5ZWNkNjgzYWVmIiwibG9naW5OYW1lIjoidGVzdCIsImV4cCI6MTU3NjIyODU5NiwidXNlcklkIjoiOTk5OSJ9.N8IGtJH6cS0SovOhHlYw68f_KWtbr6gHoaogrFstGVw'
+                if (this.templateId && this.token ) {
                     this.getCouponData()
                 }
 
@@ -301,22 +311,27 @@
         margin: 8px 0;
     }
 
-    .gps_main div {
+    /* .gps_main div {
         float: left;
-    }
+    } */
 
     .gps_main .gps_left {
+        float: left;
         width: 65%;
-        padding: 2%;
-        font-size: 0.2rem;
+        height: 9vh;
+        padding: 2% 0 2% 4%;
+        line-height: 9vh;
+        font-size: 0.3rem;
         /* border-right: 1px solid #ccc; */
     }
 
     .gps_main .gps_right {
+        float: right;
         width: 30%;
         font-size: 0.2rem;
         color: #589cde;
         line-height: 10vh;
         text-align: center;
+        border-left: 1px solid #ccc;
     }
 </style>
