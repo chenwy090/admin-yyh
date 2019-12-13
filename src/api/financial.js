@@ -40,7 +40,7 @@ export const settleBillApply = (body) => {
 
 // 结算单明细下载
 export const settleBillDownload = (id) => {
-  return getRequest(`/trade/settle/bill/download/${id}`)
+  return downloadSteam(`/trade/settle/bill/download/${id}`)
 }
 
 
@@ -83,10 +83,10 @@ export const settleBillCheckPay = (body) => {
 //   return postRequest(`/trade/merchant/settle/bill/regen`, body)
 // }
 
-// 结算单明细下载
-// export const settleBillDownload = (id) => {
-//   return getRequest(`/trade/settle/bill/download/${id}`)
-// }
+// 下载结算单
+export const postSettleBillDownload = (body) => {
+  return postRequest(`/trade/settle/bill/download`, body)
+}
 
 // 获取商户信息
 export const getMerchantInfoList = (body) => {

@@ -33,6 +33,11 @@
       </Form>
     </Card>
     <Card style="margin-top: 1vh;">
+
+      <Row class="operation">
+        <Button type="primary" icon="md-add" @click="settleBillDownloadFun">下载结算单</Button>
+      </Row>
+
       <!-- 用户列表 -->
       <Table :loading="TableLoading" border :columns="tableColumns" :data="table_list" sortable="custom" ref="table">
         <template slot-scope="{ row }" slot="operate">
@@ -75,6 +80,8 @@
     settleBillPayList,
     settleBillReject,
     settleBillCheckPay,
+    postSettleBillDownload,
+    settleBillDownload,
   } from '@/api/financial';
 
   const columns = [{
@@ -172,9 +179,9 @@
         },
 
         current: 1,
-        totalSize: 1, //总条数
+        totalSize: 0, //总条数
         TableLoading: false,
-        table_list: [{}],
+        table_list: [],
         tableColumns: columns,
 
         loading: false,
@@ -267,8 +274,56 @@
           onCancel: () => {},
         })
       },
-      downDisplayFun(item){
-
+      //结算付款单下载
+      downDisplayFun(item) {
+        settleBillDownload(item.billNo).then(res => {
+          const content = res.data;
+          let fileName = res.headers["filename"];
+          const blob = new Blob([content], {
+            type: "application/vnd.ms-excel"
+          });
+          if ("download" in document.createElement("a")) {
+            // 非IE下载
+            const elink = document.createElement("a");
+            elink.download = decodeURI(fileName);
+            elink.style.display = "none";
+            elink.href = URL.createObjectURL(blob);
+            document.body.appendChild(elink);
+            elink.click();
+            URL.revokeObjectURL(elink.href); // 释放URL 对象
+            document.body.removeChild(elink);
+          } else {
+            // IE10+下载
+            navigator.msSaveBlob(blob, fileName);
+          }
+        })
+      },
+      //结算单下载
+      settleBillDownloadFun() {
+        let body = JSON.parse(JSON.stringify(this.searchForm))
+        delete body.pageNum
+        delete body.pageSize
+        postSettleBillDownload(body).then(res => {
+          const content = res.data;
+          let fileName = res.headers["filename"];
+          const blob = new Blob([content], {
+            type: "application/vnd.ms-excel"
+          });
+          if ("download" in document.createElement("a")) {
+            // 非IE下载
+            const elink = document.createElement("a");
+            elink.download = decodeURI(fileName);
+            elink.style.display = "none";
+            elink.href = URL.createObjectURL(blob);
+            document.body.appendChild(elink);
+            elink.click();
+            URL.revokeObjectURL(elink.href); // 释放URL 对象
+            document.body.removeChild(elink);
+          } else {
+            // IE10+下载
+            navigator.msSaveBlob(blob, fileName);
+          }
+        })
       }
     },
   }
