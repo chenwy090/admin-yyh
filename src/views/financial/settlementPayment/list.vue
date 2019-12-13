@@ -2,28 +2,28 @@
   <div class="label_manage">
     <Card>
       <Form ref="searchForm" :model="searchForm" inline :label-width="90" class="search-form">
-        <Form-item label="结算单号" prop="labelName">
-          <Input v-model="searchForm.labelName" placeholder="请输入结算单号" style="width: 200px" />
+        <Form-item label="结算单号" prop="billNo">
+          <Input v-model="searchForm.billNo" placeholder="请输入结算单号" style="width: 200px" />
         </Form-item>
-        <FormItem label="结算周期">
-          <DatePicker type="daterange" placeholder="请选择结算周期" v-model="searchForm.date" style="width: 200px">
+        <FormItem label="结算周期" prop="settleTime">
+          <DatePicker type="daterange" placeholder="请选择结算周期" v-model="searchForm.settleTime" style="width: 200px">
           </DatePicker>
         </FormItem>
-        <Form-item label="品牌名称" prop="labelName">
-          <Input v-model="searchForm.labelName" placeholder="请输入品牌名称" style="width: 200px" />
+        <Form-item label="品牌名称" prop="brandName">
+          <Input v-model="searchForm.brandName" placeholder="请输入品牌名称" style="width: 200px" />
         </Form-item>
-        <Form-item label="商户名称" prop="labelName">
-          <Input v-model="searchForm.labelName" placeholder="请输入商户名称" style="width: 200px" />
+        <Form-item label="商户名称" prop="merchantName">
+          <Input v-model="searchForm.merchantName" placeholder="请输入商户名称" style="width: 200px" />
         </Form-item>
-        <FormItem label="结算付款时间">
-          <DatePicker type="daterange" placeholder="请选择结算付款时间" v-model="searchForm.date" style="width: 200px">
+        <FormItem label="结算付款时间" prop="payTime">
+          <DatePicker type="daterange" placeholder="请选择结算付款时间" v-model="searchForm.payTime" style="width: 200px">
           </DatePicker>
         </FormItem>
         <Form-item label="状态" prop="status">
           <Select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 200px;">
-            <Option value="">全部</Option>
-            <Option value="1">已启用</Option>
-            <Option value="0">已禁用</Option>
+            <Option :value="0">全部</Option>
+            <Option :value="3">待付款</Option>
+            <Option :value="4">已付款</Option>
           </Select>
         </Form-item>
         <Form-item class="br">
@@ -33,12 +33,22 @@
       </Form>
     </Card>
     <Card style="margin-top: 1vh;">
+
+      <Row class="operation">
+        <Button type="primary" icon="md-add" @click="settleBillDownloadFun">下载结算单</Button>
+      </Row>
+
       <!-- 用户列表 -->
       <Table :loading="TableLoading" border :columns="tableColumns" :data="table_list" sortable="custom" ref="table">
         <template slot-scope="{ row }" slot="operate">
-          <Button type="text" size="small" style="color:#2db7f5" @click="editLabelDisplayFn(row)">确认付款</Button>
-          <Button type="text" size="small" style="color:#ed4014" @click="modalDisplayShowFu(row)">驳回</Button>
-          <Button type="text" size="small" style="color:#21b6b8" @click="statusLabelDisplayFn(row)">下载</Button>
+          <!-- 账单状态:1 待处理;2 被驳回;3 待付款 ;4 已付款 -->
+          <!-- 只有状态为"待付款"时，才显示"确认付款"按钮。 -->
+          <Button v-if="row.billStatus == 3" type="text" size="small" style="color:#2db7f5"
+            @click="settleBillCheckPayFn(row)">确认付款</Button>
+          <!-- 只有状态为"待付款"时，才显示"驳回"按钮。 -->
+          <Button v-if="row.billStatus == 3" type="text" size="small" style="color:#ed4014"
+            @click="modalDisplayShowFu(row)">驳回</Button>
+          <Button type="text" size="small" style="color:#21b6b8" @click="downDisplayFun(row)">下载</Button>
         </template>
       </Table>
       <!-- 用户列表 -->
@@ -53,8 +63,8 @@
     <Modal v-model="modalDisplayShow" title="驳回理由" :mask-closable="false" @on-cancel="modalDisplayShow = false">
       <Form :model="displayData" ref="modalDisplayForm" :label-width="70" :rules="modalDisplayValidate"
         class="search-form">
-        <Form-item label="驳回理由" prop="remark">
-          <Input v-model="displayData.remark" placeholder="请输入驳回理由" type="textarea" :rows="4" />
+        <Form-item label="驳回理由" prop="memo">
+          <Input v-model="displayData.memo" placeholder="请输入驳回理由" type="textarea" :rows="4" />
         </Form-item>
       </Form>
       <div slot="footer">
@@ -66,6 +76,14 @@
   </div>
 </template>
 <script>
+  import {
+    settleBillPayList,
+    settleBillReject,
+    settleBillCheckPay,
+    postSettleBillDownload,
+    settleBillDownload,
+  } from '@/api/financial';
+
   const columns = [{
       title: "操作",
       width: 250,
@@ -76,61 +94,73 @@
       title: "结算单号",
       width: 190,
       align: "center",
+      key: 'billNo'
     },
     {
       title: "结算周期",
       width: 190,
       align: "center",
+      key: 'settlementCycle'
     },
     {
       title: "品牌名称",
       width: 190,
       align: "center",
+      key: 'brandName'
     },
     {
       title: "商户名称",
       width: 190,
       align: "center",
+      key: 'brandName'
     },
     {
       title: "交易金额（元）",
       width: 190,
       align: "right",
+      key: 'realPay'
     },
     {
       title: "支付通消费（元）",
       width: 190,
       align: "right",
+      key: 'channelServiceCostFee'
     },
     {
       title: "平台分账含通消费（元）",
       width: 190,
       align: "right",
+      key: 'platformProfitFee'
     },
     {
       title: "商户分账（元）",
       width: 190,
       align: "right",
+      key: 'settleAmount'
     },
     {
       title: "状态",
       width: 190,
       align: "center",
+      key: 'billStatusDesc'
     },
     {
       title: "生成方式",
       width: 190,
       align: "center",
+      key: 'generateTypeDesc'
     },
     {
       title: "结算付款单时间",
       width: 190,
       align: "center",
+      key: 'payTime'
     },
     {
       title: "创建人",
       width: 190,
       align: "center",
+      key: 'createBy'
     },
   ]
 
@@ -138,22 +168,29 @@
     data() {
       return {
         searchForm: {
-
+          pageNum: 1,
+          pageSize: 10,
+          status: 0,
+          billNo: '',
+          brandName: '',
+          merchantName: '',
+          settleTime: [],
+          payTime: [],
         },
 
         current: 1,
-        totalSize: 1, //总条数
+        totalSize: 0, //总条数
         TableLoading: false,
-        table_list: [{}],
+        table_list: [],
         tableColumns: columns,
 
-        loading:false,
-        displayData:{
-          remark:''
+        loading: false,
+        displayData: {
+          memo: ''
         },
-        modalDisplayShow:false,
-        modalDisplayValidate:{
-          remark: [{
+        modalDisplayShow: false,
+        modalDisplayValidate: {
+          memo: [{
               required: true,
               message: "驳回理由不能为空",
               trigger: "change"
@@ -167,19 +204,29 @@
         }
       }
     },
+    mounted() {
+      this.getList()
+    },
     methods: {
-      // 刷新
-      update() {
-        this.search();
-      },
       search() {
-
+        this.searchForm.pageNum = 1;
+        this.getList()
       },
       getList() {
-
+        this.TableLoading = true;
+        settleBillPayList(this.searchForm).then(res => {
+          this.TableLoading = false;
+          if (res && res.code == 200) {
+            this.table_list = res.data.records
+            this.totalSize = res.data.total
+          } else {
+            this.$Message.error(res.msg);
+          }
+        })
       },
       changeCurrent(current) {
-
+        this.searchForm.pageNum = current;
+        this.getList();
       },
       // 重置form表单
       resetForm(name) {
@@ -188,16 +235,96 @@
           this.getList()
         }
       },
-      modalDisplayShowFu(item){
-        // this.displayData.id = item.id
+      modalDisplayShowFu(item) {
+        this.displayData.id = item.id
         this.modalDisplayShow = true
       },
-      modalDisplayOk(name){
-        this.$refs[name].validate( valid => {
-          console.info(valid)
-        } )
+      modalDisplayOk(name) {
+        this.$refs[name].validate(valid => {
+          if (!valid) return;
+          settleBillReject(this.displayData).then(res => {
+            if (res && res.code == 200) {
+              this.$Message.success('驳回成功！');
+              this.search();
+            } else {
+              this.$Message.error(res.msg);
+            }
+            this.modalDisplayShow = false;
+          })
+        })
+      },
+      settleBillCheckPayFn(item) {
+        console.info(item)
+        this.$Modal.confirm({
+          title: '确认付款',
+          content: `<p>您确认已完结算单核对且打款给该<span style="color:red;">【${item.brandName}】</span>吗？</p>`,
+          onOk: () => {
+            settleBillCheckPay({
+              id: item.id,
+              memo: ""
+            }).then(res => {
+              if (res && res.code == 200) {
+                this.$Message.success('确认付款成功！');
+                this.search()
+              } else {
+                this.$Message.error(res.msg);
+              }
+            })
+          },
+          onCancel: () => {},
+        })
+      },
+      //结算付款单下载
+      downDisplayFun(item) {
+        settleBillDownload(item.billNo).then(res => {
+          const content = res.data;
+          let fileName = res.headers["filename"];
+          const blob = new Blob([content], {
+            type: "application/vnd.ms-excel"
+          });
+          if ("download" in document.createElement("a")) {
+            // 非IE下载
+            const elink = document.createElement("a");
+            elink.download = decodeURI(fileName);
+            elink.style.display = "none";
+            elink.href = URL.createObjectURL(blob);
+            document.body.appendChild(elink);
+            elink.click();
+            URL.revokeObjectURL(elink.href); // 释放URL 对象
+            document.body.removeChild(elink);
+          } else {
+            // IE10+下载
+            navigator.msSaveBlob(blob, fileName);
+          }
+        })
+      },
+      //结算单下载
+      settleBillDownloadFun() {
+        let body = JSON.parse(JSON.stringify(this.searchForm))
+        delete body.pageNum
+        delete body.pageSize
+        postSettleBillDownload(body).then(res => {
+          const content = res.data;
+          let fileName = res.headers["filename"];
+          const blob = new Blob([content], {
+            type: "application/vnd.ms-excel"
+          });
+          if ("download" in document.createElement("a")) {
+            // 非IE下载
+            const elink = document.createElement("a");
+            elink.download = decodeURI(fileName);
+            elink.style.display = "none";
+            elink.href = URL.createObjectURL(blob);
+            document.body.appendChild(elink);
+            elink.click();
+            URL.revokeObjectURL(elink.href); // 释放URL 对象
+            document.body.removeChild(elink);
+          } else {
+            // IE10+下载
+            navigator.msSaveBlob(blob, fileName);
+          }
+        })
       }
-
     },
   }
 

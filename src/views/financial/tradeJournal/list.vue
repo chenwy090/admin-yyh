@@ -21,8 +21,8 @@
         <Form-item label="支付方式" prop="payType">
           <Select v-model="searchForm.payType" placeholder="请选择支付方式" clearable style="width: 200px;">
             <Option value="">全部</Option>
-            <Option value="1">微信</Option>
-            <Option value="2">支付宝</Option>
+            <Option value="1">微信小程序</Option>
+            <Option value="2">微信app</Option>
           </Select>
         </Form-item>
         <Form-item label="交易类型" prop="tradeType">
@@ -132,13 +132,13 @@
       title: "支付方式",
       width: 190,
       align: "center",
-      key: 'payType'
+      key: 'payTypeDesc'
     },
     {
       title: "交易类型",
       width: 190,
       align: "center",
-      key: 'tradeType'
+      key: 'tradeTypeDesc'
     },
     {
       title: "交易时间",
@@ -189,9 +189,7 @@
       },
       getList() {
         this.TableLoading = true;
-        let body = {
-          ...this.searchForm
-        }
+        let body = JSON.parse(JSON.stringify(this.searchForm))
         delete body.datetimerange
         billTransactionFlowList(body).then(res => {
           this.TableLoading = false;
