@@ -350,11 +350,12 @@
       },
       // TODO
       settleBillDownloadFun(item) {
-        settleBillDownload(item.id).then(res => {
-          console.info(res)
-          let blob = new Blob([res.data], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
-          let objectUrl = URL.createObjectURL(blob);
-          // window.open(objectUrl)
+        settleBillDownload(item.billNo).then(res => {
+          if(res && res.status == 200){
+            let blob = new Blob([res.data], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+            let objectUrl = URL.createObjectURL(blob);
+            window.open(objectUrl)
+          }
         })
       },
       settleBillRegen(item) {
@@ -362,9 +363,9 @@
           title: '重新生成"',
           content: '<p>您确认要重新生成该结算单吗？</p>',
           onOk: () => {
-            settleBillRegen(item.id).then(res => {
+            settleBillRegen(item.billNo).then(res => {
               if (res && res.code == 200) {
-                this.$Message.success('重新生成"！');
+                this.$Message.success('重新生成成功！');
                 this.search()
               } else {
                 this.$Message.error(res.msg);
@@ -381,7 +382,7 @@
           title: '删除',
           content: '<p>您确认要删除该结算单吗？</p>',
           onOk: () => {
-            settleBillDelete(item.id).then(res => {
+            settleBillDelete(item.billNo).then(res => {
               if (res && res.code == 200) {
                 this.$Message.success('删除成功！');
                 this.search()
