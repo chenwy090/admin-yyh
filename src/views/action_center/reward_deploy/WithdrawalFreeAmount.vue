@@ -12,6 +12,9 @@
         <template slot-scope="{ row }" slot="action">
           <Button type="success" style="margin-right: 5px" size="small" @click="openModal(row)">修改</Button>
         </template>
+        <template slot-scope="{ row }" slot="log">
+          <Button type="success" style="margin-right: 5px" size="small" @click="viewLogShow(row)">查看日志</Button>
+        </template>
       </Table>
     </div>
 
@@ -42,6 +45,23 @@
         </FormItem>
       </Form>
     </Modal>
+
+    <!-- 操作日志 -->
+    <Modal v-model="modalViewShow" title="操作日志" :mask-closable="false" @on-cancel="modalViewShow = false" width="600">
+
+      <Table :loading="TableLoadingRizhi" border :columns="tableColumnsRizhi" :data="table_list_rizhi" sortable="custom"
+        ref="tableRizhi"></Table>
+
+      <Row type="flex" justify="end" class="page" style="margin-top: 1vh;">
+        <Page :total="totalSize2" show-total show-elevator @on-change="changeCurrent2" style="float: right"
+          :current.sync="current2"></Page>
+      </Row>
+
+      <div slot="footer">
+        <Button type="text" @click="modalViewShow = false">取消</Button>
+      </div>
+    </Modal>
+
   </div>
 </template>
 
@@ -101,9 +121,51 @@ export default {
           align: "center",
           minWidth: 160,
           key: "modifiedTime"
+        },
+        {
+          title: "操作日志",
+          align: "center",
+          minWidth: 100,
+          slot: 'log'
         }
       ],
-      tableData: []
+      tableData: [],
+
+      rizhiData:{
+        limit:10,
+        page:1,
+      },
+      totalSize2: 0,
+      current2: 1,
+      table_list_rizhi:[],
+      modalViewShow: false,
+      TableLoadingRizhi: false,
+      tableColumnsRizhi:[
+        {
+          title: "操作前",
+          align: "right",
+          minWidth: 100,
+          key: "after"
+        },
+        {
+          title: "操作后",
+          align: "right",
+          minWidth: 100,
+          key: "before"
+        },
+        {
+          title: "操作人",
+          align: "center",
+          minWidth: 100,
+          key: "createBy"
+        },
+        {
+          title: "操作时间",
+          align: "center",
+          minWidth: 160,
+          key: "gmtCreate"
+        }
+      ]
     };
   },
   created() {
@@ -196,6 +258,28 @@ export default {
         content: txt,
         duration: 3
       });
+    },
+
+    changeCurrent2(current){
+      this.rizhiData.page = current;
+    },
+    viewLogShow(item){
+      this.modalViewShow = true;
+      this.rizhiData.key = item.key;
+      this.viewLog()
+    },
+    // 查看日志
+    viewLog(){
+      this.TableLoadingRizhi = true;
+      postRequest('/trade/sys/conf/record', this.rizhiData).then(res => {
+        this.TableLoadingRizhi = false;
+          if (res && res.code == 200) {
+            this.table_list_rizhi = res.data.records
+            this.totalSize = res.data.total
+          } else {
+            this.$Message.error(res.msg);
+          }
+      })
     }
   }
 };

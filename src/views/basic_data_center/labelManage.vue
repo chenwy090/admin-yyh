@@ -146,7 +146,7 @@
           size: 10,
           tag: '',
           disabled: '',
-          moduleId: ''
+          moduleId: 0
         },
         searchFormRizhi: {
           page: 1,
@@ -289,6 +289,10 @@
       commonTagGetModuleInfo().then(res => {
         if (res && res.code == 200) {
           this.moduleList = res.data.records
+          this.moduleList.unshift({
+            moduleName:'全部',
+            id:0
+          })
         } else {
           this.$Message.error(res.msg);
         }

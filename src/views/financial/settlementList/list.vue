@@ -59,7 +59,7 @@
         <template slot-scope="{ row }" slot="status">
           <p v-if="!row.rejectReason">{{row.billStatusDesc}}</p>
           <Tooltip v-if="row.rejectReason" placement="left" theme="light">
-            <p>{{row.billStatusDesc}}</p>
+            <p style="color: #ed4014;cursor: help;">{{row.billStatusDesc}}</p>
             <div class="bohui-box" slot="content">
               <p style="color: #ed4014;">{{row.rejectReason}}</p>
               <p style="padding-left: 50px;margin-top: 5px;">{{row.rejectBy}} {{row.rejectTime}}</p>
@@ -83,9 +83,23 @@
           <Button @click="handleChoose" slot="append">选择</Button>
           </Input>
         </Form-item>
-        <Form-item label="结算周期" prop="settleTime">
-          <DatePicker type="daterange" format="yyyy-MM-dd" v-model="modalAddData.settleTime" placeholder="请选择结算周期"
-            style="width: 200px"></DatePicker>
+        <Form-item label="结算周期">
+          <Row>
+            <Col span="12">
+            <FormItem prop="settleTimeStart">
+              <DatePicker type="date" :options="options1" @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
+                format="yyyy-MM-dd" v-model="modalAddData.settleTimeStart" placeholder="请选择结算周期" style="width: 150px">
+              </DatePicker>
+            </FormItem>
+            </Col>
+            <Col span="12">
+            <FormItem prop="settleTimeEnd">
+              <DatePicker type="date" :options="options2" @on-change="(datetime) =>{ changeDateTime(datetime, 2)}"
+                format="yyyy-MM-dd" v-model="modalAddData.settleTimeEnd" placeholder="请选择结算周期" style="width: 150px">
+              </DatePicker>
+            </FormItem>
+            </Col>
+          </Row>
         </Form-item>
       </Form>
       <div slot="footer">
@@ -235,20 +249,42 @@
             message: "商户不能为空",
             trigger: "change"
           },
-          settleTime: {
+          settleTimeStart: {
             required: true,
             message: "结算周期不能为空",
             validator: (rule, value, callback) => {
-              if (value.filter(v => v).length === 0) {
+              if (!value) {
                 callback(new Error("请选择结算日期"))
               } else {
                 callback()
               }
             }
+          },
+          settleTimeEnd: {
+            required: true,
+            message: "结算周期不能为空",
+            validator: (rule, value, callback) => {
+              if (!value) {
+                callback(new Error("请选择结算日期"))
+              } else {
+                callback()
+              }
+            }
+          },
+        },
+        options1: {
+          disabledDate(date) {
+            return date && date.valueOf() >= Date.now() - 86400000;
+          }
+        },
+        options2: {
+          disabledDate(date) {
+            return date && date.valueOf() > Date.now();
           }
         },
         modalMerchantShow: false,
         merchantData: null,
+
       }
     },
     mounted() {
@@ -286,8 +322,25 @@
 
         }
       },
+      changeDateTime(datetime, index) {
+        if (!datetime) {
+          return;
+        }
+        switch (index) {
+          case 1:
+            this.options2 = {
+              disabledDate(date) {
+                let bo = date.valueOf() < new Date(datetime) - 1000 * 60 * 60 * 24;
+                let bo2 = date.valueOf() > new Date() -  1000 * 60 * 60 * 24;
+                return bo2 || bo;
+              }
+            };
+            break;
+        }
+      },
       //手动添加结算清单
       addManualDisplayFn() {
+        this.$refs['modalAddForm2'].resetFields();
         this.modalAddShow = true;
       },
       modalAddOk(name) {
@@ -295,6 +348,7 @@
           console.info(valid)
           if (!valid) return;
           let body = JSON.parse(JSON.stringify(this.modalAddData))
+          body.settleTime = [body.settleTimeStart, body.settleTimeEnd];
           let [startTime, endTime] = body.settleTime
           body.settleTime = [startTime.substr(0, 10), endTime.substr(0, 10)];
           delete body.merchantName
@@ -353,20 +407,22 @@
         settleBillDownload(item.billNo).then(res => {
           const content = res.data;
           let fileName = res.headers["filename"];
-          const blob = new Blob([content], { type: "application/vnd.ms-excel" });
+          const blob = new Blob([content], {
+            type: "application/vnd.ms-excel"
+          });
           if ("download" in document.createElement("a")) {
-              // 非IE下载
-              const elink = document.createElement("a");
-              elink.download = decodeURI(fileName);
-              elink.style.display = "none";
-              elink.href = URL.createObjectURL(blob);
-              document.body.appendChild(elink);
-              elink.click();
-              URL.revokeObjectURL(elink.href); // 释放URL 对象
-              document.body.removeChild(elink);
+            // 非IE下载
+            const elink = document.createElement("a");
+            elink.download = decodeURI(fileName);
+            elink.style.display = "none";
+            elink.href = URL.createObjectURL(blob);
+            document.body.appendChild(elink);
+            elink.click();
+            URL.revokeObjectURL(elink.href); // 释放URL 对象
+            document.body.removeChild(elink);
           } else {
-              // IE10+下载
-              navigator.msSaveBlob(blob, fileName);
+            // IE10+下载
+            navigator.msSaveBlob(blob, fileName);
           }
         })
       },
@@ -421,7 +477,7 @@
     margin-top: 2vh;
   }
 
-  .bohui-box{
+  .bohui-box {
     padding: 5px;
     font-size: 14px;
     white-space: normal;
