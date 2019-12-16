@@ -8,8 +8,8 @@
         <Form-item label="微信单号" prop="tradeNo">
           <Input v-model="searchForm.tradeNo" placeholder="请输入微信单号" style="width: 200px" />
         </Form-item>
-        <Form-item label="优惠券ID" prop="couponName">
-          <Input v-model="searchForm.couponName" placeholder="请输入微信单号" style="width: 200px" />
+        <Form-item label="优惠券ID" prop="couponid">
+          <Input v-model="searchForm.couponid" placeholder="请输入优惠券ID" style="width: 200px" />
         </Form-item>
         <Form-item label="品牌名称" prop="brandName">
           <Input v-model="searchForm.brandName" placeholder="请输入品牌名称" style="width: 200px" />
@@ -166,7 +166,7 @@
           merchantName: '',
           brandName: '',
           tradeNo: '',
-          couponId: '',
+          couponid: '',
           payType: 0,
           tradeType: '',
           tradeTimeStrat: '',
