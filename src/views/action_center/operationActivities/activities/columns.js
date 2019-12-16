@@ -35,7 +35,7 @@ export default [
     // status
     {
         title: "当前状态",
-        key: "statusName ",
+        key: "statusName",
         align: "center",
         minWidth: 140
     },

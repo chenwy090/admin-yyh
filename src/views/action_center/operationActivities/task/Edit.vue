@@ -144,6 +144,16 @@
               clearable
             />
           </FormItem>
+
+          <template v-if="formData.assignmentType==1">
+            <FormItem label="是否推荐：" prop="level" :rules="{ required: true, message: '请选择是否推荐' }">
+              <RadioGroup v-model="formData.isRecommend">
+                <Radio v-for="item in isRecommendOption" :label="item.value" :key="item.value">
+                  <span>{{item.label}}</span>
+                </Radio>
+              </RadioGroup>
+            </FormItem>
+          </template>
         </Form>
       </div>
       <div slot="footer">
@@ -284,8 +294,8 @@ export default {
           oForm.activityId = this.activityId;
           oForm.prizepoolId = this.prizepoolId;
           if (oForm.assignmentType == 1) {
-            oForm.assignmentObject = oForm.couponId;
             oForm.assignmentObjectType = oForm.couponType;
+            oForm.assignmentObject = oForm.couponId;
           }
 
           let { code, msg } = await postRequest(this.url, oForm);

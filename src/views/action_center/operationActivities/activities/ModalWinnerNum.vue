@@ -15,8 +15,8 @@
       </div>
       <Form label-position="right" ref="form" :model="formData" :label-width="120">
         <!-- 点击后，在弹层中，填写和显示以下信息：
-本次增加次数：仅支持填写正整数；
-实际中奖次数：此处数值仅用于展示，不可操作，具体值=活动累计实际中奖次数（实时计算）；
+            本次增加次数：仅支持填写正整数；
+          实际中奖次数：此处数值仅用于展示，不可操作，具体值=活动累计实际中奖次数（实时计算）；
         显示中奖次数：此处数值仅用于展示，不可操作，具体值=本次新增中奖次数+实际中奖次数+累计手动增加中奖次数（不含本次）；-->
         <template v-if="action.type=='edit'">
           <FormItem
@@ -33,8 +33,8 @@
             />
           </FormItem>
         </template>
-        <FormItem label="实际中奖次数：" prop="realWinnerNum">{{formData.realWinnerNum}}&nbsp;&nbsp;人</FormItem>
-        <FormItem label="显示中奖次数：" prop="viewWinnerNum">{{formData.viewWinnerNum}}&nbsp;&nbsp;人</FormItem>
+        <FormItem label="实际中奖次数：">{{formData.realWinnerNum}}&nbsp;&nbsp;人</FormItem>
+        <FormItem label="显示中奖次数：">{{formData.viewWinnerNum}}&nbsp;&nbsp;人</FormItem>
       </Form>
       <div slot="footer">
         <Button style="margin-right: 20px" @click="closeDialog">{{action.type=='edit'?"取消":"关闭"}}</Button>
@@ -63,23 +63,24 @@ export default {
         // 查询
         if (type == "query") {
           this.title = "查询次数";
-          //   this.url = "/activityInfo/add";
-          //   Object.keys(this.formData).forEach(name => {
-          //     this.formData[name] = "";
-          //   });
           this.formData = JSON.parse(JSON.stringify(data));
         } else {
           //edit 编辑次数
           this.title = "编辑次数";
           this.url = "/activityInfo/editWinner";
-          this.$nextTick(() => {
-            Object.keys(this.formData).forEach(name => {
-              this.formData[name] = data[name];
-            });
-          });
+          this.formData = JSON.parse(JSON.stringify(data));
         }
       },
       deep: true
+    },
+    ["formData.addWinnerNum"]() {
+      let addWinnerNum = Number(this.formData.addWinnerNum);
+
+      if (isNaN(addWinnerNum)) {
+        addWinnerNum = 0;
+      }
+      this.formData.viewWinnerNum =
+        Number(this.formData.oldViewWinnerNum) + addWinnerNum;
     }
   },
   data() {

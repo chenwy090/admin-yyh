@@ -109,6 +109,7 @@
           <template v-if="formData.drawMode==1">
             <FormItem prop="winningPercent" :rules="{ required: true, message: '请输入中奖概率' }">
               <Input
+                :key="Math.random()"
                 style="width:300px"
                 v-model.trim="formData.winningPercent"
                 placeholder="仅限填写0-100间的整数"
@@ -119,6 +120,7 @@
           <template v-else-if="formData.drawMode==2">
             <FormItem prop="winningNo" :rules="{ required: true, message: '请输入抽奖次数' }">
               <Input
+                :key="Math.random()"
                 style="width:300px"
                 v-model.trim="formData.winningNo"
                 placeholder="仅限填写正整数"
@@ -182,6 +184,18 @@ export default {
       });
 
       // this.$refs.form.validateField('xxx');
+    },
+    ["formData.drawMode"]() {
+      let fieldName =
+        this.formData.drawMode == 1 ? "winningPercent" : "winningNo";
+
+      console.log("fieldName:", fieldName, this.formData.drawMode);
+
+      // this.$refs.form.validateField("winningPercent");
+
+      // this.$refs.form.validateField("winningPercent", phoneError => {
+      //   console.log("phoneError", phoneError);
+      // });
     },
     action: {
       handler(val, oldVal) {
