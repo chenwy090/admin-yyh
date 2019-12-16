@@ -226,7 +226,7 @@
         }
       },
       division100(n) {
-          return Math.floor10(n / 100, -2);
+          return Number(n).toFixed(2);
       }
     },
   }
