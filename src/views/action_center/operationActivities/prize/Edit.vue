@@ -72,8 +72,7 @@
                 <Input
                   style="width:300px"
                   v-model.trim="formData.name"
-                  :maxlength="15"
-                  placeholder="请输入奖品名称"
+                  placeholder="最多15个汉字或30个字母"
                   clearable
                 />
               </Tooltip>
@@ -154,6 +153,7 @@
 import { createNamespacedHelpers } from "vuex";
 const { mapState, mapActions, mapGetters } = createNamespacedHelpers("egg");
 
+import util from "@/libs/util";
 import { postRequest } from "@/libs/axios";
 import createFormData from "./createFormData";
 
@@ -350,7 +350,8 @@ export default {
         if (value == "") {
           return callback(msg);
         }
-        if (value.length > len) {
+        let length = util.getByteLen(value);
+        if (length > len * 2) {
           return callback(`最多只能输入${len}个汉字`);
         }
         callback();

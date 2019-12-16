@@ -73,6 +73,7 @@
 import { createNamespacedHelpers } from "vuex";
 const { mapState, mapActions, mapGetters } = createNamespacedHelpers("egg");
 
+import util from "@/libs/util";
 import { postRequest } from "@/libs/axios";
 import createFormData from "./createFormData";
 
@@ -237,7 +238,8 @@ export default {
         if (value == "") {
           return callback(msg);
         }
-        if (value.length > len) {
+        let length = util.getByteLen(value);
+        if (length > len * 2) {
           return callback(`最多只能输入${len}个汉字`);
         }
         callback();
