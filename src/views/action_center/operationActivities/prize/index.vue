@@ -21,23 +21,18 @@
         :data="tableData"
       >
         <template slot-scope="{ row }" slot="action">
+          <!-- @click="addOrEdit('edit',row)" -->
           <Button
             type="primary"
             size="small"
             style="margin-right: 5px"
             @click="addOrEdit('edit',row)"
-          >编辑奖池</Button>
-          <Button
-            type="primary"
-            size="small"
-            style="margin-right: 5px"
-            @click="editPrizePoolContent(row)"
-          >编辑奖池内容</Button>
+          >编辑奖品</Button>
           <Poptip
             :transfer="true"
             confirm
             placement="bottom-end"
-            :title="`确认删除奖池吗?`"
+            :title="`确认删除此奖品吗?`"
             @on-ok="delItem(row)"
             @on-cancel="delCancel(row)"
             ok-text="确认"
@@ -113,8 +108,8 @@ export default {
         this.queryTableData();
         console.log("watch prize this.tab:", { ...this.tab });
       },
-      deep: true
-      // immediate: true
+      deep: true,
+      immediate: true
     }
   },
   data() {
@@ -148,12 +143,13 @@ export default {
     console.log("prize.vue mounted", this.tab);
   },
   methods: {
-    editPrizePoolContent() {},
+    editPrize(row) {
+      console.log("editPrize");
+    },
     async delItem(row) {
       this.msgOk("正在删除...");
 
-      // /activity/prizepool/delete
-      const url = "/activity/prizepool/delete";
+      const url = "/activity/prize/delete";
       const { code, msg } = await postRequest(url, { id: row.id });
       if (code == 200) {
         this.msgOk("删除成功");

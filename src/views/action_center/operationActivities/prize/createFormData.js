@@ -9,7 +9,7 @@ export default function createFormData() {
         couponName: "", // 优惠券名称
         prizeImg: "", // 奖品图片
         prizeValue: "", // 奖品价值
-        prizeNum: "", // 奖品总数
+        prizeNum: "", // 奖品库存
         remainNum: "", // 剩余库存
         drawMode: 1, // 1-按概率 2-按奖池累计抽奖次数
         winningPercent: "", // 中奖概率
