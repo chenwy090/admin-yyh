@@ -208,7 +208,10 @@ export default {
     ...mapMutations(["setActivityId", "setActivityTypeOption"]),
 
     addOrEdit(type, data) {
-      this.setActivityId(data.id);//设置活动id
+      if (type == "edit") {
+        this.setActivityId(data.id); //设置活动id
+      }
+
       console.log("addOrEdit1", type, data);
       this.action = {
         id: Math.random(),
@@ -218,7 +221,7 @@ export default {
       console.log("addOrEdit2", { ...this.action });
     },
     addOrEditJackpot(type, data) {
-      this.setActivityId(data.id);//设置活动id
+      this.setActivityId(data.id); //设置活动id
       console.log("addOrEditJackpot", type, data);
       this.showEditJackpot = true;
       let title = "";
@@ -236,7 +239,7 @@ export default {
       console.log("addOrEditJackpot", { ...this.jackpotAction });
     },
     async queryOrEditWinnerNum(type, row) {
-      this.setActivityId(row.id);//设置活动id
+      this.setActivityId(row.id); //设置活动id
       let data = await this.selectWinner(row);
       this.winnerNumAction = {
         _id: Math.random(),

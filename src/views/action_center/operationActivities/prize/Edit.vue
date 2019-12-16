@@ -278,6 +278,20 @@ export default {
           this.msgOk("数据验证成功!");
 
           let oForm = JSON.parse(JSON.stringify(this.formData));
+
+          let arr = [
+            "createBy",
+            "gmtCreate",
+            "gmtModified",
+            "modifiedBy",
+            "pageNum",
+            "pageSize"
+          ];
+
+          arr.forEach(name => {
+            delete oForm[name];
+          });
+
           oForm.prizepoolId = this.prizepoolId;
 
           let { code, msg } = await postRequest(this.url, oForm);
