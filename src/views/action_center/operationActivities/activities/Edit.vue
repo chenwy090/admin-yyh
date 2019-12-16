@@ -38,16 +38,10 @@
           <FormItem
             label="活动名称："
             prop="name"
-            :rules="{required: true,  validator: validateEmpty('请输入活动名称',30)}"
+            :rules="{required: true,  validator: validateEmpty('请输入活动名称',15)}"
           >
             <Tooltip trigger="focus" title="提醒" content="最多15个汉字" placement="right">
-              <Input
-                style="width:300px"
-                v-model="formData.name"
-                :maxlength="15"
-                placeholder="请输入活动名称"
-                clearable
-              />
+              <Input style="width:300px" v-model="formData.name" placeholder="请输入活动名称" clearable />
             </Tooltip>
           </FormItem>
           <FormItem label="活动时间：" prop="beginTime" :rules="{ required: true, message: '请选择活动时间' }">
@@ -175,61 +169,6 @@ export default {
           this.$Message.error("数据验证失败！");
         }
       });
-    },
-    validateBusinessName(rule, value, callback) {
-      value += "";
-      value = value.trim();
-      // 允许不填
-      if (value == "") {
-        // ("请选择${businessTypeLabel}");
-        return callback(`请选择${this.businessTypeLabel}`);
-      }
-      callback();
-    },
-    //验证正整数
-    validateMoney(rule, value, callback) {
-      value += "";
-      value = value.trim();
-      // 允许不填
-      if (value == "") {
-        return callback("金额不能为空");
-      }
-
-      // 排除 "","0","0.0","0.00"格式
-      if (!value || value == "0" || value == "0.0" || value == "0.00") {
-        return callback(new Error("兑换的金额不能为0"));
-      }
-
-      // 验证是否是数字
-      const n = Number(value);
-      if (isNaN(n)) {
-        return callback(new Error("请输入数字"));
-      }
-
-      if (n > 0 && n <= 99999.99) {
-        const reg = /^(0|[1-9]\d*)(\s|$|\.\d{1,2}\b)/;
-
-        if (!reg.test(value)) {
-          return callback(
-            new Error("请输入大于等于0的金额，小数点最多包含两位小数")
-          );
-        }
-      } else {
-        return callback(new Error("请输入[0.01—99999.99]之间的数"));
-      }
-
-      callback();
-    },
-    validateRemarks(rule, value, callback) {
-      value += "";
-      value = value.trim();
-      if (value == "") {
-        callback(new Error("备注不能为空"));
-      } else if (value.length < 6) {
-        callback(new Error("备注不得少于6个字"));
-      } else {
-        callback();
-      }
     },
     validateEmpty(msg, len = 20) {
       return function(rule, value, callback) {

@@ -31,7 +31,6 @@
               <Input
                 style="width:300px"
                 v-model="formData.name"
-                :maxlength="10"
                 placeholder="最多填写10个汉字或20个字母"
                 clearable
               />

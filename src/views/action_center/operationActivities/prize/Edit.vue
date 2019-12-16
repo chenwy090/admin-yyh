@@ -59,7 +59,7 @@
               <Input
                 style="width:300px"
                 v-model.trim="formData.prizeValue"
-                placeholder="请输入正整数"
+                placeholder="仅限填写正整数"
                 clearable
               />&nbsp;元
             </FormItem>
@@ -102,7 +102,7 @@
             <Input
               style="width:300px"
               v-model.trim="formData.prizeNum"
-              placeholder="请输入正整数"
+              placeholder="仅限填写正整数"
               clearable
             />
           </FormItem>
