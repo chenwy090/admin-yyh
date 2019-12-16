@@ -125,30 +125,8 @@ export default {
     Detail,
     Audit
   },
-  provide() {
-    return {
-      foo: this.foo,
-      // foo: this.fonnB.a,
-      info: this.info
-      // 提示：provide 和 inject 绑定并不是可响应的。这是刻意为之的。然而，如果你传入了一个可监听的对象，那么其对象的属性还是可响应的。
-    };
-  },
   data() {
     return {
-      // fonnB: "old word",
-      // fonnB: { a: "old word" },
-      foo: {
-        obj: { corporateWithdrawFee: { total: 0, bank: 0, platform: 0 } }
-      },
-
-      info: {
-        obj: {
-          corporateWithdrawFee: { total: 0, bank: 0, platform: 0 },
-          individualWithdrawFee: { total: 0, bank: 0 },
-          payPipelineFeeRate: { wx: 0, aliPay: 0 },
-          shareProfitRate: { merchant: 0, platform: 0 }
-        }
-      },
       showAuditLogList: false,
       showEdit: false,
       showDetail: false,
@@ -194,22 +172,6 @@ export default {
   },
   created() {
     this.queryTableData();
-    this.getInfo();
-    // setInterval(() => {
-    //   // this.fonnB.a = Math.random(); // 这里更新新，仅仅foonB变化了，foo没有变化
-    //   // this.fonnB.a = { total: Math.random() }; // 这里更新新，仅仅foonB变化了，foo没有变化
-
-    //   this.foo.obj = {
-    //     corporateWithdrawFee: { total: Math.random(), bank: 0, platform: 0 }
-    //   };
-    //   this.info.obj.corporateWithdrawFee = { total: Math.random(), bank: 0, platform: 0 }
-    //   // this.info.obj = { corporateWithdrawFee: { total: Math.random(), bank: 0, platform: 0 } }
-    //   // this._provided.foo = "new words";
-    //   // this._provided.foo = this.fonnB;
-    //   //这里更新foo变化了，但子组件获得的foo 依旧是old words
-    //   // console.log(JSON.stringify(this._provided), this.fonnB);
-    //   console.log(JSON.stringify(this.foo));
-    // }, 1000);
   },
   methods: {
     async addOrEdit(type, id) {

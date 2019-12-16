@@ -10,6 +10,8 @@ import cms from './modules/cms';
 import financial from './modules/financial';
 // 任务中心
 import missionCenter from './modules/mission-center';
+// 双蛋活动
+import egg from './modules/egg';
 
 Vue.use(Vuex);
 
@@ -31,7 +33,8 @@ const store = new Vuex.Store({
         comm,
         cms,
         financial,
-        missionCenter
+        missionCenter,
+        egg
     }
 });
 
