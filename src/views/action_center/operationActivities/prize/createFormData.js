@@ -8,6 +8,8 @@ export default function createFormData() {
         couponId: "", // 优惠券ID
         couponName: "", // 优惠券名称
         prizeImg: "", // 奖品图片
+        defaultPrizeImgList:[],
+        
         prizeValue: "", // 奖品价值
         prizeNum: "", // 奖品库存
         remainNum: "", // 剩余库存

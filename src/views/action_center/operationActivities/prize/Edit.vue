@@ -79,6 +79,15 @@
                 />
               </Tooltip>
             </FormItem>
+
+            <FormItem label="奖品图片：" prop="prizeImg" :rules="{ required: true, message: '请上传图片' }">
+              <UploadImage
+                :fileUploadType="'prizeImg'"
+                :defaultList="formData.defaultPrizeImgList"
+                @remove="removePrizeImg"
+                @uploadSuccess="prizeImgUploadSuccess"
+              ></UploadImage>
+            </FormItem>
           </template>
           <FormItem label="奖励类型：" prop="level" :rules="{ required: true, message: '请选择奖励类型' }">
             <RadioGroup v-model="formData.level">
@@ -265,6 +274,16 @@ export default {
   },
   async mounted() {},
   methods: {
+    
+            
+    removePrizeImg() {
+      this.formData.prizeImg = "";
+      this.formData.defaultPrizeImgList = [];
+    },
+    prizeImgUploadSuccess({ imgUrl }) {
+      this.formData.prizeImg = imgUrl;
+      console.log("prizeImgUploadSuccess", imgUrl);
+    },
     handleChooseCoupon() {
       this.showCouponList = true;
     },

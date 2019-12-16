@@ -165,6 +165,15 @@ export default {
     },
     addOrEdit(type, data) {
       console.log("addOrEdit1 prizeAction", type, data);
+
+      if (type == "edit") {
+        let { prizeImg } = data;
+        let defaultPrizeImgList = [];
+        if (prizeImg) {
+          defaultPrizeImgList = [{ imgUrl: prizeImg }];
+        }
+        data.defaultPrizeImgList = defaultPrizeImgList;
+      }
       this.prizeAction = {
         id: Math.random(),
         type,
