@@ -14,7 +14,6 @@
         <span>{{title}}</span>
       </p>
       <div>
-        activityTypeOption:{{activityTypeOption}}
         <Form
           label-position="right"
           ref="form"
@@ -37,7 +36,7 @@
           </FormItem>
 
           <FormItem
-            label="活动名称"
+            label="活动名称："
             prop="name"
             :rules="{required: true,  validator: validateEmpty('请输入活动名称',30)}"
           >
@@ -75,6 +74,8 @@ import { createNamespacedHelpers } from "vuex";
 const { mapState, mapActions, mapGetters } = createNamespacedHelpers("egg");
 
 import { postRequest } from "@/libs/axios";
+import createFormData from "./createFormData";
+
 export default {
   name: "edit",
   props: {
@@ -101,21 +102,16 @@ export default {
         if (type == "add") {
           this.title = "创建活动";
           this.url = "/activityInfo/add";
-          Object.keys(this.formData).forEach(name => {
-            this.formData[name] = "";
-          });
+          this.formData = createFormData();
+          this.daterange = [];
         } else {
           //edit 修改
           this.title = "修改活动";
           this.url = "/activityInfo/edit";
-          this.$nextTick(() => {
-            Object.keys(this.formData).forEach(name => {
-              this.formData[name] = data[name];
-            });
+          this.formData = JSON.parse(JSON.stringify(data));
 
-            let { beginTime, endTime } = data;
-            this.daterange = [beginTime, endTime];
-          });
+          let { beginTime, endTime } = data;
+          this.daterange = [beginTime, endTime];
         }
       },
       deep: true
@@ -135,13 +131,7 @@ export default {
       //   }
       // ],
       daterange: [],
-      formData: {
-        id: "",
-        activityType: 0,
-        name: "",
-        beginTime: "",
-        endTime: ""
-      },
+      formData: createFormData(),
       ruleValidate: {}
     };
   },

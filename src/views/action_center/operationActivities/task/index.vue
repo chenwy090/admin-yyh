@@ -170,6 +170,7 @@ export default {
       console.log("addOrEdit1 taskAction", type, data);
 
       if (type == "edit" && data.assignmentType == 1) {
+        data.couponType = data.assignmentObjectType;
         data.couponId = data.assignmentObject;
       }
       this.taskAction = {

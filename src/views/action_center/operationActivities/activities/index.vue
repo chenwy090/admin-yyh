@@ -3,7 +3,6 @@
   <div class="xxx">
     <div class="query-row">
       <Card :bordered="false" style="margin-bottom:2px">
-        {{activityTypeOption}}
         <Form inline>
           <!-- 商户/品牌名称 -->
           <FormItem label="活动名称：" :label-width="80">
@@ -69,10 +68,30 @@
             @click="addOrEditJackpot('edit',row)"
           >编辑奖池</Button>
           <!-- v-if="row.status == 2" -->
-          <Button type="success" size="small" @click="updateStatus(row)">上架</Button>
-          <Button type="warning" size="small" @click="updateStatus(row)">下架</Button>
-          <Button type="warning" size="small" @click="queryOrEditWinnerNum('query',row)">查询次数</Button>
-          <Button type="warning" size="small" @click="queryOrEditWinnerNum('edit',row)">编辑次数</Button>
+          <Button
+            type="success"
+            size="small"
+            style="margin-right: 5px"
+            @click="updateStatus(row)"
+          >上架</Button>
+          <Button
+            type="warning"
+            size="small"
+            style="margin-right: 5px"
+            @click="updateStatus(row)"
+          >下架</Button>
+          <Button
+            type="warning"
+            size="small"
+            style="margin-right: 5px"
+            @click="queryOrEditWinnerNum('query',row)"
+          >查询次数</Button>
+          <Button
+            type="warning"
+            size="small"
+            style="margin-right: 5px"
+            @click="queryOrEditWinnerNum('edit',row)"
+          >编辑次数</Button>
         </template>
       </Table>
       <!-- 分页器 -->
@@ -266,14 +285,17 @@ export default {
       const url = "/activityInfo/updateStatus";
       // status 活动状态, 1-待上架 2-已上架 3已下架
       let { id, status } = row;
-      if (status == 1 || status == 2) {
+      if (status == 1) {
         status = 2;
-      } else {
+      } else if (status == 2) {
+        status = 3;
+      } else if (status == 3) {
         status = 2;
       }
       let { code, data } = await postRequest(url, { id, status });
 
       if (code == 200) {
+        this.queryTableData(this.page.pageNum);
       } else {
         this.msgErr(code + " 数据加载失败!");
       }
@@ -289,6 +311,7 @@ export default {
       if (code == 200) {
         // 实际中奖次数 realWinnerNum: 0  显示中奖次数 viewWinnerNum: 0
         data.id = id;
+        data.oldViewWinnerNum = data.viewWinnerNum;
         return data;
       } else {
         this.msgErr(code + " 数据加载失败!");
@@ -335,6 +358,9 @@ export default {
           this.tableData = records.map(item => {
             let { activityType, status, beginTime, endTime } = item;
             item.statusName = this.statusOption[status];
+
+            console.log("statusName:", status, item.statusName);
+
             let activityTypeName = "";
             this.activityTypeOption.some(item => {
               let r = item.id == activityType;
