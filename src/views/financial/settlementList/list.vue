@@ -7,7 +7,7 @@
         </Form-item>
 
         <FormItem label="结算周期" prop="settleTime">
-          <DatePicker type="daterange" placeholder="请选择结算周期" v-model="searchForm.settleTime" style="width: 200px">
+          <DatePicker type="daterange" placeholder="请选择结算周期" @on-change=" searchForm.settleTime = $event " v-model="searchForm.settleTime" style="width: 200px">
           </DatePicker>
         </FormItem>
 
@@ -19,8 +19,8 @@
           <Input v-model="searchForm.merchantName" placeholder="请输入商户名称" style="width: 200px" />
         </Form-item>
 
-        <Form-item label="结算状态" prop="status">
-          <Select v-model="searchForm.status" placeholder="请选择结算状态" clearable style="width: 200px;">
+        <Form-item label="状态" prop="status">
+          <Select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 200px;">
             <Option :value="0">全部</Option>
             <Option :value="1">待处理</Option>
             <Option :value="2">被驳回</Option>
@@ -305,6 +305,14 @@
         settleBillList(body).then(res => {
           this.TableLoading = false;
           if (res && res.code == 200) {
+            if(res.data.records instanceof Array){
+              res.data.records.forEach(item => {
+                item.realPay = this.division100(item.realPay || 0);
+                item.channelServiceCostFee = this.division100(item.channelServiceCostFee || 0);
+                item.platformProfitFee = this.division100(item.platformProfitFee || 0);
+                item.settleAmount = this.division100(item.settleAmount || 0);
+              })
+            }
             this.table_list = res.data.records
             this.totalSize = res.data.total
           } else {
@@ -329,6 +337,7 @@
         }
         switch (index) {
           case 1:
+            this.modalAddData.settleTimeStart = datetime;
             this.options2 = {
               disabledDate(date) {
                 let bo = date.valueOf() < new Date(datetime) - 1000 * 60 * 60 * 24;
@@ -336,6 +345,9 @@
                 return bo2 || bo;
               }
             };
+            break;
+          case 2:
+            this.modalAddData.settleTimeEnd = datetime;
             break;
         }
       },
@@ -350,8 +362,6 @@
           if (!valid) return;
           let body = JSON.parse(JSON.stringify(this.modalAddData))
           body.settleTime = [body.settleTimeStart, body.settleTimeEnd];
-          let [startTime, endTime] = body.settleTime
-          body.settleTime = [startTime.substr(0, 10), endTime.substr(0, 10)];
           delete body.merchantName
           settleBillSave(body).then(res => {
             this.modalAddShow = false;
@@ -465,6 +475,9 @@
           },
         })
       },
+      division100(n) {
+          return Math.floor10(n / 100, -2);
+      }
     },
   }
 

@@ -74,7 +74,7 @@
           </Card>
           <Card style="margin-top: 1vh;">
             <Row class="operation">
-              <Button type="primary" icon="md-refresh" @click="refech">刷新</Button>
+              <!-- <Button type="primary" icon="md-refresh" @click="refech">刷新</Button> -->
               <span
                 v-if="refreshData&&refreshData.allOrderCount"
               >总共{{refreshData.allOrderCount}}单，待付款{{refreshData.pendingPaymentOrderCount}}单，已付款{{refreshData.paidOrderCount}}单，已取消{{refreshData.cancelledOrderCount}}单，退款{{refreshData.refundOrderCount}}单</span>

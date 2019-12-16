@@ -6,7 +6,7 @@
           <Input v-model="searchForm.billNo" placeholder="请输入结算单号" style="width: 200px" />
         </Form-item>
         <FormItem label="结算周期" prop="settleTime">
-          <DatePicker type="daterange" placeholder="请选择结算周期" v-model="searchForm.settleTime" style="width: 200px">
+          <DatePicker type="daterange" placeholder="请选择结算周期" @on-change=" searchForm.settleTime = $event " v-model="searchForm.settleTime" style="width: 200px">
           </DatePicker>
         </FormItem>
         <Form-item label="品牌名称" prop="brandName">
@@ -16,7 +16,7 @@
           <Input v-model="searchForm.merchantName" placeholder="请输入商户名称" style="width: 200px" />
         </Form-item>
         <FormItem label="结算付款时间" prop="payTime">
-          <DatePicker type="daterange" placeholder="请选择结算付款时间" v-model="searchForm.payTime" style="width: 200px">
+          <DatePicker type="daterange" placeholder="请选择结算付款时间" @on-change=" searchForm.payTime = $event " v-model="searchForm.payTime" style="width: 200px">
           </DatePicker>
         </FormItem>
         <Form-item label="状态" prop="status">
@@ -64,7 +64,7 @@
       <Form :model="displayData" ref="modalDisplayForm" :label-width="70" :rules="modalDisplayValidate"
         class="search-form">
         <Form-item label="驳回理由" prop="memo">
-          <Input v-model="displayData.memo" placeholder="请输入驳回理由" type="textarea" :rows="4" />
+          <Input v-model.trim="displayData.memo" placeholder="请输入驳回理由" type="textarea" :rows="4" />
         </Form-item>
       </Form>
       <div slot="footer">
@@ -151,7 +151,7 @@
       key: 'generateTypeDesc'
     },
     {
-      title: "结算付款单时间",
+      title: "结算单付款时间",
       width: 150,
       align: "center",
       key: 'payTime'
@@ -217,6 +217,14 @@
         settleBillPayList(this.searchForm).then(res => {
           this.TableLoading = false;
           if (res && res.code == 200) {
+            if(res.data.records instanceof Array){
+              res.data.records.forEach(item => {
+                item.realPay = this.division100(item.realPay || 0);
+                item.channelServiceCostFee = this.division100(item.channelServiceCostFee || 0);
+                item.platformProfitFee = this.division100(item.platformProfitFee || 0);
+                item.settleAmount = this.division100(item.settleAmount || 0);
+              })
+            }
             this.table_list = res.data.records
             this.totalSize = res.data.total
           } else {
@@ -242,6 +250,7 @@
       modalDisplayOk(name) {
         this.$refs[name].validate(valid => {
           if (!valid) return;
+
           settleBillReject(this.displayData).then(res => {
             if (res && res.code == 200) {
               this.$Message.success('驳回成功！');
@@ -304,6 +313,10 @@
         delete body.pageNum
         delete body.pageSize
         postSettleBillDownload(body).then(res => {
+          if(res.status !== 200) {
+            this.$Message.error('网络请求失败，请稍后！');
+            return;
+          }
           const content = res.data;
           let fileName = res.headers["filename"];
           const blob = new Blob([content], {
@@ -324,6 +337,9 @@
             navigator.msSaveBlob(blob, fileName);
           }
         })
+      },
+      division100(n) {
+          return Math.floor10(n / 100, -2);
       }
     },
   }

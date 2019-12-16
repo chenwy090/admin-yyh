@@ -8,7 +8,7 @@
         <Form-item label="微信单号" prop="tradeNo">
           <Input v-model="searchForm.tradeNo" placeholder="请输入微信单号" style="width: 200px" />
         </Form-item>
-        <Form-item label="优惠卷ID" prop="couponName">
+        <Form-item label="优惠券ID" prop="couponName">
           <Input v-model="searchForm.couponName" placeholder="请输入微信单号" style="width: 200px" />
         </Form-item>
         <Form-item label="品牌名称" prop="brandName">
@@ -77,13 +77,13 @@
       key: 'tradeNo'
     },
     {
-      title: "优惠卷ID",
+      title: "优惠券ID",
       width: 100,
       align: "center",
       key: 'couponId'
     },
     {
-      title: "优惠卷名称",
+      title: "优惠券名称",
       width: 190,
       align: "center",
       key: 'couponName'
@@ -197,6 +197,14 @@
         billTransactionFlowList(body).then(res => {
           this.TableLoading = false;
           if (res && res.code == 200) {
+            if(res.data.records instanceof Array){
+              res.data.records.forEach(item => {
+                item.orderAmount = this.division100(item.orderAmount || 0);
+                item.payChannelFee = this.division100(item.payChannelFee || 0);
+                item.totalFee = this.division100(item.totalFee || 0);
+                item.paidAmount = this.division100(item.paidAmount || 0);
+              })
+            }
             this.table_list = res.data.records
             this.totalSize = res.data.total
           } else {
@@ -217,6 +225,9 @@
           this.search()
         }
       },
+      division100(n) {
+          return Math.floor10(n / 100, -2);
+      }
     },
   }
 
