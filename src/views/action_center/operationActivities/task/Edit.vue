@@ -146,7 +146,11 @@
           </FormItem>
 
           <template v-if="formData.assignmentType==1">
-            <FormItem label="是否推荐：" prop="isRecommend" :rules="{ required: true, message: '请选择是否推荐' }">
+            <FormItem
+              label="是否推荐："
+              prop="isRecommend"
+              :rules="{ required: true, message: '请选择是否推荐' }"
+            >
               <RadioGroup v-model="formData.isRecommend">
                 <Radio v-for="item in isRecommendOption" :label="item.value" :key="item.value">
                   <span>{{item.label}}</span>

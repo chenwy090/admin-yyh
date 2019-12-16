@@ -23,7 +23,7 @@
           :label-width="100"
         >
           <FormItem
-            label="奖池名称"
+            label="奖池名称："
             prop="name"
             :rules="{required: true,  validator: validateEmpty('请输入奖池名称',10)}"
           >
@@ -32,7 +32,7 @@
                 style="width:300px"
                 v-model="formData.name"
                 :maxlength="10"
-                placeholder="请输入奖池名称"
+                placeholder="最多填写10个汉字或20个字母"
                 clearable
               />
             </Tooltip>

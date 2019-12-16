@@ -7,7 +7,7 @@
       :mask-closable="false"
       @on-cancel="closeDialog"
       :styles="{top: '20px'}"
-      width="500"
+      width="600"
     >
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="ios-information-circle"></Icon>
@@ -52,7 +52,6 @@
           </template>
           <template v-else-if="formData.prizeType==1">
             <FormItem
-              :key="Math.random()"
               label="奖品价值："
               prop="prizeValue"
               :rules="{ required: true, validator: validateInt('奖品价值') }"
@@ -123,6 +122,7 @@
                 placeholder="仅限填写0-100间的整数"
                 clearable
               />&nbsp;%
+              <div style="color:red;font-size:12px;">当前奖池剩余中奖假率为80%</div>
             </FormItem>
           </template>
           <template v-else-if="formData.drawMode==2">
@@ -133,6 +133,7 @@
                 placeholder="仅限填写正整数"
                 clearable
               />
+              <div style="color:red;font-size:12px;">注：若输入多个次数，可用"-"（减号）分隔，且次数的数量与奖品库存必须一致</div>
             </FormItem>
           </template>
         </Form>
@@ -274,14 +275,13 @@ export default {
   },
   async mounted() {},
   methods: {
-    
-            
     removePrizeImg() {
       this.formData.prizeImg = "";
       this.formData.defaultPrizeImgList = [];
     },
     prizeImgUploadSuccess({ imgUrl }) {
       this.formData.prizeImg = imgUrl;
+      this.formData.defaultPrizeImgList = [{ imgUrl }];
       console.log("prizeImgUploadSuccess", imgUrl);
     },
     handleChooseCoupon() {

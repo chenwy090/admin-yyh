@@ -11,18 +11,19 @@
     <!-- :default-file-list="defaultList" -->
     <div style="display: inline;">
       <Upload
-        :headers="userToken"
         ref="upload"
         :type="dragType"
-        :format="['gif','jpg','jpeg','png','bmp']"
-        :show-upload-list="false"
-        :before-upload="handleBeforeUpload"
-        :on-success="handleUploadSuccess"
+        :headers="userToken"
         :action="url"
         accept="image"
+        :format="['gif','jpg','jpeg','png','bmp']"
+        :on-format-error="handleFormatError"
+        :show-upload-list="false"
+        :default-file-list="defaultList"
+        :before-upload="handleBeforeUpload"
+        :on-success="handleUploadSuccess"
         :max-size="2048"
         :on-exceeded-size="handleMaxSize"
-        :on-format-error="handleFormatError"
         :style="uploadStyle"
       >
         <!-- :style="display: inline-block;width:90px;" -->
@@ -45,7 +46,7 @@
 </template>
 <script>
 import { uploadOperationImage2AliOssURl } from "@/api/index";
-import { checkImage,getImageWH } from "@/libs/date";
+import { checkImage, getImageWH } from "@/libs/date";
 export default {
   name: "upload-image",
   props: {
@@ -89,8 +90,8 @@ export default {
   },
   data() {
     return {
-        width:0,
-        height:0,
+      width: 0,
+      height: 0,
       userToken: {}, //用户token
       // 文件上传
       url: uploadOperationImage2AliOssURl,
@@ -112,7 +113,6 @@ export default {
   },
 
   methods: {
-
     handleView(imgUrl) {
       this.imgUrl = imgUrl;
       this.visible = true;
@@ -124,13 +124,13 @@ export default {
     },
     handleUploadSuccess(res, file, fileList) {
       if (res.code == 200) {
-          this.uploadList = [];
+        this.uploadList = [];
         let imgUrl = res.image_url;
         file.imgUrl = imgUrl;
-          console.log(this.width);
-          this.$emit("uploadSuccess", {
-           coverImgHeight: this.height,
-           coverImgWidth: this.width,
+        console.log(this.width);
+        this.$emit("uploadSuccess", {
+          coverImgHeight: this.height,
+          coverImgWidth: this.width,
           fileUploadType: this.fileUploadType,
           imgUrl
         });
@@ -149,13 +149,13 @@ export default {
       this.msgErr("只能上传gif,jpg,jpeg,png,bmp格式,请重新上传");
     },
     handleBeforeUpload(file) {
-        console.log(file);
-        getImageWH(file).then(res => {
-            console.log(res);
-           this.width = res.w;
-           this.height = res.h;
-        })
-        return checkImage(file);
+      console.log(file);
+      getImageWH(file).then(res => {
+        console.log(res);
+        this.width = res.w;
+        this.height = res.h;
+      });
+      return checkImage(file);
     },
     // 全局提示
     msgOk(txt) {
