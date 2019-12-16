@@ -7,7 +7,8 @@
         </Form-item>
 
         <FormItem label="结算周期" prop="settleTime">
-          <DatePicker type="daterange" placeholder="请选择结算周期" @on-change=" searchForm.settleTime = $event " v-model="searchForm.settleTime" style="width: 200px">
+          <DatePicker type="daterange" placeholder="请选择结算周期" @on-change=" searchForm.settleTime = $event "
+            v-model="searchForm.settleTime" style="width: 200px">
           </DatePicker>
         </FormItem>
 
@@ -305,7 +306,7 @@
         settleBillList(body).then(res => {
           this.TableLoading = false;
           if (res && res.code == 200) {
-            if(res.data.records instanceof Array){
+            if (res.data.records instanceof Array) {
               res.data.records.forEach(item => {
                 item.realPay = this.division100(item.realPay || 0);
                 item.channelServiceCostFee = this.division100(item.channelServiceCostFee || 0);
@@ -341,7 +342,7 @@
             this.options2 = {
               disabledDate(date) {
                 let bo = date.valueOf() < new Date(datetime) - 1000 * 60 * 60 * 24;
-                let bo2 = date.valueOf() > new Date() -  1000 * 60 * 60 * 24;
+                let bo2 = date.valueOf() > new Date() - 1000 * 60 * 60 * 24;
                 return bo2 || bo;
               }
             };
@@ -475,7 +476,16 @@
         })
       },
       division100(n) {
-          return Number(n).toFixed(2);
+        let num = String(n);
+        let arr = num.split(/\./)
+        if (arr.length == 2) {
+          if (arr[1].length < 2) {
+            arr[1] = arr[1].padEnd(2, '0')
+          }
+          return arr.join('.');
+        } else {
+          return `${num}.00`
+        }
       }
     },
   }

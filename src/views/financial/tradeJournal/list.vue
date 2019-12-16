@@ -226,7 +226,16 @@
         }
       },
       division100(n) {
-          return Number(n).toFixed(2);
+        let num = String(n);
+        let arr = num.split(/\./)
+        if (arr.length == 2) {
+          if (arr[1].length < 2) {
+            arr[1] = arr[1].padEnd(2, '0')
+          }
+          return arr.join('.');
+        } else {
+          return `${num}.00`
+        }
       }
     },
   }
