@@ -59,7 +59,7 @@
         <template slot-scope="{ row }" slot="status">
           <p v-if="!row.rejectReason">{{row.billStatusDesc}}</p>
           <!-- placement="left"  -->
-          <Tooltip v-if="row.rejectReason" theme="light">
+          <Tooltip v-if="row.rejectReason" theme="light" transfer>
             <p style="color: #ed4014;cursor: help;">{{row.billStatusDesc}}</p>
             <div class="bohui-box" slot="content">
               <p style="color: #ed4014;">{{row.rejectReason}}</p>
