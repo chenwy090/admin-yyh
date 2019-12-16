@@ -358,7 +358,6 @@
       },
       modalAddOk(name) {
         this.$refs[name].validate(valid => {
-          console.info(valid)
           if (!valid) return;
           let body = JSON.parse(JSON.stringify(this.modalAddData))
           body.settleTime = [body.settleTimeStart, body.settleTimeEnd];
@@ -476,7 +475,7 @@
         })
       },
       division100(n) {
-          return Math.floor10(n / 100, -2);
+          return Number(n).toFixed(2);
       }
     },
   }
