@@ -145,13 +145,13 @@ export default {
           title: "操作前",
           align: "right",
           minWidth: 100,
-          key: "after"
+          key: "before"
         },
         {
           title: "操作后",
           align: "right",
           minWidth: 100,
-          key: "before"
+          key: "after"
         },
         {
           title: "操作人",
