@@ -26,18 +26,12 @@
             size="small"
             style="margin-right: 5px"
             @click="addOrEdit('edit',row)"
-          >编辑奖池</Button>
-          <Button
-            type="primary"
-            size="small"
-            style="margin-right: 5px"
-            @click="editPrizePoolContent(row)"
-          >编辑奖池内容</Button>
+          >编辑任务</Button>
           <Poptip
             :transfer="true"
             confirm
             placement="bottom-end"
-            :title="`确认删除奖池吗?`"
+            :title="`确认删除此任务吗?`"
             @on-ok="delItem(row)"
             @on-cancel="delCancel(row)"
             ok-text="确认"
@@ -64,7 +58,7 @@
       </Row>
     </Card>
 
-    <Edit :action="jackpotAction" @refresh="queryTableData"></Edit>
+    <Edit :action="taskAction" @refresh="queryTableData"></Edit>
   </div>
 </template>
 <script>
@@ -113,16 +107,16 @@ export default {
         this.queryTableData();
         console.log("watch task this.tab:", { ...this.tab });
       },
-      deep: true
-      // immediate: true
+      deep: true,
+      immediate: true
     }
   },
   data() {
     return {
       activityId: "",
-      jackpotAction: {
+      taskAction: {
         _id: Math.random(),
-        title: "编辑奖池",
+        title: "添加任务",
         type: "add", //query/add/edit
         data: null
       },
@@ -154,11 +148,12 @@ export default {
     console.log("task.vue mounted", this.tab);
   },
   methods: {
-    editPrizePoolContent() {},
+    editTask(row) {
+      console.log("editTask");
+    },
     async delItem(row) {
       this.msgOk("正在删除...");
-      // /activity/prizepool/delete
-      const url = "/activity/prizepool/delete";
+      const url = "/activity/assignment/rule/delete";
       const { code, msg } = await postRequest(url, { id: row.id });
       if (code == 200) {
         this.msgOk("删除成功");
@@ -172,13 +167,17 @@ export default {
       this.msgOk("已取消删除");
     },
     addOrEdit(type, data) {
-      console.log("addOrEdit1 jackpotAction", type, data);
-      this.jackpotAction = {
+      console.log("addOrEdit1 taskAction", type, data);
+
+      if (type == "edit" && data.assignmentType == 1) {
+        data.couponId = data.assignmentObject;
+      }
+      this.taskAction = {
         id: Math.random(),
         type,
         data
       };
-      console.log("addOrEdit2 jackpotAction", { ...this.jackpotAction });
+      console.log("addOrEdit2 taskAction", { ...this.taskAction });
     },
     // 刷新搜索
     refresh() {
@@ -193,7 +192,8 @@ export default {
       this.page.pageNum = pageNum || 1;
       this.loading = true;
 
-      const url = "/activity/prizepool/list";
+      const url = "/activity/assignment/rule/list";
+      console.log("queryTableData", this.tab.url);
 
       try {
         let {

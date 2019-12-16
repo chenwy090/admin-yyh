@@ -89,12 +89,12 @@
           </FormItem>
           <FormItem
             label="奖品库存："
-            prop="remainNum"
+            prop="prizeNum"
             :rules="{ required: true, validator: validateInt('奖品库存') }"
           >
             <Input
               style="width:300px"
-              v-model.trim="formData.remainNum"
+              v-model.trim="formData.prizeNum"
               placeholder="请输入正整数"
               clearable
             />
@@ -275,9 +275,23 @@ export default {
       this.$refs[name].validate(async valid => {
         // console.log(JSON.stringify(this.formValidate));
         if (valid) {
-          this.$Message.success("数据验证成功!");
+          this.msgOk("数据验证成功!");
 
           let oForm = JSON.parse(JSON.stringify(this.formData));
+
+          let arr = [
+            "createBy",
+            "gmtCreate",
+            "gmtModified",
+            "modifiedBy",
+            "pageNum",
+            "pageSize"
+          ];
+
+          arr.forEach(name => {
+            delete oForm[name];
+          });
+
           oForm.prizepoolId = this.prizepoolId;
 
           let { code, msg } = await postRequest(this.url, oForm);

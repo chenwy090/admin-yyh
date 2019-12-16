@@ -20,32 +20,129 @@
           ref="form"
           :model="formData"
           :rules="ruleValidate"
-          :label-width="100"
+          :label-width="120"
         >
+          formData.assignmentType: {{formData.assignmentType}}
           <FormItem
-            label="奖池名称"
-            prop="name"
-            :rules="{required: true,  validator: validateEmpty('请输入奖池名称',10)}"
+            label="任务类型："
+            prop="assignmentType"
+            :rules="{ required: true, message: '请选择任务类型：' }"
           >
-            <Tooltip trigger="focus" title="提醒" content="最多10个汉字" placement="right">
+            <Select v-model="formData.assignmentType" style="width:300px" clearable>
+              <!-- <Option v-for="(v,k) in assignmentTypeOption" :value="k" :key="v">{{ v }}</Option> -->
+              <Option
+                v-for="item in assignmentTypeOption"
+                :value="item.value"
+                :key="item.value"
+              >{{ item.label }}</Option>
+            </Select>
+          </FormItem>
+
+          <template v-if="formData.assignmentType==3 || formData.assignmentType==4">
+            <FormItem
+              label="页面类型 ："
+              prop="assignmentType"
+              :rules="{ required: true, message: '请选择页面类型：' }"
+            >
+              <Select v-model="formData.assignmentObjectType" style="width:300px" clearable>
+                <!-- <Option v-for="(v,k) in assignmentTypeOption" :value="k" :key="v">{{ v }}</Option> -->
+                <Option
+                  v-for="item in assignmentObjectTypeOption"
+                  :value="item.value"
+                  :key="item.value"
+                >{{ item.label }}</Option>
+              </Select>
+            </FormItem>
+          </template>
+          <!-- 浏览内容数量 -->
+          <template v-if="formData.assignmentObjectType==8">
+            <FormItem
+              label="浏览内容数量："
+              prop="executeNum"
+              :rules="{ required: true, validator: validateInt('浏览内容数量') }"
+            >
+              <Input
+                style="width:300px"
+                v-model.trim="formData.executeNum"
+                placeholder="仅限填写正整数"
+                clearable
+              />
+            </FormItem>
+          </template>
+          <FormItem
+            label="任务标题"
+            prop="name"
+            :rules="{required: true,  validator: validateEmpty('请输入任务标题',13)}"
+          >
+            <Tooltip trigger="focus" title="提醒" content="最多13个汉字" placement="right">
               <Input
                 style="width:300px"
                 v-model="formData.name"
                 :maxlength="10"
-                placeholder="请输入奖池名称"
+                placeholder="最多填写13个汉字或26个字母"
                 clearable
               />
             </Tooltip>
           </FormItem>
-          <FormItem label="适用时间：" prop="beginTime" :rules="{ required: true, message: '请选择活动时间' }">
-            <DatePicker
-              type="datetimerange"
-              placeholder="请选时间"
-              format="yyyy-MM-dd HH:mm:ss"
-              style="display:inline-block;width: 300px"
-              :value="daterange"
-              @on-change="changeTime"
-            ></DatePicker>
+
+          <template v-if="formData.assignmentType==1">
+            <FormItem
+              :key="Math.random()"
+              label="选择优惠券"
+              prop="couponId"
+              :rules="{ required: true, message: '请选择优惠券' }"
+            >
+              <Row>
+                <Col span="16">
+                  <Input v-model.trim="formData.couponId" placeholder="点击按钮选择优惠券" disabled>
+                    <Button @click="handleChooseCoupon" slot="append">选择</Button>
+                  </Input>
+                </Col>
+              </Row>
+            </FormItem>
+          </template>
+
+          <template v-if="formData.assignmentType==2">
+            <FormItem
+              label="每天可完成次数："
+              prop="executeNum"
+              :rules="{ required: true, validator: validateInt('每天可完成次数') }"
+            >
+              <Input
+                style="width:300px"
+                v-model.trim="formData.executeNum"
+                placeholder="仅限填写正整数"
+                clearable
+              />
+            </FormItem>
+          </template>
+
+          <template v-if="formData.assignmentType==5">
+            <FormItem
+              label="内容点赞数量："
+              prop="executeNum"
+              :rules="{ required: true, validator: validateInt('内容点赞数量') }"
+            >
+              <Input
+                style="width:300px"
+                v-model.trim="formData.executeNum"
+                placeholder="仅限填写正整数"
+                clearable
+              />
+            </FormItem>
+          </template>
+
+          <FormItem
+            label="奖励能量："
+            prop="rewardPoints"
+            :rules="{ required: true, validator: validateInt('奖励能量') }"
+          >
+            <Input
+              style="width:300px"
+              v-model.trim="formData.rewardPoints"
+              placeholder="仅限填写正整数"
+              clearable
+            />
           </FormItem>
         </Form>
       </div>
@@ -54,6 +151,11 @@
         <Button @click="closeDialog" style="margin-left: 8px">取消</Button>
       </div>
     </Modal>
+    <CouponList
+      v-if="showCouponList"
+      :showCouponList.sync="showCouponList"
+      @seclectedTr-event="selectedCouponItem"
+    ></CouponList>
   </div>
 </template>
 <script>
@@ -61,6 +163,7 @@ import { createNamespacedHelpers } from "vuex";
 const { mapState, mapActions, mapGetters } = createNamespacedHelpers("egg");
 
 import { postRequest } from "@/libs/axios";
+import createFormData from "./createFormData";
 
 import CouponList from "@/views/action_center/operationActivities/components/CouponList";
 import UploadImage from "@/views/action_center/operationActivities/components/UploadImage";
@@ -81,7 +184,8 @@ export default {
   computed: {
     ...mapGetters({
       // 映射 `this.activityId` 为 `store.getters.getActivityId`
-      activityId: "getActivityId"
+      activityId: "getActivityId",
+      prizepoolId: "getPrizepoolId"
     })
   },
   watch: {
@@ -89,26 +193,18 @@ export default {
       handler(val, oldVal) {
         let { type, data } = this.action;
         this.isShow = true;
-        console.log("watch jackpot edit action:");
+        console.log("watch task edit action:");
 
         // 新增
         if (type == "add") {
-          this.title = "添加奖池";
-          this.url = "/activity/prizepool/add";
-          Object.keys(this.formData).forEach(name => {
-            this.formData[name] = "";
-          });
+          this.title = "新增任务";
+          this.url = "/activity/assignment/rule/add";
+          this.formData = createFormData();
         } else {
           //edit 修改
-          this.title = "修改奖池";
-          this.url = "/activity/prizepool/edit";
-
-          Object.keys(this.formData).forEach(name => {
-            this.formData[name] = data[name];
-          });
-
-          let { beginTime, endTime } = data;
-          this.daterange = [beginTime, endTime];
+          this.title = "编辑任务";
+          this.url = "/activity/assignment/rule/edit";
+          this.formData = JSON.parse(JSON.stringify(data));
         }
       },
       deep: true
@@ -132,26 +228,27 @@ export default {
       assignmentObjectType  任务类型是1，领优惠券时此字段传优惠券类型，1-商超券 2-周边券 
     页面类型 4-领优惠频道页 5-抽奖广场页 6-活动主页 7-优惠券详情页 8-内容详情页
     */
-
-      assignmentObjectTypeOption: {
-        1: "领优惠券",
-        2: "邀请助力",
-        3: "浏览页面",
-        4: "分享页面",
-        5: "内容点赞",
-        6: "下载APP"
-      },
-      daterange: [],
-      formData: {
-        activityId: "",
-        prizepoolId: "",
-        id: "",
-        name: "",
-        name: "",
-        assignmentObjectType: "",
-        endTime: "",
-        prizepoolType: 1
-      },
+      // assignmentType
+      assignmentTypeOption: [
+        { label: "领优惠券", value: 1 },
+        { label: "邀请助力", value: 2 },
+        { label: "浏览页面", value: 3 },
+        { label: "分享页面", value: 4 },
+        { label: "内容点赞", value: 5 },
+        { label: "下载APP", value: 6 }
+      ],
+      // assignmentObjectType
+      // 页面类型 4-领优惠频道页 5-抽奖广场页 6-活动主页 7-优惠券详情页 8-内容详情页
+      assignmentObjectTypeOption: [
+        { label: "领优惠频道页", value: 4 },
+        { label: "抽奖广场页", value: 5 },
+        { label: "活动主页", value: 6 },
+        { label: "优惠券详情页", value: 7 },
+        { label: "内容详情页", value: 8 }
+      ],
+      // isRecommend 是否推荐：0-未推荐 1-被推荐（好券推荐列表页展示）
+      isRecommendOption: [{ label: "是", value: 1 }, { label: "否", value: 0 }],
+      formData: createFormData(),
       ruleValidate: {}
     };
   },
@@ -169,13 +266,7 @@ export default {
       this.formData.couponId = id;
       this.formData.couponName = name;
     },
-    changeTime(arr) {
-      // yyyy-MM-dd HH:mm:ss
-      console.log(arr);
-      let [beginTime, endTime] = arr;
-      this.formData.beginTime = beginTime;
-      this.formData.endTime = endTime;
-    },
+
     closeDialog() {
       //关闭对话框清除表单数据
       // this.$refs.formValidate.resetFields();
@@ -187,13 +278,15 @@ export default {
       this.$refs[name].validate(async valid => {
         // console.log(JSON.stringify(this.formValidate));
         if (valid) {
-          this.$Message.success("数据验证成功!");
+          this.msgOk("数据验证成功!");
 
           let oForm = JSON.parse(JSON.stringify(this.formData));
           oForm.activityId = this.activityId;
-          oForm.prizepoolType = 1;
-          oForm.prizepoolType = 1;
-          oForm.isDeleted = 0;
+          oForm.prizepoolId = this.prizepoolId;
+          if (oForm.assignmentType == 1) {
+            oForm.assignmentObject = oForm.couponId;
+            oForm.assignmentObjectType = oForm.couponType;
+          }
 
           let { code, msg } = await postRequest(this.url, oForm);
 
@@ -223,6 +316,25 @@ export default {
           return callback(`最多只能输入${len}个汉字`);
         }
         callback();
+      };
+    },
+    validateInt(msg) {
+      //验证正整数
+      return function(rule, value, callback) {
+        value += "";
+        value = value.trim();
+        // 允许不填
+        if (value == "") {
+          return callback(`${msg}不能为空`);
+        }
+        let reg = /^(0|\+?[1-9][0-9]*)$/;
+        if (reg.test(value)) {
+          console.log("reg.test(value)", reg.test(value));
+
+          callback();
+        } else {
+          callback(new Error("请输入大于等于0的正数"));
+        }
       };
     },
     // 全局提示
