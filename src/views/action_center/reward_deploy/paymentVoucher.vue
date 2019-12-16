@@ -216,7 +216,7 @@ export default {
       const url = "/trade/sys/conf/save";
       // this.formData.value = +this.formData.value
       let body = JSON.parse(JSON.stringify(this.formData))
-      if(body.value === '') body.value
+      if(body.value === '') body.value = 0;
       const { code, msg } = await postRequest(url, body);
       if (code == 200) {
         this.queryTableData();
