@@ -2,7 +2,7 @@
   <!-- Withdrawal - switch -->
   <div style="margin-bottom: 20px;">
     <Row>
-      <h3>商户免审提现金额</h3>
+      <h3>支付券的配置</h3>
       <Button size="small" icon="md-refresh" class="marginLeft20" @click="refresh">刷新</Button>
       <!-- <Button type="primary" class="marginLeft20" @click="showDeduction=true">扣款</Button> -->
     </Row>
@@ -12,9 +12,9 @@
         <template slot-scope="{ row }" slot="action">
           <Button type="success" style="margin-right: 5px" size="small" @click="openModal(row)">修改</Button>
         </template>
-        <!-- <template slot-scope="{ row }" slot="log">
+        <template slot-scope="{ row }" slot="log">
           <Button type="success" style="margin-right: 5px" size="small" @click="viewLogShow(row)">查看日志</Button>
-        </template> -->
+        </template>
       </Table>
     </div>
 
@@ -28,11 +28,11 @@
         :label-width="120"
       >
         <FormItem
-          label="金额:"
+          label="过期退免审金额:"
           prop="value"
           :rules="{ required: true, validator: checkIsPositiveIntegerEx0 }"
         >
-          <Input style="width:80%" v-model="formData.value" placeholder="请输入免审金额" clearable />
+          <Input style="width:80%" v-model="formData.value" placeholder="请输入过期退免审金额" clearable />
         </FormItem>
 
         <FormItem>
@@ -74,7 +74,7 @@ export default {
       ruleValidate: {},
       tableLoading: false,
       modal: {
-        levelName: "商户免审提现金额",
+        levelName: "支付券配置",
         isopen: false
       },
       formData: {
@@ -122,12 +122,12 @@ export default {
           minWidth: 160,
           key: "modifiedTime"
         },
-        // {
-        //   title: "操作日志",
-        //   align: "center",
-        //   minWidth: 100,
-        //   slot: 'log'
-        // }
+        {
+          title: "操作日志",
+          align: "center",
+          minWidth: 100,
+          slot: 'log'
+        }
       ],
       tableData: [],
 
@@ -145,13 +145,13 @@ export default {
           title: "操作前",
           align: "right",
           minWidth: 100,
-          key: "after"
+          key: "before"
         },
         {
           title: "操作后",
           align: "right",
           minWidth: 100,
-          key: "before"
+          key: "after"
         },
         {
           title: "操作人",
@@ -214,7 +214,10 @@ export default {
     },
     async saveChange() {
       const url = "/trade/sys/conf/save";
-      const { code, msg } = await postRequest(url, this.formData);
+      // this.formData.value = +this.formData.value
+      let body = JSON.parse(JSON.stringify(this.formData))
+      if(body.value === '') body.value = 0;
+      const { code, msg } = await postRequest(url, body);
       if (code == 200) {
         this.queryTableData();
         setTimeout(() => {
@@ -226,11 +229,12 @@ export default {
     },
     //验证正整数
     checkIsPositiveIntegerEx0(rule, value, callback) {
-      var reg = /^([0-9][0-9]*)$/;
-      if (reg.test(value)) {
+      // var reg = /^([0-9][0-9]*)$/;
+      var reg = /^(([1-9][0-9]*)|(([0]\.\d{1,2}|[1-9][0-9]*\.\d{1,2})))$/;
+      if (reg.test(value) || value === '') {
         callback();
       } else {
-        callback(new Error("请输入大于等于0的正整数"));
+        callback(new Error("请输入大于0的正数，保留小数点后两位"));
       }
     },
     validateEmpty(msg, len = 20) {

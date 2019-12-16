@@ -58,7 +58,8 @@
         </template>
         <template slot-scope="{ row }" slot="status">
           <p v-if="!row.rejectReason">{{row.billStatusDesc}}</p>
-          <Tooltip v-if="row.rejectReason" placement="left" theme="light">
+          <!-- placement="left"  -->
+          <Tooltip v-if="row.rejectReason" theme="light">
             <p style="color: #ed4014;cursor: help;">{{row.billStatusDesc}}</p>
             <div class="bohui-box" slot="content">
               <p style="color: #ed4014;">{{row.rejectReason}}</p>
@@ -134,7 +135,7 @@
 
   const columns = [{
       title: "操作",
-      width: 240,
+      width: 245,
       align: "left",
       fixed: "left",
       slot: "operate"
@@ -481,6 +482,8 @@
     padding: 5px;
     font-size: 14px;
     white-space: normal;
+    /* max-height: 200px;
+    overflow: auto; */
   }
 
 </style>
