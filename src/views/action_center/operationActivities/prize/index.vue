@@ -102,6 +102,7 @@ export default {
     prizepoolId() {
       console.log("prize watch prizepoolId:", this.prizepoolId);
       console.log("prize watch tab:", { ...this.tab });
+      this.queryTableData();
     },
     tab: {
       handler(val, oldVal) {

@@ -101,6 +101,7 @@ export default {
     prizepoolId() {
       console.log("task watch prizepoolId:", this.prizepoolId);
       console.log("task watch tab:", { ...this.tab });
+      this.queryTableData();
     },
     tab: {
       handler(val, oldVal) {

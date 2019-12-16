@@ -109,7 +109,6 @@
           <template v-if="formData.drawMode==1">
             <FormItem prop="winningPercent" :rules="{ required: true, message: '请输入中奖概率' }">
               <Input
-                :key="Math.random()"
                 style="width:300px"
                 v-model.trim="formData.winningPercent"
                 placeholder="仅限填写0-100间的整数"
@@ -120,7 +119,6 @@
           <template v-else-if="formData.drawMode==2">
             <FormItem prop="winningNo" :rules="{ required: true, message: '请输入抽奖次数' }">
               <Input
-                :key="Math.random()"
                 style="width:300px"
                 v-model.trim="formData.winningNo"
                 placeholder="仅限填写正整数"
@@ -186,23 +184,18 @@ export default {
       // this.$refs.form.validateField('xxx');
     },
     ["formData.drawMode"]() {
-      let fieldName =
-        this.formData.drawMode == 1 ? "winningPercent" : "winningNo";
+      let { drawMode } = this.formData;
+      let fieldName = drawMode == 1 ? "winningPercent" : "winningNo";
 
-      console.log("fieldName:", fieldName, this.formData.drawMode);
-
-      // this.$refs.form.validateField("winningPercent");
-
-      // this.$refs.form.validateField("winningPercent", phoneError => {
-      //   console.log("phoneError", phoneError);
-      // });
+      this.$nextTick(_ => {
+        this.$refs.form.validateField(fieldName);
+      });
     },
     action: {
       handler(val, oldVal) {
         let { type, data } = this.action;
         this.isShow = true;
         console.log("watch prize edit action:");
-
         // 新增
         if (type == "add") {
           this.title = "添加奖品";
@@ -212,7 +205,13 @@ export default {
           //edit 修改
           this.title = "编辑奖品";
           this.url = "/activity/prize/edit";
-          this.formData = JSON.parse(JSON.stringify(data));
+          let formData = createFormData();
+          let _data = JSON.parse(JSON.stringify(data));
+
+          this.formData = {
+            ...formData,
+            ..._data
+          };
         }
       },
       deep: true
