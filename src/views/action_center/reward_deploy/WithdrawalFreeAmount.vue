@@ -12,9 +12,9 @@
         <template slot-scope="{ row }" slot="action">
           <Button type="success" style="margin-right: 5px" size="small" @click="openModal(row)">修改</Button>
         </template>
-        <template slot-scope="{ row }" slot="log">
+        <!-- <template slot-scope="{ row }" slot="log">
           <Button type="success" style="margin-right: 5px" size="small" @click="viewLogShow(row)">查看日志</Button>
-        </template>
+        </template> -->
       </Table>
     </div>
 
@@ -122,12 +122,12 @@ export default {
           minWidth: 160,
           key: "modifiedTime"
         },
-        {
-          title: "操作日志",
-          align: "center",
-          minWidth: 100,
-          slot: 'log'
-        }
+        // {
+        //   title: "操作日志",
+        //   align: "center",
+        //   minWidth: 100,
+        //   slot: 'log'
+        // }
       ],
       tableData: [],
 

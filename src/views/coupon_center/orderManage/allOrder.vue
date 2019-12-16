@@ -18,7 +18,7 @@
                 <Input v-model="searchForm.orderNo" placeholder="请填写订单号" />
               </FormItem>
               <FormItem label="状态：" span="24">
-                <Select v-model="searchForm.status" placeholder="请选择状态" clearable>
+                <Select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 100px;">
                   <Option
                     v-for="item in statusList"
                     :value="item.value"
@@ -72,7 +72,7 @@
               </FormItem>
             </Form>
           </Card>
-          <Card>
+          <Card style="margin-top: 1vh;">
             <Row class="operation">
               <Button type="primary" icon="md-refresh" @click="refech">刷新</Button>
               <span
@@ -160,9 +160,11 @@ export default {
       ],
       //1: 待付款  2:已取消  3: 付款中  4：已付款  5: 退款  6: 已完成
       //全部、待付款、已取消（超时未支付、手动取消）、已付款（全部券码可使用、部分券码可使用）、退款（退款中、已退款、退款失败）、已完成（已全部使用、已全部退款）
+      // 1: 待付款  2:已取消  3: 付款中  4：已付款  5: 退款  6: 已完成 )
       statusList: [
         { value: "1", label: "待付款" },
         { value: "2", label: "已取消" },
+        { value: "3", label: "付款中" },
         { value: "4", label: "已付款" },
         { value: "5", label: "退款" },
         { value: "6", label: "已完成" }
