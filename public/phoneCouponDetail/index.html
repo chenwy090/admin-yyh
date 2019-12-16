@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="x5-fullscreen" content="true">
+    <meta name="full-screen" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <meta http-equiv="cache-control" content="max-age=0" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>预览优惠券详情</title>
+    <script src="https://cdn.bootcss.com/vue/2.6.10/vue.min.js"></script>
+    <script src="https://cdn.bootcss.com/axios/0.19.0/axios.min.js"></script>
+    <!-- <script src="https://cdn.bootcss.com/sass.js/0.11.0/sass.min.js"></script> -->
+    <script src="./rem.js"></script>
+</head>
+
+<body>
+    <div id="container">
+        <div class="title">优惠券详情</div>
+        <div class="main">
+            <div class="mian_head">
+                <div class="head_img">
+                    <img :src="couponData.couponBigImg" alt="">
+                </div>
+                <div class="head_txt">
+                    <div class="head_title1">
+                        {{couponData.displayText}}
+                        <span>{{couponData.couponTypeName}}</span>
+                        <div class="head_title1_left">
+                            <span v-for="(item, index) in couponData.couponSaleAfterVOList"
+                                :key="index"> 
+                                <span v-if="index != 0">|</span>
+                                {{item.value}}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="head_title2">
+                        {{couponData.title}}
+                    </div>
+                    <div class="head_title3">
+                        <div class="head_title3_txt">
+                            <span>{{couponData.shareReward}}</span>
+                            <span>{{couponData.sharedReward}}</span>
+                            <span>{{couponData.firstLevelReward}}</span>
+                        </div>
+                        <div class="head_title3_button">
+                            分享赚U贝
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mian_rule">
+                <div class="rule_title">
+                    领取规则
+                </div>
+                <div class="rule_main">
+                    <div class="rule_time">
+                        活动时间：{{couponData.startDate | time}} — {{couponData.endDate | time}}
+                    </div>
+                    <div class="rule_main_txt">
+                        {{couponData.useDesc}}
+                    </div>
+                    <div class="rule_main_button">
+                    </div>
+                </div>
+            </div>
+
+            <div class="mian_rule">
+                <div class="rule_title">
+                    适用门店
+                </div>
+                <div class="gps_main">
+                    <div class="gps_left" >
+                        <span v-if="couponData.merchantInfoVOList">
+                            {{couponData.merchantInfoVOList[0].merchantName}}
+                        </span>
+                    </div>
+                    <div class="gps_right">
+                        1043.0km
+                    </div>
+                </div>
+            </div>
+
+            <div class="mian_rule" style="margin-top:15px;padding-bottom: 50px;" v-if="couponData.discountDetail">
+                <div class="rule_title">
+                    优惠券详情
+                </div>
+                <div class="gps_main" v-html="couponData.discountDetail">
+                    {{couponData.discountDetail}}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+<script>
+    new Vue({
+        el: "#container",
+        data: function () {
+            return {
+                baseUrl:'', //接口地址
+                token:'', //用户登录信息
+                templateId: '', // 券id
+                couponData: {
+                    // title1: '免费体验儿童街舞课',
+                    // couponType: '赠品券',
+                    // title2: 'D2M舞蹈教室免费体验儿童街舞',
+                    // time: '2019.12.11——2020.01.31',
+                    // rule: '舞蹈教室免费体验童街舞',
+                    // details:'<p>支付券测试-请勿动<img src="https://image.52ash.cn/wx_mini/I3OqoTBwCr.jpg" style="max-width: 100%;"></p>'
+                },
+            };
+        },
+        filters: {
+            time(val) {
+                if (val) {
+                    let value = val.slice(0, 10)
+                    return value
+                }
+            }
+        },
+        created: function () {
+            this.getUrlKey()
+            // this.templateId = '20191212040171'
+            // this.getCouponData()
+            // console.log(this.templateId);
+        },
+        methods: {
+            // 根据id获取数据
+            getCouponData() {
+                axios.get(
+                    this.baseUrl + `zex-mgr/merchantCouponTemplate/getMerchantCouponDetail?templateId=${this.templateId}`,
+                    {headers:{jwttoken:this.token}}
+                )
+                    .then(res => {
+                        if (res.data.code == 200) {
+                            this.couponData = res.data.data
+                        }
+                    })
+            },
+            // 获取url参数
+            getUrlKey() {
+                this.templateId = decodeURIComponent((new RegExp('[?|&]' + 'templateId' + '=' + '([^&;]+?)(&|#|;|$)').exec(
+                    window.location.href ) || [, ""])[1]
+                    .replace(/\+/g, '%20')) || null
+                this.token = decodeURIComponent((new RegExp('[?|&]' + 'token' + '=' + '([^&;]+?)(&|#|;|$)').exec(
+                    window.location.href ) || [, ""])[1]
+                    .replace(/\+/g, '%20')) || null
+
+                // 接口地址
+                let baseUrl = decodeURIComponent((new RegExp('[?|&]' + 'env' + '=' + '([^&;]+?)(&|#|;|$)').exec(
+                    window.location.href ) || [, ""])[1]
+                    .replace(/\+/g, '%20')) || null
+                if(baseUrl == 'dev') {
+                    this.baseUrl = 'http://192.168.31.114:8088/'
+                }else if(baseUrl == 'test') {
+                    this.baseUrl = 'http://192.168.31.134:8088/'
+                }else if(baseUrl == 'review') {
+                    this.baseUrl = 'http://192.168.31.123:8088/'
+                }else if(baseUrl == 'prod') {
+                    this.baseUrl = 'http://crm.52iuh.com:8088/'
+                }
+
+                // this.templateId = '20191212040171'
+                // this.token ='eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXNzd29yZCI6ImRmNDllYzQ4ZTU2NTIyZDExMTUxZmI5ZWNkNjgzYWVmIiwibG9naW5OYW1lIjoidGVzdCIsImV4cCI6MTU3NjIyODU5NiwidXNlcklkIjoiOTk5OSJ9.N8IGtJH6cS0SovOhHlYw68f_KWtbr6gHoaogrFstGVw'
+                if (this.templateId && this.token &&  this.baseUrl) {
+                    this.getCouponData()
+                }
+
+            }
+        }
+    });
+
+</script>
+
+</html>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    div {
+        font-size: 0.34rem;
+    }
+
+    img {
+        border: 0;
+        vertical-align: middle;
+    }
+
+    #container {
+        background-color: #f2f2f2;
+        /* height: 100%; */
+
+    }
+
+    .title {
+        background-color: #fff;
+        width: 100%;
+        height: 6vh;
+        line-height: 6vh;
+        text-align: center;
+        font-size: 0.4rem;
+    }
+
+    .mian_head {
+        width: 100%;
+    }
+
+    .head_img img {
+        width: 100%;
+        height: 100%;
+    }
+
+    .mian_head .head_txt {
+        background-color: #fff;
+        padding: 3%;
+    }
+
+    /* .mian_head .head_txt div {
+        height: 5vh;
+    } */
+    .head_txt .head_title1 {
+        font-size: 0.3rem;
+        height: 5vh;
+        color: #ef913a;
+        font-weight: 600;
+        overflow: hidden;
+    }
+
+    .head_txt .head_title1 span {
+        color: #000;
+    }
+
+    .head_txt .head_title1 .head_title1_left {
+        float: right;
+        font-size: 0.2rem;
+        font-weight: normal;
+    }
+
+    .head_txt .head_title1 .head_title1_left span {
+        color: #848484;
+    }
+
+    .head_title1 .head_title1_left span:nth-child(1) {
+        margin-right: 5px;
+    }
+
+    .head_txt .head_title2 {
+        height: 5vh;
+        font-size: 0.28rem;
+        color: #5f5f5f;
+    }
+
+    .head_txt .head_title3 {
+        overflow: hidden;
+        height: 4vh;
+    }
+
+    .head_txt .head_title3 div {
+        font-size: 0.2rem;
+    }
+
+    .head_title3 .head_title3_txt {
+        float: left;
+        color: #9f9f9f;
+        line-height: 4vh;
+    }
+
+    .head_title3 .head_title3_button {
+        font-size: 0.23rem !important;
+        color: #fff;
+        padding: 6px;
+        background-color: #e59591;
+        float: right;
+        border-radius: 0 6px 6px 0;
+    }
+
+    .main .mian_rule {
+        margin-top: 5px;
+        background-color: #fff;
+    }
+
+    .mian_rule .rule_title {
+        padding: 3%;
+        border-bottom: 1px solid #ccc;
+    }
+
+    .mian_rule .rule_main {
+        padding: 3% 3% 0 3%;
+        /* width: 100%; */
+    }
+
+    .mian_rule .rule_main div {
+        font-size: 0.3rem;
+    }
+
+    .rule_main .rule_time {
+        font-size: 0.24rem !important;
+    }
+
+    .rule_main .rule_main_txt {
+        overflow: hidden;
+    }
+
+    .rule_main .rule_main_button {
+        width: 0.2rem;
+        height: 0.2rem;
+        /* background-color: #000; */
+        border-left: 1px solid #000;
+        border-top: 1px solid #000;
+        transform: rotate(45deg);
+        margin: 2vh auto;
+    }
+
+    .gps_main {
+        overflow: hidden;
+        margin: 8px 0;
+    }
+
+    /* .gps_main div {
+        float: left;
+    } */
+
+    .gps_main .gps_left {
+        float: left;
+        width: 65%;
+        height: 9vh;
+        padding: 2% 0 2% 4%;
+        line-height: 9vh;
+        font-size: 0.3rem;
+        /* border-right: 1px solid #ccc; */
+    }
+
+    .gps_main .gps_right {
+        float: right;
+        width: 30%;
+        font-size: 0.2rem;
+        color: #589cde;
+        line-height: 10vh;
+        text-align: center;
+        border-left: 1px solid #ccc;
+    }
+</style>

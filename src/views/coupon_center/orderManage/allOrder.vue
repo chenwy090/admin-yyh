@@ -44,7 +44,7 @@
                 <DatePicker
                   :value="searchForm.gmtCreateStart"
                   type="date"
-                  placeholder
+                  placeholder="选择开始领取时间"
                   style="width: 48%"
                   :options="options1"
                   @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
@@ -53,7 +53,7 @@
                 <DatePicker
                   :value="searchForm.gmtCreateEnd"
                   type="date"
-                  placeholder
+                  placeholder="选择结束领取时间"
                   style="width: 48%"
                   :options="options2"
                   @on-change="(datetime) =>{ changeDateTime(datetime, 2)}"
@@ -182,18 +182,18 @@ export default {
         },
         {
           title: "订单编号",
-          width: 200,
+          width: 160,
           key: "orderNo"
         },
         {
           title: "状态",
-          width: 220,
+          width: 80,
           align: "center",
           key: "statusStr"
         },
         {
           title: "优惠券ID",
-          width: 200,
+          width: 180,
           align: "center",
           key: "couponId"
         },
@@ -209,7 +209,7 @@ export default {
         },
         {
           title: "数量",
-          minWidth: 150,
+          minWidth: 100,
           key: "amount"
         },
         {
@@ -225,12 +225,12 @@ export default {
         },
         {
           title: "U贝抵扣",
-          minWidth: 250,
+          minWidth: 100,
           key: "ubayDiscount"
         },
         {
           title: "红包抵扣",
-          minWidth: 150,
+          minWidth: 100,
           key: "redEnvelopeDiscount"
         },
         {
@@ -241,12 +241,12 @@ export default {
         },
         {
           title: "买家",
-          width: 100,
+          width: 120,
           key: "phoneNumber"
         },
         {
           title: "付款时间",
-          minWidth: 250,
+          minWidth: 180,
           key: "payTime"
         },
         {
