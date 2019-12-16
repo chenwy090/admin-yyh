@@ -85,7 +85,7 @@ export const settleBillCheckPay = (body) => {
 
 // 下载结算单
 export const postSettleBillDownload = (body) => {
-  return postRequest(`/trade/settle/bill/download`, body)
+  return downloadSteam(`/trade/settle/bill/download`, body)
 }
 
 // 获取商户信息
