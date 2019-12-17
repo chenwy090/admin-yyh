@@ -75,9 +75,9 @@
           <Card style="margin-top: 1vh;">
             <Row class="operation">
               <!-- <Button type="primary" icon="md-refresh" @click="refech">刷新</Button> -->
-              <span
+              <!-- <span
                 v-if="refreshData&&refreshData.allOrderCount"
-              >总共{{refreshData.allOrderCount}}单，待付款{{refreshData.pendingPaymentOrderCount}}单，已付款{{refreshData.paidOrderCount}}单，已取消{{refreshData.cancelledOrderCount}}单，退款{{refreshData.refundOrderCount}}单</span>
+              >总共{{refreshData.allOrderCount}}单，待付款{{refreshData.pendingPaymentOrderCount}}单，已付款{{refreshData.paidOrderCount}}单，已取消{{refreshData.cancelledOrderCount}}单，退款{{refreshData.refundOrderCount}}单</span> -->
               <!--<Button type="primary" icon="ios-download-outline" @click="downFn">下载</Button>-->
             </Row>
             <Row>
@@ -316,7 +316,7 @@ export default {
       this.searchForm.current = 1;
       this.current = 1;
       this.loadTableData();
-      this.refech();
+      // this.refech();
     },
     loadTableData(page) {
       this.searchForm.current = page || 1;
@@ -337,18 +337,18 @@ export default {
         }
       });
     },
-    refech() {
-      this.refreshData = {};
-      getRequest(`/trade/fund/account/order/status`, null).then(res => {
-        console.log(1111);
-        // this.TableLoading = false;
-        if (res.code === "200") {
-          this.refreshData = res.data.retData;
-        } else {
-          this.$Message.error("获取数据失败");
-        }
-      });
-    },
+    // refech() {
+    //   this.refreshData = {};
+    //   getRequest(`/trade/fund/account/order/status`, null).then(res => {
+    //     console.log(1111);
+    //     // this.TableLoading = false;
+    //     if (res.code === "200") {
+    //       this.refreshData = res.data.retData;
+    //     } else {
+    //       this.$Message.error("获取数据失败");
+    //     }
+    //   });
+    // },
     showDetail(row) {
       this.showViewDialogVisible = true;
       this.$nextTick(() => {
