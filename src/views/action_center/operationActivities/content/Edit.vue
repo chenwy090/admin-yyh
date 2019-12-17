@@ -11,7 +11,7 @@
     >
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="ios-information-circle"></Icon>
-        <span>{{title}}内容编辑</span>
+        <span>{{title}}</span>
       </p>
       <div>
         activityId:{{activityId}}
@@ -103,7 +103,7 @@ export default {
   async mounted() {
     let { type, data } = this.action;
     this.isShow = true;
-    console.log("mounted content edit action:");
+    console.log("mounted content edit action:", type, data);
     // 新增
     if (type == "add") {
       this.title = "添加内容";
