@@ -62,6 +62,19 @@
           >编辑活动</Button>
 
           <Button
+            type="warning"
+            size="small"
+            style="margin-right: 5px"
+            @click="queryOrEditContent('query',row)"
+          >查询内容</Button>
+          <Button
+            type="warning"
+            size="small"
+            style="margin-right: 5px"
+            @click="queryOrEditContent('edit',row)"
+          >编辑内容</Button>
+
+          <Button
             type="primary"
             size="small"
             style="margin-right: 5px"
@@ -111,6 +124,13 @@
 
     <Edit :action="action" @refresh="queryTableData"></Edit>
 
+    <!-- 活动内容 -->
+    <ActivityContent
+      v-if="showEditConent"
+      :showEditConent.sync="showEditConent"
+      :action="contentAction"
+    ></ActivityContent>
+
     <!-- 奖池 -->
     <Drawer
       v-model="showEditJackpot"
@@ -146,15 +166,20 @@ import columns from "./columns";
 
 import Edit from "./Edit";
 
+// 内容
+import createContentFormData from "../content/createFormData";
+import ActivityContent from "../content";
+
 // 奖池
 import Jackpot from "../jackpot";
-
+// 编辑/查看 次数
 import ModalWinnerNum from "./ModalWinnerNum";
 
 export default {
   name: "ubay-management",
   components: {
     Edit,
+    ActivityContent,
     Jackpot,
     ModalWinnerNum
   },
@@ -167,11 +192,18 @@ export default {
         paddingBottom: "53px",
         position: "static"
       },
+      showEditConent: false, //内容
       showEditJackpot: false, //奖池
       //新增 add、修改 edit
       action: {
         id: Math.random(),
         type: "add",
+        data: null
+      },
+      contentAction: {
+        _id: Math.random(),
+        title: "编辑内容",
+        type: "edit", //query/edit
         data: null
       },
       jackpotAction: {
@@ -240,7 +272,7 @@ export default {
       console.log("addOrEdit2", { ...this.action });
     },
     addOrEditJackpot(type, data) {
-      this.setActivityId(data.id); //设置活动id
+      this.setActivityId(data.activityId); //设置活动id
       console.log("addOrEditJackpot", type, data);
       this.showEditJackpot = true;
       let title = "";
@@ -257,8 +289,22 @@ export default {
       };
       console.log("addOrEditJackpot", { ...this.jackpotAction });
     },
+
+    async queryOrEditContent(type, row) {
+      this.showEditConent = true;
+      this.setActivityId(row.activityId); //设置活动id
+      let data = await this.queryContent(row);
+      if (type !== "query") {
+        type == data._type;
+      }
+      this.contentAction = {
+        _id: Math.random(),
+        type,
+        data
+      };
+    },
     async queryOrEditWinnerNum(type, row) {
-      this.setActivityId(row.id); //设置活动id
+      this.setActivityId(row.activityId); //设置活动id
       let data = await this.selectWinner(row);
       this.winnerNumAction = {
         _id: Math.random(),
@@ -300,6 +346,48 @@ export default {
         this.msgErr(code + " 数据加载失败!");
       }
     },
+    // 查看活动的图片文案
+    async queryContent({ activityId }) {
+      // 活动类型列表
+      const url = "/activityPic/text/selectByActivityId";
+
+      let { code, data } = await getRequest(url, { activityId });
+
+      let formData = createContentFormData();
+      let _type = ""; //add/edit
+
+      if (code == 200) {
+        if (data.length == 0) {
+          data = formData;
+          data._type = "add";
+          data.activityId = activityId;
+        } else {
+          data.sort((obj1, obj2) => {
+            return obj1.type - obj2.type;
+          });
+          let { activityPicTextList: arr } = formData;
+          let activityPicTextList = data.map(item => {
+            let { type, picUrl } = item;
+            let _item = arr.find(obj => obj.type == type);
+
+            item = { ..._item, ...item };
+
+            let defaultPicUrlList = [];
+            if (picUrl) {
+              defaultPicUrlList = [{ imgUrl: picUrl }];
+            }
+            item.defaultPicUrlList = defaultPicUrlList;
+
+            return item;
+          });
+          data = { _type: "edit", activityId, activityPicTextList };
+        }
+        return data;
+      } else {
+        this.msgErr(code + " 数据加载失败!");
+        return { activityId: "", activityPicTextList: [] };
+      }
+    },
     // 查询次数
     async selectWinner({ id }) {
       // 活动类型列表
@@ -324,6 +412,10 @@ export default {
       let { code, data } = await getRequest(url);
 
       if (code == 200) {
+        let _data = JSON.parse(JSON.stringify(data[0]));
+        _data.id = Math.random();
+        _data.name = _data.name + Math.random();
+        data.push(_data);
         this.activityTypeOption = data;
         this.setActivityTypeOption({ activityTypeOption: data });
       } else {
