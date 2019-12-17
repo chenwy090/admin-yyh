@@ -3,19 +3,19 @@
     <Card>
       <Form ref="searchForm" :model="searchForm" inline :label-width="70" class="search-form">
         <Form-item label="订单号" prop="orderNo">
-          <Input v-model="searchForm.orderNo" placeholder="请输入订单号" style="width: 200px" />
+          <Input clearable v-model="searchForm.orderNo" placeholder="请输入订单号" style="width: 200px" />
         </Form-item>
         <Form-item label="微信单号" prop="tradeNo">
-          <Input v-model="searchForm.tradeNo" placeholder="请输入微信单号" style="width: 200px" />
+          <Input clearable v-model="searchForm.tradeNo" placeholder="请输入微信单号" style="width: 200px" />
         </Form-item>
         <Form-item label="优惠券ID" prop="couponId">
-          <Input v-model="searchForm.couponId" placeholder="请输入优惠券ID" style="width: 200px" />
+          <Input clearable v-model="searchForm.couponId" placeholder="请输入优惠券ID" style="width: 200px" />
         </Form-item>
         <Form-item label="品牌名称" prop="brandName">
-          <Input v-model="searchForm.brandName" placeholder="请输入品牌名称" style="width: 200px" />
+          <Input clearable v-model="searchForm.brandName" placeholder="请输入品牌名称" style="width: 200px" />
         </Form-item>
         <Form-item label="商户名称" prop="merchantName">
-          <Input v-model="searchForm.merchantName" placeholder="请输入商户名称" style="width: 200px" />
+          <Input clearable v-model="searchForm.merchantName" placeholder="请输入商户名称" style="width: 200px" />
         </Form-item>
 
         <Form-item label="支付方式" prop="payType">

@@ -3,7 +3,7 @@
     <Card>
       <Form ref="searchForm" :model="searchForm" inline :label-width="90" class="search-form">
         <Form-item label="结算单号" prop="billNo">
-          <Input v-model="searchForm.billNo" placeholder="请输入结算单号" style="width: 200px" />
+          <Input clearable v-model="searchForm.billNo" placeholder="请输入结算单号" style="width: 200px" />
         </Form-item>
         <FormItem label="结算周期" prop="settleTime">
           <DatePicker transfer type="daterange" placeholder="请选择结算周期" @on-change=" searchForm.settleTime = $event "
@@ -11,10 +11,10 @@
           </DatePicker>
         </FormItem>
         <Form-item label="品牌名称" prop="brandName">
-          <Input v-model="searchForm.brandName" placeholder="请输入品牌名称" style="width: 200px" />
+          <Input clearable v-model="searchForm.brandName" placeholder="请输入品牌名称" style="width: 200px" />
         </Form-item>
         <Form-item label="商户名称" prop="merchantName">
-          <Input v-model="searchForm.merchantName" placeholder="请输入商户名称" style="width: 200px" />
+          <Input clearable v-model="searchForm.merchantName" placeholder="请输入商户名称" style="width: 200px" />
         </Form-item>
         <FormItem label="结算付款时间" prop="payTime">
           <DatePicker transfer type="daterange" placeholder="请选择结算付款时间" @on-change=" searchForm.payTime = $event "
