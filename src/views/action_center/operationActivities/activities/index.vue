@@ -76,7 +76,12 @@
             style="color:red;margin-right: 5px"
             @click="queryOrEditContent('edit',row)"
           >编辑内容</Button>
-
+          <Button
+            type="text"
+            size="small"
+            style="color:red;margin-right: 5px"
+            @click="addOrEditJackpot('query',row)"
+          >查看奖池</Button>
           <Button
             v-if="row.status!=3"
             type="text"
@@ -154,19 +159,30 @@
       v-model="showEditJackpot"
       :closable="true"
       :mask-closable="false"
-      width="900"
+      width="1000"
       :styles="styles"
     >
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="ios-information-circle"></Icon>
         <span>{{jackpotAction.title}}</span>
       </p>
-      <Jackpot
-        v-if="showEditJackpot"
-        :showEditJackpot.sync="showEditJackpot"
-        :action="jackpotAction"
-        @refresh="queryTableData"
-      ></Jackpot>
+
+      <template v-if="jackpotAction.type=='edit'">
+        <Jackpot
+          v-if="showEditJackpot"
+          :showEditJackpot.sync="showEditJackpot"
+          :action="jackpotAction"
+          @refresh="queryTableData"
+        ></Jackpot>
+      </template>
+      <template v-else-if="jackpotAction.type=='query'">
+        <JackpotDetail
+          v-if="showEditJackpot"
+          :showEditJackpot.sync="showEditJackpot"
+          :action="jackpotAction"
+          @refresh="queryTableData"
+        ></JackpotDetail>
+      </template>
     </Drawer>
 
     <ModalWinnerNum :action="winnerNumAction"></ModalWinnerNum>
@@ -190,6 +206,8 @@ import ActivityContent from "../content";
 
 // 奖池
 import Jackpot from "../jackpot";
+import JackpotDetail from "../jackpot/Detail";
+
 // 编辑/查看 次数
 import ModalWinnerNum from "./ModalWinnerNum";
 
@@ -199,6 +217,7 @@ export default {
     Edit,
     ActivityContent,
     Jackpot,
+    JackpotDetail,
     ModalWinnerNum
   },
   watch: {},

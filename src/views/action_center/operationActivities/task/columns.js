@@ -17,24 +17,20 @@ export default [
         title: "任务类型",
         key: "assignmentTypeName",
         align: "center",
-        minWidth: 140
     },
     {
         title: "任务标题",
         key: "name",
         align: "center",
-        minWidth: 120
     },
     {
         title: "次数限制",
         key: "executeNum",
         align: "center",
-        width: 100
     },
     {
         title: "可获能量",
         key: "rewardPoints",
         align: "center",
-        width: 100
     },
 ];

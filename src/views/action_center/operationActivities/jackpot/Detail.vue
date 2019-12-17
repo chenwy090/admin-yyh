@@ -1,9 +1,8 @@
 <template>
   <!--  新建/编辑 奖池 -->
-  <div class="edit">
+  <div class="detail">
     <Card :bordered="false" style="margin-bottom:2px">
       <Row type="flex" justify="start">
-        <Button type="primary" icon="md-add" class="marginLeft20" @click="addOrEdit('add')">新增奖池</Button>
         <Button icon="md-refresh" class="marginLeft20" @click="refresh">刷新</Button>
       </Row>
     </Card>
@@ -18,42 +17,11 @@
       >
         <template slot-scope="{ row }" slot="action">
           <Button
-            v-if="row.showEdit"
-            type="primary"
-            size="small"
-            style="margin-right: 5px"
-            @click="addOrEdit('edit',row)"
-          >编辑奖池</Button>
-          <Button
-            v-if="!row.showEdit"
             type="primary"
             size="small"
             style="margin-right: 5px"
             @click="editPrizePoolContent(row,'query')"
           >查看奖池内容</Button>
-          <Button
-            v-if="row.showEdit"
-            type="primary"
-            size="small"
-            style="margin-right: 5px"
-            @click="editPrizePoolContent(row,'edit')"
-          >编辑奖池内容</Button>
-          <!-- 删除奖池将同步删除奖池内的所有奖品和任务，是否确认操作？  确认删除奖池吗? -->
-
-          <Poptip
-            v-if="row.showDel"
-            :transfer="true"
-            confirm
-            placement="bottom-end"
-            :title="`${row.delTips}`"
-            @on-ok="delItem(row)"
-            @on-cancel="delCancel(row)"
-            ok-text="确认"
-            cancel-text="取消"
-            word-wrap
-          >
-            <Button type="error" size="small">删除</Button>
-          </Poptip>
         </template>
       </Table>
       <!-- 分页器 -->
@@ -103,7 +71,7 @@ import columns from "./columns";
 import Edit from "./Edit";
 
 export default {
-  name: "edit",
+  name: "jackpot-detail",
   components: { Edit },
   props: {
     showEditJackpot: {
@@ -195,18 +163,6 @@ export default {
       tabs: [
         {
           id: Math.random(),
-          label: "奖品设置",
-          compName: "prize",
-          url: "/activity/prize/list"
-        },
-        {
-          id: Math.random(),
-          label: "任务设置",
-          compName: "task",
-          url: "/activity/assignment/rule/list"
-        },
-        {
-          id: Math.random(),
           label: "查看奖品设置",
           compName: "prize/Detail",
           url: "/activity/prize/list"
@@ -232,67 +188,13 @@ export default {
     editPrizePoolContent(row, actionType) {
       if (actionType == "query") {
         this.compName = "prize/Detail";
-        this.tabs = [
-          {
-            id: Math.random(),
-            label: "查看奖品设置",
-            compName: "prize/Detail",
-            url: "/activity/prize/list"
-          },
-          {
-            id: Math.random(),
-            label: "查看任务设置",
-            compName: "task/Detail",
-            url: "/activity/assignment/rule/list"
-          }
-        ];
-      } else if (actionType == "edit") {
-        this.compName = "task";
-        this.tabs = [
-          {
-            id: Math.random(),
-            label: "奖品设置",
-            compName: "prize",
-            url: "/activity/prize/list"
-          },
-          {
-            id: Math.random(),
-            label: "任务设置",
-            compName: "task",
-            url: "/activity/assignment/rule/list"
-          }
-        ];
       }
       this.actionType = actionType;
       this.jackpotName = row.name;
       this.setPrizepoolId(row.id); //设置奖池id
       this.showPrizeAndTask = true;
     },
-    async delItem(row) {
-      this.msgOk("正在删除...");
-      // /activity/prizepool/delete
-      const url = "/activity/prizepool/delete";
-      const { code, msg } = await postRequest(url, { id: row.id });
-      if (code == 200) {
-        this.msgOk("删除成功");
-        //查询table
-        this.queryTableData();
-      } else {
-        this.msgErr(msg);
-      }
-    },
-    delCancel() {
-      this.msgOk("已取消删除");
-    },
-    addOrEdit(type, data) {
-      console.log("addOrEdit1 jackpotAction", type, data);
-      this.jackpotAction = {
-        id: Math.random(),
-        type,
-        data
-      };
-      console.log("addOrEdit2 jackpotAction", { ...this.jackpotAction });
-    },
+
     // 刷新搜索
     refresh() {
       this.queryTableData(this.page.pageNum);
