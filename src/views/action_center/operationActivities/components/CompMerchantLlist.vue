@@ -59,7 +59,7 @@ export default {
       default: function() {
         return {
           name: "merchant",
-          couponType: 2,
+          couponType: 1,
           label: "超市券",
           compName: "CompMerchantLlist",
           url: "/campagin/activitylist"

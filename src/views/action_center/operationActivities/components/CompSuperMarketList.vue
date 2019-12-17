@@ -60,7 +60,7 @@ export default {
       default: function() {
         return {
           name: "superMarket",
-          couponType: 1,
+          couponType: 2,
           label: "周边券",
           compName: "CompSuperMarketList",
           url: "/merchantCouponTemplate/activitylist"

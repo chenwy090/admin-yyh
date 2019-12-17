@@ -14,7 +14,6 @@
         <span>{{title}}</span>
       </p>
       <div>
-        activityId:{{activityId}}
         <Form
           label-position="right"
           ref="form"
@@ -22,7 +21,6 @@
           :rules="ruleValidate"
           :label-width="120"
         >
-          formData.assignmentType: {{formData.assignmentType}}
           <FormItem
             label="任务类型："
             prop="assignmentType"
@@ -55,7 +53,7 @@
             </FormItem>
           </template>
           <!-- 浏览内容数量 -->
-          <template v-if="formData.assignmentObjectType==8">
+          <template v-if="formData.assignmentObjectType==7 || formData.assignmentObjectType==8">
             <FormItem
               label="浏览内容数量："
               prop="executeNum"

@@ -14,7 +14,6 @@
         <span>{{title}}</span>
       </p>
       <div>
-        activityId:{{activityId}}
         <Form
           label-position="right"
           ref="form"
@@ -22,7 +21,6 @@
           :rules="ruleValidate"
           :label-width="100"
         >
-          formData.prizeType: {{formData.prizeType}}
           <FormItem label="奖品类型：" prop="prizeType" :rules="{ required: true, message: '请选择奖品类型' }">
             <Select v-model="formData.prizeType" style="width:300px" clearable>
               <!-- <Option v-for="(v,k) in prizeTypeOption" :value="k" :key="v">{{ v }}</Option> -->
