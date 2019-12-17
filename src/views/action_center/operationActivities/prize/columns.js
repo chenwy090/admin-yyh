@@ -30,7 +30,12 @@ export default [
         title: "消耗积分",
         key: "couponPrizeCount",
         align: "center",
-        minWidth: 100
+        minWidth: 100,
+        render: (h, params) => {
+            let { level } = params.row;
+            let levelOption = { 2: "小奖100", 1: "大奖1000" };
+            return <span>{levelOption[level]}</span>
+        }
     },
     {
         title: "库存",

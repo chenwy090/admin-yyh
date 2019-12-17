@@ -51,6 +51,7 @@ export default {
     return {
       isShow: true,
       compName: "CompSuperMarketList",
+      // 优惠券类型：包括"周边券"、"超市券"；
       //  couponType 优惠券类型 0-商超券 1-商户/周边券
       // 商超 /zex-mgr/coupon/superMarket/list
       // 商户 /zex-mgr/coupon/merchant/list
@@ -59,17 +60,17 @@ export default {
           id: Math.random(),
           name: "xxx",
           couponType: 1,
-          label: "商超",
+          label: "周边券",
           compName: "CompSuperMarketList",
-          url: "/coupon/superMarket/list"
+          url: "/merchantCouponTemplate/activitylist"
         },
         CompMerchantLlist: {
           id: Math.random(),
           name: "xxx",
           couponType: 2,
-          label: "商户",
+          label: "超市券",
           compName: "CompMerchantLlist",
-          url: "/coupon/merchant/list"
+          url: "/campagin/activitylist"
         }
       }
     };

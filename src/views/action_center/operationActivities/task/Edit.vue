@@ -252,10 +252,10 @@ export default {
         { label: "下载APP", value: 6 }
       ],
       // assignmentObjectType
-      // 页面类型 4-领优惠频道页 5-抽奖广场页 6-活动主页 7-优惠券详情页 8-内容详情页
+      // 页面类型 4-领优惠频道页 5-抽奖广场页-->改成赚钱频道页 6-活动主页 7-优惠券详情页 8-内容详情页
       assignmentObjectTypeOption: [
         { label: "领优惠频道页", value: 4 },
-        { label: "抽奖广场页", value: 5 },
+        { label: "赚钱频道页", value: 5 },
         { label: "活动主页", value: 6 },
         { label: "优惠券详情页", value: 7 },
         { label: "内容详情页", value: 8 }
