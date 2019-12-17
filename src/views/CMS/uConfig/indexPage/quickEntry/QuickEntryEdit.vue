@@ -82,6 +82,9 @@
             </Row>
           </FormItem>
           <FormItem :label="`标签：`" :prop="`tags`">
+            <Row style="margin-bottom: 1vh;">
+              <Icon @click="tagsAdd" class="tag-add" size="30" color="#2d8cf0" type="ios-add-circle-outline" />
+            </Row>
             <Row class="tags-list" v-for="(items,index) in tagsList" :key="items.key">
               <Col span="5">
               <Select v-model="items.moduleId" disabled style="width:120px" placeholder="请选择所属模块"
@@ -95,8 +98,7 @@
               </Select>
               </Col>
               <Col span="5">
-                <Icon v-if="index == 0" @click="tagsAdd" class="tag-add" size="30" color="#2d8cf0" type="ios-add-circle-outline" />
-                <Icon v-if="index != 0" @click="tagsRemove(index)" class="tag-remove" size="30" color="#ffb08f" type="ios-remove-circle-outline" />
+                <Icon @click="tagsRemove(index)" class="tag-remove" size="30" color="#ffb08f" type="ios-remove-circle-outline" />
               </Col>
             </Row>
           </FormItem>
