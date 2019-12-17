@@ -242,12 +242,12 @@ export default {
     */
       // assignmentType
       assignmentTypeOption: [
-        { label: "领优惠券", value: 1 },
-        { label: "邀请助力", value: 2 },
-        { label: "浏览页面", value: 3 },
-        { label: "分享页面", value: 4 },
-        { label: "内容点赞", value: 5 },
-        { label: "下载APP", value: 6 }
+        { label: "领取优惠券类", value: 1 },
+        { label: "邀请助力类", value: 2 },
+        { label: "浏览页面类", value: 3 },
+        { label: "分享页面类", value: 4 },
+        { label: "内容点赞类", value: 5 },
+        { label: "下载APP类", value: 6 }
       ],
       // assignmentObjectType
       // 页面类型 4-领优惠频道页 5-抽奖广场页-->改成赚钱频道页 6-活动主页 7-优惠券详情页 8-内容详情页

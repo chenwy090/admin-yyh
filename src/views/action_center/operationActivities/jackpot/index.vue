@@ -261,9 +261,9 @@ export default {
               taskRelCount
             } = item;
 
-            let s = new Date(beginTime).getTime();
-            let e = new Date(endTime).getTime();
-            if (s < e) {
+            let s = Date.now();
+            let e = new Date(beginTime).getTime();
+            if (s <= e) {
               item.showEdit = true;
               item.showDel = true;
             }

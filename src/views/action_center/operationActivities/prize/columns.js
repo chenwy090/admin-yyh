@@ -39,7 +39,7 @@ export default [
     },
     {
         title: "库存",
-        key: "remainNum",
+        key: "prizeNum",
         align: "center",
         minWidth: 140
     },

@@ -120,7 +120,7 @@
                 placeholder="仅限填写0-100间的整数"
                 clearable
               />&nbsp;%
-              <div style="color:red;font-size:12px;">当前奖池剩余中奖假率为{{lastPercent}}%</div>
+              <div style="color:red;font-size:12px;">当前奖池剩余中奖概率为{{lastPercent}}%</div>
             </FormItem>
           </template>
           <template v-else-if="formData.drawMode==2">
