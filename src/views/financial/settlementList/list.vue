@@ -146,7 +146,7 @@
   const columns = [{
       title: "操作",
       width: 245,
-      align: "left",
+      align: "center",
       fixed: "left",
       slot: "operate"
     },
