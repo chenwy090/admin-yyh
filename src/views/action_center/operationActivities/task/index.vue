@@ -3,7 +3,7 @@
   <div class="edit">
     <Card :bordered="false" style="margin-bottom:2px">
       <Row type="flex" justify="start">
-        prizepoolId:{{prizepoolId}}
+        <!-- prizepoolId:{{prizepoolId}} -->
         <Button type="primary" icon="md-add" class="marginLeft20" @click="addOrEdit('add')">添加任务</Button>
         <Button icon="md-refresh" class="marginLeft20" @click="refresh">刷新</Button>
       </Row>

@@ -74,7 +74,7 @@
 
     <template v-if="showPrizeAndTask">
       <div>
-        {{compName}}
+        <!-- {{compName}} -->
         <Tabs type="card" v-model="compName">
           <TabPane v-for="tab in tabs" :key="tab.id" :label="tab.label" :name="tab.compName"></TabPane>
         </Tabs>

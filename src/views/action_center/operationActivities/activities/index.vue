@@ -55,37 +55,41 @@
             @click="query('edit',row)"
           >查看活动</Button>-->
           <Button
-            type="primary"
+            v-if="row.status==1"
+            type="text"
             size="small"
-            style="margin-right: 5px"
+            style="color:red;margin-right: 5px"
             @click="addOrEdit('edit',row)"
           >编辑活动</Button>
 
           <Button
-            type="warning"
+            v-if="row.status==3"
+            type="text"
             size="small"
-            style="margin-right: 5px"
+            style="color:#2db7f5;margin-right: 5px"
             @click="queryOrEditContent('query',row)"
           >查询内容</Button>
           <Button
-            type="warning"
+            v-if="row.status!=3"
+            type="text"
             size="small"
-            style="margin-right: 5px"
+            style="color:red;margin-right: 5px"
             @click="queryOrEditContent('edit',row)"
           >编辑内容</Button>
 
           <Button
-            type="primary"
+            v-if="row.status!=3"
+            type="text"
             size="small"
-            style="margin-right: 5px"
+            style="color:red;margin-right: 5px"
             @click="addOrEditJackpot('edit',row)"
           >编辑奖池</Button>
           <!-- v-if="row.status == 2" -->
           <Button
             v-if="row.status==1"
-            type="success"
+            type="text"
             size="small"
-            style="margin-right: 5px"
+            style="color:green;margin-right: 5px"
             @click="updateStatus(row,2)"
           >上架</Button>
 
@@ -102,19 +106,21 @@
             cancel-text="取消"
             word-wrap
           >
-            <Button type="error" size="small" style="margin-right: 5px">下架</Button>
+            <Button type="text" size="small" style="color:red;margin-right: 5px">下架</Button>
           </Poptip>
 
           <Button
-            type="warning"
+            v-if="row.status==3"
+            type="text"
             size="small"
-            style="margin-right: 5px"
+            style="color:#2d8cf0;margin-right: 5px"
             @click="queryOrEditWinnerNum('query',row)"
           >查询次数</Button>
           <Button
-            type="warning"
+            v-if="row.status!=3"
+            type="text"
             size="small"
-            style="margin-right: 5px"
+            style="color:green;margin-right: 5px"
             @click="queryOrEditWinnerNum('edit',row)"
           >编辑次数</Button>
         </template>
@@ -348,7 +354,7 @@ export default {
       if (row.status == 3) {
         this.msgErr("已经下架的活动不能进行此操作");
       }
-      
+
       let { code, data } = await postRequest(url, { id, status });
 
       if (code == 200) {

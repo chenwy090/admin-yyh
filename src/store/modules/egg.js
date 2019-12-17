@@ -1,4 +1,4 @@
-// 财务中心 financial
+// 双旦活动
 
 export default {
     namespaced: true,

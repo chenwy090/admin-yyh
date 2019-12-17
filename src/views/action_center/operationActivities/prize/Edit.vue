@@ -5,6 +5,7 @@
       v-model="isShow"
       :closable="true"
       :mask-closable="false"
+      @on-visible-change="visibleChange"
       @on-cancel="closeDialog"
       :styles="{top: '20px'}"
       width="600"
@@ -119,7 +120,7 @@
                 placeholder="仅限填写0-100间的整数"
                 clearable
               />&nbsp;%
-              <div style="color:red;font-size:12px;">当前奖池剩余中奖假率为80%</div>
+              <div style="color:red;font-size:12px;">当前奖池剩余中奖假率为{{lastPercent}}%</div>
             </FormItem>
           </template>
           <template v-else-if="formData.drawMode==2">
@@ -179,17 +180,26 @@ export default {
     })
   },
   watch: {
+    prizepoolId() {
+      console.log("watch:prizepoolId", this.prizepoolId);
+    },
     ["formData.prizeType"]() {
       // this.$refs.form.resetFields();
 
-      this.$refs.form.fields.forEach(field => {
-        console.log(field.prop);
-        // if (field.prop == "modelIterationTime") {
-        //   field.resetField();
-        // }
-      });
+
+
+      // this.$refs.form.fields.forEach(field => {
+      //   console.log(field.prop);
+      //   // if (field.prop == "modelIterationTime") {
+      //   //   field.resetField();
+      //   // }
+      // });
 
       // this.$refs.form.validateField('xxx');
+    },
+    
+    ["formData.level"]() {
+      this.getPercentByPrizepoolId();
     },
     ["formData.drawMode"]() {
       let { drawMode } = this.formData;
@@ -233,6 +243,7 @@ export default {
       url: "/activityInfo/add",
       isShow: false,
       title: "创建活动",
+      lastPercent: 0,
       // prizeType 奖品类型：1:实物、2：优惠券
       // prizeTypeOption: {
       //   1: "实物",
@@ -271,7 +282,7 @@ export default {
       ruleValidate: {}
     };
   },
-  async mounted() {},
+  mounted() {},
   methods: {
     removePrizeImg() {
       this.formData.prizeImg = "";
@@ -294,6 +305,32 @@ export default {
       this.formData.couponId = id;
       this.formData.couponName = name;
     },
+    visibleChange(isShow ) {
+
+      console.log("visibleChange",isShow)
+      if (isShow) {
+        this.getPercentByPrizepoolId();
+      }
+    },
+
+    async getPercentByPrizepoolId() {
+      // 根据奖池和类别获得剩余概率
+      const url = "/activity/prize/getPercentByPrizepoolId";
+
+      let params = {
+        prizepoolId: this.prizepoolId,
+        level: this.formData.level
+      };
+
+      let { code, lastPercent, msg } = await postRequest(url, params);
+
+      if (code == 200) {
+        this.lastPercent = lastPercent;
+      } else {
+        this.msgErr(msg);
+      }
+    },
+
     closeDialog() {
       //关闭对话框清除表单数据
       // this.$refs.formValidate.resetFields();
