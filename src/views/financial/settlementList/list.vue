@@ -44,18 +44,27 @@
       <!-- 用户列表 -->
       <Table :loading="TableLoading" border :columns="tableColumns" :data="table_list" sortable="custom" ref="table">
         <template slot-scope="{ row }" slot="operate">
-          <!-- 账单状态:1 待处理;2 被驳回;3 待付款 ;4 已付款 -->
-          <!-- 只有状态为"待处理、被驳回"状态时，才会显示"申请付款"按钮。 -->
-          <Button v-if="row.billStatus == 1 || row.billStatus == 2" type="text" size="small" style="color:#2db7f5"
-            @click="editLabelDisplayFn(row)">申请付款</Button>
+          <!-- generateStatus =1 只允许删除-->
+          <div v-if="row.generateStatus === 1">
+            <Button type="error" size="small" :disabled="!(row.billStatus == 1 || row.billStatus == 2)"
+              @click="settleBillDelete(row)">删除</Button>
+          </div>
+          <div v-if="row.generateStatus !== 1">
+            <ButtonGroup>
+              <!-- 账单状态:1 待处理;2 被驳回;3 待付款 ;4 已付款 -->
+              <!-- 只有状态为"待处理、被驳回"状态时，才会显示"申请付款"按钮。 -->
+              <Button type="success" size="small" :disabled="!(row.billStatus == 1 || row.billStatus == 2)"
+                @click="editLabelDisplayFn(row)">申请付款</Button>
+              <!-- 只有状态为"被驳回"状态时，才会显示"重新生成"按钮。 -->
+              <Button type="primary" size="small" :disabled="!(row.billStatus == 2)"
+                @click="settleBillRegen(row)">重新生成</Button>
+              <Button type="info" size="small" @click="settleBillDownloadFun(row)">下载</Button>
+              <!-- 只有状态为"待处理、被驳回"状态时，才会显示"删除"按钮。 -->
+              <Button type="error" size="small" :disabled="!(row.billStatus == 1 || row.billStatus == 2)"
+                @click="settleBillDelete(row)">删除</Button>
+            </ButtonGroup>
+          </div>
 
-          <!-- 只有状态为"被驳回"状态时，才会显示"重新生成"按钮。 -->
-          <Button v-if="row.billStatus == 2" type="text" size="small" style="color:#21b6b8"
-            @click="settleBillRegen(row)">重新生成</Button>
-          <Button type="text" size="small" style="color:#21b6b8" @click="settleBillDownloadFun(row)">下载</Button>
-          <!-- 只有状态为"待处理、被驳回"状态时，才会显示"删除"按钮。 -->
-          <Button v-if="row.billStatus == 1 || row.billStatus == 2" type="text" size="small" style="color:#ed4014"
-            @click="settleBillDelete(row)">删除</Button>
         </template>
         <template slot-scope="{ row }" slot="status">
           <p v-if="!row.rejectReason">{{row.billStatusDesc}}</p>
@@ -496,6 +505,10 @@
     margin-bottom: 2vh;
   }
 
+  .operation button {
+    margin-right: 0;
+  }
+
   .page {
     margin-top: 2vh;
   }
@@ -506,6 +519,11 @@
     white-space: normal;
     /* max-height: 200px;
     overflow: auto; */
+  }
+
+  .disabled {
+    cursor: no-drop;
+    color: #ccc;
   }
 
 </style>

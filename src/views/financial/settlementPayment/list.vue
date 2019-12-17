@@ -6,7 +6,8 @@
           <Input v-model="searchForm.billNo" placeholder="请输入结算单号" style="width: 200px" />
         </Form-item>
         <FormItem label="结算周期" prop="settleTime">
-          <DatePicker type="daterange" placeholder="请选择结算周期" @on-change=" searchForm.settleTime = $event " v-model="searchForm.settleTime" style="width: 200px">
+          <DatePicker type="daterange" placeholder="请选择结算周期" @on-change=" searchForm.settleTime = $event "
+            v-model="searchForm.settleTime" style="width: 200px">
           </DatePicker>
         </FormItem>
         <Form-item label="品牌名称" prop="brandName">
@@ -16,7 +17,8 @@
           <Input v-model="searchForm.merchantName" placeholder="请输入商户名称" style="width: 200px" />
         </Form-item>
         <FormItem label="结算付款时间" prop="payTime">
-          <DatePicker type="daterange" placeholder="请选择结算付款时间" @on-change=" searchForm.payTime = $event " v-model="searchForm.payTime" style="width: 200px">
+          <DatePicker type="daterange" placeholder="请选择结算付款时间" @on-change=" searchForm.payTime = $event "
+            v-model="searchForm.payTime" style="width: 200px">
           </DatePicker>
         </FormItem>
         <Form-item label="状态" prop="status">
@@ -41,14 +43,18 @@
       <!-- 用户列表 -->
       <Table :loading="TableLoading" border :columns="tableColumns" :data="table_list" sortable="custom" ref="table">
         <template slot-scope="{ row }" slot="operate">
-          <!-- 账单状态:1 待处理;2 被驳回;3 待付款 ;4 已付款 -->
-          <!-- 只有状态为"待付款"时，才显示"确认付款"按钮。 -->
-          <Button v-if="row.billStatus == 3" type="text" size="small" style="color:#2db7f5"
-            @click="settleBillCheckPayFn(row)">确认付款</Button>
-          <!-- 只有状态为"待付款"时，才显示"驳回"按钮。 -->
-          <Button v-if="row.billStatus == 3" type="text" size="small" style="color:#ed4014"
-            @click="modalDisplayShowFu(row)">驳回</Button>
-          <Button type="text" size="small" style="color:#21b6b8" @click="downDisplayFun(row)">下载</Button>
+
+          <ButtonGroup>
+            <!-- 账单状态:1 待处理;2 被驳回;3 待付款 ;4 已付款 -->
+            <!-- 只有状态为"待付款"时，才显示"确认付款"按钮。 -->
+            <Button :disabled="!(row.billStatus == 3)" type="success" size="small"
+              @click="settleBillCheckPayFn(row)">确认付款</Button>
+            <!-- 只有状态为"待付款"时，才显示"驳回"按钮。 -->
+            <Button :disabled="!(row.billStatus == 3)" type="primary" size="small"
+              @click="modalDisplayShowFu(row)">驳回</Button>
+            <Button type="info" size="small"  @click="downDisplayFun(row)">下载</Button>
+          </ButtonGroup>
+
         </template>
       </Table>
       <!-- 用户列表 -->
@@ -217,7 +223,7 @@
         settleBillPayList(this.searchForm).then(res => {
           this.TableLoading = false;
           if (res && res.code == 200) {
-            if(res.data.records instanceof Array){
+            if (res.data.records instanceof Array) {
               res.data.records.forEach(item => {
                 item.realPay = this.division100(item.realPay || 0);
                 item.channelServiceCostFee = this.division100(item.channelServiceCostFee || 0);
@@ -313,7 +319,7 @@
         delete body.pageNum
         delete body.pageSize
         postSettleBillDownload(body).then(res => {
-          if(res.status !== 200) {
+          if (res.status !== 200) {
             this.$Message.error('网络请求失败，请稍后！');
             return;
           }
