@@ -3,12 +3,12 @@ export default function createFormData() {
         name: "",
         prizepoolId: "", // 所属奖池ID
         level: 2, // 1-大奖 2-普通奖
-        prizeType: 1, //  奖品类型：1:实物、2：优惠券
+        prizeType: 2, //  奖品类型：1:实物、2：优惠券
         couponType: 1, // 优惠券类型：1：周边券、2：商超券
         couponId: "", // 优惠券ID
         couponName: "", // 优惠券名称
         prizeImg: "", // 奖品图片
-        defaultPrizeImgList:[],
+        defaultPrizeImgList: [],
         prizeValue: "", // 奖品价值
         prizeNum: "", // 奖品库存
         remainNum: "", // 剩余库存

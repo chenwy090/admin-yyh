@@ -117,7 +117,7 @@
             @click="queryOrEditWinnerNum('query',row)"
           >查询次数</Button>
           <Button
-            v-if="row.status!=3"
+            v-if="row.status==2"
             type="text"
             size="small"
             style="color:green;margin-right: 5px"
