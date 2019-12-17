@@ -20,24 +20,37 @@
           ref="form"
           :model="formData"
           :rules="ruleValidate"
-          :label-width="100"
+          :label-width="120"
         >
-          <FormItem
-            v-for="(item,index) in formData.activityPicTextList"
-            :key="index"
-            label="奖品类型："
-            prop="prizeType"
-            :rules="{ required: true, message: '请选择奖品类型' }"
-          >
-            <Select v-model="formData.prizeType" style="width:300px" clearable>
-              <!-- <Option v-for="(v,k) in prizeTypeOption" :value="k" :key="v">{{ v }}</Option> -->
-              <Option
-                v-for="item in prizeTypeOption"
-                :value="item.value"
-                :key="item.value"
-              >{{ item.label }}</Option>
-            </Select>
-          </FormItem>
+          <template v-for="(item,index) in formData.activityPicTextList">
+            <div :key="item.type">
+              <FormItem
+                :label="item.picUrlLabel"
+                :prop="'activityPicTextList.' + index + '.picUrl'"
+              >
+                <UploadImage
+                  :fileUploadType="'picUrl'"
+                  :defaultList="item.defaultPicUrlList"
+                  @remove="removePicUrl(index)"
+                  @uploadSuccess="picUrlUploadSuccess($event,index)"
+                ></UploadImage>
+              </FormItem>
+              <FormItem
+                :label="item.remarkLabel"
+                :prop="'activityPicTextList.' + index + '.remark'"
+              >
+                <Input type="text" v-model="item.remark" placeholder></Input>
+              </FormItem>
+
+              <FormItem
+                v-if="item.type==4"
+                :label="item.buttonTextLabel"
+                :prop="'activityPicTextList.' + index + '.buttonText'"
+              >
+                <Input type="text" v-model="item.buttonText" placeholder></Input>
+              </FormItem>
+            </div>
+          </template>
         </Form>
       </div>
       <div slot="footer">
@@ -103,26 +116,20 @@ export default {
     this.formData = data;
   },
   methods: {
-    removePrizeImg() {
-      this.formData.prizeImg = "";
-      this.formData.defaultPrizeImgList = [];
-    },
-    prizeImgUploadSuccess({ imgUrl }) {
-      this.formData.prizeImg = imgUrl;
-      this.formData.defaultPrizeImgList = [{ imgUrl }];
-      console.log("prizeImgUploadSuccess", imgUrl);
-    },
-    handleChooseCoupon() {
-      this.showCouponList = true;
-    },
-    selectedCouponItem(data) {
-      console.log("selectedCouponItem----", data);
-      let { couponType, id, name } = data;
+    removePicUrl(index) {
+      console.log("removePicUrl", index);
 
-      // templateId 券模板id templateName 券模板名称
-      this.formData.couponType = couponType;
-      this.formData.couponId = id;
-      this.formData.couponName = name;
+      let item = this.formData.activityPicTextList[index];
+      item.picUrl = "";
+      item.defaultPicUrlList = [];
+      this.formData.activityPicTextList.splice(index, 1, item);
+    },
+    picUrlUploadSuccess({ imgUrl }, index) {
+      console.log("picUrlUploadSuccess", imgUrl, index);
+      let item = this.formData.activityPicTextList[index];
+      item.picUrl = imgUrl;
+      item.defaultPicUrlList = [{ imgUrl }];
+      this.formData.activityPicTextList.splice(index, 1, item);
     },
     closeDialog() {
       //关闭对话框清除表单数据
