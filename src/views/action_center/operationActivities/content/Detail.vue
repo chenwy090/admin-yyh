@@ -15,12 +15,10 @@
         <span>{{title}}</span>
       </p>
       <div>
-        activityId:{{activityId}}
         <Form
           label-position="right"
           ref="form"
           :model="formData"
-          :rules="ruleValidate"
           :label-width="120"
         >
           <template v-for="item in formData.activityPicTextList">
@@ -64,7 +62,6 @@ export default {
       isShow: true,
       title: "查看内容",
       formData: createFormData(),
-      ruleValidate: {}
     };
   },
   async mounted() {

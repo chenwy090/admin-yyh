@@ -48,12 +48,12 @@
       -->
       <Table border :show-index="true" :loading="loading" :columns="columns" :data="tableData">
         <template slot-scope="{ row }" slot="action">
-          <Button
+          <!-- <Button
             type="primary"
             size="small"
             style="margin-right: 5px"
             @click="query('edit',row)"
-          >查看活动</Button>
+          >查看活动</Button>-->
           <Button
             type="primary"
             size="small"
@@ -85,13 +85,13 @@
             type="success"
             size="small"
             style="margin-right: 5px"
-            @click="updateStatus(row)"
+            @click="updateStatus(row,2)"
           >上架</Button>
           <Button
             type="warning"
             size="small"
             style="margin-right: 5px"
-            @click="updateStatus(row)"
+            @click="updateStatus(row,3)"
           >下架</Button>
           <Button
             type="warning"
@@ -326,18 +326,19 @@ export default {
     },
 
     // 活动上下架
-    async updateStatus(row) {
+    async updateStatus(row, status) {
+      // 点上架传2 下架传3
       // 活动类型列表
       const url = "/activityInfo/updateStatus";
       // status 活动状态, 1-待上架 2-已上架 3已下架
-      let { id, status } = row;
-      if (status == 1) {
-        status = 2;
-      } else if (status == 2) {
-        status = 3;
-      } else if (status == 3) {
-        status = 2;
-      }
+      let { id } = row;
+      // if (status == 1) {
+      //   status = 2;
+      // } else if (status == 2) {
+      //   status = 3;
+      // } else if (status == 3) {
+      //   status = 2;
+      // }
       let { code, data } = await postRequest(url, { id, status });
 
       if (code == 200) {
