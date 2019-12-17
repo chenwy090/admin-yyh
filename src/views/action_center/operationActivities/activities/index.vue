@@ -82,17 +82,29 @@
           >编辑奖池</Button>
           <!-- v-if="row.status == 2" -->
           <Button
+            v-if="row.status==1"
             type="success"
             size="small"
             style="margin-right: 5px"
             @click="updateStatus(row,2)"
           >上架</Button>
-          <Button
-            type="warning"
-            size="small"
-            style="margin-right: 5px"
-            @click="updateStatus(row,3)"
-          >下架</Button>
+
+          <!-- status 活动状态, 1-待上架  可以点上架  2-已上架 可以点下架 3已下架  不能上下架操作 -->
+          <Poptip
+            v-if="row.status==2"
+            :transfer="true"
+            confirm
+            placement="bottom-end"
+            title="确认下架此活动吗?"
+            @on-ok="updateStatus(row,3)"
+            @on-cancel="cancelUpdateStatus"
+            ok-text="确认"
+            cancel-text="取消"
+            word-wrap
+          >
+            <Button type="error" size="small" style="margin-right: 5px">下架</Button>
+          </Poptip>
+
           <Button
             type="warning"
             size="small"
@@ -332,13 +344,11 @@ export default {
       const url = "/activityInfo/updateStatus";
       // status 活动状态, 1-待上架 2-已上架 3已下架
       let { id } = row;
-      // if (status == 1) {
-      //   status = 2;
-      // } else if (status == 2) {
-      //   status = 3;
-      // } else if (status == 3) {
-      //   status = 2;
-      // }
+
+      if (row.status == 3) {
+        this.msgErr("已经下架的活动不能进行此操作");
+      }
+      
       let { code, data } = await postRequest(url, { id, status });
 
       if (code == 200) {
@@ -346,6 +356,9 @@ export default {
       } else {
         this.msgErr(code + " 数据加载失败!");
       }
+    },
+    cancelUpdateStatus() {
+      this.msgOk("已取消下架");
     },
     // 查看活动的图片文案
     async queryContent({ activityId }) {

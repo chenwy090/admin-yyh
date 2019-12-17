@@ -21,22 +21,27 @@
       >
         <template slot-scope="{ row }" slot="action">
           <Button
+            v-if="row.showEdit"
             type="primary"
             size="small"
             style="margin-right: 5px"
             @click="addOrEdit('edit',row)"
           >编辑奖池</Button>
           <Button
+            v-if="row.showEdit"
             type="primary"
             size="small"
             style="margin-right: 5px"
             @click="editPrizePoolContent(row)"
           >编辑奖池内容</Button>
+          <!-- 删除奖池将同步删除奖池内的所有奖品和任务，是否确认操作？  确认删除奖池吗? -->
+
           <Poptip
+            v-if="row.showDel"
             :transfer="true"
             confirm
             placement="bottom-end"
-            :title="`确认删除奖池吗?`"
+            :title="`${row.delTips}`"
             @on-ok="delItem(row)"
             @on-cancel="delCancel(row)"
             ok-text="确认"
@@ -247,8 +252,35 @@ export default {
 
         if (code == 200) {
           this.tableData = records.map(item => {
-            let { beginTime, endTime } = item;
+            //
+            let {
+              beginTime,
+              endTime,
+              couponPrizeCount,
+              kindPrizeCount,
+              taskRelCount
+            } = item;
+
+            let s = new Date(beginTime).getTime();
+            let e = new Date(endTime).getTime();
+            if (s < e) {
+              item.showEdit = true;
+              item.showDel = true;
+            }
+
             item.time = `${beginTime}-${endTime}`;
+
+            let r = !!(couponPrizeCount || kindPrizeCount || taskRelCount);
+
+            // 删除奖池将同步删除奖池内的所有奖品和任务，是否确认操作？  确认删除奖池吗?
+
+            if (r) {
+              item.delTips =
+                "删除奖池将同步删除奖池内的所有奖品和任务，是否确认操作？";
+            } else {
+              item.delTips = "确认删除奖池吗?";
+            }
+
             return item;
           });
           this.page.pageNum = current; //分页查询起始记录

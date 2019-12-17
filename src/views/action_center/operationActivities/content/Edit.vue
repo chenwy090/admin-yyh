@@ -14,7 +14,6 @@
         <span>{{title}}</span>
       </p>
       <div>
-        activityId:{{activityId}}
         <Form
           label-position="right"
           ref="form"
