@@ -265,13 +265,14 @@ export default {
         {
           title: "退款原因",
           width: 200,
+          align: "center",
           key: 'refundReason'
         },
-        {
-          title: "券码状态",
-          width: 200,
-          key: 'barCodeStatus'
-        },
+        // {
+        //   title: "券码状态",
+        //   width: 200,
+        //   key: 'barCodeStatus'
+        // },
         {
           title: "退款金额",
           width: 200,
@@ -287,11 +288,13 @@ export default {
         {
           title: "优惠券标题",
           width: 200,
+          align: "center",
           key: "couponTitle"
         },
         {
           title: "所属商户",
           minWidth: 250,
+          align: "center",
           key: "merchantName"
         },
         {
@@ -339,6 +342,7 @@ export default {
         {
           title: "付款时间",
           minWidth: 250,
+          align: "center",
           key: "payTime"
         },
         {
