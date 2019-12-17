@@ -7,7 +7,7 @@
         </Form-item>
 
         <FormItem label="结算周期" prop="settleTime">
-          <DatePicker type="daterange" placeholder="请选择结算周期" @on-change=" searchForm.settleTime = $event "
+          <DatePicker transfer type="daterange" placeholder="请选择结算周期" @on-change=" searchForm.settleTime = $event "
             v-model="searchForm.settleTime" style="width: 200px">
           </DatePicker>
         </FormItem>
@@ -98,14 +98,14 @@
           <Row>
             <Col span="12">
             <FormItem prop="settleTimeStart">
-              <DatePicker type="date" :options="options1" @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
+              <DatePicker transfer type="date" :options="options1" @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
                 format="yyyy-MM-dd" v-model="modalAddData.settleTimeStart" placeholder="请选择结算周期" style="width: 150px">
               </DatePicker>
             </FormItem>
             </Col>
             <Col span="12">
             <FormItem prop="settleTimeEnd">
-              <DatePicker type="date" :options="options2" @on-change="(datetime) =>{ changeDateTime(datetime, 2)}"
+              <DatePicker transfer type="date" :options="options2" @on-change="(datetime) =>{ changeDateTime(datetime, 2)}"
                 format="yyyy-MM-dd" v-model="modalAddData.settleTimeEnd" placeholder="请选择结算周期" style="width: 150px">
               </DatePicker>
             </FormItem>

@@ -34,7 +34,7 @@
         </Form-item>
 
         <FormItem label="交易时间" prop="datetimerange">
-          <DatePicker type="datetimerange" placeholder="请选择交易时间" v-model="searchForm.datetimerange"
+          <DatePicker transfer type="datetimerange" placeholder="请选择交易时间" v-model="searchForm.datetimerange"
             @on-change=" [searchForm.tradeTimeStrat, searchForm.tradeTimeEnd] = $event " style="width: 275px;">
           </DatePicker>
         </FormItem>
