@@ -1255,7 +1255,7 @@
 
     created() {
       this.userToken = { jwttoken: localStorage.getItem("jwttoken") };
-      this.getJumpTagList();
+      // this.getJumpTagList();
       // this.init();
     },
     methods: {
