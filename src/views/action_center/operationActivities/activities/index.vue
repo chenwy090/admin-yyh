@@ -48,12 +48,12 @@
       -->
       <Table border :show-index="true" :loading="loading" :columns="columns" :data="tableData">
         <template slot-scope="{ row }" slot="action">
-          <Button
+          <!-- <Button
             type="primary"
             size="small"
             style="margin-right: 5px"
             @click="query('edit',row)"
-          >查看活动</Button>
+          >查看活动</Button> -->
           <Button
             type="primary"
             size="small"
