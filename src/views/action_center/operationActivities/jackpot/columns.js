@@ -18,24 +18,24 @@ export default [
         title: "适用时间",
         key: "time",
         align: "center",
-        width: 120
+        minWidth: 120
     },
     {
         title: "券奖品数",
         key: "couponPrizeCount",
         align: "center",
-        minWidth: 100
+        width: 100
     },
     {
         title: "实物奖品数",
         key: "kindPrizeCount",
         align: "center",
-        minWidth: 140
+        width: 140
     },
     {
         title: "任务数",
         key: "taskRelCount",
         align: "center",
-        minWidth: 140
+        width: 140
     },
 ];

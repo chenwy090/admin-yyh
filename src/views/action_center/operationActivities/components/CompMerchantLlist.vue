@@ -85,7 +85,7 @@ export default {
           width: 70,
           align: "center",
           render: (h, params) => {
-            const { ticketTemplateId: id, name } = params.row;
+            const { campId: id, name } = params.row;
             let flag = false;
             if (this.choice.id == id) {
               flag = true;
@@ -113,7 +113,7 @@ export default {
         {
           title: "优惠券ID",
           align: "center",
-          key: "ticketTemplateId"
+          key: "campId"
         },
         {
           title: "优惠券名称",
