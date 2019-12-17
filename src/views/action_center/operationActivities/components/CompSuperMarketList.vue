@@ -1,21 +1,12 @@
 <template>
-  <!-- 优惠券 商超 /zex-mgr/coupon/merchant/list -->
+  <!-- 优惠券 商超  couponType: 1 -->
   <div class="coupon-list-box">
     <row>
       <Form ref="searchItem" :model="searchItem" inline :label-width="100" class="search-form">
-        <FormItem label="商超名称：">
-          <Input
-            type="text"
-            v-model="searchItem.shopName"
-            clearable
-            placeholder="请输入商超名称："
-            style="width: 150px"
-          />
-        </FormItem>
         <FormItem label="优惠券名称：">
           <Input
             type="text"
-            v-model="searchItem.couponName"
+            v-model="searchItem.title"
             clearable
             placeholder="请输入优惠券名称"
             style="width: 150px"
@@ -44,8 +35,8 @@
       <Page
         show-total
         show-elevator
-        :current="page.page"
-        :page-size="page.size"
+        :current="page.pageNum"
+        :page-size="page.pageSize"
         :total="page.total"
         @on-change="changeCurrent"
       ></Page>
@@ -70,9 +61,9 @@ export default {
         return {
           name: "superMarket",
           couponType: 1,
-          label: "商超",
+          label: "周边券",
           compName: "CompSuperMarketList",
-          url: "/coupon/superMarket/list"
+          url: "/merchantCouponTemplate/activitylist"
         };
       }
     }
@@ -95,9 +86,9 @@ export default {
           width: 70,
           align: "center",
           render: (h, params) => {
-            const { _id, templateId: id, title: name } = params.row;
+            const { templateId: id, title: name } = params.row;
             let flag = false;
-            if (this.choice._id == _id) {
+            if (this.choice.id == id) {
               flag = true;
             } else {
               flag = false;
@@ -110,7 +101,6 @@ export default {
                 },
                 on: {
                   "on-change": () => {
-                    self.choice._id = _id;
                     self.choice.id = id;
                     self.choice.name = name;
                     self.choice.row = params.row;
@@ -121,12 +111,11 @@ export default {
             ]);
           }
         },
-        // 商户名称 省/市 优惠券名称 有效期
         {
-          title: "商户名称",
+          title: "优惠券ID",
           align: "center",
-          minWidth: 130,
-          key: "shopName"
+          width: 230,
+          key: "templateId"
         },
         {
           title: "优惠券名称",
@@ -169,14 +158,13 @@ export default {
       ],
       tableData: [],
       page: {
-        page: 1, //页码
-        size: 10, //每页数量
+        pageNum: 1, //页码
+        pageSize: 10, //每页数量
         total: 0 //数据总数
       },
       tableLoading: false,
       searchItem: {
-        shopName: "",
-        couponName: ""
+        title: ""
       }
     };
   },
@@ -191,7 +179,7 @@ export default {
     },
     // 获取商户列表
     queryTableData(page) {
-      this.page.page = page || 1;
+      this.page.pageNum = page || 1;
       this.tableLoading = false;
       const reqParams = {
         ...this.searchItem,
@@ -209,9 +197,9 @@ export default {
             item._id = Math.random();
             return item;
           });
-          this.page.page = current; //分页查询起始记录
+          this.page.pageNum = current; //分页查询起始记录
+          this.page.pageSize = size; //每页数据
           this.page.total = total; //列表总数
-          this.page.size = size; //每页数据
         } else {
           this.msgErr(msg);
         }
@@ -241,8 +229,8 @@ export default {
       };
 
       this.page = {
-        page: 1, //页码
-        size: 10, //每页数量
+        pageNum: 1, //页码
+        pageSize: 10, //每页数量
         total: 0 //数据总数
       };
 
