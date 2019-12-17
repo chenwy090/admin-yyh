@@ -237,6 +237,7 @@ export default {
         if (this.formData.type == 6) {
           this.getIndustryMaindList();
           this.getIndustrySecendList();
+          this.tagsSelectEditList = data.tagDesc
           this.getCommonTagInitData();
           this.tagsList = data.tagIds.map( v=> {
             return {
@@ -246,8 +247,6 @@ export default {
             }
           } )
         }
-        console.log("this.formData:", JSON.stringify(this.formData));
-        console.log("typeOption:", JSON.stringify(this.typeOption));
       },
       deep: true,
       immediate: true
@@ -273,7 +272,6 @@ export default {
             this.$set(item, 'disabled', list.indexOf(item.tagId) !== -1)
           })
         }
-        console.info(this.tagsSelectList)
       },
       deep: true,
       immediate: true
@@ -304,6 +302,7 @@ export default {
       mainIndustryId: "",
       tagsModuleList:[],
       tagsSelectList: [],
+      tagsSelectEditList: [],
       tagsList: [
         {
           key: Math.random() * 100000,
@@ -478,7 +477,18 @@ export default {
 
       commonTagMerchantCouponTages().then(res => {
         if (res && res.code == 200) {
-          this.tagsSelectList = res.data
+          let list = res.data;
+          let list2 = JSON.parse(JSON.stringify(this.tagsSelectEditList))
+          if(list2 instanceof Array && list2.length){
+            let _list = list.map(item => item.tagId);
+            let _noList = []
+            list2.forEach(item => {
+              let index = _list.indexOf(item.tagId);
+              if(index === -1) _noList.push(item)
+            })
+            list = list.concat(..._noList)
+          }
+          this.tagsSelectList = list
           // 触发一次 tagsList watch
           if(this.formData.type == 6){
             this.tagsList = [...this.tagsList]
