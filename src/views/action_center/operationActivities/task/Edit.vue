@@ -87,7 +87,7 @@
               :key="Math.random()"
               label="优惠券ID："
               prop="couponId"
-              :rules="{ required: true, message: '请选择优惠券' }"
+              :rules="{ required: true, message: '请选择优惠券ID' }"
             >
               <Row>
                 <Col span="16">
