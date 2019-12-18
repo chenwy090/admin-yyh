@@ -85,7 +85,7 @@
           <template v-if="formData.assignmentType==1">
             <FormItem
               :key="Math.random()"
-              label="选择优惠券"
+              label="优惠券ID："
               prop="couponId"
               :rules="{ required: true, message: '请选择优惠券' }"
             >
