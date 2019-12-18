@@ -878,7 +878,7 @@
             @on-select-all-cancel="cancelAllCampagin"
             :loading="TableLoading"
           ></Table>
-          <Row type="flex" justify="end" class="page">
+          <Row type="flex" justify="end" class="page" style="margin-top: 1vh;">
             <Page
               :total="totalSize"
               show-total
