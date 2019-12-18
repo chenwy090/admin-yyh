@@ -1905,7 +1905,7 @@
           let newCouponPutChannelList = [];
 
           this.edit_info.couponPutChannelList.forEach(code => {
-            that.couponPutChannelList.some(item => {
+            this.couponPutChannelList.some(item => {
               let r = code == item.code;
               if (r) {
                 newCouponPutChannelList.push(item);
@@ -2240,7 +2240,7 @@
               this.goback();
             }, 1200);
           } else {
-            this.$Message.error(res.msg);
+            this.$Message.error(res.msg || '');
           }
         });
       },
