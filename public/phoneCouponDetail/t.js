@@ -5,6 +5,8 @@ new Vue({
       baseUrl: '', //接口地址
       token: '', //用户登录信息
       templateId: '', // 券id
+      success: 0,
+      showMore: false,
       couponData: {
         // title1: '免费体验儿童街舞课',
         // couponType: '赠品券',
@@ -29,6 +31,11 @@ new Vue({
     // this.getCouponData()
     // console.log(this.templateId);
   },
+  computed:{
+    address(){
+      return Number(Math.random() * 999).toFixed(1)
+    }
+  },
   methods: {
     // 根据id获取数据
     getCouponData() {
@@ -47,6 +54,7 @@ new Vue({
             }
             this.couponData = res.data.data
           }
+          this.success = res.data.code
         })
     },
     // 获取url参数
@@ -78,6 +86,10 @@ new Vue({
         this.getCouponData()
       }
 
+    },
+
+    showMore(){
+      console.info('ok')
     }
   }
 });

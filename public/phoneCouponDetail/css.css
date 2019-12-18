@@ -2,6 +2,10 @@
   background-color: #f2f2f2;
 }
 
+li {
+  list-style: none;
+}
+
 .title {
   background-color: #fff;
   width: 100%;
@@ -51,9 +55,12 @@ img {
   width: 100%;
 }
 
+.head_img {}
+
 .head_img img {
   width: 100%;
   height: 100%;
+  object-fit: cover;
 }
 
 .mian_head .head_txt {
@@ -80,6 +87,19 @@ img {
   float: right;
   font-size: 0.2rem;
   font-weight: normal;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.help-icon {
+  width: .4rem;
+  height: .4rem;
+  margin-left: .05rem;
+}
+
+.help-icon svg {
+  fill: #ccc;
 }
 
 .head_txt .head_title1 .head_title1_left span {
@@ -109,6 +129,9 @@ img {
   float: left;
   color: #9f9f9f;
   line-height: 4vh;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .head_title3 .head_title3_button {
@@ -132,13 +155,12 @@ img {
 }
 
 .mian_rule .rule_main {
-  padding: 3% 3% 0 3%;
-  /* width: 100%; */
+  padding: .2rem;
 }
 
-.mian_rule .rule_main div {
+/* .mian_rule .rule_main div {
   font-size: 0.3rem;
-}
+} */
 
 .rule_main .rule_time {
   font-size: 0.24rem !important;
@@ -149,26 +171,35 @@ img {
   overflow: hidden;
   font-size: 0.24rem !important;
   line-height: 1.5;
+  max-height: 1rem;
+  transition: all .1s ease;
+}
+
+.rule_main .rule_main_txt.active {
+  max-height: none;
 }
 
 .rule_main .rule_main_button {
   width: 0.2rem;
   height: 0.2rem;
-  /* background-color: #000; */
   border-left: 1px solid #000;
   border-top: 1px solid #000;
   transform: rotate(45deg);
-  margin: 2vh auto;
+  margin: .2rem auto 0 auto;
+  background-color: #fff;
+  transition: all .1s ease;
+}
+
+.rule_main .rule_main_button.active {
+  transform: rotate(225deg);
 }
 
 .gps_main {
   overflow: hidden;
-  margin: 8px 0;
+  margin: 5px 0;
+  padding-bottom: 5px;
+  display: flex;
 }
-
-/* .gps_main div {
-  float: left;
-} */
 
 .gps_main .gps_left {
   float: left;
@@ -180,12 +211,59 @@ img {
   /* border-right: 1px solid #ccc; */
 }
 
+.gps_main .gps_left .item {
+  line-height: 1;
+  height: 4.5vh;
+  line-height: 4.5vh;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .gps_main .gps_right {
   float: right;
   width: 30%;
   font-size: 0.24rem;
   color: #589cde;
-  line-height: 10vh;
   text-align: center;
   border-left: 1px solid #ccc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.success401 {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  text-align: center;
+  font-size: .45rem;
+  color: #666;
+  margin-top: .9rem;
+}
+
+.title-desc-more {
+  font-size: .24rem;
+  font-weight: 400;
+  color: #666;
+  text-align: right;
+  float: right;
+  padding-top: .08rem;
+}
+
+
+.address-icon {
+  width: .4rem;
+  height: .4rem;
+  display: flex;
+}
+
+.address-icon svg {
+  fill: #589cde;
+}
+
+svg {
+  width: 100%;
+  height: 100%;
+  color: inherit;
 }
