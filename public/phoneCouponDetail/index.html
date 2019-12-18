@@ -82,17 +82,17 @@
             </span>
           </div>
           <div class="gps_right">
-            1043.0km
+            {{Number(Math.random() * 999).toFixed(1)}}km
           </div>
         </div>
       </div>
 
-      <div class="mian_rule" style="margin-top:15px;padding-bottom: 50px;" v-if="couponData.discountDetail">
+      <div class="mian_rule" style="margin-top:15px;padding-bottom: 15px;" v-if="couponData.discountDetail">
         <div class="rule_title">
           优惠券详情
         </div>
-        <div class="gps_main" v-html="couponData.discountDetail">
-          {{couponData.discountDetail}}
+        <div class="gps_main" >
+          <div v-html="couponData.discountDetail" style="padding: .1rem;"></div>
         </div>
       </div>
 

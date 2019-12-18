@@ -224,6 +224,7 @@
                     // cityCode:this.addressValue[1]||'',
                     couponName:this.copponForm.couponName,
                     merchantName:this.copponForm.merchantName,
+                    requestFrom: "useReward",
                     // provinceCode:this.addressValue[0]||'',
                 }
                 //商户券列表
