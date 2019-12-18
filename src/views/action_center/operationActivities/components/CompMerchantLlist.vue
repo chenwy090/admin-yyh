@@ -85,7 +85,7 @@ export default {
           width: 70,
           align: "center",
           render: (h, params) => {
-            const { campId: id, name, couponSimpleImg: img } = params.row;
+            const { campId: id, name, couponImg: img } = params.row;
             let flag = false;
             if (this.choice.id == id) {
               flag = true;
