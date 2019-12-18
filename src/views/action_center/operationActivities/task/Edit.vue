@@ -254,8 +254,8 @@ export default {
       assignmentObjectTypeOption: [
         { label: "领优惠频道页", value: 4 },
         { label: "赚钱频道页", value: 5 },
-        { label: "活动主页", value: 6 },
-        { label: "优惠券详情页", value: 7 },
+        // { label: "活动主页", value: 6 },
+        // { label: "优惠券详情页", value: 7 },
         { label: "内容详情页", value: 8 }
       ],
       // isRecommend 是否推荐：0-未推荐 1-被推荐（好券推荐列表页展示）
@@ -290,7 +290,7 @@ export default {
       this.$refs[name].validate(async valid => {
         // console.log(JSON.stringify(this.formValidate));
         if (valid) {
-          this.msgOk("数据验证成功!");
+          // this.msgOk("数据验证成功!");
 
           let oForm = JSON.parse(JSON.stringify(this.formData));
           oForm.activityId = this.activityId;
