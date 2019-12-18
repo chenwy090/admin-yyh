@@ -36,7 +36,7 @@
               <span>{{couponData.couponTypeName}}</span>
               <div class="head_title1_left">
 
-                <template v-if=" couponData.enableSaleAfter == 1 ">
+                <template v-if=" couponData.couponKind != 1 && couponData.enableSaleAfter == 1 ">
                   <span v-for="(item, index) in couponData.couponSaleAfterVOList" :key="index">
                     <span v-if="index != 0">|</span>
                     {{item.value}}
@@ -70,7 +70,7 @@
           </div>
           <div class="rule_main">
             <div class="rule_time">
-              活动时间：{{couponData.startDate | time}} — {{couponData.endDate | time}}
+              活动时间：{{couponData.startDate | time}} 至 {{couponData.endDate | time}}
             </div>
             <div class="rule_main_txt" :class=" { 'active': showMore } ">
               <p v-for="(item,index) in couponData.useDesc" :key="index">{{item}}</p>
