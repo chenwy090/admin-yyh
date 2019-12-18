@@ -51,18 +51,6 @@
           </template>
           <template v-else-if="formData.prizeType==1">
             <FormItem
-              label="奖品价值："
-              prop="prizeValue"
-              :rules="{ required: true, validator: validateInt('奖品价值') }"
-            >
-              <Input
-                style="width:300px"
-                v-model.trim="formData.prizeValue"
-                placeholder="仅限填写正整数"
-                clearable
-              />&nbsp;元
-            </FormItem>
-            <FormItem
               label="奖品名称："
               prop="name"
               :rules="{required: true,  validator: validateEmpty('请输入奖品名称',15)}"
@@ -84,6 +72,18 @@
                 @remove="removePrizeImg"
                 @uploadSuccess="prizeImgUploadSuccess"
               ></UploadImage>
+            </FormItem>
+            <FormItem
+              label="奖品价值："
+              prop="prizeValue"
+              :rules="{ required: true, validator: validateInt('奖品价值') }"
+            >
+              <Input
+                style="width:300px"
+                v-model.trim="formData.prizeValue"
+                placeholder="仅限填写正整数"
+                clearable
+              />&nbsp;元
             </FormItem>
           </template>
           <FormItem label="奖励类型：" prop="level" :rules="{ required: true, message: '请选择奖励类型' }">
@@ -185,19 +185,15 @@ export default {
     },
     ["formData.prizeType"]() {
       // this.$refs.form.resetFields();
-
-
-
       // this.$refs.form.fields.forEach(field => {
       //   console.log(field.prop);
       //   // if (field.prop == "modelIterationTime") {
       //   //   field.resetField();
       //   // }
       // });
-
       // this.$refs.form.validateField('xxx');
     },
-    
+
     ["formData.level"]() {
       this.getPercentByPrizepoolId();
     },
@@ -305,9 +301,8 @@ export default {
       this.formData.couponId = id;
       this.formData.couponName = name;
     },
-    visibleChange(isShow ) {
-
-      console.log("visibleChange",isShow)
+    visibleChange(isShow) {
+      console.log("visibleChange", isShow);
       if (isShow) {
         this.getPercentByPrizepoolId();
       }
