@@ -376,7 +376,7 @@
             </Col>
             <Col span="20">
               <InputNumber
-                :min="1"
+                :min="0"
                 type="text"
                 v-model="edit_info.merchantLedger"
                 style="width:100px"
@@ -1888,7 +1888,7 @@
         }
         // console.log(this.edit_info.newCouponSaleAfterList);
         // return
-        if (this.edit_info.couponKind == 3 && !this.edit_info.merchantLedger) {
+        if (this.edit_info.couponKind == 3 && this.edit_info.merchantLedger == null) {
           this.$Message.error("请选择商户分账金额");
           return;
         } else {

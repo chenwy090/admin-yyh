@@ -19,23 +19,23 @@
         <template slot-scope="{ row }" slot="action">
           <Button
             v-if="row.showEdit"
-            type="primary"
+            type="text"
             size="small"
-            style="margin-right: 5px"
+            style="color:red;margin-right: 5px"
             @click="addOrEdit('edit',row)"
           >编辑奖池</Button>
           <Button
             v-if="!row.showEdit"
-            type="primary"
+            type="text"
             size="small"
-            style="margin-right: 5px"
+            style="color:#2db7f5;margin-right: 5px"
             @click="editPrizePoolContent(row,'query')"
           >查看奖池内容</Button>
           <Button
             v-if="row.showEdit"
-            type="primary"
+            type="text"
             size="small"
-            style="margin-right: 5px"
+            style="color:red;margin-right: 5px"
             @click="editPrizePoolContent(row,'edit')"
           >编辑奖池内容</Button>
           <!-- 删除奖池将同步删除奖池内的所有奖品和任务，是否确认操作？  确认删除奖池吗? -->
@@ -52,7 +52,7 @@
             cancel-text="取消"
             word-wrap
           >
-            <Button type="error" size="small">删除</Button>
+            <Button style="color:red;margin-right: 5px" type="text" size="small">删除</Button>
           </Poptip>
         </template>
       </Table>
@@ -247,7 +247,7 @@ export default {
           }
         ];
       } else if (actionType == "edit") {
-        this.compName = "task";
+        this.compName = "prize";
         this.tabs = [
           {
             id: Math.random(),
@@ -303,6 +303,7 @@ export default {
     },
     // 查询
     async queryTableData(pageNum) {
+      this.showPrizeAndTask = false;
       this.page.pageNum = pageNum || 1;
       this.loading = true;
 
