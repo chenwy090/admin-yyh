@@ -7,6 +7,7 @@ export default function createFormData() {
         couponType: 1, // 优惠券类型：1：周边券、2：商超券
         couponId: "", // 优惠券ID
         couponName: "", // 优惠券名称
+        couponImg: "", // 优惠券名称
         prizeImg: "", // 奖品图片
         defaultPrizeImgList: [],
         prizeValue: "", // 奖品价值

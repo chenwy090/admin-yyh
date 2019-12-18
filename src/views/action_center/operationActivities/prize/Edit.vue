@@ -294,12 +294,13 @@ export default {
     },
     selectedCouponItem(data) {
       console.log("selectedCouponItem----", data);
-      let { couponType, id, name } = data;
+      let { couponType, id, name, img } = data;
 
       // templateId 券模板id templateName 券模板名称
       this.formData.couponType = couponType;
       this.formData.couponId = id;
       this.formData.couponName = name;
+      this.formData.couponImg = img;
     },
     visibleChange(isShow) {
       console.log("visibleChange", isShow);

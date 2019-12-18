@@ -85,7 +85,7 @@ export default {
           width: 70,
           align: "center",
           render: (h, params) => {
-            const { campId: id, name } = params.row;
+            const { campId: id, name, couponSimpleImg: img } = params.row;
             let flag = false;
             if (this.choice.id == id) {
               flag = true;
@@ -102,6 +102,7 @@ export default {
                   "on-change": () => {
                     self.choice.id = id;
                     self.choice.name = name;
+                    self.choice.img = img;
                     self.choice.row = params.row;
                     // console.log("change", JSON.stringify(self.choice));
                   }
