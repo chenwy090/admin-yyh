@@ -44,6 +44,8 @@
             >
               <Select v-model="formData.assignmentObjectType" style="width:300px" clearable>
                 <!-- <Option v-for="(v,k) in assignmentTypeOption" :value="k" :key="v">{{ v }}</Option> -->
+
+                <!-- assignmentObjectTypeOption3 assignmentObjectTypeOption4 -->
                 <Option
                   v-for="item in assignmentObjectTypeOption"
                   :value="item.value"
@@ -251,11 +253,16 @@ export default {
       ],
       // assignmentObjectType
       // 页面类型 4-领优惠频道页 5-抽奖广场页-->改成赚钱频道页 6-活动主页 7-优惠券详情页 8-内容详情页
-      assignmentObjectTypeOption: [
+      // 分享页面类 3
+      assignmentObjectTypeOption3: [
         { label: "领优惠频道页", value: 4 },
         { label: "赚钱频道页", value: 5 },
-        // { label: "活动主页", value: 6 },
-        // { label: "优惠券详情页", value: 7 },
+        { label: "内容详情页", value: 8 }
+      ],
+      // 分享页面类 4
+      assignmentObjectTypeOption4: [
+        { label: "活动主页", value: 6 },
+        { label: "优惠券详情页", value: 7 },
         { label: "内容详情页", value: 8 }
       ],
       // isRecommend 是否推荐：0-未推荐 1-被推荐（好券推荐列表页展示）
