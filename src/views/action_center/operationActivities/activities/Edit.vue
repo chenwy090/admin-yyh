@@ -150,7 +150,7 @@ export default {
       this.$refs[name].validate(async valid => {
         // console.log(JSON.stringify(this.formValidate));
         if (valid) {
-          this.$Message.success("数据验证成功!");
+          // this.$Message.success("数据验证成功!");
 
           let oForm = JSON.parse(JSON.stringify(this.formData));
 

@@ -36,9 +36,9 @@
           <template v-if="formData.prizeType==2">
             <FormItem
               :key="Math.random()"
-              label="选择优惠券"
+              label="优惠券ID："
               prop="couponId"
-              :rules="{ required: true, message: '请选择优惠券' }"
+              :rules="{ required: true, message: '请选择优惠券ID' }"
             >
               <Row>
                 <Col span="16">
@@ -338,7 +338,7 @@ export default {
       this.$refs[name].validate(async valid => {
         // console.log(JSON.stringify(this.formValidate));
         if (valid) {
-          this.msgOk("数据验证成功!");
+          // this.msgOk("数据验证成功!");
 
           let oForm = JSON.parse(JSON.stringify(this.formData));
 
