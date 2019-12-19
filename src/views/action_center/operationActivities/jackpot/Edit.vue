@@ -183,21 +183,28 @@ export default {
       });
     },
 
-    
+
     validateTime(rule, value, callback) {
-      this.formData.beginTime = beginTime;
-      this.formData.endTime = endTime;
-        value += "";
-        value = value.trim();
-        if (value == "") {
-          return callback(msg);
-        }
-        let length = util.getByteLen(value);
-        if (length > len * 2) {
-          return callback(`最多只能输入${len}个汉字`);
-        }
-        callback();
-      
+        this.$nextTick(_=>{
+            let beginTime = this.formData.beginTime;
+            let endTime = this.formData.endTime;
+            if (beginTime == "" || endTime == "") {
+                return callback('时间不能为空');
+            }
+            beginTime = new Date(beginTime);
+            endTime = new Date(endTime);
+            if (beginTime < new Date()) {
+                return callback(`开始时间不能小于当前时间`);
+            }
+            if (endTime < new Date()) {
+                return callback(`开始时间不能小于当前时间`);
+            }
+            if (beginTime >= endTime) {
+                return callback(`结束时间必须大于开始时间`);
+            }
+            callback();
+        });
+
     },
 
     validateEmpty(msg, len = 20) {
