@@ -31,25 +31,36 @@ new Vue({
     // this.getCouponData()
     // console.log(this.templateId);
   },
-  computed:{
-    address(){
+  computed: {
+    address() {
       return Number(Math.random() * 999).toFixed(1)
     }
   },
   methods: {
     // 根据id获取数据
     getCouponData() {
-      axios.get(
-          this.baseUrl + `zex-mgr/merchantCouponTemplate/getMerchantCouponDetail?templateId=${this.templateId}`, {
-            headers: {
-              jwttoken: this.token
-            }
-          }
-        )
+      console.log("token", this.token);
+      let url = `${this.baseUrl}zex-mgr/merchantCouponTemplate/getMerchantCouponDetail`;
+      // axios.get(
+      //   url, {
+      //   params: { templateId: this.templateId },
+      //   headers: {
+      //     jwttoken: this.token
+      //   }
+      // }
+      // )
+      axios({
+        method: 'get',
+        url,
+        params: { templateId: this.templateId },
+        headers: {
+          'jwttoken': this.token
+        }
+      })
         .then(res => {
           if (res.data.code == 200) {
             var useDesc = res.data.data.useDesc
-            if(useDesc){
+            if (useDesc) {
               res.data.data.useDesc = useDesc.split(/\r|\n|\r\n|\\n/)
             }
             this.couponData = res.data.data
@@ -60,20 +71,23 @@ new Vue({
     // 获取url参数
     getUrlKey() {
       this.templateId = decodeURIComponent((new RegExp('[?|&]' + 'templateId' + '=' + '([^&;]+?)(&|#|;|$)').exec(
-          window.location.href) || [, ""])[1]
+        window.location.href) || [, ""])[1]
         .replace(/\+/g, '%20')) || null
       this.token = decodeURIComponent((new RegExp('[?|&]' + 'token' + '=' + '([^&;]+?)(&|#|;|$)').exec(
-          window.location.href) || [, ""])[1]
+        window.location.href) || [, ""])[1]
         .replace(/\+/g, '%20')) || null
 
       // 接口地址
       let baseUrl = decodeURIComponent((new RegExp('[?|&]' + 'env' + '=' + '([^&;]+?)(&|#|;|$)').exec(
-          window.location.href) || [, ""])[1]
+        window.location.href) || [, ""])[1]
         .replace(/\+/g, '%20')) || null
+
       if (baseUrl == 'dev') {
         this.baseUrl = 'http://192.168.31.114:8088/'
       } else if (baseUrl == 'test') {
-        this.baseUrl = 'http://192.168.31.134:8088/'
+        // this.baseUrl = 'http://192.168.31.134:8088/'
+        this.baseUrl = 'http://crmt.52ash.cn/'
+
       } else if (baseUrl == 'review') {
         this.baseUrl = 'http://192.168.31.123:8088/'
       } else if (baseUrl == 'prod') {
@@ -88,7 +102,7 @@ new Vue({
 
     },
 
-    showMore(){
+    showMore() {
       console.info('ok')
     }
   }
