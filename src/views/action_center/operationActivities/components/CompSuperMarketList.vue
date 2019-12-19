@@ -86,7 +86,11 @@ export default {
           width: 70,
           align: "center",
           render: (h, params) => {
-            const { templateId: id, title: name } = params.row;
+            const {
+              templateId: id,
+              title: name,
+              couponSmallImg: img
+            } = params.row;
             let flag = false;
             if (this.choice.id == id) {
               flag = true;
@@ -103,6 +107,7 @@ export default {
                   "on-change": () => {
                     self.choice.id = id;
                     self.choice.name = name;
+                    self.choice.img = img;
                     self.choice.row = params.row;
                     // console.log("change", JSON.stringify(self.choice));
                   }
@@ -126,7 +131,6 @@ export default {
         {
           title: "有效期",
           align: "center",
-          width: 180,
           key: "time",
           render: (h, params) => {
             let { dateType, startDate, endDate } = params.row;
@@ -142,19 +146,22 @@ export default {
 
             return h("span", str);
           }
-        },
-        // 商超  isActivityCoupon  0: 是活动券  1: 不是活动券
-        {
-          title: "活动券",
-          align: "center",
-          width: 100,
-          key: "isActivityCoupon",
-          render(h, params) {
-            let { isActivityCoupon } = params.row;
-            const arr = ["是", "否"];
-            return h("span", arr[isActivityCoupon]);
-          }
         }
+        /*
+        商超    isActivityCoupon  0: 是活动券  1: 不是活动券
+        周边券  isActivityCoupon 是否活动券 0: 不是活动券  1: 活动券 
+        */
+        // {
+        //   title: "活动券",
+        //   align: "center",
+        //   width: 100,
+        //   key: "isActivityCoupon",
+        //   render(h, params) {
+        //     let { isActivityCoupon } = params.row;
+        //     const arr = ["否", "是"];
+        //     return h("span", arr[isActivityCoupon]);
+        //   }
+        // }
       ],
       tableData: [],
       page: {

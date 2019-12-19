@@ -878,7 +878,7 @@
             @on-select-all-cancel="cancelAllCampagin"
             :loading="TableLoading"
           ></Table>
-          <Row type="flex" justify="end" class="page">
+          <Row type="flex" justify="end" class="page" style="margin-top: 1vh;">
             <Page
               :total="totalSize"
               show-total
@@ -2037,15 +2037,16 @@
         }
 
         // 验证跳转标签
-        if (this.edit_info.couponTagRelationList != []) {
-          for (let i = 0; i < this.edit_info.couponTagRelationList.length; i++) {
-            let index = i + 1;
-            if (!this.edit_info.couponTagRelationList[i].tagId) {
-              this.$Message.error("第" + index + "条的跳转标签没有选择");
-              return;
-            }
-          }
-        }
+        // 20191218 待处理 陈健批注
+        // if (this.edit_info.couponTagRelationList != []) {
+        //   for (let i = 0; i < this.edit_info.couponTagRelationList.length; i++) {
+        //     let index = i + 1;
+        //     if (!this.edit_info.couponTagRelationList[i].tagId) {
+        //       this.$Message.error("第" + index + "条的跳转标签没有选择");
+        //       return;
+        //     }
+        //   }
+        // }
         if (!this.edit_info.couponSmallImg) {
           this.$Message.error("请上传优惠券缩略图");
           return;
@@ -2158,19 +2159,20 @@
         };
 
         // 跳转标签处理
-        this.reqParams.couponTagRelationList = this.edit_info.couponTagRelationList; //跳转标签列表
-        for (let z = 0; z < this.reqParams.couponTagRelationList.length; z++) {
-          for (let j = 0; j < this.jumpTagList.length; j++) {
-            if (
-              this.reqParams.couponTagRelationList[z].tagId ==
-              this.jumpTagList[j].tagId
-            ) {
-              this.reqParams.couponTagRelationList[z].tagName = this.jumpTagList[
-                j
-              ].tagName;
-            }
-          }
-        }
+        // 20191218 待处理 陈健批注
+        // this.reqParams.couponTagRelationList = this.edit_info.couponTagRelationList; //跳转标签列表
+        // for (let z = 0; z < this.reqParams.couponTagRelationList.length; z++) {
+        //   for (let j = 0; j < this.jumpTagList.length; j++) {
+        //     if (
+        //       this.reqParams.couponTagRelationList[z].tagId ==
+        //       this.jumpTagList[j].tagId
+        //     ) {
+        //       this.reqParams.couponTagRelationList[z].tagName = this.jumpTagList[
+        //         j
+        //       ].tagName;
+        //     }
+        //   }
+        // }
 
         if (this.reqParams.couponKind != 1) {
           this.reqParams.enableSaleAfter = this.edit_info.enableSaleAfter;

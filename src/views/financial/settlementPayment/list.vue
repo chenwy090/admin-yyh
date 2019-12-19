@@ -52,7 +52,7 @@
             <!-- 只有状态为"待付款"时，才显示"驳回"按钮。 -->
             <Button :disabled="!(row.billStatus == 3)" type="primary" size="small"
               @click="modalDisplayShowFu(row)">驳回</Button>
-            <Button type="info" size="small"  @click="downDisplayFun(row)">下载</Button>
+            <Button type="info" size="small" @click="downDisplayFun(row)">下载</Button>
           </ButtonGroup>
 
         </template>
@@ -118,7 +118,7 @@
       title: "商户名称",
       width: 190,
       align: "center",
-      key: 'brandName'
+      key: 'merchantName'
     },
     {
       title: "交易金额（元）",
@@ -367,6 +367,10 @@
 
   .page {
     margin-top: 2vh;
+  }
+
+  .ivu-btn-primary[disabled] {
+    border-color: #dcdee2 !important;
   }
 
 </style>

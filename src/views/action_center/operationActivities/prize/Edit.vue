@@ -36,9 +36,9 @@
           <template v-if="formData.prizeType==2">
             <FormItem
               :key="Math.random()"
-              label="选择优惠券"
+              label="优惠券ID："
               prop="couponId"
-              :rules="{ required: true, message: '请选择优惠券' }"
+              :rules="{ required: true, message: '请选择优惠券ID' }"
             >
               <Row>
                 <Col span="16">
@@ -50,18 +50,6 @@
             </FormItem>
           </template>
           <template v-else-if="formData.prizeType==1">
-            <FormItem
-              label="奖品价值："
-              prop="prizeValue"
-              :rules="{ required: true, validator: validateInt('奖品价值') }"
-            >
-              <Input
-                style="width:300px"
-                v-model.trim="formData.prizeValue"
-                placeholder="仅限填写正整数"
-                clearable
-              />&nbsp;元
-            </FormItem>
             <FormItem
               label="奖品名称："
               prop="name"
@@ -84,6 +72,18 @@
                 @remove="removePrizeImg"
                 @uploadSuccess="prizeImgUploadSuccess"
               ></UploadImage>
+            </FormItem>
+            <FormItem
+              label="奖品价值："
+              prop="prizeValue"
+              :rules="{ required: true, validator: validateInt('奖品价值') }"
+            >
+              <Input
+                style="width:300px"
+                v-model.trim="formData.prizeValue"
+                placeholder="仅限填写正整数"
+                clearable
+              />&nbsp;元
             </FormItem>
           </template>
           <FormItem label="奖励类型：" prop="level" :rules="{ required: true, message: '请选择奖励类型' }">
@@ -185,19 +185,15 @@ export default {
     },
     ["formData.prizeType"]() {
       // this.$refs.form.resetFields();
-
-
-
       // this.$refs.form.fields.forEach(field => {
       //   console.log(field.prop);
       //   // if (field.prop == "modelIterationTime") {
       //   //   field.resetField();
       //   // }
       // });
-
       // this.$refs.form.validateField('xxx');
     },
-    
+
     ["formData.level"]() {
       this.getPercentByPrizepoolId();
     },
@@ -298,16 +294,16 @@ export default {
     },
     selectedCouponItem(data) {
       console.log("selectedCouponItem----", data);
-      let { couponType, id, name } = data;
+      let { couponType, id, name, img } = data;
 
       // templateId 券模板id templateName 券模板名称
       this.formData.couponType = couponType;
       this.formData.couponId = id;
       this.formData.couponName = name;
+      this.formData.couponImg = img;
     },
-    visibleChange(isShow ) {
-
-      console.log("visibleChange",isShow)
+    visibleChange(isShow) {
+      console.log("visibleChange", isShow);
       if (isShow) {
         this.getPercentByPrizepoolId();
       }
@@ -342,7 +338,7 @@ export default {
       this.$refs[name].validate(async valid => {
         // console.log(JSON.stringify(this.formValidate));
         if (valid) {
-          this.msgOk("数据验证成功!");
+          // this.msgOk("数据验证成功!");
 
           let oForm = JSON.parse(JSON.stringify(this.formData));
 

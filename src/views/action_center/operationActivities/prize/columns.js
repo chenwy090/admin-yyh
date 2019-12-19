@@ -38,8 +38,14 @@ export default [
         }
     },
     {
-        title: "库存",
+        title: "总库存",
         key: "prizeNum",
+        align: "center",
+        minWidth: 140
+    },
+    {
+        title: "剩余库存",
+        key: "remainNum",
         align: "center",
         minWidth: 140
     },
