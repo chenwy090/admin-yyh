@@ -26,7 +26,12 @@
             prop="assignmentType"
             :rules="{ required: true, message: '请选择任务类型：' }"
           >
-            <Select v-model="formData.assignmentType" style="width:300px" clearable @on-change="assignmentTypeChange">
+            <Select
+              v-model="formData.assignmentType"
+              style="width:300px"
+              clearable
+              @on-change="assignmentTypeChange"
+            >
               <!-- <Option v-for="(v,k) in assignmentTypeOption" :value="k" :key="v">{{ v }}</Option> -->
               <Option
                 v-for="item in assignmentTypeOption"
@@ -53,7 +58,6 @@
               </Select>
             </FormItem>
           </template>
-
 
           <!-- 浏览内容数量 -->
           <template v-if="formData.assignmentObjectType==7 || formData.assignmentObjectType==8">
@@ -266,7 +270,7 @@ export default {
         { label: "优惠券详情页", value: 7 },
         { label: "内容详情页", value: 8 }
       ],
-      assignmentObjectTypeOption:[],
+      assignmentObjectTypeOption: [],
       // isRecommend 是否推荐：0-未推荐 1-被推荐（好券推荐列表页展示）
       isRecommendOption: [{ label: "是", value: 1 }, { label: "否", value: 0 }],
       formData: createFormData(),
@@ -275,12 +279,13 @@ export default {
   },
   async mounted() {},
   methods: {
-    assignmentTypeChange(){
-        if (this.formData.assignmentType == 3){
-            this.assignmentObjectTypeOption = this.assignmentObjectTypeOption3;
-        }else if (this.formData.assignmentType == 4){
-            this.assignmentObjectTypeOption = this.assignmentObjectTypeOption4;
-        }
+    assignmentTypeChange() {
+      this.formData.assignmentObjectType = "";
+      if (this.formData.assignmentType == 3) {
+        this.assignmentObjectTypeOption = this.assignmentObjectTypeOption3;
+      } else if (this.formData.assignmentType == 4) {
+        this.assignmentObjectTypeOption = this.assignmentObjectTypeOption4;
+      }
     },
     handleChooseCoupon() {
       this.showCouponList = true;
