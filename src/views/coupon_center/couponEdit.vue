@@ -1463,7 +1463,7 @@
           //富文本中转处理
           res.data.newDiscountDetail = newDiscountDetail || "";
           // 跳转标签
-          this.edit_info.couponTagRelationList = res.data.merchantCouponTagVOList;
+          this.edit_info.couponTagRelationList = res.data.merchantCouponTagVOList || [];
 
           this.edit_info = {
             ...this.edit_info,
