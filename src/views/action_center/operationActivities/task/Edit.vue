@@ -26,7 +26,7 @@
             prop="assignmentType"
             :rules="{ required: true, message: '请选择任务类型：' }"
           >
-            <Select v-model="formData.assignmentType" style="width:300px" clearable>
+            <Select v-model="formData.assignmentType" style="width:300px" clearable @on-change="assignmentTypeChange">
               <!-- <Option v-for="(v,k) in assignmentTypeOption" :value="k" :key="v">{{ v }}</Option> -->
               <Option
                 v-for="item in assignmentTypeOption"
@@ -44,7 +44,6 @@
             >
               <Select v-model="formData.assignmentObjectType" style="width:300px" clearable>
                 <!-- <Option v-for="(v,k) in assignmentTypeOption" :value="k" :key="v">{{ v }}</Option> -->
-
                 <!-- assignmentObjectTypeOption3 assignmentObjectTypeOption4 -->
                 <Option
                   v-for="item in assignmentObjectTypeOption"
@@ -54,6 +53,8 @@
               </Select>
             </FormItem>
           </template>
+
+
           <!-- 浏览内容数量 -->
           <template v-if="formData.assignmentObjectType==7 || formData.assignmentObjectType==8">
             <FormItem
@@ -239,7 +240,7 @@ export default {
       //   }
       // ],
       /*
-      assignmentObjectType  任务类型是1，领优惠券时此字段传优惠券类型，1-商超券 2-周边券 
+      assignmentObjectType  任务类型是1，领优惠券时此字段传优惠券类型，1-商超券 2-周边券
     页面类型 4-领优惠频道页 5-抽奖广场页 6-活动主页 7-优惠券详情页 8-内容详情页
     */
       // assignmentType
@@ -265,6 +266,7 @@ export default {
         { label: "优惠券详情页", value: 7 },
         { label: "内容详情页", value: 8 }
       ],
+      assignmentObjectTypeOption:[],
       // isRecommend 是否推荐：0-未推荐 1-被推荐（好券推荐列表页展示）
       isRecommendOption: [{ label: "是", value: 1 }, { label: "否", value: 0 }],
       formData: createFormData(),
@@ -273,6 +275,13 @@ export default {
   },
   async mounted() {},
   methods: {
+    assignmentTypeChange(){
+        if (this.formData.assignmentType == 3){
+            this.assignmentObjectTypeOption = this.assignmentObjectTypeOption3;
+        }else if (this.formData.assignmentType == 4){
+            this.assignmentObjectTypeOption = this.assignmentObjectTypeOption4;
+        }
+    },
     handleChooseCoupon() {
       this.showCouponList = true;
     },
