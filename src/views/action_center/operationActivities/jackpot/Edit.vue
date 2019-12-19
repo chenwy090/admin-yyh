@@ -35,7 +35,11 @@
               />
             </Tooltip>
           </FormItem>
-          <FormItem label="适用时间：" prop="beginTime" :rules="{ required: true, message: '请选择时间' }">
+          <FormItem
+            label="适用时间："
+            prop="beginTime"
+            :rules="{required: true,  validator: validateTime}"
+          >
             <DatePicker
               type="datetimerange"
               placeholder="请选时间"
@@ -177,6 +181,23 @@ export default {
           this.$Message.error("数据验证失败！");
         }
       });
+    },
+
+    
+    validateTime(rule, value, callback) {
+      this.formData.beginTime = beginTime;
+      this.formData.endTime = endTime;
+        value += "";
+        value = value.trim();
+        if (value == "") {
+          return callback(msg);
+        }
+        let length = util.getByteLen(value);
+        if (length > len * 2) {
+          return callback(`最多只能输入${len}个汉字`);
+        }
+        callback();
+      
     },
 
     validateEmpty(msg, len = 20) {
