@@ -98,15 +98,17 @@
           <Row>
             <Col span="12">
             <FormItem prop="settleTimeStart">
-              <DatePicker transfer type="date" :options="options1" @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
-                format="yyyy-MM-dd" v-model="modalAddData.settleTimeStart" placeholder="请选择结算周期" style="width: 150px">
+              <DatePicker transfer type="date" :options="options1"
+                @on-change="(datetime) =>{ changeDateTime(datetime, 1)}" format="yyyy-MM-dd"
+                v-model="modalAddData.settleTimeStart" placeholder="请选择结算周期" style="width: 150px">
               </DatePicker>
             </FormItem>
             </Col>
             <Col span="12">
             <FormItem prop="settleTimeEnd">
-              <DatePicker transfer type="date" :options="options2" @on-change="(datetime) =>{ changeDateTime(datetime, 2)}"
-                format="yyyy-MM-dd" v-model="modalAddData.settleTimeEnd" placeholder="请选择结算周期" style="width: 150px">
+              <DatePicker transfer type="date" :options="options2"
+                @on-change="(datetime) =>{ changeDateTime(datetime, 2)}" format="yyyy-MM-dd"
+                v-model="modalAddData.settleTimeEnd" placeholder="请选择结算周期" style="width: 150px">
               </DatePicker>
             </FormItem>
             </Col>
@@ -524,6 +526,10 @@
   .disabled {
     cursor: no-drop;
     color: #ccc;
+  }
+
+  .ivu-btn-primary[disabled] {
+    border-color: #dcdee2 !important;
   }
 
 </style>
