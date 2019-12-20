@@ -519,6 +519,7 @@
     padding: 5px;
     font-size: 14px;
     white-space: normal;
+    word-break: break-all;
     /* max-height: 200px;
     overflow: auto; */
   }
