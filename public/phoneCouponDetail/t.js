@@ -85,13 +85,11 @@ new Vue({
       if (baseUrl == 'dev') {
         this.baseUrl = 'http://192.168.31.114:8088/'
       } else if (baseUrl == 'test') {
-        // this.baseUrl = 'http://192.168.31.134:8088/'
-        this.baseUrl = 'http://crmt.52ash.cn/'
-
-      } else if (baseUrl == 'review') {
-        this.baseUrl = 'http://192.168.31.123:8088/'
+        this.baseUrl = 'http://192.168.31.134:8088/'
+      } else if (baseUrl == "lpt") {
+        this.baseUrl = "http://192.168.31.123:8200/"
       } else if (baseUrl == 'prod') {
-        this.baseUrl = 'http://crm.52iuh.com:8088/'
+        this.baseUrl = 'http://crm.52iuh.com:8200/'
       }
 
       // this.templateId = '20191212040171'
