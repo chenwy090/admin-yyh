@@ -228,23 +228,28 @@ export default {
       let data = {};
 
       // 优惠券类型1：周边券、2：商超券
-      if (this.searchForm.couponType == 2) {
-        url = "/campagin/list";
-        data = {
-          isEffective: 1,
-          campType: 57,
-          status: 1,
-          sendChannel: 1,
-          name: this.searchForm.name
-        };
-      } else {
-        url = "/merchantCouponTemplate/backList";
-        data = {
-          isActivityCoupon:null,
-          templateStatus: "进行中",
-          title: this.searchForm.name
-        };
+      switch(this.searchForm.couponType){
+        case 1:
+          url = "/merchantCouponTemplate/backList";
+          data = {
+            isActivityCoupon:null,
+            templateStatus: "进行中",
+            title: this.searchForm.name,
+            requestFrom: 'choujiangtuan',
+          };
+        break;
+        case 2:
+          url = "/campagin/list";
+          data = {
+            isEffective: 1,
+            campType: 57,
+            status: 1,
+            sendChannel: 1,
+            name: this.searchForm.name
+          };
+        break;
       }
+
       this.loading = true;
       getCampaginListData(url, data, this.page.pageNum).then(res => {
         if (res.code == 200) {

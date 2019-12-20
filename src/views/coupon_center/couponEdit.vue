@@ -148,7 +148,7 @@
               </Select>
             </Col>
           </Row>
-          <Row class="box" v-if="edit_info.couponKind==2">
+          <Row class="box" v-if="edit_info.couponKind==2 || edit_info.couponKind==3">
             <Col span="4" class="left-text">
               <span style="color:red">*</span>优惠类型
             </Col>
@@ -187,9 +187,9 @@
                       v-model="edit_info.originalPrice"
                       v-numformatter="edit_info.originalPrice"
                     />
-                    <span>&nbsp;&nbsp; 元</span>
                   </div>
                 </Tooltip>
+                <span>&nbsp;&nbsp; 元</span>
                 <span style="color:red;margin-left: 20px">*</span>售卖价
                 <Tooltip
                   trigger="focus"
@@ -214,9 +214,10 @@
                       v-model="edit_info.price"
                       v-numformatter="edit_info.price"
                     />
-                    <span>&nbsp;&nbsp; 元</span>
                   </div>
                 </Tooltip>
+                <span>&nbsp;&nbsp; 元</span>
+                <span style="margin-left:10px">优惠力度：{{discountNum}} 折</span>
               </div>
             </Col>
           </Row>
@@ -347,12 +348,19 @@
               </Tooltip>
             </Col>
           </Row>
-          <Row class="box" v-if="edit_info.couponKind==2">
+          <Row class="box" v-if="edit_info.couponKind==2 || edit_info.couponKind==3">
             <Col span="4" class="left-text">
               <span style="color:red">*</span>售后条件
             </Col>
             <Col span="20">
-              <CheckboxGroup v-model="edit_info.couponSaleAfterList">
+              <RadioGroup v-model="edit_info.enableSaleAfter">
+                <Radio :label="1">支持退款</Radio>
+                <Radio :label="0">不支持退款</Radio>
+              </RadioGroup>
+              <CheckboxGroup
+                v-model="edit_info.couponSaleAfterList"
+                v-if="edit_info.enableSaleAfter == 1"
+              >
                 <Checkbox
                   v-for="(item,index) in couponSaleAfterList"
                   :key="index"
@@ -362,12 +370,30 @@
             </Col>
           </Row>
 
+          <Row class="box" v-if="edit_info.couponKind==3">
+            <Col span="4" class="left-text">
+              <span style="color:red">*</span>商户分账金额
+            </Col>
+            <Col span="20">
+              <InputNumber
+                :min="0"
+                type="text"
+                v-model="edit_info.merchantLedger"
+                style="width:100px"
+                :max="999999"
+              ></InputNumber>元 / 每张
+            </Col>
+          </Row>
+
           <Row class="box">
             <Col span="4" class="left-text">
               <span style="color:red">*</span>适用商户
             </Col>
             <Col span="16">
-              <Button @click="addMerchantList">点击选择所需商户</Button>
+              <Button
+                @click="addMerchantList"
+                :disabled="edit_info.status == -1 && edit_info.statusName == '已结束(手动下架)' && edit_info.statusName != null && camp_pageStatus == 'edit'"
+              >点击选择所需商户</Button>
             </Col>
           </Row>
           <Row class="box">
@@ -521,6 +547,31 @@
                   :label="item.code"
                 >{{item.value}}</Checkbox>
               </CheckboxGroup>
+            </Col>
+          </Row>
+          <Row class="box">
+            <Col span="4" class="left-text">跳转标签</Col>
+            <Col span="20">
+              <Button type="primary" @click="addJumpTag()">增加跳转标签</Button>
+              <div
+                style="margin:5px 0"
+                v-for="(item, index) in edit_info.couponTagRelationList"
+                :key="index"
+              >
+                <Select v-model="item.tagId" style="width:200px">
+                  <Option
+                    v-for="(item1, index1) in jumpTagList"
+                    :value="item1.tagId"
+                    :key="index1"
+                  >{{ item1.tagName }}</Option>
+                </Select>
+                <Button
+                  shape="circle"
+                  icon="md-close"
+                  style="margin-left:10px"
+                  @click="delJumpTag(index)"
+                ></Button>
+              </div>
             </Col>
           </Row>
           <Row class="box">
@@ -827,7 +878,7 @@
             @on-select-all-cancel="cancelAllCampagin"
             :loading="TableLoading"
           ></Table>
-          <Row type="flex" justify="end" class="page">
+          <Row type="flex" justify="end" class="page" style="margin-top: 1vh;">
             <Page
               :total="totalSize"
               show-total
@@ -931,11 +982,34 @@ export default {
   },
   watch: {
     ["edit_info.couponPutChannelList"]() {
-      console.log("watch:---", this.edit_info.couponPutChannelList);
+      // console.log("watch:---", this.edit_info.couponPutChannelList);
+    },
+    ["edit_info.price"](val) {
+      // console.log("111", val);
+      if (val == "") {
+        this.discountNum = 0;
+        return;
+      }
+      if (Number(this.edit_info.price) > Number(this.edit_info.originalPrice)) {
+        this.$Message.error("您的优惠价高于原价，请重新输入");
+        return;
+      }
+      let num = (this.edit_info.price / this.edit_info.originalPrice) * 10;
+      this.discountNum = num.toFixed(2);
+    },
+    ["edit_info.originalPrice"](val) {
+      if (this.edit_info.price == "") {
+        return;
+      }
+      let num = (this.edit_info.price / this.edit_info.originalPrice) * 10;
+      this.discountNum = num.toFixed(2);
     }
   },
   data() {
     return {
+      jumpTagList: [], //选择跳转标签列表
+      discountNum: 0, // 折扣显示
+      // afterConditions: "", // 售后条件
       showBusinessList: false,
       //乐刻需求新增begin--------------------------
       // 优惠券来源 0-平台自营券 1-第三方券
@@ -953,11 +1027,15 @@ export default {
       couponKindList: [
         {
           value: 1,
-          label: "免费券"
+          label: "免费"
+        },
+        {
+          value: 3,
+          label: "收费(平台自营)"
         },
         {
           value: 2,
-          label: "付费券"
+          label: "收费(商户自营)"
         }
       ],
       couponSaleAfterList: [
@@ -1155,7 +1233,10 @@ export default {
         decreaseAmount: 0,
         displayText: "",
         discountDetail: "",
-        newDiscountDetail: "" //富文本中转
+        newDiscountDetail: "", //富文本中转
+        merchantLedger: null, // 商户分账金额
+        enableSaleAfter: null, // 是否支持退款
+        couponTagRelationList: [] //跳转标签列表
       },
       edit_loading: false,
       userToken: "",
@@ -1174,9 +1255,35 @@ export default {
 
   created() {
     this.userToken = { jwttoken: localStorage.getItem("jwttoken") };
+    this.getJumpTagList();
     // this.init();
   },
   methods: {
+    // 获取跳转标签
+    getJumpTagList() {
+      getRequest("/commonTag/merchantCouponTages").then(res => {
+        if (res.code == 200) {
+          this.jumpTagList = res.data;
+        } else {
+          this.msgErr(res.msg);
+        }
+      });
+    },
+
+    // 添加跳转标签
+    addJumpTag() {
+      let obj = {
+        tagId: ""
+        // tagName: ""
+      };
+      this.edit_info.couponTagRelationList.push(obj);
+    },
+
+    // 删除跳转标签
+    delJumpTag(index) {
+      this.edit_info.couponTagRelationList.splice(index, 1);
+    },
+
     handleChangeCouponKind() {
       console.log("handleChangeCouponKind:", arguments);
       this.add_info.merchantList = [];
@@ -1188,17 +1295,17 @@ export default {
     },
     //确定选择商户
     /*selectMerchant() {
-        if (this.selectedMerchantList && this.selectedMerchantList.length > 0) {
-          for (var obj of this.selectedMerchantList) {
-            this.add_info.merchantList.push(obj);
-          }
-          var afterArr = uniqueArray(this.add_info.merchantList, "merchantId");
-          this.add_info.merchantList = afterArr;
-          this.merchantTabDisplay = false;
-        } else {
-          this.msgErr("至少选一个商户");
-        }
-      },*/
+                if (this.selectedMerchantList && this.selectedMerchantList.length > 0) {
+                  for (var obj of this.selectedMerchantList) {
+                    this.add_info.merchantList.push(obj);
+                  }
+                  var afterArr = uniqueArray(this.add_info.merchantList, "merchantId");
+                  this.add_info.merchantList = afterArr;
+                  this.merchantTabDisplay = false;
+                } else {
+                  this.msgErr("至少选一个商户");
+                }
+              },*/
     couponSourceChange(couponSource) {
       console.log("couponSourceChange:", couponSource);
       if (couponSource === 0) {
@@ -1276,7 +1383,6 @@ export default {
     },
     init() {
       this.camp_pageStatus = this.getStore("camp_pageStatus");
-
       this.getprovincelist();
       this.getMerchantInfo();
       this.getCampInfo();
@@ -1320,7 +1426,9 @@ export default {
         decreaseAmount: 0,
         displayText: "",
         discountDetail: "", // 优惠券图文详情（富文本）
-        newDiscountDetail: "" //富文本中转
+        newDiscountDetail: "", //富文本中转
+        merchantLedger: null, // 商户分账金额
+        couponTagRelationList: [] //跳转标签列表
       };
     },
     //编辑
@@ -1354,6 +1462,10 @@ export default {
         res.data.thirdUrl = thirdUrl || "";
         //富文本中转处理
         res.data.newDiscountDetail = newDiscountDetail || "";
+        // 跳转标签
+        this.edit_info.couponTagRelationList =
+          res.data.merchantCouponTagVOList || [];
+
         this.edit_info = {
           ...this.edit_info,
           ...res.data
@@ -1380,7 +1492,7 @@ export default {
         this.imgSrc2 = this.edit_info.couponBigImg;
         this.imgSrc3 = this.edit_info.couponSimpleImg;
 
-        if (this.edit_info.couponKind == 2) {
+        if (this.edit_info.couponKind != 1) {
           // this.edit_info.price = this.edit_info.price / 100;
         } else {
           this.edit_info.price = 0;
@@ -1464,11 +1576,11 @@ export default {
             // that.bsUploadList.push(obj);
             var roleIdList = [];
             /*if (res.data.roleIdList){
-                            for (var o of res.data.roleIdList){
-                                roleIdList.push(parseInt(o))
-                            }
-                        }
-                        this.add_info.roleIdList = roleIdList;*/
+                                    for (var o of res.data.roleIdList){
+                                        roleIdList.push(parseInt(o))
+                                    }
+                                }
+                                this.add_info.roleIdList = roleIdList;*/
             that.add_info.templateId = that.templateId;
           } else {
             this.$Message.error(res.msg);
@@ -1556,7 +1668,7 @@ export default {
     addMerchantList() {
       //couponKind 1 免费券 | 2 付费券
       const { couponKind } = this.edit_info;
-      if (couponKind == 1) {
+      if (couponKind == 1 || couponKind == 3) {
         this.merchantTabDisplay = true;
         this.selectedMerchantList = [];
         this.getMerchantListFn();
@@ -1617,6 +1729,8 @@ export default {
 
     //保存
     campagin_add() {
+      // console.log(this.edit_info.couponTagRelationList);
+      // return
       // this.edit_info.couponKind = 1;
       if (
         !this.add_info.merchantList ||
@@ -1757,19 +1871,35 @@ export default {
         }
       }
       this.edit_info.newCouponSaleAfterList = [];
+      if (this.edit_info.couponKind == 2 || this.edit_info.couponKind == 3) {
+        if (
+          this.edit_info.enableSaleAfter == 1 &&
+          !this.edit_info.couponSaleAfterList
+        ) {
+          this.$Message.error("请选择售后条件");
+          return;
+        } else {
+          var that = this;
+          this.edit_info.couponSaleAfterList.map(function(v, i) {
+            that.edit_info.newCouponSaleAfterList.push(
+              that.couponSaleAfterList[v - 1]
+            );
+          });
+        }
+      }
+      // console.log(this.edit_info.newCouponSaleAfterList);
+      // return
       if (
-        this.edit_info.couponKind == 2 &&
-        !this.edit_info.couponSaleAfterList
+        this.edit_info.couponKind == 3 &&
+        this.edit_info.merchantLedger == null
       ) {
-        this.$Message.error("请选择售后条件");
+        this.$Message.error("请选择商户分账金额");
         return;
       } else {
-        var that = this;
-        this.edit_info.couponSaleAfterList.map(function(v, i) {
-          that.edit_info.newCouponSaleAfterList.push(
-            that.couponSaleAfterList[v - 1]
-          );
-        });
+        if (this.edit_info.merchantLedger > parseFloat(this.edit_info.price)) {
+          this.$Message.error("分账金额必须小于售卖价");
+          return;
+        }
       }
       this.edit_info.newCouponPutChannelList = [];
       if (!this.edit_info.couponPutChannelList.length) {
@@ -1779,7 +1909,7 @@ export default {
         let newCouponPutChannelList = [];
 
         this.edit_info.couponPutChannelList.forEach(code => {
-          that.couponPutChannelList.some(item => {
+          this.couponPutChannelList.some(item => {
             let r = code == item.code;
             if (r) {
               newCouponPutChannelList.push(item);
@@ -1787,7 +1917,7 @@ export default {
             return r;
           });
         });
-        
+
         this.edit_info.newCouponPutChannelList = newCouponPutChannelList;
       }
       this.edit_info.startDate = formatDate(
@@ -1909,6 +2039,18 @@ export default {
           return;
         }
       }
+
+      // 验证跳转标签
+      // 20191218 待处理 陈健批注
+      if (this.edit_info.couponTagRelationList != []) {
+        for (let i = 0; i < this.edit_info.couponTagRelationList.length; i++) {
+          let index = i + 1;
+          if (!this.edit_info.couponTagRelationList[i].tagId) {
+            this.$Message.error("第" + index + "条的跳转标签没有选择");
+            return;
+          }
+        }
+      }
       if (!this.edit_info.couponSmallImg) {
         this.$Message.error("请上传优惠券缩略图");
         return;
@@ -1963,9 +2105,9 @@ export default {
       }
 
       /*if(this.camp_pageStatus == "edit"){
-            this.new_ticketMoney = this.edit_info.ticketMoney;
-            this.new_ticketDiscount = this.edit_info.ticketDiscount;
-        }*/
+                    this.new_ticketMoney = this.edit_info.ticketMoney;
+                    this.new_ticketDiscount = this.edit_info.ticketDiscount;
+                }*/
       this.reqParams = {
         // ...this.edit_info，
 
@@ -2013,12 +2155,36 @@ export default {
         merchantList: this.add_info.merchantList,
         // discountDetail: this.edit_info.discountDetail, // 优惠券图文详情（富文本）
         discountDetail: this.edit_info.newDiscountDetail, // 优惠券图文详情（富文本）
+        merchantLedger: this.edit_info.merchantLedger, // 商户分账金额
         payCouponMerchantType: this.edit_info.payCouponMerchantType
+        // couponTagRelationList: this.edit_info.couponTagRelationList //跳转标签列表
+        // enableSaleAfter: this.edit_info.enableSaleAfter,
+        // couponSaleAfterList: this.edit_info.enableSaleAfter == 1? this.edit_info.newCouponSaleAfterList : []
       };
 
+      // 跳转标签处理
+      // 20191218 待处理 陈健批注
+      this.reqParams.couponTagRelationList = this.edit_info.couponTagRelationList; //跳转标签列表
+      for (let z = 0; z < this.reqParams.couponTagRelationList.length; z++) {
+        for (let j = 0; j < this.jumpTagList.length; j++) {
+          if (
+            this.reqParams.couponTagRelationList[z].tagId ==
+            this.jumpTagList[j].tagId
+          ) {
+            this.reqParams.couponTagRelationList[z].tagName = this.jumpTagList[
+              j
+            ].tagName;
+          }
+        }
+      }
+
       if (this.reqParams.couponKind != 1) {
-        this.reqParams.couponSaleAfterList =
-          this.edit_info.newCouponSaleAfterList || [];
+        this.reqParams.enableSaleAfter = this.edit_info.enableSaleAfter;
+        if (this.edit_info.enableSaleAfter == 1) {
+          this.reqParams.couponSaleAfterList = this.edit_info.newCouponSaleAfterList;
+        } else {
+          this.reqParams.couponSaleAfterList = [];
+        }
       }
 
       if (this.camp_pageStatus === "add") {
@@ -2080,7 +2246,7 @@ export default {
             this.goback();
           }, 1200);
         } else {
-          this.$Message.error(res.msg);
+          this.$Message.error(res.msg || "");
         }
       });
     },

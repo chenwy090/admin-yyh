@@ -554,7 +554,7 @@ export const upSpecialTopic = (id, status) => {
 
 // 获取列表
 export const getHotCouponList = (pageNum, shopId) => {
-    return postRequest(`/hotCoupon/list?isAsc=DESC&orderByColumn=1&pageNum=${pageNum}&pageSize=10&shopId=${shopId}`)
+    return postRequest(`/hotCoupon/list?isAsc=DESC&orderByColumn=1&pageNum=${pageNum}&pageSize=10&shopId=${shopId}`,{})
 }
 
 // 新增

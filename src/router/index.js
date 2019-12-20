@@ -8,6 +8,11 @@ import store from '../store';
 
 Vue.use(VueRouter);
 
+// const VueRouterPush = VueRouter.prototype.push
+// VueRouter.prototype.push = function push (to) {
+//     return VueRouterPush.call(this, to).catch(err => err)
+// }
+
 // 路由配置
 const RouterConfig = {
    mode: 'history',
@@ -41,17 +46,17 @@ router.beforeEach((to, from, next) => {
                 name: 'home_index'
             });
         } else {
-           
+
             if(to.name ==='error-404'){
                 next({
                     name: 'login'
-                });  
+                });
             }else{
                 // Util.toDefaultPage([...routers], to.name, router, next);
                 if(to.name ==='error-404'){
                     next({
                         name: 'login'
-                    });  
+                    });
                 }else{
                     Util.toDefaultPage([...routers], to.name, router, next);
                 }

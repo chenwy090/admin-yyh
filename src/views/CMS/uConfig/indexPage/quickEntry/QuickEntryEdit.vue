@@ -7,7 +7,7 @@
         ref="form"
         :model="formData"
         :rules="ruleValidate"
-        :label-width="100"
+        :label-width="130"
       >
         <FormItem label="标题：" prop="title" :rules="{ required: true, message: '请输入标题' }">
           <Tooltip trigger="focus" title="提醒" content="最多20个汉字" placement="right">
@@ -44,7 +44,67 @@
           </Select>
         </FormItem>
 
-        <template v-if="showContent">
+        <template v-if="formData.type == 1">
+          <FormItem
+            :label="`${contentLabel}：`"
+            :prop="`content`"
+            :rules="{ requierd: true, validator: validateContent }">
+            <Input style="width:80%" v-model="formData.content" :placeholder="`点击按钮选择${contentLabel}`" disabled>
+            <Button @click="handleChoose" slot="append">选择</Button>
+            </Input>
+          </FormItem>
+        </template>
+
+        <template v-if="formData.type == 3 || formData.type == 4">
+          <FormItem
+            :label="`${contentLabel}：`"
+            :prop="`content`"
+            :rules="{ requierd: true, validator: validateContent }">
+            <Input style="width:80%" v-model="formData.content" placeholder="请输入内容" clearable />
+          </FormItem>
+        </template>
+
+        <template v-if="formData.type == 6">
+          <FormItem :label="`${contentLabel}：`" :prop="`content`"
+            :rules="{ requierd: true, validator: validateContent }">
+            <Row>
+              <Col span="5">
+              <Select v-model="formData.value" style="width:120px" placeholder="请选择主行业"
+                @on-change="getIndustrySecendList()">
+                <Option v-for="item in mainIndustryList" :value="item.id" :key="item.id">{{ item.name }}</Option>
+              </Select>
+              </Col>
+              <Col span="5">
+              <Select v-model="formData.value1" style="width:120px" placeholder="请选择二级行业">
+                <Option v-for="item in secendIndustryList" :value="item.id" :key="item.id">{{ item.name }}</Option>
+              </Select>
+              </Col>
+            </Row>
+          </FormItem>
+          <FormItem :label="`标签：`" :prop="`tags`">
+            <Row style="margin-bottom: 1vh;">
+              <Icon @click="tagsAdd" class="tag-add" size="30" color="#2d8cf0" type="ios-add-circle-outline" />
+            </Row>
+            <Row class="tags-list" v-for="(items,index) in tagsList" :key="items.key">
+              <Col span="5">
+              <Select v-model="items.moduleId" disabled style="width:120px" placeholder="请选择所属模块"
+                @on-change="getIndustrySecendList()">
+                <Option v-for="item in tagsModuleList" :value="item.id" :key="item.id">{{ item.moduleName }}</Option>
+              </Select>
+              </Col>
+              <Col span="5">
+              <Select filterable v-model="items.tagId" style="width:120px" placeholder="请选择标签">
+                <Option v-for="item in tagsSelectList" :disabled="item.disabled" :value="item.tagId" :key="item.tagId">{{ item.tagName }}</Option>
+              </Select>
+              </Col>
+              <Col span="5">
+                <Icon @click="tagsRemove(index)" class="tag-remove" size="30" color="#ffb08f" type="ios-remove-circle-outline" />
+              </Col>
+            </Row>
+          </FormItem>
+        </template>
+
+        <!-- <template v-if="showContent">
           <FormItem
             :label="`${contentLabel}：`"
             :prop="`content`"
@@ -100,7 +160,7 @@
               </Col>
             </Row>
           </FormItem>
-        </template>
+        </template> -->
       </Form>
     </div>
     <div class="demo-drawer-footer">
@@ -120,11 +180,17 @@ import { postRequest, getRequest } from "@/libs/axios";
 
 import UploadImage from "../UploadImage";
 import ThematicActivities from "./ThematicActivities";
+import {
+  commonTagGetModuleInfo,
+  commonTagMerchantCouponTages,
+} from '@/api/basicData';
 
 export default {
   name: "quick-entry-edit",
   inject: ["typeOption", "msgOk", "msgErr"],
-  created() {},
+  created() {
+
+  },
   components: {
     UploadImage,
     ThematicActivities
@@ -147,7 +213,8 @@ export default {
             iconUrl: "",
             defaultIconUrlList: [],
             hotUrl: "",
-            defaultHotUrlList: []
+            defaultHotUrlList: [],
+            tagIds:[]
           }
         };
       }
@@ -160,7 +227,7 @@ export default {
         return true;
       }
       return false;
-    }
+    },
   },
   watch: {
     action: {
@@ -170,9 +237,16 @@ export default {
         if (this.formData.type == 6) {
           this.getIndustryMaindList();
           this.getIndustrySecendList();
+          this.tagsSelectEditList = data.tagDesc
+          this.getCommonTagInitData();
+          this.tagsList = data.tagIds.map( v=> {
+            return {
+              key: Math.random() * 100000,
+              moduleId:4,
+              tagId: v,
+            }
+          } )
         }
-        console.log("this.formData:", JSON.stringify(this.formData));
-        console.log("typeOption:", JSON.stringify(this.typeOption));
       },
       deep: true,
       immediate: true
@@ -182,12 +256,26 @@ export default {
       if (this.formData.type == 6) {
         this.getIndustryMaindList();
         this.getIndustrySecendList();
+        this.getCommonTagInitData();
       }
       this.contentLabel = this.typeOption[this.formData.type];
       this.formData.content = "";
       this.formData.value = "";
       this.formData.value1 = "";
-    }
+    },
+    // 选择的标签不能再选择
+    tagsList:{
+      handler(val, oldVal){
+        if(val instanceof Array){
+          let list = val.map( v => v.tagId)
+          this.tagsSelectList.forEach(item => {
+            this.$set(item, 'disabled', list.indexOf(item.tagId) !== -1)
+          })
+        }
+      },
+      deep: true,
+      immediate: true
+    },
   },
   data() {
     return {
@@ -211,8 +299,21 @@ export default {
       showThematicActivities: false,
       mainIndustryList: [],
       secendIndustryList: [],
-      mainIndustryId: ""
+      mainIndustryId: "",
+      tagsModuleList:[],
+      tagsSelectList: [],
+      tagsSelectEditList: [],
+      tagsList: [
+        {
+          key: Math.random() * 100000,
+          moduleId:4,
+          tagId: '',
+        }
+      ],
     };
+  },
+  mounted(){
+
   },
   methods: {
     //查询所有一级行业列表
@@ -302,6 +403,12 @@ export default {
           // 快捷入口配置项添加或编辑
           const url = "/page/module/layout/saveQuickItem";
 
+          // 添加标签
+          if(this.formData.type == 6){
+            let tagIds = this.tagsList.map(v => v.tagId).filter(v => v);
+            oForm.tagIds = tagIds
+          }
+
           let { code, msg } = await postRequest(url, oForm);
 
           if (code == 200) {
@@ -357,7 +464,50 @@ export default {
       } else {
         callback();
       }
-    }
+    },
+    // 标签
+    getCommonTagInitData(){
+      commonTagGetModuleInfo().then(res => {
+        if (res && res.code == 200) {
+          this.tagsModuleList = res.data.records
+        } else {
+          this.$Message.error(res.msg);
+        }
+      })
+
+      commonTagMerchantCouponTages().then(res => {
+        if (res && res.code == 200) {
+          let list = res.data;
+          let list2 = JSON.parse(JSON.stringify(this.tagsSelectEditList))
+          if(list2 instanceof Array && list2.length){
+            let _list = list.map(item => item.tagId);
+            let _noList = []
+            list2.forEach(item => {
+              let index = _list.indexOf(item.tagId);
+              if(index === -1) _noList.push(item)
+            })
+            list = list.concat(..._noList)
+          }
+          this.tagsSelectList = list
+          // 触发一次 tagsList watch
+          if(this.formData.type == 6){
+            this.tagsList = [...this.tagsList]
+          }
+        } else {
+          this.$Message.error(res.msg);
+        }
+      })
+    },
+    tagsAdd(){
+      this.tagsList.push({
+        key: Math.random() * 100000,
+        moduleId:4,
+        tagId: '',
+      })
+    },
+    tagsRemove(index){
+      this.tagsList.splice(index, 1);
+    },
   }
 };
 </script>
@@ -374,5 +524,14 @@ export default {
   padding: 10px 16px;
   text-align: right;
   background: #fff;
+}
+.tags-list{
+  margin-bottom: 1vh;
+}
+.tag-add{
+  cursor: pointer;
+}
+.tag-remove{
+  cursor: pointer;
 }
 </style>

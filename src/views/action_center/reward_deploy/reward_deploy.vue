@@ -80,7 +80,9 @@
     <!-- 提现-开关 -->
     <WithdrawalSwitch></WithdrawalSwitch>
     <!-- 商户免审提现金额 -->
-    <WithdrawalFreeAmount></WithdrawalFreeAmount>
+    <!-- <WithdrawalFreeAmount></WithdrawalFreeAmount> -->
+    <!-- 支付券配置 -->
+    <paymentVoucher></paymentVoucher>
 
     <!--奖励配置-->
     <Modal v-model="modal1.isopen" :title="modal1.name" :mask-closable="false" footer-hide>
@@ -410,11 +412,12 @@ import { postRequest, getRequest } from "@/libs/axios";
 import { uploadOperationImage2AliOssURl } from "@/api/index";
 import EditorBar from "@/components/EditorBar";
 import WithdrawalSwitch from "./WithdrawalSwitch";
-import WithdrawalFreeAmount from "./WithdrawalFreeAmount";
+// import WithdrawalFreeAmount from "./WithdrawalFreeAmount";
+import paymentVoucher from "./paymentVoucher";
 
 export default {
   name: "reward_deploy",
-  components: { EditorBar, WithdrawalSwitch, WithdrawalFreeAmount },
+  components: { EditorBar, WithdrawalSwitch, paymentVoucher },
   data() {
     return {
       userToken: {}, //用户token
@@ -879,7 +882,8 @@ export default {
         content: txt,
         duration: 3
       });
-    }
+    },
+
   },
   created() {
     this.getData1();
@@ -888,7 +892,8 @@ export default {
     this.userToken = {
       jwttoken: localStorage.getItem("jwttoken")
     };
-  }
+  },
+
 };
 </script>
 

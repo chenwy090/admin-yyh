@@ -1,0 +1,265 @@
+#container {
+  background-color: #f2f2f2;
+}
+
+html{
+  overflow: auto;
+}
+
+li {
+  list-style: none;
+}
+
+.title {
+  background-color: #fff;
+  width: 100%;
+  height: 6vh;
+  line-height: 6vh;
+  text-align: center;
+  font-size: 0.5rem;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+div {
+  font-size: 0.34rem;
+}
+
+img {
+  border: 0;
+  vertical-align: middle;
+}
+
+#container {
+  background-color: #f2f2f2;
+  /* height: 100%; */
+
+}
+
+.title {
+  background-color: #fff;
+  width: 100%;
+  height: 6vh;
+  line-height: 6vh;
+  text-align: center;
+  font-size: 0.4rem;
+}
+
+.mian_head {
+  width: 100%;
+}
+
+.head_img {}
+
+.head_img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mian_head .head_txt {
+  background-color: #fff;
+  padding: 3%;
+}
+
+/* .mian_head .head_txt div {
+  height: 5vh;
+} */
+.head_txt .head_title1 {
+  font-size: 0.3rem;
+  height: 5vh;
+  color: #ef913a;
+  font-weight: 600;
+  overflow: hidden;
+}
+
+.head_txt .head_title1 span {
+  color: #000;
+}
+
+.head_txt .head_title1 .head_title1_left {
+  float: right;
+  font-size: 0.2rem;
+  font-weight: normal;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.help-icon {
+  width: .4rem;
+  height: .4rem;
+  margin-left: .05rem;
+}
+
+.help-icon svg {
+  fill: #ccc;
+}
+
+.head_txt .head_title1 .head_title1_left span {
+  color: #848484;
+}
+
+.head_title1 .head_title1_left span:nth-child(1) {
+  margin-right: 5px;
+}
+
+.head_txt .head_title2 {
+  height: 5vh;
+  font-size: 0.28rem;
+  color: #5f5f5f;
+}
+
+.head_txt .head_title3 {
+  overflow: hidden;
+  height: 4vh;
+}
+
+.head_txt .head_title3 div {
+  font-size: 0.2rem;
+}
+
+.head_title3 .head_title3_txt {
+  float: left;
+  color: #9f9f9f;
+  line-height: 4vh;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.head_title3 .head_title3_button {
+  font-size: 0.23rem !important;
+  color: #fff;
+  padding: 6px;
+  background-color: #e59591;
+  float: right;
+  border-radius: 0 6px 6px 0;
+}
+
+.main .mian_rule {
+  margin-top: 5px;
+  background-color: #fff;
+}
+
+.mian_rule .rule_title {
+  padding: 3%;
+  border-bottom: 1px solid #ccc;
+  font-weight: 700;
+}
+
+.mian_rule .rule_main {
+  padding: .2rem;
+}
+
+/* .mian_rule .rule_main div {
+  font-size: 0.3rem;
+} */
+
+.rule_main .rule_time {
+  font-size: 0.24rem !important;
+  padding: 0.05rem 0;
+}
+
+.rule_main .rule_main_txt {
+  overflow: hidden;
+  font-size: 0.24rem !important;
+  line-height: 1.5;
+  max-height: 1rem;
+  transition: all .1s ease;
+}
+
+.rule_main .rule_main_txt.active {
+  max-height: none;
+}
+
+.rule_main .rule_main_button {
+  width: 0.2rem;
+  height: 0.2rem;
+  border-left: 1px solid #000;
+  border-top: 1px solid #000;
+  transform: rotate(45deg);
+  margin: .2rem auto 0 auto;
+  background-color: #fff;
+  transition: all .1s ease;
+}
+
+.rule_main .rule_main_button.active {
+  transform: rotate(225deg);
+}
+
+.gps_main {
+  overflow: hidden;
+  margin: 5px 0;
+  padding-bottom: 5px;
+  display: flex;
+}
+
+.gps_main .gps_left {
+  float: left;
+  width: 65%;
+  height: 9vh;
+  padding: 2% 0 2% 4%;
+  line-height: 9vh;
+  font-size: 0.3rem;
+  /* border-right: 1px solid #ccc; */
+}
+
+.gps_main .gps_left .item {
+  line-height: 1;
+  height: 4.5vh;
+  line-height: 4.5vh;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gps_main .gps_right {
+  float: right;
+  width: 30%;
+  font-size: 0.24rem;
+  color: #589cde;
+  text-align: center;
+  border-left: 1px solid #ccc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.success401 {
+  width: 100%;
+  position: absolute;
+  text-align: center;
+  font-size: .45rem;
+  color: #666;
+  margin-top: .9rem;
+}
+
+.title-desc-more {
+  font-size: .24rem;
+  font-weight: 400;
+  color: #666;
+  text-align: right;
+  float: right;
+  padding-top: .08rem;
+}
+
+
+.address-icon {
+  width: .4rem;
+  height: .4rem;
+  display: flex;
+}
+
+.address-icon svg {
+  fill: #589cde;
+}
+
+svg {
+  width: 100%;
+  height: 100%;
+  color: inherit;
+}
