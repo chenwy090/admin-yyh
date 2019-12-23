@@ -357,6 +357,14 @@ export default {
 
           oForm.prizepoolId = this.prizepoolId;
 
+          if (this.formData.drawMode == 1) {
+            // 中奖概率
+            this.formData.winningPercent = "";
+          } else {
+            // 抽奖次数
+            this.formData.winningNo = "";
+          }
+
           let { code, msg } = await postRequest(this.url, oForm);
 
           if (code == 200) {
