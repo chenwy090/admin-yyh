@@ -36,10 +36,7 @@
 import { createNamespacedHelpers } from "vuex";
 const { mapState, mapActions, mapGetters } = createNamespacedHelpers("egg");
 import { postRequest } from "@/libs/axios";
-import columns from "./columns";
-
-let cols = JSON.parse(JSON.stringify(columns));
-cols.shift();
+import { detailColumns as columns } from "./columns";
 
 export default {
   name: "detail",
@@ -106,7 +103,7 @@ export default {
         total: 0 //数据总数
       },
       loading: false,
-      columns: cols,
+      columns,
       tableData: []
     };
   },
