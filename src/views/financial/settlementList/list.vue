@@ -117,7 +117,7 @@
       </Form>
       <div slot="footer">
         <Button type="text" @click="modalAddShow = false">取消</Button>
-        <Button type="primary" @click="modalAddOk('modalAddForm2')">保存</Button>
+        <Button type="primary" :loading="modalAddBtnShow" @click="modalAddOk('modalAddForm2')">保存</Button>
       </div>
     </Modal>
 
@@ -252,6 +252,7 @@
 
         loading: false,
         modalAddShow: false,
+        modalAddBtnShow: false,
         modalAddData: {
           merchantName: '',
           settleTime: [],
@@ -374,8 +375,10 @@
           let body = JSON.parse(JSON.stringify(this.modalAddData))
           body.settleTime = [body.settleTimeStart, body.settleTimeEnd];
           delete body.merchantName
+          this.modalAddBtnShow = true;
           settleBillSave(body).then(res => {
             this.modalAddShow = false;
+            this.modalAddBtnShow = false;
             if (res && res.code == 200) {
               this.$Message.success('手动创建成功！');
               this.search()

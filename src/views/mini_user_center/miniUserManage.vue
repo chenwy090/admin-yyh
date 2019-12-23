@@ -37,7 +37,7 @@
                     <Option value="8">所有分享到小程序首页</Option>
                   </Select>
                 </Form-item>
-
+                <!--2019.12.23 注释
                 <FormItem label="否促核销核销用户:" :label-width="130">
                   <Select v-model="searchItem.isWriteoffUser" style="width:100px">
                     <Option
@@ -48,7 +48,7 @@
                   </Select>
                 </FormItem>
 
-                <FormItem label="促核销有效期：" :label-width="120" v-if="searchItem.isWriteoffUser == 1">
+                 <FormItem label="促核销有效期：" :label-width="120" v-if="searchItem.isWriteoffUser == 1">
                   <DatePicker
                     type="daterange"
                     placeholder="请选择日期"
@@ -56,7 +56,7 @@
                     :value="daterange"
                     @on-change="changeStartDate"
                   ></DatePicker>
-                </FormItem>
+                </FormItem>-->
               </span>
               <FormItem style="margin-left:-35px;" class="br">
                 <Button @click="queryTableList" type="primary" icon="ios-search">搜索</Button>
@@ -197,7 +197,6 @@ export default {
       drop: false,
       dropDownContent: "展开",
       dropDownIcon: "ios-arrow-down",
-
       searchItem: {
         phoneNumber: null,
         source: "",
