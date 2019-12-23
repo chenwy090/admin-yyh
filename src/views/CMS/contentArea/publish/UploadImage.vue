@@ -119,7 +119,7 @@ export default {
     },
     handleRemove(file) {
       this.uploadList = [];
-      this.defaultList = [];
+      // this.defaultList = [];
       this.$emit("remove");
     },
     handleUploadSuccess(res, file, fileList) {
