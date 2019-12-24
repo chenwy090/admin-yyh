@@ -41,7 +41,7 @@
               <!--</Select>-->
               <!--</FormItem>-->
               <FormItem label="领取时间：" span="35" :label-width="100">
-                <DatePicker
+                <!-- <DatePicker
                   :value="searchForm.gmtCreateStart"
                   type="date"
                   placeholder="选择开始领取时间"
@@ -57,7 +57,10 @@
                   style="width: 48%"
                   :options="options2"
                   @on-change="(datetime) =>{ changeDateTime(datetime, 2)}"
-                ></DatePicker>
+                ></DatePicker> -->
+
+                <DatePicker type="daterange" placeholder="选择领取时间" v-model="searchForm.gmtCreateDate" @on-change="[searchForm.gmtCreateStart, searchForm.gmtCreateEnd] = $event"></DatePicker>
+
               </FormItem>
               <FormItem span="20" :label-width="1">
                 <Button
@@ -259,6 +262,7 @@ export default {
       ],
       refreshData: {},
       searchForm: {
+        gmtCreateDate: "",
         gmtCreateEnd: "",
         gmtCreateStart: "",
         orderNo: "",
@@ -270,43 +274,45 @@ export default {
       },
       current: 1,
       addressData: [],
-      options2: {},
-      options1: {},
+      // options2: {},
+      // options1: {},
       TokerViewDialogVisible: false,
       DownViewDialogVisible: false,
       showViewDialogVisible: false
     };
   },
   methods: {
-    changeDateTime(datetime, index) {
-      switch (index) {
-        case 1:
-          this.searchForm.gmtCreateStart = datetime;
-          this.options2 = {
-            disabledDate(date) {
-              return date.valueOf() < new Date(datetime) - 1000 * 60 * 60 * 24;
-            }
-          };
-          break;
-        case 2:
-          this.searchForm.gmtCreateEnd = datetime;
-          this.options1 = {
-            disabledDate(date) {
-              return (
-                date.valueOf() < Date.now() - 1000 * 60 * 60 * 24 ||
-                date.valueOf() > new Date(datetime)
-              );
-            }
-          };
-          break;
-      }
-    },
+    // changeDateTime(datetime, index) {
+    //   switch (index) {
+    //     case 1:
+    //       this.searchForm.gmtCreateStart = datetime;
+    //       this.options2 = {
+    //         disabledDate(date) {
+    //           return date.valueOf() < new Date(datetime) - 1000 * 60 * 60 * 24;
+    //         }
+    //       };
+    //       break;
+    //     case 2:
+    //       this.searchForm.gmtCreateEnd = datetime;
+    //       this.options1 = {
+    //         disabledDate(date) {
+    //           return (
+    //             date.valueOf() < Date.now() - 1000 * 60 * 60 * 24 ||
+    //             date.valueOf() > new Date(datetime)
+    //           );
+    //         }
+    //       };
+    //       break;
+    //   }
+    // },
     search() {
       this.searchForm.current = 1;
       this.current = 1;
       this.loadTableData();
     },
     reset() {
+      this.$refs['searchForm'].resetFields()
+      this.searchForm.gmtCreateDate = "";
       this.searchForm.gmtCreateEnd = "";
       this.searchForm.gmtCreateStart = "";
       this.searchForm.orderNo = "";
