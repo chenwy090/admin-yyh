@@ -377,7 +377,7 @@ export default {
     }
   },
   created() {
-    this.reset();
+    this.search();
   }
 };
 </script>
