@@ -451,10 +451,11 @@ export default {
       let { code, data } = await getRequest(url);
 
       if (code == 200) {
-        let _data = JSON.parse(JSON.stringify(data[0]));
-        _data.id = Math.random();
-        _data.name = _data.name + Math.random();
-        data.push(_data);
+        // 测试专用
+        // let _data = JSON.parse(JSON.stringify(data[0]));
+        // _data.id = Math.random();
+        // _data.name = _data.name + Math.random();
+        // data.push(_data);
         this.activityTypeOption = data;
         this.setActivityTypeOption({ activityTypeOption: data });
       } else {
