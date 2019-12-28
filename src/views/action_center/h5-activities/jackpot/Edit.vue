@@ -22,15 +22,15 @@
           :label-width="100"
         >
           <FormItem
-            label="奖池名称："
+            label="模板名称："
             prop="name"
-            :rules="{required: true,  validator: validateEmpty('请输入奖池名称',10)}"
+            :rules="{required: true,  validator: validateEmpty('请输入模板名称',6)}"
           >
-            <Tooltip trigger="focus" title="提醒" content="最多10个汉字" placement="right">
+            <Tooltip trigger="focus" title="提醒" content="最多6个字符" placement="right">
               <Input
                 style="width:300px"
                 v-model="formData.name"
-                placeholder="最多填写10个汉字或20个字母"
+                placeholder="最多填写6个字符"
                 clearable
               />
             </Tooltip>
@@ -49,6 +49,38 @@
               @on-change="changeTime"
             ></DatePicker>
           </FormItem>
+          <FormItem
+            label="排序："
+            prop="order"
+            :rules="{required: true,  validator: validateOrder}"
+          >
+            <Tooltip trigger="focus" title="提醒" content="极限填写正整数" placement="right">
+              <Input
+                style="width:300px"
+                v-model="formData.order"
+                placeholder="极限填写正整数"
+                clearable
+              />
+            </Tooltip>
+          </FormItem>
+          <FormItem
+            label="导航icon："
+            prop="icon"
+            
+          >
+            <UploadImage v-model="formData.icon"></UploadImage>
+          </FormItem>
+          <FormItem
+            label="导航背景："
+            prop="background"  
+          >
+             <Input
+                style="width:300px"
+                v-model="formData.background"
+                placeholder="请填写色值"
+                clearable
+              />
+          </FormItem>
         </Form>
       </div>
       <div slot="footer">
@@ -64,7 +96,7 @@ const { mapState, mapActions, mapGetters } = createNamespacedHelpers("egg");
 
 import util from "@/libs/util";
 import { postRequest } from "@/libs/axios";
-
+import UploadImage from "../components/UploadImage";
 export default {
   name: "edit",
   props: {
@@ -73,6 +105,9 @@ export default {
       // 对象或数组默认值必须从一个工厂函数获取
       default: () => ({ type: "add" })
     }
+  },
+  components:{
+    UploadImage
   },
   computed: {
     ...mapGetters({
@@ -89,7 +124,7 @@ export default {
 
         // 新增
         if (type == "add") {
-          this.title = "添加奖池";
+          this.title = "添加模板";
           this.url = "/activity/prizepool/add";
           Object.keys(this.formData).forEach(name => {
             this.formData[name] = "";
@@ -97,7 +132,7 @@ export default {
           this.daterange = [];
         } else {
           //edit 修改
-          this.title = "修改奖池";
+          this.title = "修改moban";
           this.url = "/activity/prizepool/edit";
 
           Object.keys(this.formData).forEach(name => {
@@ -133,7 +168,10 @@ export default {
         beginTime: "",
         endTime: "",
         prizepoolType: 1,
-        isDeleted: 0
+        isDeleted: 0,
+        order:'',
+        icon:'',
+        background:''
       },
       ruleValidate: {}
     };
@@ -220,6 +258,17 @@ export default {
         }
         callback();
       };
+    },
+    validateOrder(rule, value, callback){
+      // value += "";
+      // value = value.trim();
+      // // 允许不填
+      let reg = /^(0|\+?[1-9][0-9]*)$/;
+      if (reg.test(value)) {
+        callback();
+      } else {
+        callback('仅输入正整数');
+      }  
     },
     // 全局提示
     msgOk(txt) {

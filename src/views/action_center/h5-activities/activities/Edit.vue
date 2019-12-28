@@ -54,6 +54,21 @@
               @on-change="changeTime"
             ></DatePicker>
           </FormItem>
+          <FormItem
+            label="开放城市："
+            prop="cityType"
+          >
+            <RadioGroup v-model="formData.cityType">
+                <Radio label="1">全部城市</Radio>
+                <Radio label="2">指定城市</Radio>
+            </RadioGroup>
+            <div class="change-city" v-if="formData.cityType == '2'">
+              <CheckboxGroup v-model="formData.city">
+                <Checkbox label="杭州"></Checkbox>
+                <Checkbox label="无锡"></Checkbox>
+              </CheckboxGroup>
+            </div>
+          </FormItem>
         </Form>
       </div>
       <div slot="footer">
@@ -200,5 +215,9 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style scoped lang="less">
+  .change-city{
+    border-top:1px #ddd solid;
+    width:300px;
+  }
 </style>

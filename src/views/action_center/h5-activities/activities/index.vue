@@ -55,6 +55,12 @@
             @click="query('edit',row)"
           >查看活动</Button>-->
           <Button
+            type="text"
+            size="small"
+            style="color:#2db7f5;margin-right: 5px" @click="addOrEditJackpot('edit',row)">
+            编辑活动模块
+          </Button>
+          <Button
             v-if="row.status==1"
             type="text"
             size="small"
@@ -316,7 +322,7 @@ export default {
       if (type == "query") {
         title = "查看奖池";
       } else if (type == "edit") {
-        title = "编辑奖池";
+        title = "编辑活动模块";
       }
       this.jackpotAction = {
         _id: Math.random(),

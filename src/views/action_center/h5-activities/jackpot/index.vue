@@ -3,7 +3,7 @@
   <div class="edit">
     <Card :bordered="false" style="margin-bottom:2px">
       <Row type="flex" justify="start">
-        <Button type="primary" icon="md-add" class="marginLeft20" @click="addOrEdit('add')">新增奖池</Button>
+        <Button type="primary" icon="md-add" class="marginLeft20" @click="addOrEdit('add')">新增模块</Button>
         <Button icon="md-refresh" class="marginLeft20" @click="refresh">刷新</Button>
       </Row>
     </Card>
@@ -17,7 +17,27 @@
         :data="tableData"
       >
         <template slot-scope="{ row }" slot="action">
-          <Button
+          <template v-if="row.status == 1">
+            <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px">
+              编辑模块   
+            </Button>
+            <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px">
+              编辑模块内容   
+            </Button>
+            <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px">
+              删除   
+            </Button>
+          </template>
+          <template v-else>
+            <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px">
+              查看模块   
+            </Button>
+            <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px">
+              查看模块内容   
+            </Button>
+          </template>
+
+          <!-- <Button
             v-if="row.showEdit"
             type="text"
             size="small"
@@ -37,7 +57,7 @@
             size="small"
             style="color:red;margin-right: 5px"
             @click="editPrizePoolContent(row,'edit')"
-          >编辑奖池内容</Button>
+          >编辑奖池内容</Button> -->
           <!-- 删除奖池将同步删除奖池内的所有奖品和任务，是否确认操作？  确认删除奖池吗? -->
 
           <Poptip
@@ -75,24 +95,7 @@
       <Button style="margin-right: 8px" @click="closeDialog">关闭</Button>
     </div>
     <Edit :action="jackpotAction" @refresh="queryTableData"></Edit>
-
-    <template v-if="showPrizeAndTask">
-      <div style="margin:10px;">奖池名称:{{jackpotName}}</div>
-      <div>
-        <!-- {{compName}} -->
-        <Tabs type="card" v-model="compName">
-          <TabPane v-for="tab in tabs" :key="tab.id" :label="tab.label" :name="tab.compName"></TabPane>
-        </Tabs>
-        <keep-alive>
-          <component
-            :is="oVueComponent"
-            :tab="tab"
-            :actionType="actionType"
-            @seclectedTr-event="selectedTrCallBack"
-          ></component>
-        </keep-alive>
-      </div>
-    </template>
+    <!--新增模板-->
   </div>
 </template>
 <script>
@@ -121,21 +124,6 @@ export default {
     }
   },
   computed: {
-    tab() {
-      let tab = null;
-      this.tabs.some(item => {
-        let r = this.compName == item.compName;
-        // console.log(this.compName, item.compNames);
-
-        if (r) {
-          tab = item;
-        }
-        return r;
-      });
-      console.log("computed tab", this.compName, { ...tab });
-
-      return tab;
-    },
     oVueComponent() {
       let { actionType, compName } = this;
 
@@ -159,7 +147,7 @@ export default {
         data = JSON.parse(JSON.stringify(data));
         this.activityId = data.id;
 
-        this.queryTableData();
+        //this.queryTableData();
         console.log("watch jackpotAction data:", data);
 
         if (type == "add") {
@@ -189,35 +177,10 @@ export default {
       },
       loading: false,
       columns,
-      tableData: [],
-      showPrizeAndTask: false,
-      compName: "prize",
-      tabs: [
-        {
-          id: Math.random(),
-          label: "奖品设置",
-          compName: "prize",
-          url: "/activity/prize/list"
-        },
-        {
-          id: Math.random(),
-          label: "任务设置",
-          compName: "task",
-          url: "/activity/assignment/rule/list"
-        },
-        {
-          id: Math.random(),
-          label: "查看奖品设置",
-          compName: "prize/Detail",
-          url: "/activity/prize/list"
-        },
-        {
-          id: Math.random(),
-          label: "查看任务设置",
-          compName: "task/Detail",
-          url: "/activity/assignment/rule/list"
-        }
-      ]
+      //0已结束1未开始2进行中
+      tableData: [{name:'模块具体名称',order:3,productNum:3,time:'2019-12-27 11:24:00-2019-12-27 22:08:08',status:1},
+      {name:'模块具体名称',order:3,productNum:3,time:'2019-12-27 11:24:00-2019-12-27 22:08:08',status:0},
+      {name:'模块具体名称',order:3,productNum:3,time:'2019-12-27 11:24:00-2019-12-27 22:08:08',status:2}],
     };
   },
   mounted() {
@@ -229,45 +192,7 @@ export default {
       console.log("selectedTrCallBack");
       // this.$emit("seclectedTr-event", choice);
     },
-    editPrizePoolContent(row, actionType) {
-      if (actionType == "query") {
-        this.compName = "prize/Detail";
-        this.tabs = [
-          {
-            id: Math.random(),
-            label: "查看奖品设置",
-            compName: "prize/Detail",
-            url: "/activity/prize/list"
-          },
-          {
-            id: Math.random(),
-            label: "查看任务设置",
-            compName: "task/Detail",
-            url: "/activity/assignment/rule/list"
-          }
-        ];
-      } else if (actionType == "edit") {
-        this.compName = "prize";
-        this.tabs = [
-          {
-            id: Math.random(),
-            label: "奖品设置",
-            compName: "prize",
-            url: "/activity/prize/list"
-          },
-          {
-            id: Math.random(),
-            label: "任务设置",
-            compName: "task",
-            url: "/activity/assignment/rule/list"
-          }
-        ];
-      }
-      this.actionType = actionType;
-      this.jackpotName = row.name;
-      this.setPrizepoolId(row.id); //设置奖池id
-      this.showPrizeAndTask = true;
-    },
+    
     async delItem(row) {
       this.msgOk("正在删除...");
       // /activity/prizepool/delete

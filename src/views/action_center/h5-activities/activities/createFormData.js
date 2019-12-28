@@ -4,6 +4,8 @@ export default function createFormData() {
         activityType: 1,
         name: "",
         beginTime: "",
-        endTime: ""
+        endTime: "",
+        cityType:'',
+        city:[]
     };
 };
