@@ -1,296 +1,140 @@
 <template>
-  <div>
-    <Row>
-      <Col span="4">
-        <FormItem
-        >
-          <Select
-            v-model="provinceCode"
-            placeholder="选择省"
-            @on-change="provinceChange"
-            :label-in-value="true"
-          >
-            <Option
-              v-for="(item,index) in provinceList"
-              :key="index"
-              :value="item.provinceCode"
-            >{{item.provinceName}}</Option>
-          </Select>
+  <Modal v-model="visible2" width="900" @on-ok="visibleChange(true)" @on-cancel="visibleChange(false)">
+    <Card :bordered="false" style="margin-bottom:2px">
+      <Form ref="searchForm" label-position="right" :label-width="80" :model="searchForm" inline>
+        <FormItem label="门店" span="24" style="width:25%" prop="shopId">
+          <Input v-model="searchForm.shopId" placeholder="门店shopId" clearable />
         </FormItem>
-      </Col>
-      <Col span="4">
-        <FormItem
-        >
-          <Select
-            v-model="cityCode"
-            placeholder="选择市"
-            @on-change="cityChange"
-            :label-in-value="true"
-          >
-            <Option
-              v-for="(item,index) in cityList"
-              :key="index"
-              :value="item.cityCode"
-            >{{item.cityName}}</Option>
-          </Select>
+        <FormItem label="门店" span="24" style="width:25%" prop="shopName">
+          <Input v-model="searchForm.shopName" placeholder="门店名称" clearable />
         </FormItem>
-      </Col>
-      <Col span="4">
-        <FormItem
-        >
-          <Select
-            v-model="countryCode"
-            placeholder="选择区"
-            @on-change="areaChange"
-            :label-in-value="true"
+
+        <FormItem span="24" :label-width="1" style="width:23%">
+          <Button type="primary" class="submit" icon="ios-search" @click="search()" style="margin-right: 5px"
+            >搜索</Button
           >
-            <Option
-              v-for="(item,index) in areaList"
-              :key="index"
-              :value="item.areaCode"
-            >{{item.areaName}}</Option>
-          </Select>
+          <Button icon="md-refresh" @click="reset">重置</Button>
         </FormItem>
-      </Col>
-      <Col span="4">
-        <FormItem
-        >
-          <Select
-            v-model="shopId"
-            placeholder="选择门店"
-            @on-change="shopIdChange"
-            :label-in-value="true"
+      </Form>
+    </Card>
+    <Card>
+      <Row>
+        <Col span="19">
+          <Table
+            :data="dataList"
+            :columns="[
+              { type: 'selection', align: 'center' },
+              { title: '门店编号', key: 'shopId' },
+              { title: '门店名称', key: 'shopName' },
+              { title: '所属地区', key: 'address' },
+            ]"
+            @on-selection-change="listSelect"
           >
-            <Option
-              v-for="(item,index) in shopList"
-              :key="index"
-              :value="item.shopId"
-            >{{item.shopName}}</Option>
-          </Select>
-        </FormItem>
-      </Col>
-      <Col span="2">
-        <Button type="dashed" long @click="handleRemove()" icon="ios-close"></Button>
-      </Col>
+          </Table>
+        </Col>
+        <Col span="5" style="padding-left: 1vh;">
+          <H3>已选门店 <Button size="small" @click="shopIdList = []">移除全部</Button> </H3>
+          <div style="max-height: 500px;overflow: auto;padding-top:1vh;">
+            <Row v-for="(item, index) in shopIdList" :key="index">
+              <Col span="4">
+                <Icon style="cursor: pointer;" type="ios-remove-circle-outline" @click="shopIdRemove(item, index)" />
+              </Col>
+              <Col span="20">
+                <Tag :name="item.shopName">
+                  {{ item.shopName }}
+                </Tag>
+              </Col>
+            </Row>
+          </div>
+        </Col>
+      </Row>
+    </Card>
+    <Row type="flex" justify="end" class="page" style="padding-top: 1vh;">
+      <Page
+        :total="totalSize"
+        show-total
+        show-elevator
+        @on-change="changeCurrent"
+        style="float: right"
+        :current.sync="current"
+      ></Page>
     </Row>
-  </div>
+  </Modal>
 </template>
 <script>
-import {
-  postRequest,
-  getRequest,
-  postSyncRequest,
-  getSyncRequest
-} from "@/libs/axios";
+import { getShopList } from '@/api/sys'
+import { postRequest, getRequest, postSyncRequest, getSyncRequest } from '@/libs/axios'
 export default {
-  props: {
-    id: Number,
-    shop: {
-      type: Object,
-      default: function() {
-        return {};
-      }
-    }
-  },
-
+  props: ['visible'],
   data() {
     return {
-      isInit: 0,
-      provinceList: [],
-      cityList: [],
-      areaList: [],
-      shopList: [],
-      provinceCode: null,
-      cityCode: null,
-      countryCode: null,
-      shopId: null,
-      provinceName: null,
-      cityName: null,
-      districtName: null
-    };
-  },
-  methods: {
-    loadProvinceList() {
-      return postSyncRequest("/system/area/province/list").then(res => {
-        if (res.code == 200) {
-          this.provinceList = res.data;
-
-          ["provinceCode", "cityCode", "countryCode", "shopId"].forEach(
-            name => {
-              this[name] = this.shop[name];
-              // console.log(name, this[name]);
-            }
-          );
-        } else {
-          this.$Message.error(res.msg);
-        }
-      });
-    },
-    //根据省份code获取城市信息数据
-    provinceChange(item, callback) {
-      this.cityList = [];
-      this.areaList = [];
-      this.shopList = [];
-      this.cityCode = null;
-      this.countryCode = null;
-      this.shopId = null;
-      this.cityName = null;
-      this.districtName = null;
-      this.provinceName = item.label;
-      this.$emit("sendProvinceId", this.provinceCode, this.shop.id);
-      getSyncRequest("/system/area/city/" + this.provinceCode).then(res => {
-        if (res.code == 200) {
-          this.cityList = res.data;
-        } else {
-          this.$Message.error(res.msg);
-        }
-      });
-      // this.loadShops();
-    },
-    //根据城市code获取区县信息数据
-    cityChange(item, callback) {
-      this.areaList = [];
-      this.shopList = [];
-      this.countryCode = null;
-      this.shopId = null;
-      this.districtName = null;
-      if (!item) {
-        this.cityName = null;
-      } else {
-        this.cityName = item.label;
-      }
-      this.$emit("sendCityId", this.cityCode, this.shop.id);
-      getSyncRequest("/system/area/district/" + this.cityCode).then(res => {
-        if (res.code == 200) {
-          this.areaList = res.data;
-          if (callback) {
-            callback();
-          }
-          // this.loadShops();
-        } else {
-          this.$Message.error(res.msg);
-        }
-      });
-    },
-    //根据城市code获取区域信息数据
-    areaChange(item) {
-      this.shopList = [];
-      this.shopId = null;
-      if (!item) {
-        this.districtName = null;
-      } else {
-        this.districtName = item.label;
-      }
-      this.$emit("sendAreaId", this.countryCode, this.shop.id);
-      this.loadShops();
-    },
-    shopIdChange(item) {
-      if (!item) {
-        this.$emit("sendShopId", this.shopId, null, this.shop.id);
-      } else {
-        this.$emit("sendShopId", this.shopId, item.label, this.shop.id);
-      }
-    },
-    loadShops() {
-      if (!this.provinceName) {
-        return this.$Message.error("请选择省份");
-      }
-      if (!this.cityName) {
-        return this.$Message.error("请选择区县");
-      }
-      if (!this.districtName) {
-        return this.$Message.error("请选择区域");
-      }
-      // if (!this.shopId) {
-      //   return this.$Message.error("请选择门店");
-      // }
-      postRequest("/system/sys-shop-info/list?pageNum=1&pageSize=2000", {
-        province: this.provinceName,
-        city: this.cityName,
-        district: this.districtName
-      }).then(res => {
-        if (res.code == 200) {
-          this.shopList = res.data.records;
-        } else {
-          this.$Message.error(res.msg);
-        }
-      });
-    },
-    handleRemove() {
-      this.$emit("handleRemove-event", this.shop.id);
-    },
-    init() {
-      postRequest("/system/area/province/list")
-        .then(res => {
-          if (res.code == 200) {
-            this.provinceList = res.data;
-          } else {
-            this.$Message.error(res.msg);
-          }
-          return res;
-        })
-        .then(res => {
-          if (this.shop.provinceCode) {
-            this.provinceCode = this.shop.provinceCode;
-            this.provinceName = this.provinceList.find(
-              el => el.provinceCode == this.provinceCode
-            ).provinceName;
-          }
-
-          return res;
-        })
-        .then(res => {
-          getSyncRequest("/system/area/city/" + this.provinceCode)
-            .then(res => {
-              if (res.code == 200) {
-                this.cityList = res.data;
-                this.cityCode = this.shop.cityCode;
-                this.countryCode = null;
-                if (this.shop.cityCode) {
-                  this.cityName = this.cityList.find(
-                    el => el.cityCode == this.cityCode
-                  ).cityName;
-                }
-              } else {
-                this.$Message.error(res.msg);
-              }
-              return res;
-            })
-            .then(res => {
-              if (this.shop.cityCode) {
-                getSyncRequest("/system/area/district/" + this.cityCode).then(
-                  res => {
-                    if (res.code == 200) {
-                      this.areaList = res.data;
-                      this.countryCode = this.shop.countryCode;
-                      if (this.shop.countryCode) {
-                        this.districtName = this.areaList.find(
-                          el => el.areaCode == this.countryCode
-                        ).areaName;
-                      }
-
-                      if (this.shop.shopId) {
-                        this.shopId = `${this.shop.shopId}`;
-                        this.loadShops();
-                      }
-                    } else {
-                      this.$Message.error(res.msg);
-                    }
-                  }
-                );
-              }
-            });
-        });
+      totalSize: 0,
+      current: 0,
+      searchForm: {
+        shopId: '',
+        shopName: '',
+        title: '',
+        startTime: '',
+        endTime: '',
+        pageNum: 1,
+        pageSize: 10,
+        status: null,
+        type: 0,
+      },
+      dataList: [],
+      shopIdList: [],
+      visible2: false,
     }
   },
-  mounted() {
-    this.$nextTick(() => {
-      this.loadProvinceList();
-      // 修改 级联查询
-      if (this.shop.provinceCode) {
-        this.init();
+  watch: {
+    visible(val) {
+      this.visible2 = val
+    },
+  },
+  methods: {
+    getList() {
+      getShopList(this.searchForm, this.searchForm.pageNum).then(res => {
+        if (res.isSuccess) {
+          this.dataList = res.data.records
+          this.totalSize = res.data.total
+          this.current = res.data.current
+        } else {
+          this.$Message.error(res.msg)
+        }
+      })
+    },
+    changeCurrent(current) {
+      if (this.searchForm.pageNum != current) {
+        this.searchForm.pageNum = current
+        this.getList()
       }
-    });
-  }
-};
+    },
+    search() {
+      this.searchForm.pageNum = 1
+      this.getList()
+    },
+    reset() {
+      this.$refs['searchForm'].resetFields()
+      this.search()
+    },
+    listSelect(selection) {
+      console.info(selection)
+      let list = this.shopIdList.map(item => item.shopId)
+      let list2 = selection.filter(item => !list.includes(item.shopId))
+      this.shopIdList.push(...list2)
+    },
+    shopIdRemove(item, index) {
+      this.shopIdList.splice(index, 1)
+    },
+    visibleChange(visible) {
+      if (visible) {
+        this.$emit('shopListData', this.shopIdList)
+      }
+      this.$emit('update:visible', false)
+    },
+  },
+  mounted() {
+    this.getList()
+  },
+}
 </script>
