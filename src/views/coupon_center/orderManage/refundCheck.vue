@@ -33,10 +33,10 @@
                 <Input v-model="searchForm.orderNo" placeholder="请填写订单号" />
               </FormItem>
               <FormItem label="退款申请时间：" :label-width="120">
-                <DatePicker
+                <!-- <DatePicker
                   :value="searchForm.applyRefundTimeStart"
                   type="date"
-                  placeholder
+                  placeholder="选择开始退款申请时间"
                   style="width: 48%"
                   :options="options1"
                   @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
@@ -45,11 +45,14 @@
                 <DatePicker
                   :value="searchForm.applyRefundTimeEnd"
                   type="date"
-                  placeholder
+                  placeholder="选择结束退款申请时间"
                   style="width: 48%"
                   :options="options2"
                   @on-change="(datetime) =>{ changeDateTime(datetime, 2)}"
-                ></DatePicker>
+                ></DatePicker> -->
+
+                <DatePicker type="daterange" v-model="searchForm.applyRefundTimeDate" placeholder="选择退款申请时间" @on-change="[searchForm.applyRefundTimeStart, searchForm.applyRefundTimeEnd] = $event"></DatePicker>
+
               </FormItem>
               <FormItem span="20" :label-width="1" style="width:23%">
                 <Button
@@ -263,6 +266,23 @@ export default {
           key: "orderNo"
         },
         {
+          title: "退款原因",
+          width: 200,
+          align: "center",
+          key: 'refundReason'
+        },
+        // {
+        //   title: "券码状态",
+        //   width: 200,
+        //   key: 'barCodeStatus'
+        // },
+        {
+          title: "退款金额",
+          width: 200,
+          align: 'right',
+          key: 'realRefundMoney'
+        },
+        {
           title: "优惠券ID",
           width: 200,
           align: "center",
@@ -271,53 +291,61 @@ export default {
         {
           title: "优惠券标题",
           width: 200,
+          align: "center",
           key: "couponTitle"
         },
         {
           title: "所属商户",
           minWidth: 250,
+          align: "center",
           key: "merchantName"
         },
         {
           title: "数量",
           minWidth: 150,
+          align: "right",
           key: "amount"
         },
         {
           title: "单价",
           width: 100,
-          align: "center",
+          align: "right",
           key: "price"
         },
         {
           title: "总价",
           width: 100,
+          align: "right",
           key: "totalPrice"
         },
         {
           title: "U贝抵扣",
-          minWidth: 250,
+          minWidth: 100,
+          align: "right",
           key: "ubayDiscount"
         },
         {
           title: "红包抵扣",
           minWidth: 150,
+          align: "right",
           key: "redEnvelopeDiscount"
         },
         {
           title: "实付款",
           width: 100,
-          align: "center",
+          align: "right",
           key: "realPay"
         },
         {
           title: "买家",
-          width: 100,
+          width: 120,
+          align: "center",
           key: "phoneNumber"
         },
         {
           title: "付款时间",
           minWidth: 250,
+          align: "center",
           key: "payTime"
         },
         {
@@ -334,6 +362,7 @@ export default {
       selectDataList: [],
       searchForm: {
         auditStatus: "1",
+        applyRefundTimeDate: "",
         applyRefundTimeEnd: "",
         applyRefundTimeStart: "",
         orderNo: "",
@@ -343,8 +372,8 @@ export default {
       },
       current: 1,
       addressData: [],
-      options2: {},
-      options1: {},
+      // options2: {},
+      // options1: {},
       TokerViewDialogVisible: false,
       DownViewDialogVisible: false,
       title: "详情", //"详情":"审核";
@@ -358,35 +387,37 @@ export default {
     };
   },
   methods: {
-    changeDateTime(datetime, index) {
-      switch (index) {
-        case 1:
-          this.searchForm.applyRefundTimeStart = datetime;
-          this.options2 = {
-            disabledDate(date) {
-              return date.valueOf() < new Date(datetime) - 1000 * 60 * 60 * 24;
-            }
-          };
-          break;
-        case 2:
-          this.searchForm.applyRefundTimeEnd = datetime;
-          this.options1 = {
-            disabledDate(date) {
-              return (
-                date.valueOf() < Date.now() - 1000 * 60 * 60 * 24 ||
-                date.valueOf() > new Date(datetime)
-              );
-            }
-          };
-          break;
-      }
-    },
+    // changeDateTime(datetime, index) {
+    //   switch (index) {
+    //     case 1:
+    //       this.searchForm.applyRefundTimeStart = datetime;
+    //       this.options2 = {
+    //         disabledDate(date) {
+    //           return date.valueOf() < new Date(datetime) - 1000 * 60 * 60 * 24;
+    //         }
+    //       };
+    //       break;
+    //     case 2:
+    //       this.searchForm.applyRefundTimeEnd = datetime;
+    //       this.options1 = {
+    //         disabledDate(date) {
+    //           return (
+    //             date.valueOf() < Date.now() - 1000 * 60 * 60 * 24 ||
+    //             date.valueOf() > new Date(datetime)
+    //           );
+    //         }
+    //       };
+    //       break;
+    //   }
+    // },
     search() {
       this.searchForm.current = 1;
       this.current = 1;
       this.loadTableData();
     },
     reset() {
+      this.$refs['searchForm'].resetFields()
+      this.searchForm.applyRefundTimeDate = "";
       this.searchForm.applyRefundTimeEnd = "";
       this.searchForm.applyRefundTimeStart = "";
       this.searchForm.orderNo = "";
@@ -503,7 +534,7 @@ export default {
     }
   },
   created() {
-    this.reset();
+    this.search();
   }
 };
 </script>

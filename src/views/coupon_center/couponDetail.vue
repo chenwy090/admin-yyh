@@ -27,6 +27,9 @@
 
       <Row style="margin-left:15%;">
         <Form label-position="right" :label-width="150">
+          <FormItem label="预览二维码：" required>
+            <img style="width:100px" :src="QrImg" />
+          </FormItem>
           <FormItem
             label="优惠券来源："
             required
@@ -51,12 +54,21 @@
           </FormItem>
 
           <FormItem label="标题：" required>{{edit_info.title}}</FormItem>
-          <FormItem label="收费类型：" required>{{couponKindList[edit_info.couponKind-1].label}}</FormItem>
+          <FormItem label="收费类型：" required>
+            <RadioGroup v-model="edit_info.couponKind">
+              <Radio
+                v-for="item in couponKindList"
+                disabled
+                :key="item.value"
+                :label="item.value"
+              >{{item.label}}</Radio>
+            </RadioGroup>
+          </FormItem>
 
           <template v-if="edit_info.couponKind==1">
             <FormItem label="优惠类型：" required>{{edit_info.couponTypeName}}</FormItem>
           </template>
-          <template v-if="edit_info.couponKind==2">
+          <template v-if="edit_info.couponKind==2 || edit_info.couponKind==3">
             <FormItem label="优惠类型：" required>
               <Row>
                 <Row>{{edit_info.couponTypeName}}</Row>
@@ -67,6 +79,7 @@
                   <span style="color:red;margin-left: 20px">*</span>
                   售卖价 {{edit_info.price}}
                   <span>&nbsp;&nbsp; 元</span>
+                  <span style="margin-left:10px">优惠力度：{{discountNum}} 折</span>
                 </Row>
               </Row>
             </FormItem>
@@ -103,14 +116,24 @@
             </FormItem>
           </template>
 
-          <template v-if="edit_info.couponKind==2">
+          <template v-if="edit_info.couponKind==2 || edit_info.couponKind==3">
             <FormItem label="售后条件：" required>
-              <span
-                v-for="(item,index) in edit_info.couponSaleAfterVOList"
-                :key="index"
-              >{{item.value}}&nbsp;&nbsp;</span>
+              <RadioGroup v-model="edit_info.enableSaleAfter">
+                <Radio disabled :label="1">支持退款</Radio>
+                <Radio disabled :label="0">不支持退款</Radio>
+              </RadioGroup>
+              <div v-if="edit_info.enableSaleAfter == 1">
+                <span
+                  v-for="(item,index) in edit_info.couponSaleAfterVOList"
+                  :key="index"
+                >{{item.value}}&nbsp;&nbsp;</span>
+              </div>
             </FormItem>
           </template>
+
+          <div v-if="edit_info.couponKind==3">
+            <FormItem label="商户分账金额：" required>{{edit_info.merchantLedger}}</FormItem>
+          </div>
 
           <FormItem label="活动开始时间：" required>{{edit_info.startDate}}</FormItem>
           <FormItem label="活动结束时间：" required>{{edit_info.endDate}}</FormItem>
@@ -145,6 +168,13 @@
             >{{item.value}}&nbsp;&nbsp;</span>
           </FormItem>
 
+          <FormItem label="跳转标签：" required>
+            <span
+              v-for="(item,index) in  edit_info.merchantCouponTagVOList"
+              :key="index"
+            >{{item.tagName}}&nbsp;&nbsp;</span>
+          </FormItem>
+
           <FormItem label="优惠券缩略图：" required>
             <div class="imgSrc_box" v-if="imgSrc1">
               <img :src="imgSrc1" style="width:100%" />
@@ -170,7 +200,7 @@
             <span style="color:red">&nbsp;&nbsp; 张</span>
           </FormItem>
           <!-- <FormItem label="领取规则：" :rules="{ required: true}">{{edit_info.useDesc}}</FormItem> -->
-          <FormItem label="领取规则：" >
+          <FormItem label="领取规则：">
             <Input
               type="textarea"
               v-model="edit_info.useDesc"
@@ -188,7 +218,7 @@
               style="width:400px;margin:0;"
             ></EditorBar>
           </FormItem>
-          <FormItem label="备注：" :rules="{ required: true}">{{edit_info.remark}}</FormItem>
+          <FormItem label="备注：" required>{{edit_info.remark}}</FormItem>
         </Form>
 
         <Row
@@ -231,7 +261,7 @@
 </template>
 
 <script>
-  import { postJson, postRequest } from "@/libs/axios";
+  import { postJson, postRequest, getRequest } from "@/libs/axios";
   import { baseUrl } from "@/api/index";
   import logModal from "./logInfo";
   import EditorBar from "@/components/EditorBar";
@@ -247,6 +277,8 @@
     components: { logModal, EditorBar },
     data() {
       return {
+        QrImg: null,
+        discountNum: 0, // 优惠力度显示
         logDialogModal: false,
         //乐刻需求新增begin--------------------------
         // 优惠券来源 0-平台自营券 1-第三方券
@@ -268,7 +300,11 @@
           },
           {
             value: 2,
-            label: "付费券"
+            label: "付费券(商户自营)"
+          },
+          {
+            value: 3,
+            label: "付费券(平台自营)"
           }
         ],
         couponSaleAfterList: [
@@ -435,6 +471,7 @@
       init() {
         this.camp_pageStatus = this.getStore("camp_pageStatus");
         this.editInfo();
+        this.getQRImg();
       },
       showLog() {
         this.logDialogModal = true;
@@ -457,7 +494,7 @@
             // console.log(res);
             if (res.code == 200) {
               this.edit_info = res.data;
-              this.edit_info.useDesc = res.data.useDesc.replace(/\\n/g,"\n")
+              this.edit_info.useDesc = res.data.useDesc.replace(/\\n/g, "\n");
               this.uploadList = [{ url: this.edit_info.couponSmallImg }];
               this.uploadList1 = [{ url: this.edit_info.couponBigImg }];
               this.edit_info.merchantList = this.edit_info.merchantList;
@@ -466,23 +503,27 @@
               this.imgSrc2 = this.edit_info.couponBigImg;
               this.imgSrc3 = this.edit_info.couponSimpleImg;
 
-              if (this.edit_info.couponKind == 2) {
-                // this.edit_info.price = this.edit_info.price;
-              } else {
-                this.edit_info.price = 0;
-              }
+              // if (this.edit_info.couponKind == 2) {
+              //   // this.edit_info.price = this.edit_info.price;
+              // } else {
+              //   this.edit_info.price = 0;
+              // }
 
               this.edit_info.ticketMoney = this.edit_info.ticketMoney / 100;
               //console.info("this.edit_info.ticketMoney" + this.edit_info.ticketMoney);
               //console.info("this.edit_info.ticketMoney" + this.edit_info.ticketMoney);
 
               this.edit_info.ticketDiscount = this.edit_info.ticketDiscount / 10;
-              this.edit_info.couponKind = this.edit_info.couponKind - 0;
+              // this.edit_info.couponKind = this.edit_info.couponKind - 0;
 
-              this.edit_info.couponKind =
-                this.edit_info.couponKind == 1 ? "1" : "2";
-              this.edit_info.useDateType =
-                this.edit_info.useDateType == 1 ? "1" : "2";
+              // this.edit_info.couponKind =
+              //   this.edit_info.couponKind == 1 ? "1" : "2";
+              // this.edit_info.useDateType =
+              //   this.edit_info.useDateType == 1 ? "1" : "2";
+              // 计算优惠力度
+              let num =
+                (this.edit_info.price / this.edit_info.originalPrice) * 10;
+              this.discountNum = num.toFixed(2);
             } else {
               this.msgErr(res.msg);
             }
@@ -490,6 +531,16 @@
           .catch(err => {
             // console.log(err, 'operating_merchant/merchant-customer/merchant-customer-add, Line929')
           });
+      },
+      //获取二维码
+      getQRImg() {
+        getRequest(
+          "/merchantCouponTemplate/qrcode?templateId=" + this.couponEdit_info
+        ).then(res => {
+          if (res.code == 200) {
+            this.QrImg = 'data:image/png;base64,' + res.data
+          }
+        });
       },
       upStatus() {
         //templateId 券模板id 上架状态, 1:上架
@@ -501,11 +552,11 @@
         const url = "/merchantCouponTemplate/upShelf";
         postRequest(url, reqParams).then(res => {
           if (res.code == 200) {
-            this.msgOk("更新成功");
+            this.msgOk("上架成功");
             this.updateTemplateStatusDisplay = false;
             //this.getList({});
             // 清空输入框
-            this.goback();
+            this.refresh();
           } else {
             this.msgErr(res.msg);
           }
@@ -524,10 +575,10 @@
           duration: 3
         });
       },
-      // goback() {
-      //   this.$emit("changeStatus", false);
-      // }
-
+      refresh() {
+        this.close();
+        this.$emit("refresh");
+      },
       close() {
         // this.$emit("changeStatus", false);
         this.$emit("update:couponDetailPage", false);
@@ -617,8 +668,8 @@
     box-sizing: border-box;
   }
   /* .ivu-form-item {
-      margin-bottom: 0;
-    } */
+                      margin-bottom: 0;
+                    } */
   .demo-drawer-footer {
     width: 100%;
     position: fixed;

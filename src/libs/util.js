@@ -10,71 +10,71 @@ let util = {
 
 };
 const _methods = {
-  /**
-   * 找到符合的
-   * @param {*} arr 
-   * @param {*} key 
-   * @param {*} name
-   */
-  findIndex(arr, key, name) {
-    const len = arr.length;
-    for(let i = 0; i < len; i++){
-      if (arr[i][key] === name) {
-        return i;
-      }
+    /**
+     * 找到符合的
+     * @param {*} arr 
+     * @param {*} key 
+     * @param {*} name
+     */
+    findIndex(arr, key, name) {
+        const len = arr.length;
+        for (let i = 0; i < len; i++) {
+            if (arr[i][key] === name) {
+                return i;
+            }
+        }
+        return -1;
+    },
+    g_isNotNull(el) {
+        if (el || (typeof el === 'number' && !isNaN(el)) || typeof el === 'boolean') {
+            return true
+        }
+        return false
+    },
+    // 可以放在utils中
+    filterNull: (json) => {
+        let res = {}
+        Object.keys(json).forEach(k => {
+            if (_methods.g_isNotNull(json[k])) {
+                res[k] = json[k]
+            }
+        })
+        return res;
+    }, // json to FormData()
+    g_json2form: (json) => {
+        let form = new FormData()
+        if (typeof json !== 'object' || json === {}) {
+            return form
+        }
+        Object.keys(json).forEach((k) => {
+            form.append(k, json[k])
+        })
+        return form
+    },
+    // json to FormData()
+    g_json2query: (json) => {
+        let str = '';
+        if (typeof json !== 'object' || json === {}) {
+            return str
+        }
+        Object.keys(json).forEach((k, i) => {
+            if (_methods.g_isNotNull(json[k])) {
+                str += '&' + k + '=' + json[k]
+            }
+        })
+        if (str[0] === '&') {
+            str = '?' + str.slice(1);
+        }
+        return str
     }
-    return -1;
-  },
-  g_isNotNull(el) {
-      if (el || (typeof el === 'number' && ! isNaN(el)) || typeof el === 'boolean') {
-          return true
-      }
-      return false
-  },
-  // 可以放在utils中
-  filterNull: (json) => {
-      let res = {}
-      Object.keys(json).forEach(k => {
-          if (_methods.g_isNotNull(json[k])) {
-              res[k] = json[k]
-          }
-      })
-      return res;
-  }, // json to FormData()
-  g_json2form: (json) => {
-      let form = new FormData()
-      if (typeof json !== 'object' || json === {}) {
-          return form
-      }
-      Object.keys(json).forEach((k) => {
-          form.append(k, json[k])
-      })
-      return form
-  },
-  // json to FormData()
-  g_json2query: (json) => {
-      let str = '';
-      if (typeof json !== 'object' || json === {}) {
-          return str
-      }
-      Object.keys(json).forEach((k, i) => {
-          if (_methods.g_isNotNull(json[k])) {
-              str += '&' + k + '=' + json[k]
-          }
-      })
-      if (str[0] === '&') {
-          str = '?' + str.slice(1);
-      }
-      return str
-  }
 }
 Object.assign(util, _methods);
-util.title = function(title) {
+util.title = function (title) {
     title = title || '知而行管理系统';
     window.document.title = title;
 };
 
-util.inOf = function(arr, targetArr) {
+util.inOf = function (arr, targetArr) {
     let res = true;
     arr.forEach(item => {
         if (targetArr.indexOf(item) < 0) {
@@ -84,7 +84,7 @@ util.inOf = function(arr, targetArr) {
     return res;
 };
 
-util.oneOf = function(ele, targetArr) {
+util.oneOf = function (ele, targetArr) {
     if (targetArr.indexOf(ele) >= 0) {
         return true;
     } else {
@@ -92,7 +92,7 @@ util.oneOf = function(ele, targetArr) {
     }
 };
 
-util.getRouterObjByName = function(routers, name) {
+util.getRouterObjByName = function (routers, name) {
     if (!name || !routers || !routers.length) {
         return null;
     }
@@ -109,7 +109,7 @@ util.getRouterObjByName = function(routers, name) {
     return null;
 };
 
-util.handleTitle = function(vm, item) {
+util.handleTitle = function (vm, item) {
     if (typeof item.title === 'object') {
         return vm.$t(item.title.i18n);
     } else {
@@ -117,7 +117,7 @@ util.handleTitle = function(vm, item) {
     }
 };
 
-util.setCurrentPath = function(vm, name) {
+util.setCurrentPath = function (vm, name) {
     let title = '';
     let isOtherRouter = false;
     vm.$store.state.app.routers.forEach(item => {
@@ -148,15 +148,15 @@ util.setCurrentPath = function(vm, name) {
         }];
     } else if ((name.indexOf('_index') >= 0 || isOtherRouter) && name !== 'home_index') {
         currentPathArr = [{
-                title: util.handleTitle(vm, util.getRouterObjByName(vm.$store.state.app.routers, 'home_index')),
-                path: '/home',
-                name: 'home_index'
-            },
-            {
-                title: title,
-                path: '',
-                name: name
-            }
+            title: util.handleTitle(vm, util.getRouterObjByName(vm.$store.state.app.routers, 'home_index')),
+            path: '/home',
+            name: 'home_index'
+        },
+        {
+            title: title,
+            path: '',
+            name: name
+        }
         ];
     } else {
         let currentPathObj = vm.$store.state.app.routers.filter(item => {
@@ -183,35 +183,35 @@ util.setCurrentPath = function(vm, name) {
             }];
         } else if (currentPathObj.children.length <= 1 && currentPathObj.name !== 'home') {
             currentPathArr = [{
-                    title: '首页',
-                    path: '/home',
-                    name: 'home_index'
-                },
-                {
-                    title: currentPathObj.title,
-                    path: '',
-                    name: name
-                }
+                title: '首页',
+                path: '/home',
+                name: 'home_index'
+            },
+            {
+                title: currentPathObj.title,
+                path: '',
+                name: name
+            }
             ];
         } else {
             let childObj = currentPathObj.children.filter((child) => {
                 return child.name === name;
             })[0];
             currentPathArr = [{
-                    title: '首页',
-                    path: '/home',
-                    name: 'home_index'
-                },
-                {
-                    title: currentPathObj.title,
-                    path: '',
-                    name: currentPathObj.name
-                },
-                {
-                    title: childObj.title,
-                    path: currentPathObj.path + '/' + childObj.path,
-                    name: name
-                }
+                title: '首页',
+                path: '/home',
+                name: 'home_index'
+            },
+            {
+                title: currentPathObj.title,
+                path: '',
+                name: currentPathObj.name
+            },
+            {
+                title: childObj.title,
+                path: currentPathObj.path + '/' + childObj.path,
+                name: name
+            }
             ];
         }
     }
@@ -220,7 +220,7 @@ util.setCurrentPath = function(vm, name) {
     return currentPathArr;
 };
 
-util.openNewPage = function(vm, name, argu, query) {
+util.openNewPage = function (vm, name, argu, query) {
     let pageOpenedList = vm.$store.state.app.pageOpenedList;
     let openedPageLen = pageOpenedList.length;
     let i = 0;
@@ -260,7 +260,7 @@ util.openNewPage = function(vm, name, argu, query) {
     vm.$store.commit('setCurrentPageName', name);
 };
 
-util.toDefaultPage = function(routers, name, route, next) {
+util.toDefaultPage = function (routers, name, route, next) {
     let len = routers.length;
     let i = 0;
     let notHandle = true;
@@ -280,11 +280,11 @@ util.toDefaultPage = function(routers, name, route, next) {
     }
 };
 
-util.fullscreenEvent = function(vm) {
+util.fullscreenEvent = function (vm) {
     vm.$store.commit('initCachepage');
 };
 
-util.initRouter = function(vm) {
+util.initRouter = function (vm) {
     const constRoutes = [];
     const otherRoutes = [];
 
@@ -315,7 +315,7 @@ util.initRouter = function(vm) {
 
 
         // res.data =[{"visible":"1","icon":"ios-cog","orderNum":1,"title":"测试管理","parentId":0,"url":"Main","path":"xxx","component":"Main","children":[{"path":"text","component":"text","visible":"1","icon":"#","name":"text","menuId":1239,"orderNum":1,"menuType":"C","perms":"","title":"测试2","parentId":1236,"url":"text","permTypes":["del"]},{"path":"sys/text","component":"xx","visible":"1","icon":"#","name":"sys/text","menuId":1237,"orderNum":1,"menuType":"C","perms":"xx","title":"测试菜单5","parentId":1236,"url":"xx"}],"name":"xxx","menuId":1236,"menuType":"M","perms":"","permTypes":["del","edit"]}]
-        
+
         let menuData = res.data;
         // console.log('这是个危险操作，快看看我在哪:');
         // menuData.forEach((el,i) => {
@@ -363,7 +363,7 @@ util.initRouter = function(vm) {
 };
 
 // 生成路由节点
-util.initRouterNode = function(routers, data) {
+util.initRouterNode = function (routers, data) {
     if (data) {
         for (var item of data) {
             let menu = Object.assign({}, item);
@@ -387,4 +387,10 @@ util.initRouterNode = function(routers, data) {
     }
 };
 
+util.getByteLen = function (str) {
+    if (typeof str != "string") {
+        return 0;
+    }
+    return str.replace(/[^\x00-\xff]/g, "01").length;
+};
 export default util;

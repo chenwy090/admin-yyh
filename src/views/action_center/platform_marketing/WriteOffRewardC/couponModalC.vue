@@ -50,7 +50,7 @@
                             </Table>
                         </Row>
                         <!-- 分页 -->
-                        <Row type="flex" justify="end" class="page">
+                        <Row type="flex" justify="end" class="page" style="margin-top: 1vh;">
                             <Page
                                     :total="totalSize1"
                                     show-total
@@ -104,7 +104,7 @@
                             </Table>
                         </Row>
                         <!-- 分页 -->
-                        <Row type="flex" justify="end" class="page">
+                        <Row type="flex" justify="end" class="page" style="margin-top: 1vh;">
                             <Page
                                     :total="totalSize2"
                                     show-total
@@ -142,9 +142,9 @@
                     current: 1,
                 },
                 copponForm2:{
-                    merchantName:'',
-                    couponName:'',
-                    current: 1,
+                  merchantName:'',
+                  couponName:'',
+                  current: 1,
                 },
                 totalSize1: 0,
                 totalSize2: 0,

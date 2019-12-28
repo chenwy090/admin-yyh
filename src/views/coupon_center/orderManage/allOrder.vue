@@ -18,7 +18,7 @@
                 <Input v-model="searchForm.orderNo" placeholder="请填写订单号" />
               </FormItem>
               <FormItem label="状态：" span="24">
-                <Select v-model="searchForm.status" placeholder="请选择状态" clearable>
+                <Select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 100px;">
                   <Option
                     v-for="item in statusList"
                     :value="item.value"
@@ -41,10 +41,10 @@
               <!--</Select>-->
               <!--</FormItem>-->
               <FormItem label="领取时间：" span="35" :label-width="100">
-                <DatePicker
+                <!-- <DatePicker
                   :value="searchForm.gmtCreateStart"
                   type="date"
-                  placeholder
+                  placeholder="选择开始领取时间"
                   style="width: 48%"
                   :options="options1"
                   @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
@@ -53,11 +53,14 @@
                 <DatePicker
                   :value="searchForm.gmtCreateEnd"
                   type="date"
-                  placeholder
+                  placeholder="选择结束领取时间"
                   style="width: 48%"
                   :options="options2"
                   @on-change="(datetime) =>{ changeDateTime(datetime, 2)}"
-                ></DatePicker>
+                ></DatePicker> -->
+
+                <DatePicker type="daterange" placeholder="选择领取时间" v-model="searchForm.gmtCreateDate" @on-change="[searchForm.gmtCreateStart, searchForm.gmtCreateEnd] = $event"></DatePicker>
+
               </FormItem>
               <FormItem span="20" :label-width="1">
                 <Button
@@ -72,12 +75,12 @@
               </FormItem>
             </Form>
           </Card>
-          <Card>
+          <Card style="margin-top: 1vh;">
             <Row class="operation">
-              <Button type="primary" icon="md-refresh" @click="refech">刷新</Button>
-              <span
+              <!-- <Button type="primary" icon="md-refresh" @click="refech">刷新</Button> -->
+              <!-- <span
                 v-if="refreshData&&refreshData.allOrderCount"
-              >总共{{refreshData.allOrderCount}}单，待付款{{refreshData.pendingPaymentOrderCount}}单，已付款{{refreshData.paidOrderCount}}单，已取消{{refreshData.cancelledOrderCount}}单，退款{{refreshData.refundOrderCount}}单</span>
+              >总共{{refreshData.allOrderCount}}单，待付款{{refreshData.pendingPaymentOrderCount}}单，已付款{{refreshData.paidOrderCount}}单，已取消{{refreshData.cancelledOrderCount}}单，退款{{refreshData.refundOrderCount}}单</span> -->
               <!--<Button type="primary" icon="ios-download-outline" @click="downFn">下载</Button>-->
             </Row>
             <Row>
@@ -160,9 +163,11 @@ export default {
       ],
       //1: 待付款  2:已取消  3: 付款中  4：已付款  5: 退款  6: 已完成
       //全部、待付款、已取消（超时未支付、手动取消）、已付款（全部券码可使用、部分券码可使用）、退款（退款中、已退款、退款失败）、已完成（已全部使用、已全部退款）
+      // 1: 待付款  2:已取消  3: 付款中  4：已付款  5: 退款  6: 已完成 )
       statusList: [
         { value: "1", label: "待付款" },
         { value: "2", label: "已取消" },
+        { value: "3", label: "付款中" },
         { value: "4", label: "已付款" },
         { value: "5", label: "退款" },
         { value: "6", label: "已完成" }
@@ -182,18 +187,18 @@ export default {
         },
         {
           title: "订单编号",
-          width: 200,
+          width: 160,
           key: "orderNo"
         },
         {
           title: "状态",
-          width: 220,
+          width: 80,
           align: "center",
           key: "statusStr"
         },
         {
           title: "优惠券ID",
-          width: 200,
+          width: 180,
           align: "center",
           key: "couponId"
         },
@@ -209,7 +214,7 @@ export default {
         },
         {
           title: "数量",
-          minWidth: 150,
+          minWidth: 100,
           key: "amount"
         },
         {
@@ -225,12 +230,12 @@ export default {
         },
         {
           title: "U贝抵扣",
-          minWidth: 250,
+          minWidth: 100,
           key: "ubayDiscount"
         },
         {
           title: "红包抵扣",
-          minWidth: 150,
+          minWidth: 100,
           key: "redEnvelopeDiscount"
         },
         {
@@ -241,12 +246,12 @@ export default {
         },
         {
           title: "买家",
-          width: 100,
+          width: 120,
           key: "phoneNumber"
         },
         {
           title: "付款时间",
-          minWidth: 250,
+          minWidth: 180,
           key: "payTime"
         },
         {
@@ -257,6 +262,7 @@ export default {
       ],
       refreshData: {},
       searchForm: {
+        gmtCreateDate: "",
         gmtCreateEnd: "",
         gmtCreateStart: "",
         orderNo: "",
@@ -268,43 +274,45 @@ export default {
       },
       current: 1,
       addressData: [],
-      options2: {},
-      options1: {},
+      // options2: {},
+      // options1: {},
       TokerViewDialogVisible: false,
       DownViewDialogVisible: false,
       showViewDialogVisible: false
     };
   },
   methods: {
-    changeDateTime(datetime, index) {
-      switch (index) {
-        case 1:
-          this.searchForm.gmtCreateStart = datetime;
-          this.options2 = {
-            disabledDate(date) {
-              return date.valueOf() < new Date(datetime) - 1000 * 60 * 60 * 24;
-            }
-          };
-          break;
-        case 2:
-          this.searchForm.gmtCreateEnd = datetime;
-          this.options1 = {
-            disabledDate(date) {
-              return (
-                date.valueOf() < Date.now() - 1000 * 60 * 60 * 24 ||
-                date.valueOf() > new Date(datetime)
-              );
-            }
-          };
-          break;
-      }
-    },
+    // changeDateTime(datetime, index) {
+    //   switch (index) {
+    //     case 1:
+    //       this.searchForm.gmtCreateStart = datetime;
+    //       this.options2 = {
+    //         disabledDate(date) {
+    //           return date.valueOf() < new Date(datetime) - 1000 * 60 * 60 * 24;
+    //         }
+    //       };
+    //       break;
+    //     case 2:
+    //       this.searchForm.gmtCreateEnd = datetime;
+    //       this.options1 = {
+    //         disabledDate(date) {
+    //           return (
+    //             date.valueOf() < Date.now() - 1000 * 60 * 60 * 24 ||
+    //             date.valueOf() > new Date(datetime)
+    //           );
+    //         }
+    //       };
+    //       break;
+    //   }
+    // },
     search() {
       this.searchForm.current = 1;
       this.current = 1;
       this.loadTableData();
     },
     reset() {
+      this.$refs['searchForm'].resetFields()
+      this.searchForm.gmtCreateDate = "";
       this.searchForm.gmtCreateEnd = "";
       this.searchForm.gmtCreateStart = "";
       this.searchForm.orderNo = "";
@@ -314,7 +322,7 @@ export default {
       this.searchForm.current = 1;
       this.current = 1;
       this.loadTableData();
-      this.refech();
+      // this.refech();
     },
     loadTableData(page) {
       this.searchForm.current = page || 1;
@@ -335,18 +343,18 @@ export default {
         }
       });
     },
-    refech() {
-      this.refreshData = {};
-      getRequest(`/trade/fund/account/order/status`, null).then(res => {
-        console.log(1111);
-        // this.TableLoading = false;
-        if (res.code === "200") {
-          this.refreshData = res.data.retData;
-        } else {
-          this.$Message.error("获取数据失败");
-        }
-      });
-    },
+    // refech() {
+    //   this.refreshData = {};
+    //   getRequest(`/trade/fund/account/order/status`, null).then(res => {
+    //     console.log(1111);
+    //     // this.TableLoading = false;
+    //     if (res.code === "200") {
+    //       this.refreshData = res.data.retData;
+    //     } else {
+    //       this.$Message.error("获取数据失败");
+    //     }
+    //   });
+    // },
     showDetail(row) {
       this.showViewDialogVisible = true;
       this.$nextTick(() => {
@@ -369,7 +377,7 @@ export default {
     }
   },
   created() {
-    this.reset();
+    this.search();
   }
 };
 </script>
