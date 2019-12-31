@@ -9,28 +9,31 @@
 </template>
 
 <script>
-import { createNamespacedHelpers } from "vuex";
-const { mapGetters, mapState, mapActions } = createNamespacedHelpers("cms");
+import { createNamespacedHelpers } from 'vuex'
+const { mapGetters, mapState, mapActions } = createNamespacedHelpers('cms')
 
-import ConfigModule from "./ConfigModule";
-import BootAd from "./bootAd";
-import IndexPage from "./indexPage";
-import PlatformBonus from "./platformBonus"; //平台分红
+import ConfigModule from './ConfigModule'
+import BootAd from './bootAd'
+import IndexPage from './indexPage'
+import PlatformBonus from './platformBonus' //平台分红
 
-import bannerPage from "./bannerPage/bannerPage";
+import bannerPage from './bannerPage/bannerPage'
 
 // 领优惠配置
-import DiscountConfig from "./discountConfig";
+import DiscountConfig from './discountConfig'
+
+// 赚钱频道
+import makeMoney from './makeMoney'
 
 export default {
-  name: "u-config",
+  name: 'u-config',
   provide() {
     return {
       linkTo: this.linkTo,
       // 全局提示
       msgOk: this.msgOk,
-      msgErr: this.msgErr
-    };
+      msgErr: this.msgErr,
+    }
   },
   components: {
     [ConfigModule.name]: ConfigModule,
@@ -38,33 +41,38 @@ export default {
     bannerPage,
     IndexPage,
     PlatformBonus,
-    DiscountConfig
+    DiscountConfig,
+    makeMoney,
   },
   computed: {
-    ...mapGetters({ compName: "getCompName" })
+    ...mapGetters({ compName: 'getCompName' }),
   },
   data() {
-    return {};
+    return {}
   },
   methods: {
     ...mapActions({
-      linkTo: "setCompName"
+      linkTo: 'setCompName',
     }),
     // 全局提示
     msgOk(txt) {
       this.$Message.info({
         content: txt,
-        duration: 3
-      });
+        duration: 3,
+      })
     },
     msgErr(txt) {
       this.$Message.error({
         content: txt,
-        duration: 3
-      });
-    }
-  }
-};
+        duration: 3,
+      })
+    },
+  },
+  mounted() {
+    // 开发用
+    this.linkTo('bannerPage')
+  },
+}
 </script>
 
 <style scoped>

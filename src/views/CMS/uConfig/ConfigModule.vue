@@ -33,6 +33,10 @@ export default {
           compName: 'discountConfig',
           label: '领优惠配置',
         },
+        makeMoney: {
+          compName: 'makeMoney',
+          label: '赚钱频道',
+        },
       },
     }
   },
@@ -66,5 +70,6 @@ export default {
   .ivu-card-body {
     padding: 0;
   }
+  margin-bottom: 1vh;
 }
 </style>

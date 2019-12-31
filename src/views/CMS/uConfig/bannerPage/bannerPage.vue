@@ -78,19 +78,22 @@
                 @on-selection-change="handleSelect"
               >
                 <template slot-scope="{ row }" slot="action">
-                  <!--<Button v-if="row.status==='0'"-->
-                  <!--type="success"-->
-                  <!--style="margin-right: 5px"-->
-                  <!--size="small"-->
-                  <!--@click="edit(row)"-->
-                  <!--&gt;编辑</Button>-->
+                  <Button
+                    v-if="row.status === '0'"
+                    type="success"
+                    style="margin-right: 5px"
+                    size="small"
+                    @click="edit(row)"
+                    >编辑</Button
+                  >
+
                   <Button
                     v-if="row.status === '0' || row.status === '1' || row.status === '2'"
                     type="info"
                     style="margin-right: 5px"
                     size="small"
                     @click="showDetail(row)"
-                    >查看详情</Button
+                    >查看</Button
                   >
                   <Button
                     v-if="row.status === '0'"
@@ -121,7 +124,8 @@
                   <div>{{ ['待上架', '上架', '下架'][row.status] }}</div>
                 </template>
                 <template slot-scope="{ row }" slot="type">
-                  <div>{{ ['全部', '小程序', 'android', 'ios'][row.type] }}</div>
+                  <!-- <div>{{ ['全部', '小程序', 'android', 'ios'][row.type] }}</div> -->
+                  <div>{{ row.type | $showType }}</div>
                 </template>
                 <template slot-scope="{ row }" slot="image">
                   <img style="max-width: 100px;max-height: 50px;" :src="row.image" alt="" />
@@ -246,7 +250,7 @@ export default {
         },
         {
           title: '终端',
-          width: 100,
+          width: 140,
           align: 'center',
           slot: 'type',
         },
@@ -356,6 +360,14 @@ export default {
     console.log(1)
     this.loadTableData()
   },
+  filters: {
+    $showType(val) {
+      if (!val) return ''
+      let list = ['小程序', 'android', 'ios']
+      let list2 = val.split(',')
+      return list2.map(l => list[+l - 1]).join(',')
+    },
+  },
   methods: {
     changeDateTime(datetime, index) {
       switch (index) {
@@ -422,6 +434,7 @@ export default {
       this.$emit('closeTab', true)
       this.$nextTick(() => {
         this.$refs['AddOrEdit'].resetRow(row)
+        this.$refs['AddOrEdit'].getData(row.id)
       })
     },
     showDetail(row) {

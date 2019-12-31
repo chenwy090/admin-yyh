@@ -8,7 +8,7 @@
   <!--footer-hide>-->
   <div v-if="viewDialogVisible" class="modal">
     <Card>
-      <p slot="title">新增</p>
+      <p slot="title">{{ id ? '编辑' : '新增' }}</p>
       <a href="#" slot="extra">
         <Button type="dashed" icon="md-arrow-round-back" @click="close()">返回上一层</Button>
       </a>
@@ -74,7 +74,7 @@
             <Col span="18">
               <!-- 门店类型： storeType 0 全国  1零售商 2城市  3门店 -->
               <!-- 自定义门店 -->
-              <storeForm></storeForm>
+              <storeForm :pushRange.sync="modal.pushRange" :shopRequestList.sync="modal.shopRequestList"></storeForm>
             </Col>
           </Row>
           <Row class="padding-left-12">
@@ -229,6 +229,7 @@ export default {
   },
   data() {
     return {
+      id: 0,
       choujiangType: '',
       userToken: '',
       url: uploadOperationImage2AliOssURl,
@@ -263,9 +264,9 @@ export default {
       ],
       clientTypeList: [
         // { value: '0', label: '全部' },
-        { value: '1', label: '小程序' },
-        { value: '2', label: 'android' },
-        { value: '3', label: 'ios' },
+        { value: 1, label: '小程序' },
+        { value: 2, label: 'android' },
+        { value: 3, label: 'ios' },
       ],
       titleName: '',
       volumeViewDialogModal: false,
@@ -279,11 +280,12 @@ export default {
         value: '',
         content: '',
         couponType: '',
+        // pushRange:0,
         shopRequestList: [],
         location: '',
         businessLayer: '',
         layerPriority: '',
-        clientType: ['1', '2', '3'],
+        clientType: [1, 2, 3],
         startTime: '',
         endTime: '',
         image: '',
@@ -450,7 +452,7 @@ export default {
         location: '',
         businessLayer: '',
         layerPriority: '',
-        clientType: ['1', '2', '3'],
+        clientType: [1, 2, 3],
         startTime: '',
         endTime: '',
         image: '',
@@ -585,10 +587,10 @@ export default {
         this.$Message.error('请选择内容或链接')
         return
       }
-      if (!this.modal.shopId && this.modal.shopId !== 0) {
-        this.$Message.error('请选择投放门店')
-        return
-      }
+      // if (!this.modal.shopId && this.modal.shopId !== 0) {
+      //   this.$Message.error('请选择投放门店')
+      //   return
+      // }
       if (!this.modal.location) {
         this.$Message.error('请选择投放位置')
         return
@@ -621,52 +623,110 @@ export default {
         this.$Message.error('请上传图片')
         return
       }
-      this.modal.shopRequestList = []
-      if (this.modal.shopId == 1) {
-        for (var i = 0; i < this.drawDailyShopList.length; i++) {
-          if (!this.drawDailyShopList[i].shopId || !this.drawDailyShopList[i].shopName) {
-            this.$Message.error('请选择投放门店')
-            break
-          } else {
-            this.modal.shopRequestList.push({
-              shopId: this.drawDailyShopList[i].shopId,
-              shopName: this.drawDailyShopList[i].shopName,
-            })
-          }
-        }
-      } else {
-        this.modal.shopRequestList.push({
-          shopId: 0,
-          shopName: '全国',
-        })
-      }
+
+      // this.modal.shopRequestList = []
+      // if (this.modal.shopId == 1) {
+      //   for (var i = 0; i < this.drawDailyShopList.length; i++) {
+      //     if (!this.drawDailyShopList[i].shopId || !this.drawDailyShopList[i].shopName) {
+      //       this.$Message.error('请选择投放门店')
+      //       break
+      //     } else {
+      //       this.modal.shopRequestList.push({
+      //         shopId: this.drawDailyShopList[i].shopId,
+      //         shopName: this.drawDailyShopList[i].shopName,
+      //       })
+      //     }
+      //   }
+      // } else {
+      //   this.modal.shopRequestList.push({
+      //     shopId: 0,
+      //     shopName: '全国',
+      //   })
+      // }
       if (true) {
-        postRequest(`/banner/saveBanner`, this.modal).then(res => {
-          if (res.code == '200') {
-            this.$Message.success('新增成功')
-            this.$emit('setViewDialogVisible', false)
-            this.$emit('search')
-          } else if (res.code == '9999') {
-            var tamplate = `<p>该时间段内，以下门店在所选运营位上已有活动：</p>`
-            res.data.forEach(function(v, i) {
-              tamplate =
-                tamplate +
-                `<p><span>${v.provinceName} &nbsp;&nbsp;</span> <span>${v.cityName}&nbsp;&nbsp;</span><span>${v.areaName}&nbsp;&nbsp;</span><span>${v.shopName}&nbsp;&nbsp;</span><span>${v.startTime}&nbsp;&nbsp;</span>-<span>${v.endTime}&nbsp;&nbsp;</span><span>${v.content}</span></p>`
-            })
-            this.$Modal.confirm({
-              title: '提示',
-              width: 700,
-              content: tamplate,
-              onOk: () => {},
-            })
-          } else {
-            this.$Message.error(res.msg)
-          }
-        })
+        if (this.id) {
+          this.modal.id = this.id
+          postRequest(`/banner/editBanner`, this.modal).then(res => {
+            if (res.code == '200') {
+              this.$Message.success('编辑成功')
+              this.close()
+              this.$emit('search')
+            } else if (res.code == '9999') {
+              var tamplate = `<p>该时间段内，以下门店在所选运营位上已有活动：</p>`
+              res.data.forEach(function(v, i) {
+                tamplate =
+                  tamplate +
+                  `<p><span>${v.provinceName} &nbsp;&nbsp;</span> <span>${v.cityName}&nbsp;&nbsp;</span><span>${v.areaName}&nbsp;&nbsp;</span><span>${v.shopName}&nbsp;&nbsp;</span><span>${v.startTime}&nbsp;&nbsp;</span>-<span>${v.endTime}&nbsp;&nbsp;</span><span>${v.content}</span></p>`
+              })
+              this.$Modal.confirm({
+                title: '提示',
+                width: 700,
+                content: tamplate,
+                onOk: () => {},
+              })
+            } else {
+              this.$Message.error(res.msg || '')
+            }
+          })
+        } else {
+          postRequest(`/banner/saveBanner`, this.modal).then(res => {
+            if (res.code == '200') {
+              this.$Message.success('新增成功')
+              this.close()
+              this.$emit('search')
+            } else if (res.code == '9999') {
+              var tamplate = `<p>该时间段内，以下门店在所选运营位上已有活动：</p>`
+              res.data.forEach(function(v, i) {
+                tamplate =
+                  tamplate +
+                  `<p><span>${v.provinceName} &nbsp;&nbsp;</span> <span>${v.cityName}&nbsp;&nbsp;</span><span>${v.areaName}&nbsp;&nbsp;</span><span>${v.shopName}&nbsp;&nbsp;</span><span>${v.startTime}&nbsp;&nbsp;</span>-<span>${v.endTime}&nbsp;&nbsp;</span><span>${v.content}</span></p>`
+              })
+              this.$Modal.confirm({
+                title: '提示',
+                width: 700,
+                content: tamplate,
+                onOk: () => {},
+              })
+            } else {
+              this.$Message.error(res.msg)
+            }
+          })
+        }
       }
     },
     close() {
+      this.id = ''
       this.$emit('setViewDialogVisible', false)
+    },
+    getData(id) {
+      this.id = id
+      getRequest(`/banner/details/${id}`).then(res => {
+        if (res.code == '200') {
+          this.modal.title = res.data.bannerInfo.title
+          this.modal.type = res.data.bannerInfo.type
+          this.modal.image = res.data.bannerInfo.image
+          this.modal.value = res.data.bannerInfo.value
+          this.modal.content = res.data.bannerInfo.content
+          this.modal.startTime = res.data.bannerInfo.startTime
+          this.modal.endTime = res.data.bannerInfo.endTime
+          this.modal.clientType = res.data.clients
+          if (!this.modal.value && this.modal.type == '2') {
+            this.choujiangType = '抽奖广场'
+          } else {
+            this.choujiangType = '抽奖团'
+          }
+
+          this.modal.pushRange = 3
+          this.modal.shopRequestList = res.data.shops
+          this.cascaderValue = [
+            res.data.location[0].location.toString(),
+            res.data.location[0].businessLayer.toString(),
+            res.data.location[0].layerPriority.toString(),
+          ]
+        } else {
+          this.$Message.error(res.msg)
+        }
+      })
     },
   },
   created() {

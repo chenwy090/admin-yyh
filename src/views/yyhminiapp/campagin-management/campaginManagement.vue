@@ -465,7 +465,7 @@
 
     <!-- 2 要优惠拼团设置  [领优惠---规则设置]-->
 
-    <div v-if="grabInfoSetPage">
+    <div v-if="!grabInfoSetPage">
       <!-- showGgrabInfoSet =>this.grabInfoSetPage = e; -->
       <grabInfoSet :campId="campId" @changeStatus="showGgrabInfoSet"></grabInfoSet>
     </div>
