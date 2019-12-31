@@ -95,7 +95,7 @@
 			              placeholder="请选择"
 			              clearable
 			            >
-			            	<Option v-for="(item,index) in statusOption" :label="item.label" :vaule="item.value" :key="index"></Option>
+			            	<Option v-for="(item,index) in statusOption" :label="item.label" :value="item.value" :key="index"></Option>
 			            </Select>
 			        </FormItem>
 			        <Button type="primary" icon="md-search" class="marginLeft20">搜索</Button>
