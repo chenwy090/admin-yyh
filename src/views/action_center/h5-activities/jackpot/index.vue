@@ -1,5 +1,5 @@
 <template>
-  <!--  新建/编辑 奖池 -->
+  <!--  新建/编辑 模块 -->
   <div class="edit">
     <Card :bordered="false" style="margin-bottom:2px">
       <Row type="flex" justify="start">
@@ -18,10 +18,10 @@
       >
         <template slot-scope="{ row }" slot="action">
           <template v-if="row.status == 1">
-            <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px">
+            <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEdit('edit',row)">
               编辑模块   
             </Button>
-            <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px">
+            <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEditContent('add',row)">
               编辑模块内容   
             </Button>
             <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px">
@@ -95,7 +95,10 @@
       <Button style="margin-right: 8px" @click="closeDialog">关闭</Button>
     </div>
     <Edit :action="jackpotAction" @refresh="queryTableData"></Edit>
-    <!--新增模板-->
+    <!--新增模块内容-->
+    <EditTemplate :action="templateAction"></EditTemplate>
+
+
   </div>
 </template>
 <script>
@@ -105,9 +108,11 @@ import { postRequest } from "@/libs/axios";
 import columns from "./columns";
 import Edit from "./Edit";
 
+import EditTemplate from "../template";
+
 export default {
   name: "edit",
-  components: { Edit },
+  components: { Edit ,EditTemplate},
   props: {
     showEditJackpot: {
       type: Boolean,
@@ -163,7 +168,7 @@ export default {
       activityId: "",
       jackpotAction: {
         _id: Math.random(),
-        title: "编辑奖池",
+        title: "编辑活动模板",
         type: "add", //query/add/edit
         data: null
       },
@@ -181,6 +186,12 @@ export default {
       tableData: [{name:'模块具体名称',order:3,productNum:3,time:'2019-12-27 11:24:00-2019-12-27 22:08:08',status:1},
       {name:'模块具体名称',order:3,productNum:3,time:'2019-12-27 11:24:00-2019-12-27 22:08:08',status:0},
       {name:'模块具体名称',order:3,productNum:3,time:'2019-12-27 11:24:00-2019-12-27 22:08:08',status:2}],
+      templateAction:{
+        _id: Math.random(),
+        title:'编辑模块',
+        type:'add',
+        data:null
+      }
     };
   },
   mounted() {
@@ -293,6 +304,14 @@ export default {
       console.log("closeDialog");
       this.$emit("update:showEditJackpot", false);
     },
+    addOrEditContent(type,data){
+      console.log("addOrEdit1 templateAction", type, data);
+      this.templateAction = {
+        id: Math.random(),
+        type,
+        data
+      };
+    },
     // 全局提示
     msgOk(txt) {
       this.$Message.info({
@@ -309,7 +328,7 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style scoped lang="less">
 .edit {
   padding-bottom: 50px;
 }
@@ -322,5 +341,22 @@ export default {
   padding: 10px 16px;
   text-align: right;
   background: #fff;
+}
+.template-list{
+  display: flex;
+  align-items:center;
+  .template-item{
+    width: 100px; 
+    text-align:center;
+    margin-right:50px;
+  }
+  .img-wrap{
+    height: 100px;
+    border:1px #ddd solid; 
+    img{
+      max-width:100%;
+      max-height:100%;
+    }
+  }
 }
 </style>

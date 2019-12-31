@@ -132,7 +132,7 @@ export default {
           this.daterange = [];
         } else {
           //edit 修改
-          this.title = "修改moban";
+          this.title = "编辑模板";
           this.url = "/activity/prizepool/edit";
 
           Object.keys(this.formData).forEach(name => {

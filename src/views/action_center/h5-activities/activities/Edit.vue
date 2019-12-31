@@ -14,65 +14,93 @@
         <span>{{title}}</span>
       </p>
       <div>
-        <Form
-          label-position="right"
-          ref="form"
-          :model="formData"
-          :rules="ruleValidate"
-          :label-width="100"
-        >
-          <FormItem
-            label="活动类型："
-            prop="activityType"
-            :rules="{ required: true, message: '请选择活动类型' }"
-          >
-            <Select v-model="formData.activityType" style="width:300px">
-              <Option
-                v-for="item in activityTypeOption"
-                :value="item.id"
-                :key="item.name"
-              >{{ item.name }}</Option>
-            </Select>
-          </FormItem>
+        <template v-if="action.type == 'query'">
+          <ul class="query-activity">
+            <li class="item">
+              <span class="label">活动类型：</span>
+              <div class="value">定时展示类</div>
+            </li>
+            <li class="item">
+              <span class="label">活动名称：</span>
+              <div class="value">定时展示类</div>
+            </li>
+            <li class="item">
+              <span class="label">活动时间：</span>
+              <div class="value">定时展示类</div>
+            </li>
+            <li class="item">
+              <span class="label">开放城市：</span>
+              <div class="value">定时展示类</div>
+            </li>
+            <li class="item">
+              <span class="label">活动链接：</span>
+              <div class="value">www.xxx.com/222<Button type="primary" size="small" style="margin-left:20px;">复制链接</Button></div>
+            </li>
+          </ul>
 
-          <FormItem
-            label="活动名称："
-            prop="name"
-            :rules="{required: true,  validator: validateEmpty('请输入活动名称',15)}"
+
+        </template>
+        <template v-else>
+          <Form
+            label-position="right"
+            ref="form"
+            :model="formData"
+            :rules="ruleValidate"
+            :label-width="100"
           >
-            <Tooltip trigger="focus" title="提醒" content="最多15个汉字" placement="right">
-              <Input style="width:300px" v-model="formData.name" placeholder="请输入活动名称" clearable />
-            </Tooltip>
-          </FormItem>
-          <FormItem label="活动时间：" prop="beginTime" :rules="{ required: true, message: '请选择活动时间' }">
-            <DatePicker
-              type="datetimerange"
-              placeholder="请选择抽奖日期"
-              format="yyyy-MM-dd HH:mm:ss"
-              style="display:inline-block;width: 300px"
-              :value="daterange"
-              @on-change="changeTime"
-            ></DatePicker>
-          </FormItem>
-          <FormItem
-            label="开放城市："
-            prop="cityType"
-          >
-            <RadioGroup v-model="formData.cityType">
-                <Radio label="1">全部城市</Radio>
-                <Radio label="2">指定城市</Radio>
-            </RadioGroup>
-            <div class="change-city" v-if="formData.cityType == '2'">
-              <CheckboxGroup v-model="formData.city">
-                <Checkbox label="杭州"></Checkbox>
-                <Checkbox label="无锡"></Checkbox>
-              </CheckboxGroup>
-            </div>
-          </FormItem>
-        </Form>
+            <FormItem
+              label="活动类型："
+              prop="activityType"
+              :rules="{ required: true, message: '请选择活动类型' }"
+            >
+              <Select v-model="formData.activityType" style="width:300px">
+                <Option
+                  v-for="item in activityTypeOption"
+                  :value="item.id"
+                  :key="item.name"
+                >{{ item.name }}</Option>
+              </Select>
+            </FormItem>
+
+            <FormItem
+              label="活动名称："
+              prop="name"
+              :rules="{required: true,  validator: validateEmpty('请输入活动名称',15)}"
+            >
+              <Tooltip trigger="focus" title="提醒" content="最多15个汉字" placement="right">
+                <Input style="width:300px" v-model="formData.name" placeholder="请输入活动名称" clearable />
+              </Tooltip>
+            </FormItem>
+            <FormItem label="活动时间：" prop="beginTime" :rules="{ required: true, message: '请选择活动时间' }">
+              <DatePicker
+                type="datetimerange"
+                placeholder="请选择抽奖日期"
+                format="yyyy-MM-dd HH:mm:ss"
+                style="display:inline-block;width: 300px"
+                :value="daterange"
+                @on-change="changeTime"
+              ></DatePicker>
+            </FormItem>
+            <FormItem
+              label="开放城市："
+              prop="cityType"
+            >
+              <RadioGroup v-model="formData.cityType">
+                  <Radio label="1">全部城市</Radio>
+                  <Radio label="2">指定城市</Radio>
+              </RadioGroup>
+              <div class="change-city" v-if="formData.cityType == '2'">
+                <CheckboxGroup v-model="formData.city">
+                  <Checkbox label="杭州"></Checkbox>
+                  <Checkbox label="无锡"></Checkbox>
+                </CheckboxGroup>
+              </div>
+            </FormItem>
+          </Form>
+        </template>
       </div>
       <div slot="footer">
-        <Button type="error" size="large" @click="handleSubmit('form')">确认</Button>
+        <Button type="error" size="large" @click="handleSubmit('form')" v-if="action.type != 'query'">确认</Button>
         <Button @click="closeDialog" style="margin-left: 8px">取消</Button>
       </div>
     </Modal>
@@ -114,7 +142,9 @@ export default {
           this.url = "/activityInfo/add";
           this.formData = createFormData();
           this.daterange = [];
-        } else {
+        } else if(type == "query"){
+          this.title = "查看活动";
+        }else {
           //edit 修改
           this.title = "修改活动";
           this.url = "/activityInfo/edit";
@@ -219,5 +249,17 @@ export default {
   .change-city{
     border-top:1px #ddd solid;
     width:300px;
+  }
+  .query-activity{
+    list-style:none;
+    .item{
+      display:flex;
+    }
+    .label{
+      width:80px;
+    }
+    .value{
+      flex:1
+    }
   }
 </style>

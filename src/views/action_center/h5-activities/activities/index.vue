@@ -25,6 +25,12 @@
             ></DatePicker>
           </FormItem>
 
+          <FormItem label="活动类型：" :label-width="80">
+            <Select v-model="searchData.status" style="width:200px" clearable>
+              <Option v-for="(v,k) in statusOption" :value="k" :key="v">{{ v }}</Option>
+            </Select>
+          </FormItem>
+
           <FormItem label="活动状态：" :label-width="80">
             <Select v-model="searchData.status" style="width:100px" clearable>
               <Option v-for="(v,k) in statusOption" :value="k" :key="v">{{ v }}</Option>
@@ -48,12 +54,11 @@
       -->
       <Table border :show-index="true" :loading="loading" :columns="columns" :data="tableData">
         <template slot-scope="{ row }" slot="action">
-          <!-- <Button
-            type="primary"
-            size="small"
-            style="margin-right: 5px"
-            @click="query('edit',row)"
-          >查看活动</Button>-->
+          
+            <!--待上架状态-->
+          <Button type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="updateStatus(row,2)">上架</Button>
+          <Button type="text" size="small" style="color:#2db7f5;margin-right: 5px"  @click="addOrEdit('query',row)">查看活动</Button>
+          <Button type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEdit('edit',row)">编辑活动</Button>
           <Button
             type="text"
             size="small"
@@ -61,48 +66,35 @@
             编辑活动模块
           </Button>
           <Button
-            v-if="row.status==1"
             type="text"
             size="small"
-            style="color:red;margin-right: 5px"
-            @click="addOrEdit('edit',row)"
-          >编辑活动</Button>
-
-          <Button
-            v-if="row.status==3"
-            type="text"
-            size="small"
-            style="color:#2db7f5;margin-right: 5px"
-            @click="queryOrEditContent('query',row)"
-          >查询内容</Button>
-          <Button
-            v-if="row.status!=3"
-            type="text"
-            size="small"
-            style="color:red;margin-right: 5px"
-            @click="queryOrEditContent('edit',row)"
-          >编辑内容</Button>
+            style="color:#2db7f5;margin-right: 5px"  @click="addOrEditJackpot('query',row)">
+            查看活动模块
+          </Button>
           <Button
             type="text"
             size="small"
-            style="color:red;margin-right: 5px"
-            @click="addOrEditJackpot('query',row)"
-          >查看奖池</Button>
+            style="color:#2db7f5;margin-right: 5px" @click="addOrEditStyle('edit',row)">
+            编辑活动样式
+          </Button>
           <Button
-            v-if="row.status!=3"
             type="text"
             size="small"
-            style="color:red;margin-right: 5px"
-            @click="addOrEditJackpot('edit',row)"
-          >编辑奖池</Button>
-          <!-- v-if="row.status == 2" -->
+            style="color:#2db7f5;margin-right: 5px" @click="addOrEditStyle('query',row)">
+            查看活动样式
+          </Button>
           <Button
-            v-if="row.status==1"
             type="text"
             size="small"
-            style="color:green;margin-right: 5px"
-            @click="updateStatus(row,2)"
-          >上架</Button>
+            style="color:#2db7f5;margin-right: 5px" @click="addOrEditShare('edit',row)">
+            编辑分享内容
+          </Button>
+          <Button
+            type="text"
+            size="small"
+            style="color:#2db7f5;margin-right: 5px" @click="addOrEditShare('query',row)">
+            查看分享内容
+          </Button>
 
           <!-- status 活动状态, 1-待上架  可以点上架  2-已上架 可以点下架 3已下架  不能上下架操作 -->
           <Poptip
@@ -120,20 +112,6 @@
             <Button type="text" size="small" style="color:red;margin-right: 5px">下架</Button>
           </Poptip>
 
-          <Button
-            v-if="row.status==3"
-            type="text"
-            size="small"
-            style="color:#2d8cf0;margin-right: 5px"
-            @click="queryOrEditWinnerNum('query',row)"
-          >查询次数</Button>
-          <Button
-            v-if="row.status==2"
-            type="text"
-            size="small"
-            style="color:green;margin-right: 5px"
-            @click="queryOrEditWinnerNum('edit',row)"
-          >编辑次数</Button>
         </template>
       </Table>
       <!-- 分页器 -->
@@ -153,14 +131,9 @@
 
     <Edit :action="action" @refresh="queryTableData"></Edit>
 
-    <!-- 活动内容 -->
-    <ActivityContent
-      v-if="showEditConent"
-      :showEditConent.sync="showEditConent"
-      :action="contentAction"
-    ></ActivityContent>
 
-    <!-- 奖池 -->
+
+    <!-- 编辑活动模板查看活动模板弹窗 -->
     <Drawer
       v-model="showEditJackpot"
       :closable="true"
@@ -182,19 +155,36 @@
         ></Jackpot>
       </template>
       <template v-else-if="jackpotAction.type=='query'">
-        <JackpotDetail
+        <Jackpot
           v-if="showEditJackpot"
           :showEditJackpot.sync="showEditJackpot"
           :action="jackpotAction"
           @refresh="queryTableData"
-        ></JackpotDetail>
+        ></Jackpot>
       </template>
     </Drawer>
+    <!--编辑活动样式，查看活动样式-->
+    <Drawer
+      v-model="showEditStyle"
+      :closable="true"
+      :mask-closable="false"
+      width="1000"
+      :styles="styles"
+    >
+      <p slot="header" style="color:#f60;text-align:center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>{{editStyleAction.title}}</span>
+      </p>
+      <editStyle
+        v-if="showEditStyle"
+        :showEditJackpot.sync="showEditStyle"
+        :action="editStyleAction"
+        @refresh="queryTableData"></editStyle>
+    </Drawer>
 
-    <ModalWinnerNum :action="winnerNumAction"></ModalWinnerNum>
-
-    <!-- <exchange v-if="showExchange" :showExchange.sync="showExchange" @refresh="queryTableData"></exchange>
-    <consume v-if="showConsume" :showConsume.sync="showConsume" @refresh="queryTableData"></consume>-->
+    <!--分享内容-->
+    <Share :action="shareAction" @refresh="queryTableData"></Share>
+    
   </div>
 </template>
 <script>
@@ -206,25 +196,23 @@ import columns from "./columns";
 
 import Edit from "./Edit";
 
-// 内容
-import createContentFormData from "../content/createFormData";
-import ActivityContent from "../content";
 
-// 奖池
+// 编辑活动模板 查看活动模板
 import Jackpot from "../jackpot";
-import JackpotDetail from "../jackpot/Detail";
 
-// 编辑/查看 次数
-import ModalWinnerNum from "./ModalWinnerNum";
+//编辑活动样式 查看活动样式
+import editStyle from "./editStyle";
+
+//编辑分享内容
+import Share from "../share";
 
 export default {
   name: "ubay-management",
   components: {
     Edit,
-    ActivityContent,
     Jackpot,
-    JackpotDetail,
-    ModalWinnerNum
+    editStyle,
+    Share
   },
   watch: {},
   data() {
@@ -235,18 +223,11 @@ export default {
         paddingBottom: "53px",
         position: "static"
       },
-      showEditConent: false, //内容
       showEditJackpot: false, //奖池
       //新增 add、修改 edit
       action: {
         id: Math.random(),
         type: "add",
-        data: null
-      },
-      contentAction: {
-        _id: Math.random(),
-        title: "编辑内容",
-        type: "edit", //query/edit
         data: null
       },
       jackpotAction: {
@@ -255,14 +236,6 @@ export default {
         type: "edit", //query/edit
         data: null
       },
-      //编辑/查看 次数
-      winnerNumAction: {
-        _id: Math.random(),
-        type: "query", //query/edit
-        data: null
-      },
-      showExchange: false,
-      showConsume: false,
       // status 活动状态, 1-待上架 2-已上架 3已下架
       statusOption: {
         "1": "待上架",
@@ -291,7 +264,18 @@ export default {
         total: 0 //数据总数
       },
       columns,
-      tableData: []
+      tableData: [],
+      showEditStyle:false,
+      editStyleAction:{
+        _id: Math.random(),
+        type: "query", //query/edit
+        data: null
+      },
+      shareAction:{
+        _id: Math.random(),
+        type: "edit", //query/edit
+        data: null
+      }
     };
   },
   async created() {
@@ -320,7 +304,7 @@ export default {
       this.showEditJackpot = true;
       let title = "";
       if (type == "query") {
-        title = "查看奖池";
+        title = "查看活动模块";
       } else if (type == "edit") {
         title = "编辑活动模块";
       }
@@ -332,28 +316,30 @@ export default {
       };
       console.log("addOrEditJackpot", { ...this.jackpotAction });
     },
-
-    async queryOrEditContent(type, row) {
-      this.showEditConent = true;
-      this.setActivityId(row.activityId); //设置活动id
-      let data = await this.queryContent(row);
-      if (type !== "query") {
-        type == data._type;
+    addOrEditStyle(type, data) {
+      this.setActivityId(data.activityId); //设置活动id
+      console.log("addOrEditStyle", type, data);
+      this.showEditStyle = true;
+      let title = "";
+      if (type == "query") {
+        title = "查看活动样式";
+      } else if (type == "edit") {
+        title = "编辑活动样式";
       }
-      this.contentAction = {
+      this.editStyleAction = {
         _id: Math.random(),
+        title,
         type,
         data
       };
+      console.log("addOrEditStyle", { ...this.editStyleAction });
     },
-    async queryOrEditWinnerNum(type, row) {
-      this.setActivityId(row.activityId); //设置活动id
-      let data = await this.selectWinner(row);
-      this.winnerNumAction = {
-        _id: Math.random(),
+    addOrEditShare(type,data){
+      this.shareAction = {
+        id: Math.random(),
         type,
         data
-      };
+      };  
     },
     changeStartDate(arr) {
       // yyyy-MM-dd HH:mm:ss
@@ -390,66 +376,6 @@ export default {
     },
     cancelUpdateStatus() {
       this.msgOk("已取消下架");
-    },
-    // 查看活动的图片文案
-    async queryContent({ activityId }) {
-      // 活动类型列表
-      const url = "/activityPic/text/selectByActivityId";
-
-      let { code, data } = await getRequest(url, { activityId });
-
-      let formData = createContentFormData();
-      let _type = ""; //add/edit
-
-      if (code == 200) {
-        if (data.length == 0) {
-          data = formData;
-          data._type = "add";
-          data.activityId = activityId;
-        } else {
-          data.sort((obj1, obj2) => {
-            return obj1.type - obj2.type;
-          });
-          let { activityPicTextList: arr } = formData;
-          let activityPicTextList = data.map(item => {
-            let { type, picUrl } = item;
-            let _item = arr.find(obj => obj.type == type);
-
-            item = { ..._item, ...item };
-
-            let defaultPicUrlList = [];
-            if (picUrl) {
-              defaultPicUrlList = [{ imgUrl: picUrl }];
-            }
-            item.defaultPicUrlList = defaultPicUrlList;
-
-            return item;
-          });
-          data = { _type: "edit", activityId, activityPicTextList };
-        }
-        return data;
-      } else {
-        this.msgErr(code + " 数据加载失败!");
-        return { activityId: "", activityPicTextList: [] };
-      }
-    },
-    // 查询次数
-    async selectWinner({ id }) {
-      // 活动类型列表
-      const url = "/activityInfo/selectWinner";
-      // status id活动状态, 1-待上架 2-已上架 3已下架
-
-      let { code, data } = await getRequest(url, { id });
-
-      if (code == 200) {
-        // 实际中奖次数 realWinnerNum: 0  显示中奖次数 viewWinnerNum: 0
-        data.id = id;
-        data.oldViewWinnerNum = data.viewWinnerNum;
-        return data;
-      } else {
-        this.msgErr(code + " 数据加载失败!");
-        return { id };
-      }
     },
     async queryActivityTypeList() {
       // 活动类型列表
