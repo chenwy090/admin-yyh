@@ -69,6 +69,7 @@
               <storeForm
                 :pushRange.sync="modal.pushRange"
                 :shopRequestList.sync="modal.shopRequestList"
+                :shopRequestListInfo.sync="modal.shopInfos"
                 disabled
               ></storeForm>
 
@@ -125,7 +126,7 @@
                   :options="options1"
                   @on-change="
                     datetime => {
-                      changeDateTime(datetime, 1)
+                      changeDateTime(datetime, 1);
                     }
                   "
                 ></DatePicker>
@@ -139,7 +140,7 @@
                   :options="options2"
                   @on-change="
                     datetime => {
-                      changeDateTime(datetime, 2)
+                      changeDateTime(datetime, 2);
                     }
                   "
                 ></DatePicker>
@@ -171,19 +172,19 @@
 </template>
 
 <script>
-import storeForm from '@/components/storeForm/storeForm'
-import { uploadOperationImage2AliOssURl } from '@/api/index'
-import { postRequest, getRequest, getSyncRequest } from '@/libs/axios'
+import storeForm from "@/components/storeForm/storeForm";
+import { uploadOperationImage2AliOssURl } from "@/api/index";
+import { postRequest, getRequest, getSyncRequest } from "@/libs/axios";
 export default {
-  name: 'add-or-edit-modal',
+  name: "add-or-edit-modal",
   components: { storeForm },
   props: {
     viewDialogVisible: { type: Boolean, default: false },
   },
   data() {
     return {
-      choujiangType: '',
-      userToken: '',
+      choujiangType: "",
+      userToken: "",
       url: uploadOperationImage2AliOssURl,
       drawDailyShopList: [
         {
@@ -203,119 +204,119 @@ export default {
       defaultList: [],
       visible: false,
       storeTypeList: [
-        { value: '0', label: '全国' },
-        { value: '1', label: '门店' },
+        { value: "0", label: "全国" },
+        { value: "1", label: "门店" },
       ],
       typeList: [
-        { value: 1, label: '专题活动' },
-        { value: 2, label: '抽奖团' },
-        { value: 3, label: '内链' },
-        { value: 4, label: '外链' },
-        { value: 5, label: '商户' },
-        { value: 6, label: '优惠券' },
+        { value: 1, label: "专题活动" },
+        { value: 2, label: "抽奖团" },
+        { value: 3, label: "内链" },
+        { value: 4, label: "外链" },
+        { value: 5, label: "商户" },
+        { value: 6, label: "优惠券" },
       ],
       locationList: [
-        { value: 1, label: '首页' },
-        { value: 2, label: '赚钱' },
-        { value: 3, label: '领优惠' },
-        { value: 4, label: '我的' },
-        { value: 5, label: '平台分红' },
+        { value: 1, label: "首页" },
+        { value: 2, label: "赚钱" },
+        { value: 3, label: "领优惠" },
+        { value: 4, label: "我的" },
+        { value: 5, label: "平台分红" },
       ],
       businessLayerList: [
-        { value: 1, label: '1号位置' },
-        { value: 2, label: '2号位置' },
-        { value: 3, label: '3号位置' },
+        { value: 1, label: "1号位置" },
+        { value: 2, label: "2号位置" },
+        { value: 3, label: "3号位置" },
       ],
       layerPriorityList: [
-        { value: 1, label: 'banner1' },
-        { value: 2, label: 'banner2' },
-        { value: 3, label: 'banner3' },
-        { value: 4, label: 'banner4' },
-        { value: 5, label: 'banner5' },
+        { value: 1, label: "banner1" },
+        { value: 2, label: "banner2" },
+        { value: 3, label: "banner3" },
+        { value: 4, label: "banner4" },
+        { value: 5, label: "banner5" },
       ],
       clientTypeList: [
-        { value: '0', label: '全部' },
-        { value: '1', label: '小程序' },
-        { value: '2', label: 'android' },
-        { value: '3', label: 'ios' },
+        { value: 1, label: "小程序" },
+        { value: 2, label: "android" },
+        { value: 3, label: "ios" },
       ],
-      titleName: '',
+      titleName: "",
       volumeViewDialogModal: false,
       contentViewDialogModal: false,
       drawViewDialogModal: false,
       shopViewDialogModal: false,
       modal: {
-        shopId: '',
-        title: '',
-        type: '',
-        value: '',
-        content: '',
+        shopId: "",
+        title: "",
+        type: "",
+        value: "",
+        content: "",
         shopRequestList: [],
-        location: '',
-        businessLayer: '',
-        layerPriority: '',
-        clientType: '',
-        startTime: '',
-        endTime: '',
-        image: '',
+        shopInfos: [],
+        location: "",
+        businessLayer: "",
+        layerPriority: "",
+        clientType: undefined,
+        startTime: "",
+        endTime: "",
+        image: "",
       },
       options1: {
         disabledDate(date) {
-          return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24
+          return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24;
         },
       },
       options2: {
         disabledDate(date) {
-          return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24
+          return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24;
         },
       },
       ruleValidate: {},
-    }
+    };
   },
   methods: {
     sendProvinceId(val, id) {
       this.drawDailyShopList.some((item, index) => {
         if (item.id == id) {
-          this.drawDailyShopList[index].provinceCode = val
-          return true
+          this.drawDailyShopList[index].provinceCode = val;
+          return true;
         }
-      })
+      });
     },
     sendCityId(val, id) {
       this.drawDailyShopList.some((item, index) => {
         if (item.id == id) {
-          this.drawDailyShopList[index].cityCode = val
-          return true
+          this.drawDailyShopList[index].cityCode = val;
+          return true;
         }
-      })
+      });
     },
     sendAreaId(val, id) {
       this.drawDailyShopList.some((item, index) => {
         if (item.id == id) {
-          this.drawDailyShopList[index].countryCode = val
-          return true
+          this.drawDailyShopList[index].countryCode = val;
+          return true;
         }
-      })
+      });
     },
     sendShopId(val, name, id) {
       this.drawDailyShopList.some((item, index) => {
         if (item.id == id) {
-          this.drawDailyShopList[index].shopId = val
-          this.drawDailyShopList[index].shopName = name
-          return true
+          this.drawDailyShopList[index].shopId = val;
+          this.drawDailyShopList[index].shopName = name;
+          return true;
         }
-      })
+      });
     },
     shopRemove(id) {
       if (this.drawDailyShopList.length == 1) {
-        return this.msgErr('必须保留一条')
+        return this.msgErr("必须保留一条");
       }
       this.drawDailyShopList.some((item, index) => {
         if (item.id == id) {
-          this.drawDailyShopList.splice(index, 1)
-          return true
+          this.drawDailyShopList.splice(index, 1);
+          return true;
         }
-      })
+      });
     },
     handleAdd() {
       this.drawDailyShopList.push({
@@ -326,126 +327,127 @@ export default {
         shopName: null,
         id: Math.random(),
         status: 1,
-      })
+      });
     },
     handleView(item) {
-      this.visible = true
+      this.visible = true;
     },
     handleSuccess(res, file) {
-      console.log(res)
+      console.log(res);
       if (res.code == 200) {
-        this.modal.image = res.image_url
+        this.modal.image = res.image_url;
       } else {
-        this.$Message.error('上传失败')
+        this.$Message.error("上传失败");
       }
       // file.url = 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar';
       // file.name = '7eb99afb9d5f317c912f08b5212fd69a';
     },
     handleFormatError(file) {
       this.$Notice.warning({
-        title: 'The file format is incorrect',
-        desc: 'File format of ' + file.name + ' is incorrect, please select jpg or png.',
-      })
+        title: "The file format is incorrect",
+        desc: "File format of " + file.name + " is incorrect, please select jpg or png.",
+      });
     },
     handleMaxSize(file) {
       this.$Notice.warning({
-        title: 'Exceeding file size limit',
-        desc: 'File  ' + file.name + ' is too large, no more than 2M.',
-      })
+        title: "Exceeding file size limit",
+        desc: "File  " + file.name + " is too large, no more than 2M.",
+      });
     },
     handleBeforeUpload() {
-      const check = this.uploadList.length < 5
+      const check = this.uploadList.length < 5;
       if (!check) {
         this.$Notice.warning({
-          title: 'Up to five pictures can be uploaded.',
-        })
+          title: "Up to five pictures can be uploaded.",
+        });
       }
-      return check
+      return check;
     },
     changeType() {
-      this.modal.value = ''
-      this.modal.content = ''
+      this.modal.value = "";
+      this.modal.content = "";
     },
     getLocation() {
       postRequest(`/banner/getLocations`, null).then(res => {
-        console.log(123)
-        if (res.code == '200') {
-          this.cascaderData = res.data
+        console.log(123);
+        if (res.code == "200") {
+          this.cascaderData = res.data;
         } else {
-          this.$Message.error(res.msg)
+          this.$Message.error(res.msg);
         }
-      })
+      });
     },
     changeDateTime(datetime, index) {
       switch (index) {
         case 1:
-          this.modal.startTime = datetime
+          this.modal.startTime = datetime;
           this.options2 = {
             disabledDate(date) {
-              return date.valueOf() < new Date(datetime) - 1000 * 60 * 60 * 24
+              return date.valueOf() < new Date(datetime) - 1000 * 60 * 60 * 24;
             },
-          }
-          break
+          };
+          break;
         case 2:
-          this.modal.endTime = datetime
+          this.modal.endTime = datetime;
           this.options1 = {
             disabledDate(date) {
-              return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24 || date.valueOf() > new Date(datetime)
+              return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24 || date.valueOf() > new Date(datetime);
             },
-          }
-          break
+          };
+          break;
       }
     },
     resetRow(row) {
-      this.getData(row.id)
-      this.getLocation()
-      this.choujiangType = ''
-      ;(this.modal = {
-        shopId: '',
-        title: '',
-        type: '',
-        value: '',
-        content: '',
+      this.getData(row.id);
+      this.getLocation();
+      this.choujiangType = "";
+      (this.modal = {
+        shopId: "",
+        title: "",
+        type: "",
+        value: "",
+        content: "",
         shopRequestList: [],
-        location: '',
-        businessLayer: '',
-        layerPriority: '',
-        clientType: '',
-        startTime: '',
-        endTime: '',
-        image: '',
+        location: "",
+        businessLayer: "",
+        layerPriority: "",
+        clientType: undefined,
+        startTime: "",
+        endTime: "",
+        image: "",
       }),
         (this.options2 = {
           disabledDate(date) {
-            return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24
+            return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24;
           },
-        })
+        });
       this.options1 = {
         disabledDate(date) {
-          return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24
+          return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24;
         },
-      }
+      };
     },
     getData(id) {
-      console.log(111)
+      console.log(111);
       getRequest(`/banner/details/${id}`).then(res => {
-        if (res.code == '200') {
-          this.modal.title = res.data.bannerInfo.title
-          this.modal.type = res.data.bannerInfo.type
-          this.modal.image = res.data.bannerInfo.image
-          this.modal.value = res.data.bannerInfo.value
-          this.modal.content = res.data.bannerInfo.content
-          this.modal.startTime = res.data.bannerInfo.startTime
-          this.modal.endTime = res.data.bannerInfo.endTime
-          this.modal.clientType = res.data.clients[0].toString()
-          if (!this.modal.value && this.modal.type == '2') {
-            this.choujiangType = '抽奖广场'
+        if (res.code == "200") {
+          this.modal.title = res.data.bannerInfo.title;
+          this.modal.type = res.data.bannerInfo.type;
+          this.modal.image = res.data.bannerInfo.image;
+          this.modal.value = res.data.bannerInfo.value;
+          this.modal.content = res.data.bannerInfo.content;
+          this.modal.startTime = res.data.bannerInfo.startTime;
+          this.modal.endTime = res.data.bannerInfo.endTime;
+          this.modal.clientType = res.data.clients;
+          if (!this.modal.value && this.modal.type == "2") {
+            this.choujiangType = "抽奖广场";
           } else {
-            this.choujiangType = '抽奖团'
+            this.choujiangType = "抽奖团";
           }
 
-          this.modal.pushRange = 3
-          this.modal.shopRequestList = res.data.shops
+          this.modal.pushRange = +res.data.shopType;
+          this.modal.shopRequestList = res.data.shops;
+          this.modal.shopInfos = res.data.shopInfos;
 
           // if (res.data.allShop) {
           //   this.modal.shopId = '0'
@@ -458,22 +460,22 @@ export default {
             res.data.location[0].location.toString(),
             res.data.location[0].businessLayer.toString(),
             res.data.location[0].layerPriority.toString(),
-          ]
+          ];
         } else {
-          this.$Message.error(res.msg)
+          this.$Message.error(res.msg);
         }
-      })
+      });
     },
     close() {
-      this.$emit('setViewDialogVisible', false)
+      this.$emit("setViewDialogVisible", false);
     },
   },
   created() {
     this.userToken = {
-      jwttoken: localStorage.getItem('jwttoken'),
-    }
+      jwttoken: localStorage.getItem("jwttoken"),
+    };
   },
-}
+};
 </script>
 
 <style scoped>

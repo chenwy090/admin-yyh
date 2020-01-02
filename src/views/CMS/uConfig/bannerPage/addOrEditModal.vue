@@ -8,7 +8,7 @@
   <!--footer-hide>-->
   <div v-if="viewDialogVisible" class="modal">
     <Card>
-      <p slot="title">{{ id ? '编辑' : '新增' }}</p>
+      <p slot="title">{{ id ? "编辑" : "新增" }}</p>
       <a href="#" slot="extra">
         <Button type="dashed" icon="md-arrow-round-back" @click="close()">返回上一层</Button>
       </a>
@@ -139,7 +139,7 @@
                   type="datetimerange"
                   :options="options1"
                   :value="[modal.startTime, modal.endTime]"
-                  @on-change=";[modal.startTime, modal.endTime] = $event"
+                  @on-change="[modal.startTime, modal.endTime] = $event"
                 ></DatePicker>
               </FormItem>
             </Col>
@@ -213,16 +213,16 @@
 </template>
 
 <script>
-import { uploadOperationImage2AliOssURl } from '@/api/index'
-import { postRequest, getRequest, getSyncRequest } from '@/libs/axios'
-import volumeModal from './volumeModal'
-import contentModal from './contentModal'
-import drawModal from './drawModal'
-import shopModal from './shopModal'
-import storeForm from '@/components/storeForm/storeForm'
+import { uploadOperationImage2AliOssURl } from "@/api/index";
+import { postRequest, getRequest, getSyncRequest } from "@/libs/axios";
+import volumeModal from "./volumeModal";
+import contentModal from "./contentModal";
+import drawModal from "./drawModal";
+import shopModal from "./shopModal";
+import storeForm from "@/components/storeForm/storeForm";
 
 export default {
-  name: 'add-or-edit-modal',
+  name: "add-or-edit-modal",
   components: { volumeModal, contentModal, drawModal, shopModal, storeForm },
   props: {
     viewDialogVisible: { type: Boolean, default: false },
@@ -230,8 +230,8 @@ export default {
   data() {
     return {
       id: 0,
-      choujiangType: '',
-      userToken: '',
+      choujiangType: "",
+      userToken: "",
       url: uploadOperationImage2AliOssURl,
       drawDailyShopList: [
         {
@@ -255,46 +255,46 @@ export default {
       //   { value: '3', label: '自定义门店' },
       // ],
       typeList: [
-        { value: 1, label: '专题活动' },
-        { value: 2, label: '抽奖团' },
-        { value: 3, label: '内链' },
-        { value: 4, label: '外链' },
-        { value: 5, label: '商户' },
-        { value: 6, label: '优惠券' },
+        { value: 1, label: "专题活动" },
+        { value: 2, label: "抽奖团" },
+        { value: 3, label: "内链" },
+        { value: 4, label: "外链" },
+        { value: 5, label: "商户" },
+        { value: 6, label: "优惠券" },
       ],
       clientTypeList: [
         // { value: '0', label: '全部' },
-        { value: 1, label: '小程序' },
-        { value: 2, label: 'android' },
-        { value: 3, label: 'ios' },
+        { value: 1, label: "小程序" },
+        { value: 2, label: "android" },
+        { value: 3, label: "ios" },
       ],
-      titleName: '',
+      titleName: "",
       volumeViewDialogModal: false,
       contentViewDialogModal: false,
       drawViewDialogModal: false,
       shopViewDialogModal: false,
       modal: {
-        shopId: '',
-        title: '',
-        type: '',
-        value: '',
-        content: '',
-        couponType: '',
+        shopId: "",
+        title: "",
+        type: "",
+        value: "",
+        content: "",
+        couponType: "",
         // pushRange:0,
         shopRequestList: [],
-        location: '',
-        businessLayer: '',
-        layerPriority: '',
+        location: "",
+        businessLayer: "",
+        layerPriority: "",
         clientType: [1, 2, 3],
-        startTime: '',
-        endTime: '',
-        image: '',
+        startTime: "",
+        endTime: "",
+        image: "",
       },
       cascaderData: [],
       cascaderValue: [],
       options1: {
         disabledDate(date) {
-          return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24
+          return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24;
         },
       },
       // options2: {
@@ -303,52 +303,52 @@ export default {
       //   },
       // },
       ruleValidate: {},
-    }
+    };
   },
   methods: {
     sendProvinceId(val, id) {
       this.drawDailyShopList.some((item, index) => {
         if (item.id == id) {
-          this.drawDailyShopList[index].provinceCode = val
-          return true
+          this.drawDailyShopList[index].provinceCode = val;
+          return true;
         }
-      })
+      });
     },
     sendCityId(val, id) {
       this.drawDailyShopList.some((item, index) => {
         if (item.id == id) {
-          this.drawDailyShopList[index].cityCode = val
-          return true
+          this.drawDailyShopList[index].cityCode = val;
+          return true;
         }
-      })
+      });
     },
     sendAreaId(val, id) {
       this.drawDailyShopList.some((item, index) => {
         if (item.id == id) {
-          this.drawDailyShopList[index].countryCode = val
-          return true
+          this.drawDailyShopList[index].countryCode = val;
+          return true;
         }
-      })
+      });
     },
     sendShopId(val, name, id) {
       this.drawDailyShopList.some((item, index) => {
         if (item.id == id) {
-          this.drawDailyShopList[index].shopId = val
-          this.drawDailyShopList[index].shopName = name
-          return true
+          this.drawDailyShopList[index].shopId = val;
+          this.drawDailyShopList[index].shopName = name;
+          return true;
         }
-      })
+      });
     },
     shopRemove(id) {
       if (this.drawDailyShopList.length == 1) {
-        return this.msgErr('必须保留一条')
+        return this.msgErr("必须保留一条");
       }
       this.drawDailyShopList.some((item, index) => {
         if (item.id == id) {
-          this.drawDailyShopList.splice(index, 1)
-          return true
+          this.drawDailyShopList.splice(index, 1);
+          return true;
         }
-      })
+      });
     },
     handleAdd() {
       this.drawDailyShopList.push({
@@ -359,48 +359,48 @@ export default {
         shopName: null,
         id: Math.random(),
         status: 1,
-      })
+      });
     },
     handleView(item) {
-      this.visible = true
+      this.visible = true;
     },
     handleRemove(file) {
-      this.modal.image = ''
+      this.modal.image = "";
     },
     handleSuccess(res, file) {
-      console.log(res)
+      console.log(res);
       if (res.code == 200) {
-        this.modal.image = res.image_url
+        this.modal.image = res.image_url;
       } else {
-        this.$Message.error('上传失败')
+        this.$Message.error("上传失败");
       }
       // file.url = 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar';
       // file.name = '7eb99afb9d5f317c912f08b5212fd69a';
     },
     handleFormatError(file) {
       this.$Notice.warning({
-        title: 'The file format is incorrect',
-        desc: 'File format of ' + file.name + ' is incorrect, please select jpg or png.',
-      })
+        title: "The file format is incorrect",
+        desc: "File format of " + file.name + " is incorrect, please select jpg or png.",
+      });
     },
     handleMaxSize(file) {
       this.$Notice.warning({
-        title: 'Exceeding file size limit',
-        desc: 'File  ' + file.name + ' is too large, no more than 2M.',
-      })
+        title: "Exceeding file size limit",
+        desc: "File  " + file.name + " is too large, no more than 2M.",
+      });
     },
     handleBeforeUpload() {
-      const check = this.uploadList.length < 5
+      const check = this.uploadList.length < 5;
       if (!check) {
         this.$Notice.warning({
-          title: 'Up to five pictures can be uploaded.',
-        })
+          title: "Up to five pictures can be uploaded.",
+        });
       }
-      return check
+      return check;
     },
     changeType() {
-      this.modal.value = ''
-      this.modal.content = ''
+      this.modal.value = "";
+      this.modal.content = "";
     },
     // changeDateTime(datetime, index) {
     //   switch (index) {
@@ -428,35 +428,35 @@ export default {
     // },
     getLocation() {
       postRequest(`/banner/getLocations`, null).then(res => {
-        console.log(123)
-        if (res.code == '200') {
-          this.cascaderData = res.data
+        console.log(123);
+        if (res.code == "200") {
+          this.cascaderData = res.data;
         } else {
-          this.$Message.error(res.msg)
+          this.$Message.error(res.msg);
         }
-      })
+      });
     },
     resetRow(row) {
-      this.getLocation()
-      this.choujiangType = ''
-      this.$refs['cascader'].clearSelect()
-      console.log(this.$refs['cascader'])
-      this.cascaderValue = []
+      this.getLocation();
+      this.choujiangType = "";
+      this.$refs["cascader"].clearSelect();
+      console.log(this.$refs["cascader"]);
+      this.cascaderValue = [];
       this.modal = {
-        shopId: '',
-        title: '',
-        type: '',
-        value: '',
-        content: '',
+        shopId: "",
+        title: "",
+        type: "",
+        value: "",
+        content: "",
         shopRequestList: [],
-        location: '',
-        businessLayer: '',
-        layerPriority: '',
+        location: "",
+        businessLayer: "",
+        layerPriority: "",
         clientType: [1, 2, 3],
-        startTime: '',
-        endTime: '',
-        image: '',
-      }
+        startTime: "",
+        endTime: "",
+        image: "",
+      };
       this.drawDailyShopList = [
         {
           provinceCode: null,
@@ -467,161 +467,198 @@ export default {
           id: Math.random(),
           status: 1,
         },
-      ]
+      ];
       this.options2 = {
         disabledDate(date) {
-          return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24
+          return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24;
         },
-      }
+      };
       this.options1 = {
         disabledDate(date) {
-          return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24
+          return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24;
         },
-      }
+      };
     },
     openContent() {
       // this.contentViewDialogModal = true;
       switch (this.modal.type) {
         case 1:
-          this.contentViewDialogModal = true
+          this.contentViewDialogModal = true;
           this.$nextTick(() => {
-            this.$refs['contentModal'].resetRow({ content: this.modal.content, value: this.modal.value })
-          })
-          break
+            this.$refs["contentModal"].resetRow({ content: this.modal.content, value: this.modal.value });
+          });
+          break;
         case 2:
-          this.drawViewDialogModal = true
+          this.drawViewDialogModal = true;
           this.$nextTick(() => {
-            this.$refs['drawModal'].resetRow({ content: this.modal.content, value: this.modal.value })
-          })
-          break
+            this.$refs["drawModal"].resetRow({ content: this.modal.content, value: this.modal.value });
+          });
+          break;
         case 5:
-          this.shopViewDialogModal = true
+          this.shopViewDialogModal = true;
           this.$nextTick(() => {
-            this.$refs['shopModal'].resetRow({ content: this.modal.content, value: this.modal.value })
-          })
-          break
+            this.$refs["shopModal"].resetRow({ content: this.modal.content, value: this.modal.value });
+          });
+          break;
         case 6:
-          this.volumeViewDialogModal = true
+          this.volumeViewDialogModal = true;
           this.$nextTick(() => {
-            this.$refs['volumeModal'].resetRow({ content: this.modal.content, value: this.modal.value })
-          })
-          break
+            this.$refs["volumeModal"].resetRow({ content: this.modal.content, value: this.modal.value });
+          });
+          break;
       }
     },
     selectContent(e) {
-      this.contentViewDialogModal = false
-      this.drawViewDialogModal = false
-      this.shopViewDialogModal = false
-      this.volumeViewDialogModal = false
+      this.contentViewDialogModal = false;
+      this.drawViewDialogModal = false;
+      this.shopViewDialogModal = false;
+      this.volumeViewDialogModal = false;
       if (e) {
-        this.modal.value = e.shopId
-        this.modal.content = e.shopName
-        this.modal.couponType = e.couponType
+        this.modal.value = e.shopId;
+        this.modal.content = e.shopName;
+        this.modal.couponType = e.couponType;
       }
     },
     changeRadio() {
-      if (this.modal.wardType == '1') {
+      if (this.modal.wardType == "1") {
         this.JawardRuleDtos = [
           {
             verifyCountMin: null,
             verifyCountMax: null,
             awardAmount: null,
-            awardType: '2',
-            couponType: '',
-            awardName: '',
+            awardType: "2",
+            couponType: "",
+            awardName: "",
           },
-        ]
+        ];
         this.UawardRuleDtos = [
           {
             verifyCountMin: null,
             verifyCountMax: null,
             awardAmount: null,
-            awardType: '1',
-            couponType: '',
-            awardName: '',
+            awardType: "1",
+            couponType: "",
+            awardName: "",
           },
-        ]
+        ];
       } else {
         this.UawardRuleDtos = [
           {
             verifyCountMin: null,
             verifyCountMax: null,
             awardAmount: null,
-            awardType: '1',
-            couponType: '',
-            awardName: '',
+            awardType: "1",
+            couponType: "",
+            awardName: "",
           },
-        ]
+        ];
         this.JawardRuleDtos = [
           {
             verifyCountMin: null,
             verifyCountMax: null,
             awardAmount: null,
-            awardType: '1',
-            couponType: '',
-            awardName: '',
+            awardType: "1",
+            couponType: "",
+            awardName: "",
           },
-        ]
+        ];
       }
     },
     ok() {
-      this.modal.location = this.cascaderValue[0]
-      this.modal.businessLayer = this.cascaderValue[1]
-      this.modal.layerPriority = this.cascaderValue[2]
+      this.modal.location = this.cascaderValue[0];
+      this.modal.businessLayer = this.cascaderValue[1];
+      this.modal.layerPriority = this.cascaderValue[2];
       if (!this.modal.title) {
-        this.$Message.error('请填写标题')
-        return
+        this.$Message.error("请填写标题");
+        return;
       }
       if (!this.modal.type) {
-        this.$Message.error('请选择内容类型')
-        return
+        this.$Message.error("请选择内容类型");
+        return;
       }
-      if (this.modal.type == 2 && this.choujiangType == '抽奖广场') {
-        this.modal.value = '0'
-        this.modal.content = '0'
+      if (this.modal.type == 2 && this.choujiangType == "抽奖广场") {
+        this.modal.value = "0";
+        this.modal.content = "0";
       }
       if (this.modal.type == 3 || this.modal.type == 4) {
-        this.modal.content = this.modal.value
+        this.modal.content = this.modal.value;
       }
       if (!this.modal.value || !this.modal.content) {
-        this.$Message.error('请选择内容或链接')
-        return
+        this.$Message.error("请选择内容或链接");
+        return;
       }
       // if (!this.modal.shopId && this.modal.shopId !== 0) {
       //   this.$Message.error('请选择投放门店')
       //   return
       // }
+
+      let shopReques = false;
+      let shopRequesMsg = "";
+      switch (this.modal.pushRange) {
+        case 0:
+          shopReques = true;
+          break;
+        case 1:
+          shopRequesMsg = "请选择零售商";
+          if (this.modal.shopRequestList instanceof Array && this.modal.shopRequestList[0]) {
+            let item = this.modal.shopRequestList[0];
+            if (item && item.venderName) {
+              shopReques = true;
+            }
+          }
+          break;
+        case 2:
+          shopRequesMsg = "请选择城市";
+          this.modal.shopRequestList.forEach(item => {
+            shopReques = false;
+            if (item.province && item.city) shopReques = true;
+          });
+          break;
+        case 3:
+          shopRequesMsg = "请选择门店";
+          if (this.modal.shopRequestList instanceof Array && this.modal.shopRequestList.length) {
+            shopReques = true;
+          }
+          break;
+        default:
+          shopReques = true;
+      }
+      if (!shopReques) {
+        this.$Message.error(shopRequesMsg);
+        return;
+      }
+
       if (!this.modal.location) {
-        this.$Message.error('请选择投放位置')
-        return
+        this.$Message.error("请选择投放位置");
+        return;
       }
       if (!this.modal.businessLayer) {
-        this.$Message.error('请选择运营位置')
-        return
+        this.$Message.error("请选择运营位置");
+        return;
       }
       if (!this.modal.layerPriority) {
-        this.$Message.error('请选择运营位')
-        return
+        this.$Message.error("请选择运营位");
+        return;
       }
       if (!this.modal.clientType) {
-        this.$Message.error('请选择终端')
-        return
+        this.$Message.error("请选择终端");
+        return;
       }
       if (!this.modal.startTime || !this.modal.endTime) {
-        this.$Message.error('请选择时间')
-        return
+        this.$Message.error("请选择时间");
+        return;
       }
       if (new Date(this.modal.startTime) < new Date()) {
-        this.$Message.error('开始时间要大于当前时间')
-        return
+        this.$Message.error("开始时间要大于当前时间");
+        return;
       }
       if (new Date(this.modal.startTime) >= new Date(this.modal.endTime)) {
-        this.$Message.error('开始时间不能大于等于结束时间')
-        return
+        this.$Message.error("开始时间不能大于等于结束时间");
+        return;
       }
       if (!this.modal.image) {
-        this.$Message.error('请上传图片')
-        return
+        this.$Message.error("请上传图片");
+        return;
       }
 
       // this.modal.shopRequestList = []
@@ -645,96 +682,97 @@ export default {
       // }
       if (true) {
         if (this.id) {
-          this.modal.id = this.id
+          this.modal.id = this.id;
           postRequest(`/banner/editBanner`, this.modal).then(res => {
-            if (res.code == '200') {
-              this.$Message.success('编辑成功')
-              this.close()
-              this.$emit('search')
-            } else if (res.code == '9999') {
-              var tamplate = `<p>该时间段内，以下门店在所选运营位上已有活动：</p>`
+            if (res.code == "200") {
+              this.$Message.success("编辑成功");
+              this.close();
+              this.$emit("search");
+            } else if (res.code == "9999") {
+              var tamplate = `<p>该时间段内，以下门店在所选运营位上已有活动：</p>`;
               res.data.forEach(function(v, i) {
                 tamplate =
                   tamplate +
-                  `<p><span>${v.provinceName} &nbsp;&nbsp;</span> <span>${v.cityName}&nbsp;&nbsp;</span><span>${v.areaName}&nbsp;&nbsp;</span><span>${v.shopName}&nbsp;&nbsp;</span><span>${v.startTime}&nbsp;&nbsp;</span>-<span>${v.endTime}&nbsp;&nbsp;</span><span>${v.content}</span></p>`
-              })
+                  `<p><span>${v.provinceName} &nbsp;&nbsp;</span> <span>${v.cityName}&nbsp;&nbsp;</span><span>${v.areaName}&nbsp;&nbsp;</span><span>${v.shopName}&nbsp;&nbsp;</span><span>${v.startTime}&nbsp;&nbsp;</span>-<span>${v.endTime}&nbsp;&nbsp;</span><span>${v.content}</span></p>`;
+              });
               this.$Modal.confirm({
-                title: '提示',
+                title: "提示",
                 width: 700,
                 content: tamplate,
                 onOk: () => {},
-              })
+              });
             } else {
-              this.$Message.error(res.msg || '')
+              this.$Message.error(res.msg || "");
             }
-          })
+          });
         } else {
           postRequest(`/banner/saveBanner`, this.modal).then(res => {
-            if (res.code == '200') {
-              this.$Message.success('新增成功')
-              this.close()
-              this.$emit('search')
-            } else if (res.code == '9999') {
-              var tamplate = `<p>该时间段内，以下门店在所选运营位上已有活动：</p>`
+            if (res.code == "200") {
+              this.$Message.success("新增成功");
+              this.close();
+              this.$emit("search");
+            } else if (res.code == "9999") {
+              var tamplate = `<p>该时间段内，以下门店在所选运营位上已有活动：</p>`;
               res.data.forEach(function(v, i) {
                 tamplate =
                   tamplate +
-                  `<p><span>${v.provinceName} &nbsp;&nbsp;</span> <span>${v.cityName}&nbsp;&nbsp;</span><span>${v.areaName}&nbsp;&nbsp;</span><span>${v.shopName}&nbsp;&nbsp;</span><span>${v.startTime}&nbsp;&nbsp;</span>-<span>${v.endTime}&nbsp;&nbsp;</span><span>${v.content}</span></p>`
-              })
+                  `<p><span>${v.provinceName} &nbsp;&nbsp;</span> <span>${v.cityName}&nbsp;&nbsp;</span><span>${v.areaName}&nbsp;&nbsp;</span><span>${v.shopName}&nbsp;&nbsp;</span><span>${v.startTime}&nbsp;&nbsp;</span>-<span>${v.endTime}&nbsp;&nbsp;</span><span>${v.content}</span></p>`;
+              });
               this.$Modal.confirm({
-                title: '提示',
+                title: "提示",
                 width: 700,
                 content: tamplate,
                 onOk: () => {},
-              })
+              });
             } else {
-              this.$Message.error(res.msg)
+              this.$Message.error(res.msg);
             }
-          })
+          });
         }
       }
     },
     close() {
-      this.id = ''
-      this.$emit('setViewDialogVisible', false)
+      this.id = "";
+      this.$emit("setViewDialogVisible", false);
     },
     getData(id) {
-      this.id = id
+      this.id = id;
       getRequest(`/banner/details/${id}`).then(res => {
-        if (res.code == '200') {
-          this.modal.title = res.data.bannerInfo.title
-          this.modal.type = res.data.bannerInfo.type
-          this.modal.image = res.data.bannerInfo.image
-          this.modal.value = res.data.bannerInfo.value
-          this.modal.content = res.data.bannerInfo.content
-          this.modal.startTime = res.data.bannerInfo.startTime
-          this.modal.endTime = res.data.bannerInfo.endTime
-          this.modal.clientType = res.data.clients
-          if (!this.modal.value && this.modal.type == '2') {
-            this.choujiangType = '抽奖广场'
+        if (res.code == "200") {
+          this.modal.title = res.data.bannerInfo.title;
+          this.modal.type = res.data.bannerInfo.type;
+          this.modal.image = res.data.bannerInfo.image;
+          this.modal.value = res.data.bannerInfo.value;
+          this.modal.content = res.data.bannerInfo.content;
+          this.modal.startTime = res.data.bannerInfo.startTime;
+          this.modal.endTime = res.data.bannerInfo.endTime;
+          this.modal.clientType = res.data.clients;
+          if (!this.modal.value && this.modal.type == "2") {
+            this.choujiangType = "抽奖广场";
           } else {
-            this.choujiangType = '抽奖团'
+            this.choujiangType = "抽奖团";
           }
 
-          this.modal.pushRange = 3
-          this.modal.shopRequestList = res.data.shops
+          this.modal.pushRange = +res.data.shopType;
+          this.modal.shopRequestList = res.data.shops;
+
           this.cascaderValue = [
             res.data.location[0].location.toString(),
             res.data.location[0].businessLayer.toString(),
             res.data.location[0].layerPriority.toString(),
-          ]
+          ];
         } else {
-          this.$Message.error(res.msg)
+          this.$Message.error(res.msg);
         }
-      })
+      });
     },
   },
   created() {
     this.userToken = {
-      jwttoken: localStorage.getItem('jwttoken'),
-    }
+      jwttoken: localStorage.getItem("jwttoken"),
+    };
   },
-}
+};
 </script>
 
 <style lang="less" scoped>
