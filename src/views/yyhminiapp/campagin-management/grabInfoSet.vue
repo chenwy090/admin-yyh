@@ -177,21 +177,70 @@
           <Alert>
             <h4>要优惠算法参数</h4>
           </Alert>
+          <!-- levelRatio : [{"receiveCount":12,"ratio":0.2}] -->
           <Form :label-width="240">
-            <Row v-for="(item, index) in discountRatioList" :key="index">
+            <div v-for="(item, index) in levelRatio" :key="index" style="display: flex;justify-content: flex-start;">
+              <FormItem>
+                <span>{{ item.numberStart }}--</span>
+                <InputNumber
+                  v-model="item.numberEnd"
+                  placeholder="请输入"
+                  style="width:80px"
+                  :min="item.numberStart + 1"
+                  :disabled="index !== levelRatio.length - 1"
+                  @on-change="
+                    statusCheckChange();
+                    discountRatioChange(index);
+                  "
+                ></InputNumber>
+                <span>次 </span>
+              </FormItem>
+              <FormItem :label="'折扣比例百分比'" :label-width="100">
+                <InputNumber
+                  :max="100"
+                  :min="0"
+                  :disabled="index !== levelRatio.length - 1"
+                  v-model="item.ratio"
+                  placeholder="请输入"
+                  style="width:150px"
+                  @on-change="statusCheckChange"
+                ></InputNumber>
+                <span style="color:red">&nbsp;&nbsp; %</span>
+              </FormItem>
+              <div v-if="index === 0">
+                <Icon
+                  @click="discountRatioAdd"
+                  class="tag-add"
+                  size="30"
+                  color="#2d8cf0"
+                  type="ios-add-circle-outline"
+                />
+              </div>
+
+              <div v-if="index === levelRatio.length - 1 && index !== 0">
+                <Icon
+                  @click="discountRatioRemove(index)"
+                  class="tag-remove"
+                  size="30"
+                  color="#ffb08f"
+                  type="ios-remove-circle-outline"
+                />
+              </div>
+            </div>
+
+            <!-- <Row v-for="(item, index) in levelRatio" :key="index">
               <Col span="8">
                 <FormItem :label="index + 1 + '阶段折扣'">
-                  <span>{{ item.numberStart }}--</span>
+                  <span>{{ item.numberStart }}--{{ item.numberStart + item.receiveCount }}<span>次</span></span>
                   <InputNumber
-                    v-model="item.numberEnd"
+                    v-model="item.receiveCount"
                     placeholder="请输入"
                     style="width:80px"
                     @on-change="
-                      statusCheckChange()
-                      discountRatioChange(index)
+                      statusCheckChange();
+                      discountRatioChange(index);
                     "
                   ></InputNumber>
-                  <span>次</span>
                 </FormItem>
               </Col>
               <Col span="6">
@@ -199,7 +248,7 @@
                   <InputNumber
                     :max="100"
                     :min="0"
-                    v-model="item.discountRatio"
+                    v-model="item.ratio"
                     placeholder="请输入"
                     style="width:150px"
                     @on-change="statusCheckChange"
@@ -225,7 +274,7 @@
                   type="ios-remove-circle-outline"
                 />
               </Col>
-            </Row>
+            </Row> -->
           </Form>
 
           <Form :label-width="240">
@@ -354,13 +403,13 @@
 </template>
 
 <script>
-import { getRequest, postRequest, putRequest, deleteRequest, uploadFileRequest, downloadSteam } from '@/libs/axios'
+import { getRequest, postRequest, putRequest, deleteRequest, uploadFileRequest, downloadSteam } from "@/libs/axios";
 
-import { formatDate } from '@/libs/date'
-import FileImport from './FileImport'
+import { formatDate } from "@/libs/date";
+import FileImport from "./FileImport";
 
 export default {
-  name: 'grabInfoSet',
+  name: "grabInfoSet",
   components: { FileImport },
   props: {
     campId: String,
@@ -369,7 +418,7 @@ export default {
     return {
       showFileImport: false,
       edit_info: {
-        campId: '',
+        campId: "",
 
         // addOpenRequiredScore: 0,
         dailyAcceptShareTimes: 0,
@@ -383,7 +432,7 @@ export default {
         limitTime: 0,
         // shareUseRakeBackPercent: 0,
         acceptPercent: 0,
-        fileName: '',
+        fileName: "",
 
         addMultiple: 0,
         upperDiscountAmount: 0,
@@ -393,79 +442,95 @@ export default {
         // discountRatio: 0,
         // receiveCount: 0,
       },
-      discountRatioList: [
+      levelRatio: [
         {
           numberStart: 1,
-          numberEnd: 2,
-          discountRatio: 0,
+          numberEnd: 1,
+          ratio: 0,
         },
       ],
       edit_loading: false,
-      status: '',
-      getUrl: '',
-      msg: '',
+      status: "",
+      getUrl: "",
+      msg: "",
       isCheckDisabled: true,
-    }
+    };
   },
 
   created() {
-    this.init()
+    this.init();
   },
   methods: {
     uploadFileName(filename) {
-      this.edit_info.fileName = filename
+      this.edit_info.fileName = filename;
     },
     upload() {
-      this.showFileImport = true
-      console.log(this.campId)
+      this.showFileImport = true;
+      console.log(this.campId);
     },
     async download() {
-      const url = '/campaginGrabInfoSet/download/barcodeToMoney'
+      const url = "/campaginGrabInfoSet/download/barcodeToMoney";
 
-      const res = await downloadSteam(url, { campId: this.campId })
-      const content = res.data
-      const { filename } = res.headers
+      const res = await downloadSteam(url, { campId: this.campId });
+      const content = res.data;
+      const { filename } = res.headers;
 
-      const blob = new Blob([content], { type: 'application/vnd.ms-excel' })
-      const oA = document.createElement('a')
-      if ('download' in oA) {
+      const blob = new Blob([content], { type: "application/vnd.ms-excel" });
+      const oA = document.createElement("a");
+      if ("download" in oA) {
         // 非IE下载
-        oA.download = decodeURI(filename)
-        oA.style.display = 'none'
-        oA.href = URL.createObjectURL(blob)
-        document.body.appendChild(oA)
-        oA.click()
-        URL.revokeObjectURL(oA.href) // 释放URL 对象
-        document.body.removeChild(oA)
+        oA.download = decodeURI(filename);
+        oA.style.display = "none";
+        oA.href = URL.createObjectURL(blob);
+        document.body.appendChild(oA);
+        oA.click();
+        URL.revokeObjectURL(oA.href); // 释放URL 对象
+        document.body.removeChild(oA);
       } else {
         // IE10+下载
-        navigator.msSaveBlob(blob, filename)
+        navigator.msSaveBlob(blob, filename);
       }
     },
     init() {
-      this.updateTableList()
+      this.updateTableList();
     },
 
     updateTableList() {
       const reqParams = {
         campId: this.campId,
-      }
-      const url = `/campaginGrabInfoSet/selectCampaginGrabInfoByCampId?campId=${this.campId}`
+      };
+      const url = `/campaginGrabInfoSet/selectCampaginGrabInfoByCampId?campId=${this.campId}`;
 
       postRequest(url, reqParams).then(res => {
         if (res.code == 200) {
           if (res.data.length > 0) {
-            this.edit_info = res.data[0]
+            this.edit_info = res.data[0];
 
-            this.edit_info.acceptPercent = this.edit_info.acceptPercent * 100
+            this.edit_info.acceptPercent = this.edit_info.acceptPercent * 100;
 
-            this.edit_info.helpAwardLower = this.edit_info.helpAwardLower * 100
-            this.edit_info.helpAwardUpper = this.edit_info.helpAwardUpper * 100
-            this.edit_info.discountRatio = parseInt(this.edit_info.discountRatio * 100)
-            this.edit_info.laterDiscountRatio = this.edit_info.laterDiscountRatio * 100
-            this.edit_info.limitTime = this.edit_info.limitTime / 60
+            this.edit_info.helpAwardLower = this.edit_info.helpAwardLower * 100;
+            this.edit_info.helpAwardUpper = this.edit_info.helpAwardUpper * 100;
+            this.edit_info.discountRatio = parseInt(this.edit_info.discountRatio * 100);
+            this.edit_info.laterDiscountRatio = this.edit_info.laterDiscountRatio * 100;
+            this.edit_info.limitTime = this.edit_info.limitTime / 60;
 
-            this.status = 'edit'
+            // TODO
+            let levelRatio = JSON.parse(this.edit_info.levelRatio);
+            if (levelRatio) {
+              let count = 0;
+              let numberStart = 1;
+              this.levelRatio = levelRatio.map(item => {
+                count = item.receiveCount;
+                let obj = {
+                  numberStart: numberStart,
+                  numberEnd: count,
+                  ratio: item.ratio * 100,
+                };
+                numberStart = count + 1;
+                return obj;
+              });
+            }
+            this.status = "edit";
           } else {
             this.edit_info = {
               campId: this.campId,
@@ -487,35 +552,35 @@ export default {
               acceptPercent: 0,
               receiveCount: 0,
               laterDiscountRatio: 0,
-            }
-            this.status = 'add'
+            };
+            this.status = "add";
           }
         } else {
-          this.$Message.error(res.msg)
+          this.$Message.error(res.msg);
         }
-      })
+      });
     },
 
     statusCheckChange() {
-      this.isCheckDisabled = false
+      this.isCheckDisabled = false;
     },
 
     editOk() {
       if (!this.edit_info.dailyOpenTimes && this.edit_info.dailyOpenTimes != 0) {
-        this.$Message.error('每人每天开团次数不能为空')
-        return
+        this.$Message.error("每人每天开团次数不能为空");
+        return;
       }
       if (!this.edit_info.acceptPercent && this.edit_info.acceptPercent != 0) {
-        this.$Message.error('受邀人助力者用券后给分享者返佣比例不能为空')
-        return
+        this.$Message.error("受邀人助力者用券后给分享者返佣比例不能为空");
+        return;
       } else if (this.edit_info.acceptPercent > 100) {
-        this.$Message.error('受邀人助力者用券后给分享者返佣比例范围为（0～100）')
-        return
+        this.$Message.error("受邀人助力者用券后给分享者返佣比例范围为（0～100）");
+        return;
       }
 
       if (!this.edit_info.addMultiple && this.edit_info.addMultiple != 0) {
-        this.$Message.error('团长优惠金额放大倍数不能为空')
-        return
+        this.$Message.error("团长优惠金额放大倍数不能为空");
+        return;
       }
 
       // if (
@@ -527,8 +592,8 @@ export default {
       // }
 
       if (!this.edit_info.dailyAcceptShareTimes && this.edit_info.dailyAcceptShareTimes != 0) {
-        this.$Message.error('每人每天接受分享奖励限制次数不能为空')
-        return
+        this.$Message.error("每人每天接受分享奖励限制次数不能为空");
+        return;
       }
 
       // if (
@@ -540,50 +605,50 @@ export default {
       // }
 
       if (!this.edit_info.discountRatio && this.edit_info.discountRatio != 0) {
-        this.$Message.error('折扣比例不能为空')
-        return
+        this.$Message.error("折扣比例不能为空");
+        return;
       } else if (this.edit_info.discountRatio > 100) {
-        this.$Message.error('折扣比例范围为（0～100）')
-        return
+        this.$Message.error("折扣比例范围为（0～100）");
+        return;
       }
 
       if (!this.edit_info.laterDiscountRatio && this.edit_info.laterDiscountRatio != 0) {
-        this.$Message.error('后续折扣比例不能为空')
-        return
+        this.$Message.error("后续折扣比例不能为空");
+        return;
       } else if (this.edit_info.laterDiscountRatio > 100) {
-        this.$Message.error('后续折扣比例范围为（0～100）')
-        return
+        this.$Message.error("后续折扣比例范围为（0～100）");
+        return;
       }
 
       if (!this.edit_info.receiveCount && this.edit_info.receiveCount != 0) {
-        this.$Message.error('领取次数不能为空')
-        return
+        this.$Message.error("领取次数不能为空");
+        return;
       }
 
       if (!this.edit_info.limitTime && this.edit_info.limitTime != 0) {
-        this.$Message.error('拼团限时不能为空')
-        return
+        this.$Message.error("拼团限时不能为空");
+        return;
       }
 
       if (!this.edit_info.helpAwardLower && this.edit_info.helpAwardLower != 0) {
-        this.$Message.error('助力得全场满减现金券面额下限百分比不能为空')
-        return
+        this.$Message.error("助力得全场满减现金券面额下限百分比不能为空");
+        return;
       } else if (this.edit_info.helpAwardLower > 100) {
-        this.$Message.error('助力得全场满减现金券面额下限百分比范围为（0～100）')
-        return
+        this.$Message.error("助力得全场满减现金券面额下限百分比范围为（0～100）");
+        return;
       }
 
       if (!this.edit_info.helpAwardUpper && this.edit_info.helpAwardUpper != 0) {
-        this.$Message.error('助力得全场满减现金券面额上限百分比不能为空')
-        return
+        this.$Message.error("助力得全场满减现金券面额上限百分比不能为空");
+        return;
       } else if (this.edit_info.helpAwardUpper > 100) {
-        this.$Message.error('助力得全场满减现金券面额上限百分比范围为（0～100）')
-        return
+        this.$Message.error("助力得全场满减现金券面额上限百分比范围为（0～100）");
+        return;
       }
 
       if (this.edit_info.helpAwardLower > this.edit_info.helpAwardUpper) {
-        this.$Message.error("'助力得全场满减现金券面额下限百分比'不能大于'助力得全场满减现金券面额下限百分比'")
-        return
+        this.$Message.error("'助力得全场满减现金券面额下限百分比'不能大于'助力得全场满减现金券面额下限百分比'");
+        return;
       }
 
       // if (
@@ -598,38 +663,45 @@ export default {
       // }
 
       if (!this.edit_info.lowerDiscountAmount && this.edit_info.lowerDiscountAmount != 0) {
-        this.$Message.error('最低优惠额不能为空')
-        return
+        this.$Message.error("最低优惠额不能为空");
+        return;
       }
 
       if (!this.edit_info.upperDiscountAmount && this.edit_info.upperDiscountAmount != 0) {
-        this.$Message.error('最高优惠额不能为空')
-        return
+        this.$Message.error("最高优惠额不能为空");
+        return;
       }
 
       if (this.edit_info.lowerDiscountAmount > this.edit_info.upperDiscountAmount) {
-        this.$Message.error("'最低优惠额'不能大于'最高优惠额'")
-        return
+        this.$Message.error("'最低优惠额'不能大于'最高优惠额'");
+        return;
       }
 
       if (!this.edit_info.randomSeed) {
-        this.$Message.error('随机因子不能为空')
-        return
+        this.$Message.error("随机因子不能为空");
+        return;
       }
 
-      if (this.status == 'add') {
-        this.getUrl = '/campaginGrabInfoSet/add'
-        this.msg = '新增成功'
+      if (this.status == "add") {
+        this.getUrl = "/campaginGrabInfoSet/add";
+        this.msg = "新增成功";
       } else {
-        this.getUrl = '/campaginGrabInfoSet/edit'
-        this.msg = '编辑成功'
+        this.getUrl = "/campaginGrabInfoSet/edit";
+        this.msg = "编辑成功";
       }
 
       if (!this.ruleValidate()) {
-        return
+        return;
       }
 
-      this.edit_loading = true
+      this.edit_loading = true;
+
+      let levelRatio = this.levelRatio.map(item => {
+        return {
+          receiveCount: item.numberEnd,
+          ratio: item.ratio / 100,
+        };
+      });
       const reqParams = {
         campId: this.edit_info.campId,
         addMultiple: this.edit_info.addMultiple,
@@ -638,7 +710,7 @@ export default {
         // dailyFreeOpenTimes: this.edit_info.dailyFreeOpenTimes,
         dailyJoinGroupTimes: this.edit_info.dailyJoinGroupTimes,
         dailyOpenTimes: this.edit_info.dailyOpenTimes,
-        discountRatio: this.edit_info.discountRatio / 100,
+
         groupCount: this.edit_info.groupCount,
         helpAwardLower: this.edit_info.helpAwardLower / 100,
         helpAwardUpper: this.edit_info.helpAwardUpper / 100,
@@ -649,54 +721,57 @@ export default {
         upperDiscountAmount: this.edit_info.upperDiscountAmount,
         acceptPercent: this.edit_info.acceptPercent / 100,
         receiveCount: this.edit_info.receiveCount,
+        // discountRatio: this.edit_info.discountRatio / 100,
+        discountRatio: this.edit_info.laterDiscountRatio / 100,
         laterDiscountRatio: this.edit_info.laterDiscountRatio / 100,
-      }
+        levelRatio: JSON.stringify(levelRatio), //阶段折扣
+      };
 
       postRequest(this.getUrl, reqParams).then(res => {
-        this.edit_loading = false
+        this.edit_loading = false;
         if (res.code == 200) {
-          this.$Message.info(this.msg)
-          this.isCheckDisabled = true
+          this.$Message.info(this.msg);
+          this.isCheckDisabled = true;
           setTimeout(() => {
-            this.goback()
-          }, 1200)
+            this.goback();
+          }, 1200);
         } else {
-          this.$Message.error(res.msg)
+          this.$Message.error(res.msg);
         }
-      })
+      });
     },
 
     removeInfo() {
-      const self = this
+      const self = this;
       this.$Modal.confirm({
-        title: '删除确认',
+        title: "删除确认",
         content: `删除后不可恢复，是否继续删除？`,
         onOk: function() {
           const reqParams = {
             campId: self.edit_info.campId,
-          }
+          };
 
-          postRequest('/campaginGrabInfoSet/delete?campId=' + self.edit_info.campId, reqParams).then(res => {
-            self.loading = false
-            if (res.code == '200') {
-              self.$Message.info('删除成功！')
+          postRequest("/campaginGrabInfoSet/delete?campId=" + self.edit_info.campId, reqParams).then(res => {
+            self.loading = false;
+            if (res.code == "200") {
+              self.$Message.info("删除成功！");
               setTimeout(() => {
-                self.goback()
-              }, 1200)
+                self.goback();
+              }, 1200);
             } else {
-              self.$Message.error(res.msg)
+              self.$Message.error(res.msg);
             }
-          })
+          });
         },
         onCancel: () => {
-          self.$Message.info('点击了取消')
+          self.$Message.info("点击了取消");
         },
-      })
+      });
     },
     // 跳转列表
 
     goback() {
-      this.$emit('changeStatus', false)
+      this.$emit("changeStatus", false);
     },
 
     // 遍历输入框是否有小数点
@@ -714,48 +789,48 @@ export default {
         // this.edit_info.shareUseRakeBackPercent.toString(),
         // this.edit_info.acceptPercent.toString(),
         this.edit_info.discountRatio.toString(),
-      ]
+      ];
       // console.log(edit_info1);
       // return
       // let str = "" + this.edit_info.dailyOpenTimes;
       for (let i = 0; i < edit_info1.length; i++) {
-        if (edit_info1[i].indexOf('.') != -1) {
-          this.$Message.error('只能输入整数')
-          return false
+        if (edit_info1[i].indexOf(".") != -1) {
+          this.$Message.error("只能输入整数");
+          return false;
         }
       }
-      return true
+      return true;
     },
     // 要优惠算法参数 相关方法
     discountRatioAdd() {
-      if (this.discountRatioList.length >= 10) {
-        this.$Message.info('多阶段奖励最多设置十档')
-        return
+      if (this.levelRatio.length >= 10) {
+        this.$Message.info("多阶段奖励最多设置十档");
+        return;
       }
-      this.discountRatioList.push({
+      this.levelRatio.push({
         numberStart: 0,
         numberEnd: 0,
-        discountRatio: 0,
-      })
-      this.discountRatioChange(this.discountRatioList.length - 1)
+        ratio: 0,
+      });
+      this.discountRatioChange();
     },
     discountRatioRemove(index) {
-      this.discountRatioList.splice(index, 1)
-      this.discountRatioChange(index)
+      this.levelRatio.splice(index, 1);
+      this.discountRatioChange(index);
     },
-    discountRatioChange(index) {
-      let len = this.discountRatioList.length
-      for (let i = index - 1; i < len; i++) {
-        let item = this.discountRatioList[i]
+    discountRatioChange(index = 0) {
+      let len = this.levelRatio.length;
+      for (let i = index; i < len; i++) {
+        let item = this.levelRatio[i];
         if (i + 1 < len) {
-          let item2 = this.discountRatioList[i + 1]
-          item2.numberStart = item.numberStart + item.numberEnd
+          let item2 = this.levelRatio[i + 1];
+          item2.numberStart = item.numberEnd + 1;
         }
       }
     },
   },
   mounted() {},
-}
+};
 </script>
 
 <style>

@@ -94,5 +94,6 @@ export default {
         shopId: null,
         shopName: null,
         index: 1
-    }]
+    }],
+    shopRequestList:[]
 }

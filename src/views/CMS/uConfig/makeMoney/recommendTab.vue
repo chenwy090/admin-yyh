@@ -81,9 +81,9 @@
 
     <Modal v-model="modalAddShow" title="推荐券" :mask-closable="false" @on-cancel="modalAddShow = false">
       <Form :model="modalAddData" ref="modalAddForm2" :label-width="70" class="search-form" :rules="modalAddValidate">
-        <Form-item label="可领城市" prop="status">
+        <Form-item label="可领城市" prop="code">
           <Select
-            v-model="modalAddData.provice"
+            v-model="modalAddData.provinceCode"
             placeholder="请选择省"
             style="width:100px"
             @on-change="proviceChange($event)"
@@ -91,27 +91,34 @@
             <Option v-for="item in proviceSelect" :value="item" :key="item">{{ item }}</Option>
           </Select>
           /
-          <Select v-model="modalAddData.city" placeholder="请选择市" style="width:100px">
+          <Select v-model="modalAddData.cityCode" placeholder="请选择市" style="width:100px">
             <Option v-for="item in citySelect" :value="item" :key="item">{{ item }}</Option>
           </Select>
         </Form-item>
 
-        <Form-item label="有效期">
+        <Form-item label="有效期" prop="time">
           <DatePicker
             transfer
             type="daterange"
             placeholder="请选择有效期"
-            @on-change="searchForm.settleTime = $event"
-            v-model="searchForm.settleTime"
+            @on-change="[modalAddData.beginTime, modalAddData.endTime] = $event"
+            v-model="modalAddData.time"
             style="width: 200px"
           >
           </DatePicker>
         </Form-item>
         <Form-item label="优惠券">
-          <Row><Button :disabled="couponList.length === 3" @click="showCouponList = true">添加</Button></Row>
-          <template v-for="(item, index) in couponList">
-            <Tag closable @on-close="couponListRemove(index)">{{ item.name }}</Tag>
-          </template>
+          <Row
+            ><Button @click="showCouponList = true">添加</Button>
+            <span style="color:#999;margin-left:1vh;">拖动调整顺序</span></Row
+          >
+          <CompSortDrag :list="couponList">
+            <template v-for="(item, index) in couponList">
+              <Row :key="index"
+                ><Tag closable @on-close="couponListRemove(index)">{{ item.name }}</Tag></Row
+              >
+            </template>
+          </CompSortDrag>
         </Form-item>
       </Form>
       <div slot="footer">
@@ -157,60 +164,61 @@ import {
   settleBillList,
   settleBillSave,
   settleBillApply,
-} from '@/api/financial'
+} from "@/api/financial";
 
-import * as cms from '@/api/cms'
+import * as cms from "@/api/cms";
 
-import CouponList from '@/views/CMS/contentArea/publish/CouponList'
+import CouponList from "@/views/CMS/contentArea/publish/CouponList";
+import CompSortDrag from "@/components/CompSortDrag";
 
 const columns = [
   {
-    title: '操作',
+    title: "操作",
     width: 245,
-    align: 'center',
-    fixed: 'left',
-    slot: 'operate',
+    align: "center",
+    fixed: "left",
+    slot: "operate",
   },
   {
-    title: '可领省/市',
+    title: "可领省/市",
     width: 140,
-    align: 'center',
-    key: 'billNo',
+    align: "center",
+    key: "billNo",
   },
   {
-    title: '有效期',
-    align: 'center',
-    key: 'settlementCycle',
+    title: "有效期",
+    align: "center",
+    key: "settlementCycle",
   },
   {
-    title: '状态',
+    title: "状态",
     width: 190,
-    align: 'center',
-    key: 'brandName',
+    align: "center",
+    key: "brandName",
   },
   {
-    title: '创建人',
+    title: "创建人",
     width: 190,
-    align: 'center',
-    key: 'merchantName',
+    align: "center",
+    key: "merchantName",
   },
   {
-    title: '创建时间',
-    align: 'right',
-    key: 'realPay',
+    title: "创建时间",
+    align: "right",
+    key: "realPay",
   },
-]
+];
 
 export default {
-  components: { CouponList },
+  components: { CouponList, CompSortDrag },
   data() {
     return {
       searchForm: {
         pageNum: 1,
         pageSize: 10,
-        billNo: '',
-        brandName: '',
-        merchantName: '',
+        billNo: "",
+        brandName: "",
+        merchantName: "",
         status: 0,
         settleTime: [],
       },
@@ -226,35 +234,7 @@ export default {
       modalAddShow: false,
       modalAddBtnShow: false,
       modalAddData: {},
-      modalAddValidate: {
-        merchantName: {
-          required: true,
-          message: '商户不能为空',
-          trigger: 'change',
-        },
-        settleTimeStart: {
-          required: true,
-          message: '结算周期不能为空',
-          validator: (rule, value, callback) => {
-            if (!value) {
-              callback(new Error('请选择结算日期'))
-            } else {
-              callback()
-            }
-          },
-        },
-        settleTimeEnd: {
-          required: true,
-          message: '结算周期不能为空',
-          validator: (rule, value, callback) => {
-            if (!value) {
-              callback(new Error('请选择结算日期'))
-            } else {
-              callback()
-            }
-          },
-        },
-      },
+      modalAddValidate: {},
       merchantData: null,
 
       proviceSelect: [],
@@ -263,71 +243,59 @@ export default {
       couponList: [],
 
       modalEditShow: false,
-    }
+    };
   },
   mounted() {
-    this.getList()
+    this.getList();
     cms.shopProvice().then(res => {
       if (res.isSuccess) {
-        this.proviceSelect = res.data
+        this.proviceSelect = res.data;
       }
-    })
+    });
   },
   methods: {
     search() {
-      this.searchForm.pageNum = 1
-      this.getList()
+      this.searchForm.pageNum = 1;
+      this.getList();
     },
     getList() {
-      this.TableLoading = true
+      this.TableLoading = true;
       let body = {
         ...this.searchForm,
-      }
-      delete body.daterange
+      };
+      delete body.daterange;
       settleBillList(body).then(res => {
-        this.TableLoading = false
+        this.TableLoading = false;
         if (res && res.code == 200) {
-          this.table_list = res.data.records
-          this.totalSize = res.data.total
+          this.table_list = res.data.records;
+          this.totalSize = res.data.total;
         } else {
-          this.$Message.error(res.msg)
+          this.$Message.error(res.msg);
         }
-      })
+      });
     },
     changeCurrent(current) {
-      this.searchForm.pageNum = current
-      this.getList()
+      this.searchForm.pageNum = current;
+      this.getList();
     },
     // 重置form表单
     resetForm(name) {
-      this.$refs[name].resetFields()
-      if (name == 'searchForm') {
-        this.search()
+      this.$refs[name].resetFields();
+      if (name == "searchForm") {
+        this.search();
       }
     },
     //手动添加结算清单
     addManualDisplayFn() {
-      this.$refs['modalAddForm2'].resetFields()
-      this.modalAddShow = true
+      this.$refs["modalAddForm2"].resetFields();
+      this.modalAddShow = true;
     },
     modalAddOk(name) {
       this.$refs[name].validate(valid => {
-        if (!valid) return
-        let body = JSON.parse(JSON.stringify(this.modalAddData))
-        body.settleTime = [body.settleTimeStart, body.settleTimeEnd]
-        delete body.merchantName
-        this.modalAddBtnShow = true
-        settleBillSave(body).then(res => {
-          this.modalAddShow = false
-          this.modalAddBtnShow = false
-          if (res && res.code == 200) {
-            this.$Message.success('手动创建成功！')
-            this.search()
-          } else {
-            this.$Message.error(res.msg)
-          }
-        })
-      })
+        if (!valid) return;
+        this.modalAddBtnShow = true;
+        // this.modalAddShow = false;
+      });
     },
     // editLabelDisplayFn(item) {
     //   this.$Modal.confirm({
@@ -352,25 +320,25 @@ export default {
     //   })
     // },
     proviceChange(provinceName) {
-      this.searchForm.city = ''
+      this.searchForm.city = "";
       cms.shopCity({ province: provinceName }).then(res => {
         if (res.isSuccess) {
-          this.citySelect = res.data
+          this.citySelect = res.data;
         }
-      })
+      });
     },
     selectedCouponItem(data) {
       if (this.couponList.filter(item => item.id == data.id).length > 0) {
-        this.$Message.error('优惠券有重复，请重新选择')
-        return
+        this.$Message.error("优惠券有重复，请重新选择");
+        return;
       }
-      this.couponList.push(data)
+      this.couponList.push(data);
     },
     couponListRemove(index) {
-      this.couponList.splice(index, 1)
+      this.couponList.splice(index, 1);
     },
   },
-}
+};
 </script>
 <style lang="less" scoped>
 .operation {
