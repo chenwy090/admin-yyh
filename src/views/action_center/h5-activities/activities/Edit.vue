@@ -18,23 +18,28 @@
           <ul class="query-activity">
             <li class="item">
               <span class="label">活动类型：</span>
-              <div class="value">定时展示类</div>
+              <div class="value">{{activityInfo.activityTypeName}}</div>
             </li>
             <li class="item">
               <span class="label">活动名称：</span>
-              <div class="value">定时展示类</div>
+              <div class="value">{{activityInfo.name}}</div>
             </li>
             <li class="item">
               <span class="label">活动时间：</span>
-              <div class="value">定时展示类</div>
+              <div class="value">{{activityInfo.startTime}} - {{activityInfo.endTime}}</div>
             </li>
             <li class="item">
               <span class="label">开放城市：</span>
-              <div class="value">定时展示类</div>
+              <div class="value">
+                <template v-if="activityInfo.openCityType == 1">全部城市</template>
+                <template v-if="activityInfo.openCityType == 2">
+                  <span v-for="item in activityInfo.cityList" :key="item.cityCode" style="margin-right:10px;">{{item.cityName}}</span>
+                </template>
+              </div>
             </li>
             <li class="item">
               <span class="label">活动链接：</span>
-              <div class="value">www.xxx.com/222<Button type="primary" size="small" style="margin-left:20px;">复制链接</Button></div>
+              <div class="value">{{activityInfo.h5Url}}<Button type="primary" size="small" style="margin-left:20px;">复制链接</Button></div>
             </li>
           </ul>
 
@@ -50,14 +55,14 @@
           >
             <FormItem
               label="活动类型："
-              prop="activityType"
+              prop="templateType"
               :rules="{ required: true, message: '请选择活动类型' }"
             >
-              <Select v-model="formData.activityType" style="width:300px">
+              <Select v-model="formData.templateType" style="width:300px">
                 <Option
-                  v-for="item in activityTypeOption"
-                  :value="item.id"
-                  :key="item.name"
+                  v-for="(item,index) in activityTypeOption"
+                  :value="item.type"
+                  :key="index"
                 >{{ item.name }}</Option>
               </Select>
             </FormItem>
@@ -71,10 +76,10 @@
                 <Input style="width:300px" v-model="formData.name" placeholder="请输入活动名称" clearable />
               </Tooltip>
             </FormItem>
-            <FormItem label="活动时间：" prop="beginTime" :rules="{ required: true, message: '请选择活动时间' }">
+            <FormItem label="活动时间：" prop="startTime" :rules="{ required: true, message: '请选择活动时间' }">
               <DatePicker
                 type="datetimerange"
-                placeholder="请选择抽奖日期"
+                placeholder="请选择活动时间"
                 format="yyyy-MM-dd HH:mm:ss"
                 style="display:inline-block;width: 300px"
                 :value="daterange"
@@ -83,16 +88,15 @@
             </FormItem>
             <FormItem
               label="开放城市："
-              prop="cityType"
+              prop="openCityType"
+              :rules="{ required: true, message: '请选择开放城市' }"
             >
-              <RadioGroup v-model="formData.cityType">
-                  <Radio label="1">全部城市</Radio>
-                  <Radio label="2">指定城市</Radio>
+              <RadioGroup v-model="formData.openCityType">
+                  <Radio label="1" v-for="(item,index) in openCityTypeOptions" :label="item.value" :key="index">{{item.label}}</Radio>
               </RadioGroup>
-              <div class="change-city" v-if="formData.cityType == '2'">
-                <CheckboxGroup v-model="formData.city">
-                  <Checkbox label="杭州"></Checkbox>
-                  <Checkbox label="无锡"></Checkbox>
+              <div class="change-city" v-if="formData.openCityType == 2">
+                <CheckboxGroup v-model="formData.cityCodeList">
+                  <Checkbox v-for="item in openCityList" :label="item.cityCode" :key="item.cityCode">{{item.cityName}}</Checkbox>
                 </CheckboxGroup>
               </div>
             </FormItem>
@@ -108,7 +112,7 @@
 </template>
 <script>
 import { createNamespacedHelpers } from "vuex";
-const { mapState, mapActions, mapGetters } = createNamespacedHelpers("egg");
+const { mapState, mapActions, mapGetters } = createNamespacedHelpers("template");
 
 import util from "@/libs/util";
 import { postRequest } from "@/libs/axios";
@@ -139,19 +143,21 @@ export default {
         // 新增
         if (type == "add") {
           this.title = "创建活动";
-          this.url = "/activityInfo/add";
+          this.url = "/browsing/templateInfo/add";
           this.formData = createFormData();
           this.daterange = [];
         } else if(type == "query"){
           this.title = "查看活动";
+          this.url = '/browsing/templateInfo/selectById';
+          this.queryActivityInfo(data.id,type);
         }else {
           //edit 修改
           this.title = "修改活动";
-          this.url = "/activityInfo/edit";
-          this.formData = JSON.parse(JSON.stringify(data));
+          this.queryActivityInfo(data.id,type);
 
-          let { beginTime, endTime } = data;
-          this.daterange = [beginTime, endTime];
+
+
+          
         }
       },
       deep: true
@@ -161,27 +167,28 @@ export default {
     return {
       // 新增、修改 任务抽奖banner
       // /activityInfo/add新增 /activityInfo/edit修改
-      url: "/activityInfo/add",
+      url: "/browsing/templateInfo/add",
       isShow: false,
       title: "创建活动",
-      // activityTypeOption: [
-      //   {
-      //     value: 0,
-      //     label: "扭蛋机抽奖"
-      //   }
-      // ],
       daterange: [],
       formData: createFormData(),
-      ruleValidate: {}
+      ruleValidate: {},
+      openCityTypeOptions:[{label:'全部城市',value:1},{label:'指定城市',value:2}],
+      openCityList:[],
+      activityInfo:{}
     };
   },
-  async mounted() {},
+  async created(){
+    await this.queryOpenCity();
+  },
+  async mounted() { 
+  },
   methods: {
     changeTime(arr) {
       // yyyy-MM-dd HH:mm:ss
       console.log(arr);
       let [beginTime, endTime] = arr;
-      this.formData.beginTime = beginTime;
+      this.formData.startTime = beginTime;
       this.formData.endTime = endTime;
     },
     closeDialog() {
@@ -191,6 +198,13 @@ export default {
       this.isShow = false;
       // this.$emit(`update:showExchange`, false);
     },
+    async queryOpenCity(){
+      await postRequest('/system/area/openCity/list').then(val =>{
+        if(val.code == 200){
+          this.openCityList = val.data;
+        }
+      })
+    },
     handleSubmit(name) {
       this.$refs[name].validate(async valid => {
         // console.log(JSON.stringify(this.formValidate));
@@ -199,8 +213,9 @@ export default {
 
           let oForm = JSON.parse(JSON.stringify(this.formData));
 
-          let { code, msg } = await postRequest(this.url, oForm);
 
+
+          let { code, msg } = await postRequest(this.url, oForm);
           if (code == 200) {
             this.msgOk("保存成功");
             // 关闭对话框
@@ -229,6 +244,45 @@ export default {
         callback();
       };
     },
+    async queryActivityInfo(id,type){
+      let { code, msg ,data} = await postRequest(this.url, {id:id});
+      if(code == 200){
+        if(type == 'query'){
+          this.activityTypeOption.forEach(item =>{
+            if(item.type == data.templateType){
+              data.activityTypeName = item.name
+            }
+          })
+          this.activityInfo = data;
+        }else{
+          this.url = "/browsing/templateInfo/edit";
+          //获取city的code
+          let cityCode = [];
+          if(data.cityList == null){
+            cityCode = [];
+          }else{
+            data.cityList.forEach(item =>{
+              cityCode.push(item.cityCode)
+            })
+          }
+          console.log(cityCode)
+          this.formData = {
+            id:data.id,
+            templateType:data.templateType,
+            name:data.name,
+            openCityType:data.openCityType,
+            cityCodeList:cityCode,
+            startTime:data.startTime,
+            endTime:data.endTime
+          }
+          let { startTime, endTime } = data;
+          this.daterange = [startTime, endTime];
+        }
+
+      }else{
+        this.msgErr(msg);
+      }
+    },
     // 全局提示
     msgOk(txt) {
       this.$Message.info({
@@ -254,6 +308,7 @@ export default {
     list-style:none;
     .item{
       display:flex;
+      padding:10px 0;
     }
     .label{
       width:80px;

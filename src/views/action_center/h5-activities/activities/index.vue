@@ -26,8 +26,8 @@
           </FormItem>
 
           <FormItem label="活动类型：" :label-width="80">
-            <Select v-model="searchData.status" style="width:200px" clearable>
-              <Option v-for="(v,k) in statusOption" :value="k" :key="v">{{ v }}</Option>
+            <Select v-model="searchData.templateType" style="width:200px" clearable>
+              <Option v-for="(item,index) in activityTypeOption" :value="item.type" :key="index">{{ item.name }}</Option>
             </Select>
           </FormItem>
 
@@ -56,43 +56,43 @@
         <template slot-scope="{ row }" slot="action">
           
             <!--待上架状态-->
-          <Button type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="updateStatus(row,2)">上架</Button>
+          <Button type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="updateStatus(row,2)" v-if="row.status == 1">上架</Button>
           <Button type="text" size="small" style="color:#2db7f5;margin-right: 5px"  @click="addOrEdit('query',row)">查看活动</Button>
-          <Button type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEdit('edit',row)">编辑活动</Button>
+          <Button type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEdit('edit',row)" v-if="row.status == 1">编辑活动</Button>
           <Button
             type="text"
             size="small"
-            style="color:#2db7f5;margin-right: 5px" @click="addOrEditJackpot('edit',row)">
+            style="color:#2db7f5;margin-right: 5px" @click="addOrEditJackpot('edit',row)" v-if="row.status == 1">
             编辑活动模块
           </Button>
           <Button
             type="text"
             size="small"
-            style="color:#2db7f5;margin-right: 5px"  @click="addOrEditJackpot('query',row)">
+            style="color:#2db7f5;margin-right: 5px"  @click="addOrEditJackpot('query',row)" v-if="row.status != 1">
             查看活动模块
           </Button>
           <Button
             type="text"
             size="small"
-            style="color:#2db7f5;margin-right: 5px" @click="addOrEditStyle('edit',row)">
+            style="color:#2db7f5;margin-right: 5px" @click="addOrEditStyle('edit',row)" v-if="row.status == 1">
             编辑活动样式
           </Button>
           <Button
             type="text"
             size="small"
-            style="color:#2db7f5;margin-right: 5px" @click="addOrEditStyle('query',row)">
+            style="color:#2db7f5;margin-right: 5px" @click="addOrEditStyle('query',row)" v-if="row.status != 1">
             查看活动样式
           </Button>
           <Button
             type="text"
             size="small"
-            style="color:#2db7f5;margin-right: 5px" @click="addOrEditShare('edit',row)">
+            style="color:#2db7f5;margin-right: 5px" @click="addOrEditShare('edit',row)" v-if="row.status == 1">
             编辑分享内容
           </Button>
           <Button
             type="text"
             size="small"
-            style="color:#2db7f5;margin-right: 5px" @click="addOrEditShare('query',row)">
+            style="color:#2db7f5;margin-right: 5px" @click="addOrEditShare('query',row)" v-if="row.status != 1">
             查看分享内容
           </Button>
 
@@ -189,7 +189,7 @@
 </template>
 <script>
 import { createNamespacedHelpers } from "vuex";
-const { mapMutations, mapGetters } = createNamespacedHelpers("egg");
+const { mapMutations, mapGetters } = createNamespacedHelpers("template");
 import { getRequest, postRequest } from "@/libs/axios";
 import { queryUbayMList } from "@/api/sys";
 import columns from "./columns";
@@ -251,10 +251,10 @@ export default {
       daterange: [],
       // 查询参数
       searchData: {
-        activityType: "",
+        templateType: "",
         name: "", //活动名称
         status: "", //状态
-        beginTime: "", //开始时间
+        startTime: "", //开始时间
         endTime: "" //结束时间
       },
       loading: false, //列表加载动画
@@ -317,7 +317,7 @@ export default {
       console.log("addOrEditJackpot", { ...this.jackpotAction });
     },
     addOrEditStyle(type, data) {
-      this.setActivityId(data.activityId); //设置活动id
+      this.setActivityId(data.id); //设置活动id
       console.log("addOrEditStyle", type, data);
       this.showEditStyle = true;
       let title = "";
@@ -346,11 +346,11 @@ export default {
       console.log(arr);
       let [beginTime, endTime] = arr;
       if (beginTime) {
-        beginTime += ` 00:00:00`;
+        startTime += ` 00:00:00`;
         endTime += ` 23:59:59`;
       }
       console.log(beginTime, endTime);
-      this.searchData.beginTime = beginTime;
+      this.searchData.startTime = beginTime;
       this.searchData.endTime = endTime;
     },
 
@@ -358,7 +358,7 @@ export default {
     async updateStatus(row, status) {
       // 点上架传2 下架传3
       // 活动类型列表
-      const url = "/activityInfo/updateStatus";
+      const url = "/browsing/templateInfo/updateStatus";
       // status 活动状态, 1-待上架 2-已上架 3已下架
       let { id } = row;
 
@@ -367,6 +367,7 @@ export default {
       }
 
       let { code, data } = await postRequest(url, { id, status });
+
 
       if (code == 200) {
         this.queryTableData(this.page.pageNum);
@@ -379,8 +380,8 @@ export default {
     },
     async queryActivityTypeList() {
       // 活动类型列表
-      const url = "/activityInfo/selectActivityTypeList";
-      let { code, data } = await getRequest(url);
+      const url = "/browsing/templateInfo/type/list";
+      let { code, data } = await postRequest(url);
 
       if (code == 200) {
         // 测试专用
@@ -388,8 +389,8 @@ export default {
         // _data.id = Math.random();
         // _data.name = _data.name + Math.random();
         // data.push(_data);
-        this.activityTypeOption = data;
-        this.setActivityTypeOption({ activityTypeOption: data });
+        this.activityTypeOption.push(data);
+        this.setActivityTypeOption({ activityTypeOption: this.activityTypeOption });
       } else {
         this.msgErr(code + " 数据加载失败!");
       }
@@ -407,7 +408,7 @@ export default {
       this.page.pageNum = pageNum || 1;
       this.loading = true;
 
-      const url = "/activityInfo/list";
+      const url = "/browsing/templateInfo/list";
 
       try {
         let {
@@ -420,22 +421,20 @@ export default {
 
         if (code == 200) {
           this.tableData = records.map(item => {
-            let { activityType, status, beginTime, endTime } = item;
+            let { templateType, name,status, startTime, endTime } = item;
             item.statusName = this.statusOption[status];
 
             console.log("statusName:", status, item.statusName);
 
             let activityTypeName = "";
-            this.activityTypeOption.some(item => {
-              let r = item.id == activityType;
-              if (r) {
-                activityTypeName = item.name;
+            this.activityTypeOption.forEach(item =>{
+              if(item.type == templateType){
+                activityTypeName = item.name
               }
-              return r;
-            });
+            })
 
             item.activityTypeName = activityTypeName;
-            item.time = `${beginTime}-${endTime}`;
+            item.time = `${startTime}-${endTime}`;
             // console.log(JSON.stringify(this.activityTypeOption));
             // console.log({ ...item });
 
@@ -459,7 +458,7 @@ export default {
         activityType: "",
         name: "", //活动名称
         status: "", //状态
-        beginTime: "", //开始时间
+        startTime: "", //开始时间
         endTime: "" //结束时间
       };
       this.page = {

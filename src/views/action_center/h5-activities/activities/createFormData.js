@@ -1,11 +1,11 @@
 export default function createFormData() {
     return {
         id: "",
-        activityType: 1,
+        templateType: 1,
         name: "",
-        beginTime: "",
+        startTime: "",
         endTime: "",
-        cityType:'',
-        city:[]
+        openCityType:'',
+        cityCodeList:[]
     };
 };
