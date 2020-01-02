@@ -97,9 +97,10 @@
       <Divider />
       <Alert type="warning">选择图片（不大2M,GIF/JPG/JPEG/PNG）</Alert>
       <Row type="flex" justify="start">
-        <Col span="8">
+        <Col span="5">
           <FormItem label="U社区封面：" prop="smallImg" :rules="{ required: true, message: '请上传图片' }">
             <UploadImage
+              :compress="true"
               :fileUploadType="'smallImg'"
               :defaultList="formData.defaultSmallImgList"
               @remove="removeSmallImg"
@@ -107,13 +108,26 @@
             ></UploadImage>
           </FormItem>
         </Col>
-        <Col span="8">
+        <Col span="5">
           <FormItem label="列表封面：" prop="coverImg" :rules="{ required: true, message: '请上传图片' }">
             <UploadImage
+              :compress="true"
               :fileUploadType="'coverImg'"
               :defaultList="formData.defaultCoverImgList"
               @remove="removeCoverImg"
               @uploadSuccess="coverImgUploadSuccess"
+            ></UploadImage>
+          </FormItem>
+        </Col>
+
+        <Col span="5">
+          <FormItem label="分享图片：" prop="shareImg" :rules="{ required: true, message: '请上传图片' }">
+            <UploadImage
+              :compress="true"
+              :fileUploadType="'shareImg'"
+              :defaultList="formData.defaultShareImgList"
+              @remove="removeShareImg"
+              @uploadSuccess="shareImgUploadSuccess"
             ></UploadImage>
           </FormItem>
         </Col>
@@ -321,10 +335,10 @@ export default {
           id: Math.random(),
           compName: "publish-edit",
           type: "list", // list/add/edit
-          data: {}
+          data: {},
         };
-      }
-    }
+      },
+    },
   },
   components: {
     ModalAddPhone,
@@ -333,14 +347,14 @@ export default {
     UploadImageMultiple,
     UploadImage,
     EditorBar,
-    ModalTagList
+    ModalTagList,
   },
   watch: {
     ["formData.userId"]() {
       const { userId } = this.formData;
       console.log("watch formData.userId:", userId);
       this.findUser("userId", userId);
-    }
+    },
   },
   data() {
     return {
@@ -351,7 +365,7 @@ export default {
         phoneNumber: "",
         todayPublishNum: 0, //今日发布
         weekPublishNum: 0, //7日发布
-        followerNum: 0 //粉丝
+        followerNum: 0, //粉丝
       },
       userList: [],
       showTagList: false,
@@ -360,21 +374,18 @@ export default {
       showCouponList: false,
       submitDisabled: false,
       // isAutoplay   1 -自动  0 -手动
-      autoplayOptions: [
-        { value: 0, label: "手动轮播" },
-        { value: 1, label: "自动轮播" }
-      ],
+      autoplayOptions: [{ value: 0, label: "手动轮播" }, { value: 1, label: "自动轮播" }],
       //contentType 1-Gif  2-图片轮播  3-视频 区分一下 提交的时候什么图片类型
       contentTypeList: [
         { value: 1, label: "Gif" },
-        { value: 2, label: "图片轮播" }
+        { value: 2, label: "图片轮播" },
         // { value: 3, label: "视频" }
       ],
       // 类型 sourceType 1-官方 2-PGC 3-UGC
       sourceTypeOption: {
         "1": "官方",
         "2": "PGC",
-        "3": "UGC"
+        "3": "UGC",
       },
       ruleValidate: {},
       item: {},
@@ -389,7 +400,7 @@ export default {
           phoneNumber: "",
           todayPublishNum: "",
           userId: "",
-          weekPublishNum: ""
+          weekPublishNum: "",
         },
         isAutoplay: 0,
         images: [
@@ -400,6 +411,8 @@ export default {
         defaultCoverImgList: [],
         smallImg: "", //列表封面
         defaultSmallImgList: [],
+        shareImg: "", //分享图片
+        defaultShareImgList: [],
         duration: "", //内容时常
 
         title: "", //	内容标题
@@ -418,13 +431,13 @@ export default {
         contentType: 1, //	图片类型   1-Gif  2-图片轮播  3-视频
         scanUbay: "", //	  有效阅读赚 U贝
         likeUbay: "", //	点赞赚 U贝
-        shareUbay: "" //	分享好友赚 U贝
+        shareUbay: "", //	分享好友赚 U贝
       },
       images: [], //图片15张 1张gif
       cityList: [], //适用城市
       citys: [], //适用城市
       tags: [], //标签
-      coupons: [] //优惠券
+      coupons: [], //优惠券
     };
   },
   created() {
@@ -503,13 +516,10 @@ export default {
         couponName: "",
         couponType: 1,
         sort: max,
-        msg: ""
+        msg: "",
       });
 
-      console.log(
-        "add this.formData.coupons:",
-        JSON.stringify(this.formData.coupons)
-      );
+      console.log("add this.formData.coupons:", JSON.stringify(this.formData.coupons));
     },
     delCoupon(index) {
       console.log("delrules:", index);
@@ -531,12 +541,13 @@ export default {
           images,
           smallImg,
           coverImg,
+          shareImg, //分享图片
           sourceType,
           tags,
           citys,
           coupons,
           describe,
-          contentAuthor
+          contentAuthor,
         } = data;
         isAutoplay = +isAutoplay; //bollean --> number
         images = images || [];
@@ -579,8 +590,15 @@ export default {
           defaultCoverImgList = [{ imgUrl: coverImg }];
         }
 
+        // 分享图片 shareImg
+        let defaultShareImgList = [];
+        if (shareImg) {
+          defaultShareImgList = [{ imgUrl: shareImg }];
+        }
+
         this.formData.defaultSmallImgList = defaultSmallImgList;
         this.formData.defaultCoverImgList = defaultCoverImgList;
+        this.formData.defaultShareImgList = defaultShareImgList;
 
         let couponsFlag = true;
         this.formData.coupons = coupons.map(item => {
@@ -621,7 +639,7 @@ export default {
         userId: "",
         todayPublishNum: 0, //今日发布
         weekPublishNum: 0, //7日发布
-        followerNum: 0 //粉丝
+        followerNum: 0, //粉丝
       };
 
       let arr = this.userList.filter(item => {
@@ -722,6 +740,10 @@ export default {
       this.formData.smallImg = "";
       this.formData.defaultSmallImgList = [];
     },
+    removeShareImg() {
+      this.formData.shareImg = "";
+      this.formData.defaultShareImgList = [];
+    },
     coverImgUploadSuccess({ imgUrl, coverImgHeight, coverImgWidth }) {
       this.formData.coverImg = imgUrl;
       this.formData.coverImgHeight = coverImgHeight;
@@ -729,11 +751,14 @@ export default {
       this.formData.defaultCoverImgList = [{ imgUrl }];
     },
     smallImgUploadSuccess({ imgUrl, coverImgHeight, coverImgWidth }) {
-      console.log(1);
       this.formData.smallImg = imgUrl;
       // this.formData.coverImgHeight = coverImgHeight;
       // this.formData.coverImgWidth = coverImgWidth;
       this.formData.defaultSmallImgList = [{ imgUrl }];
+    },
+    shareImgUploadSuccess({ imgUrl }) {
+      this.formData.shareImg = imgUrl;
+      this.formData.defaultShareImgList = [{ imgUrl }];
     },
     updateTagList(data) {
       console.log("selectedTagList----", data);
@@ -891,8 +916,8 @@ export default {
         }
         callback();
       };
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="less" scoped>
