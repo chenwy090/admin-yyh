@@ -4,16 +4,18 @@
       <Form ref="searchForm" :model="searchForm" inline :label-width="70" class="search-form">
         <Form-item label="省/市" prop="status">
           <Select
-            v-model="searchForm.provice"
+            v-model="searchForm.provinceCode"
             placeholder="请选择省"
             style="width:100px"
             @on-change="proviceChange($event)"
           >
-            <Option v-for="item in proviceSelect" :value="item" :key="item">{{ item }}</Option>
+            <Option v-for="item in proviceSelect" :value="item.provinceCode" :key="item.provinceCode">{{
+              item.provinceName
+            }}</Option>
           </Select>
           /
-          <Select v-model="searchForm.city" placeholder="请选择市" style="width:100px">
-            <Option v-for="item in citySelect" :value="item" :key="item">{{ item }}</Option>
+          <Select v-model="searchForm.cityCode" placeholder="请选择市" style="width:100px">
+            <Option v-for="item in citySelect" :value="item.cityCode" :key="item.cityCode">{{ item.cityName }}</Option>
           </Select>
         </Form-item>
 
@@ -22,8 +24,8 @@
             transfer
             type="daterange"
             placeholder="请选择有效期"
-            @on-change="searchForm.settleTime = $event"
-            v-model="searchForm.settleTime"
+            @on-change="[searchForm.beginTime, searchForm.endTime] = $event"
+            v-model="searchForm.time"
             style="width: 200px"
           >
           </DatePicker>
@@ -31,11 +33,11 @@
 
         <Form-item label="状态" prop="status">
           <Select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 150px;">
-            <Option :value="0">全部</Option>
-            <Option :value="1">待发布</Option>
-            <Option :value="2">进行中</Option>
-            <Option :value="3">已终止</Option>
-            <Option :value="4">已结束</Option>
+            <Option :value="''">全部</Option>
+            <Option :value="0">待发布</Option>
+            <Option :value="1">进行中</Option>
+            <Option :value="2">已终止</Option>
+            <Option :value="3">已结束</Option>
           </Select>
         </Form-item>
 
@@ -54,14 +56,31 @@
       <Table :loading="TableLoading" border :columns="tableColumns" :data="table_list" sortable="custom" ref="table">
         <template slot-scope="{ row }" slot="operate">
           <ButtonGroup>
-            <Button size="small" @click="modalEditShow = true">查看</Button>
+            <!-- 0-待发布、1-进行中、2-已终止、3-已结束 -->
+            <Button size="small" @click="viewCouponDetailFn(row)">查看</Button>
             <!-- 只有为"待发布、进行中"的状态，才显示"编辑"按钮。 -->
-            <Button size="small" type="success">编辑</Button>
+            <Button
+              size="small"
+              type="success"
+              :disabled="!(row.status == 0 || row.status == 1)"
+              @click="recommendCouponDetailFn(row)"
+              >编辑</Button
+            >
             <!-- 只有为"进行中"的状态，才显示"终止"按钮。 -->
-            <Button size="small" type="info">终止</Button>
+            <Button size="small" type="info" :disabled="row.status != 1" @click="recommendCouponStopFn(row)"
+              >终止</Button
+            >
             <!-- 只有为"待发布"的状态，才显示"删除"按钮。 -->
-            <Button size="small" type="error">删除</Button>
+            <Button size="small" type="error" :disabled="row.status != 0" @click="recommendCouponDelFn(row)"
+              >删除</Button
+            >
           </ButtonGroup>
+        </template>
+        <template slot-scope="{ row }" slot="province">
+          <p>{{ row.provinceName }}{{ row.cityName }}</p>
+        </template>
+        <template slot-scope="{ row }" slot="time">
+          <p>{{ row.beginTime }}--{{ row.endTime }}</p>
         </template>
       </Table>
       <!-- 用户列表 -->
@@ -81,18 +100,20 @@
 
     <Modal v-model="modalAddShow" title="推荐券" :mask-closable="false" @on-cancel="modalAddShow = false">
       <Form :model="modalAddData" ref="modalAddForm2" :label-width="70" class="search-form" :rules="modalAddValidate">
-        <Form-item label="可领城市" prop="code">
+        <Form-item label="可领城市">
           <Select
             v-model="modalAddData.provinceCode"
             placeholder="请选择省"
             style="width:100px"
             @on-change="proviceChange($event)"
           >
-            <Option v-for="item in proviceSelect" :value="item" :key="item">{{ item }}</Option>
+            <Option v-for="item in proviceSelect" :value="item.provinceCode" :key="item.provinceCode">{{
+              item.provinceName
+            }}</Option>
           </Select>
           /
           <Select v-model="modalAddData.cityCode" placeholder="请选择市" style="width:100px">
-            <Option v-for="item in citySelect" :value="item" :key="item">{{ item }}</Option>
+            <Option v-for="item in citySelect" :value="item.cityCode" :key="item.cityCode">{{ item.cityName }}</Option>
           </Select>
         </Form-item>
 
@@ -130,18 +151,18 @@
     <Modal v-model="modalEditShow" title="查看优惠券" :mask-closable="false" @on-cancel="modalEditShow = false">
       <Form :label-width="80" class="search-form">
         <Form-item label="可领城市：">
-          <p>浙江 > 杭州</p>
+          <p>{{ merchantData.provinceName }} > {{ merchantData.cityName }}</p>
         </Form-item>
         <Form-item label="有效期：">
-          <p>2019-1-1-- 2019-6-6</p>
+          <p>{{ merchantData.beginTime }} -- {{ merchantData.endTime }}</p>
         </Form-item>
         <Form-item label="优惠券：">
-          <p>我的优惠券（ID：123123123|库存：300）</p>
-          <p>我的优惠券（ID：123123123|库存：300）</p>
-          <p>我的优惠券（ID：123123123|库存：300）</p>
+          <p v-for="(item, index) in merchantData.coupons" :key="index">
+            {{ item.couponName }}（ID：{{ item.couponId }} | 库存：{{ item.couponSurplusStock || 0 }}）
+          </p>
         </Form-item>
         <Form-item label="状态：">
-          <p>进行中</p>
+          <p>{{ merchantData.statusDesc }}</p>
         </Form-item>
       </Form>
       <div slot="footer">
@@ -168,7 +189,7 @@ import {
 
 import * as cms from "@/api/cms";
 
-import CouponList from "@/views/CMS/contentArea/publish/CouponList";
+import CouponList from "@/components/couponList/CouponList";
 import CompSortDrag from "@/components/CompSortDrag";
 
 const columns = [
@@ -183,29 +204,32 @@ const columns = [
     title: "可领省/市",
     width: 140,
     align: "center",
-    key: "billNo",
+    key: "province",
+    slot: "province",
   },
   {
     title: "有效期",
     align: "center",
-    key: "settlementCycle",
+    key: "time",
+    width: 220,
+    slot: "time",
   },
   {
     title: "状态",
     width: 190,
     align: "center",
-    key: "brandName",
+    key: "statusDesc",
   },
   {
     title: "创建人",
     width: 190,
     align: "center",
-    key: "merchantName",
+    key: "createBy",
   },
   {
     title: "创建时间",
     align: "right",
-    key: "realPay",
+    key: "gmtCreate",
   },
 ];
 
@@ -216,11 +240,12 @@ export default {
       searchForm: {
         pageNum: 1,
         pageSize: 10,
-        billNo: "",
-        brandName: "",
-        merchantName: "",
-        status: 0,
-        settleTime: [],
+        status: "",
+        beginTime: "",
+        endTime: "",
+        time: "",
+        provinceCode: "",
+        cityCode: "",
       },
 
       current: 1,
@@ -234,8 +259,21 @@ export default {
       modalAddShow: false,
       modalAddBtnShow: false,
       modalAddData: {},
-      modalAddValidate: {},
-      merchantData: null,
+      modalAddValidate: {
+        time: {
+          required: true,
+          message: "有效期不能为空",
+          validator: (rule, value, callback) => {
+            value = value.filter(item => !!item);
+            if (!value.length) {
+              callback(new Error("请选择有效期"));
+            } else {
+              callback();
+            }
+          },
+        },
+      },
+      merchantData: {},
 
       proviceSelect: [],
       citySelect: [],
@@ -247,7 +285,7 @@ export default {
   },
   mounted() {
     this.getList();
-    cms.shopProvice().then(res => {
+    cms.provinceList().then(res => {
       if (res.isSuccess) {
         this.proviceSelect = res.data;
       }
@@ -264,7 +302,7 @@ export default {
         ...this.searchForm,
       };
       delete body.daterange;
-      settleBillList(body).then(res => {
+      cms.recommendCouponList(body).then(res => {
         this.TableLoading = false;
         if (res && res.code == 200) {
           this.table_list = res.data.records;
@@ -281,20 +319,120 @@ export default {
     // 重置form表单
     resetForm(name) {
       this.$refs[name].resetFields();
+      this.searchForm.cityCode = "";
+      this.searchForm.provinceCode = "";
       if (name == "searchForm") {
         this.search();
       }
     },
     //手动添加结算清单
     addManualDisplayFn() {
+      this.modalAddData = {};
+      this.couponList = [];
       this.$refs["modalAddForm2"].resetFields();
       this.modalAddShow = true;
     },
     modalAddOk(name) {
       this.$refs[name].validate(valid => {
         if (!valid) return;
+
+        if (!this.modalAddData.provinceCode || !this.modalAddData.cityCode) {
+          this.$Message.error("请选择省市！");
+          return;
+        }
+
+        if (this.couponList.length == 0) {
+          this.$Message.error("请选择优惠券！");
+          return;
+        }
+
+        console.info(this.couponList);
+
+        this.modalAddData.coupons = this.couponList.map((item, index) => {
+          return {
+            id: item.id,
+            rankNum: index,
+            couponName: item.name,
+            shareId: item.row.shareId,
+          };
+        });
+
         this.modalAddBtnShow = true;
-        // this.modalAddShow = false;
+
+        cms.recommendCouponSave(this.modalAddData).then(res => {
+          this.modalAddBtnShow = false;
+          if (res && res.code == 200) {
+            this.$Message.success(this.modalAddData.id ? "编辑成功！" : "新增成功！");
+            this.modalAddShow = false;
+            this.search();
+          } else {
+            this.$Message.error(res.msg);
+          }
+        });
+      });
+    },
+    recommendCouponStopFn(item) {
+      this.$Modal.confirm({
+        title: "终止",
+        content: "<p>您确定要终止该记录吗？</p>",
+        onOk: () => {
+          cms.recommendCouponStop({ id: item.id }).then(res => {
+            if (res && res.code == 200) {
+              this.$Message.success("终止成功！");
+              this.search();
+            } else {
+              this.$Message.error(res.msg);
+            }
+          });
+        },
+        onCancel: () => {},
+      });
+    },
+    recommendCouponDelFn(item) {
+      this.$Modal.confirm({
+        title: "删除",
+        content: "<p>您确定要删除该记录吗？</p>",
+        onOk: () => {
+          cms.recommendCouponDel({ id: item.id }).then(res => {
+            if (res && res.code == 200) {
+              this.$Message.success("删除成功！");
+              this.search();
+            } else {
+              this.$Message.error(res.msg);
+            }
+          });
+        },
+        onCancel: () => {},
+      });
+    },
+    recommendCouponDetailFn(item) {
+      this.modalAddData = {};
+      cms.recommendCouponDetail({ id: item.id }).then(res => {
+        if (res && res.code == 200) {
+          this.modalAddData = res.data;
+          this.modalAddData.time = [res.data.beginTime, res.data.endTime];
+          this.couponList = res.data.coupons.map(item => {
+            return {
+              id: item.couponId,
+              name: item.couponName,
+              row: { shareId: item.shareId },
+            };
+          });
+          this.modalAddShow = true;
+          this.proviceChange(res.data.provinceCode);
+        } else {
+          this.$Message.error(res.msg);
+        }
+      });
+    },
+    viewCouponDetailFn(item) {
+      cms.recommendCouponDetail({ id: item.id }).then(res => {
+        if (res && res.code == 200) {
+          this.merchantData = res.data;
+          this.modalEditShow = true;
+        } else {
+          this.$Message.error(res.msg);
+        }
       });
     },
     // editLabelDisplayFn(item) {
@@ -319,9 +457,9 @@ export default {
     //     },
     //   })
     // },
-    proviceChange(provinceName) {
+    proviceChange(provinceCode) {
       this.searchForm.city = "";
-      cms.shopCity({ province: provinceName }).then(res => {
+      cms.cityByProvinceCode(provinceCode).then(res => {
         if (res.isSuccess) {
           this.citySelect = res.data;
         }

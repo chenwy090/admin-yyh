@@ -825,6 +825,7 @@ export default {
         if (i + 1 < len) {
           let item2 = this.levelRatio[i + 1];
           item2.numberStart = item.numberEnd + 1;
+          if (item2.numberEnd === 0) item2.numberEnd = item2.numberStart + 1;
         }
       }
     },
