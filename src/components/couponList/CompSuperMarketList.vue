@@ -140,17 +140,16 @@ export default {
           align: "center",
           key: "time",
           render: (h, params) => {
-            let { dateType, startDate, endDate } = params.row;
+            let { dateType, beginEffectiveDate, endEffectiveDate } = params.row;
             let str = "-";
 
             if (dateType == 2) {
               str = "永久有效";
             } else {
-              if (startDate && endDate) {
-                str = `${startDate}-${endDate}`;
+              if (beginEffectiveDate && endEffectiveDate) {
+                str = `${beginEffectiveDate}-${endEffectiveDate}`;
               }
             }
-
             return h("span", str);
           },
         },

@@ -137,10 +137,10 @@ export default {
           align: "center",
           key: "time",
           render: (h, params) => {
-            let { useStartTime, useEndTime } = params.row;
+            let { beginEffectiveDate, endEffectiveDate } = params.row;
             let str = "-";
-            if (useStartTime && useEndTime) {
-              str = `${useStartTime}-${useEndTime}`;
+            if (beginEffectiveDate && endEffectiveDate) {
+              str = `${beginEffectiveDate}-${endEffectiveDate}`;
             }
             return h("span", str);
           },

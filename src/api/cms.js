@@ -58,3 +58,27 @@ export function recommendCouponDel(body) {
 export function recommendCouponDetail(body) {
   return postRequest("/share/recommend/coupon/detail", body);
 }
+
+// 筛选项信息
+export function filterList(body = {}) {
+  return postRequest("/filter/list", body);
+}
+
+// 筛选项信息
+export function filterDetails(body) {
+  return postRequest("/filter/details", body);
+}
+
+// 筛选项 一级分类
+export function filterIndustryMain(body = {}) {
+  return postRequest("/filter/industryMain", body);
+}
+
+// 筛选项  查询商超券省份
+export function filterProvince(body = {}) {
+  return postRequest("/system/area/province/businessList", body);
+}
+// 筛选项 根据省份code查询商超券城市
+export function filterCityByProvince(provinceCode) {
+  return getRequest(`/system/area/businessCity/${provinceCode}`);
+}
