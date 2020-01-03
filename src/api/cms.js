@@ -34,6 +34,8 @@ export function getVenderInfo() {
   return getRequest("/banner/getRetailInfo");
 }
 
+/// ------------为你推荐---------------------
+
 // 为你推荐 新增修改
 export function recommendCouponSave(body = {}) {
   return postRequest("/share/recommend/coupon/save", body);
@@ -59,6 +61,8 @@ export function recommendCouponDetail(body) {
   return postRequest("/share/recommend/coupon/detail", body);
 }
 
+/// --------------筛选项---------------------
+
 // 筛选项信息
 export function filterList(body = {}) {
   return postRequest("/filter/list", body);
@@ -81,4 +85,36 @@ export function filterProvince(body = {}) {
 // 筛选项 根据省份code查询商超券城市
 export function filterCityByProvince(provinceCode) {
   return getRequest(`/system/area/businessCity/${provinceCode}`);
+}
+
+/// ----------------------特权券------------------------------
+
+// 特权券 详情
+export function vipRightsDetail(id) {
+  return postRequest(`/vip/rights/detail/${id}`);
+}
+
+// 特权券 特权删除
+export function vipRightsDelete(id) {
+  return postRequest(`/vip/rights/delete/${id}`);
+}
+
+// 特权券 特权终止
+export function vipRightsStop(id) {
+  return postRequest(`/vip/rights/stop/${id}`);
+}
+
+// 特权券 特权列表
+export function vipRightsList(body) {
+  return postRequest(`/vip/rights/page/list`, body);
+}
+
+// 特权券 配置vip特权券（新增
+export function vipRightsConfig(body) {
+  return postRequest(`/vip/rights/config`, body);
+}
+
+// 特权券 配置vip特权券（修改）
+export function vipRightsConfigEdit(body) {
+  return postRequest(`/vip/rights/configedit`, body);
 }
