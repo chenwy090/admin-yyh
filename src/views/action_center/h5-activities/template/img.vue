@@ -106,18 +106,21 @@
 			<Table :columns="columns" :data="data" border :loading="loading"></Table>
 			
 			<div slot="footer">
-				<Button type="error" size="large">保存</Button>
+				<Button type="error" size="large" @click="saveModalByUrlType(formData.urlType)">保存</Button>
 				<Button  style="margin-left: 8px" @click="closeDialogImg">关闭</Button>
 		        
 		    </div>
 		</Modal>
+		<!-- <Yhq></Yhq> -->
 	</div>
 </template>
 <script>
 	import UploadImage from "../components/UploadImage";
+	import Yhq from "./yhq"
 	export default{
 		components:{
-		    UploadImage
+		    UploadImage,
+		    Yhq
 		},
 		props: {
 		    action: {
@@ -263,7 +266,14 @@
 					this.columns = columns;
 					let data = [{title:2019999,name:'双蛋活动预热'}]
 					this.data = data;
+				}else if(type == 3){
+					//优惠券
+
 				}
+			},
+			saveModalByUrlType(type){
+				console.log(type)
+				console.log(this.currentChoose)
 			},
 			closeDialogImg(){
 				this.isShowImg = false

@@ -5,13 +5,18 @@
 				<Form v-model="headerForm" :rules="ruleValidateHeader" ref="headerForm" class="form-wrap" :label-width="80">
 					<FormItem prop="img" label=" ">
 						<div style="display:inline-block;vertical-align:middle">
-							<UploadImage v-model="headerForm.img"></UploadImage>
+							<UploadImage
+				                :fileUploadType="'img'"
+				                :defaultList="headerForm.defaultImgList"
+				                @remove="removeImg"
+				                @uploadSuccess="ImgUploadSuccess"
+				            ></UploadImage>
 						</div>
 						<span style="margin-left:10px;">限JPG、PNG格式，2MB以内，宽度建议 750px</span>
 					</FormItem>
 					<FormItem class="form-btn">
 						<Button>取消</Button>
-						<Button type="primary" class="save">保存提交</Button>
+						<Button type="primary" class="save" @click="saveTemplateStyle('headerForm',1)">保存提交</Button>
 					</FormItem>
 				</Form>
 			</TabPane>
@@ -56,6 +61,7 @@
 	</div>
 </template>
 <script>
+	import { postRequest } from "@/libs/axios";
 	import UploadImage from "../components/UploadImage";
 	export default{
 		name: "edit",
@@ -79,13 +85,18 @@
 		        let { type, data } = this.action;
 
 		        data = JSON.parse(JSON.stringify(data));
-		        this.activityId = data.id;
+		        //this.activityId = data.id;
 
 		        //this.queryTableData();
-		        console.log("watch editStyleAction data:", data);
+		        
 
 		        if (type == "add") {
 		        } else if (type == "edit") {
+		        	//编辑模板样式
+		        	console.log(data)
+		        	this.activityId = data.id;
+		        	this.url = '/browsing/templateInfo/design/edit';
+
 		        }
 		      },
 		      deep: true,
@@ -94,9 +105,13 @@
 		},
 		data(){
 			return{
+				designType:1,//1是版头设置 2页尾设置 3背景设置
+				url:'',
+				activityId:'',
 				editStyleName:'header',
 				headerForm:{
-					img:''
+					img:'',
+					defaultImgList:[]
 				},
 				ruleValidateHeader:{
 					img:[{required: true,message:'限JPG、PNG格式，2MB以内，宽度建议 750px',trigger: 'blur'}]
@@ -117,6 +132,29 @@
 					rgb:[{required: true,trigger: 'blur'}],
 					img:[{required: true,message:'限JPG、PNG格式，1MB以内，宽度建议 ？px',trigger: 'blur'}]
 				}
+			}
+		},
+		methods:{
+			removeImg() {
+		      this.headerForm.img = "";
+		      this.headerForm.defaultImgList = [];
+		    },
+		    ImgUploadSuccess({ imgUrl }) {
+		      this.headerForm.img = imgUrl;
+		      this.headerForm.defaultImgList = [{ imgUrl }];
+		      console.log("ImgUploadSuccess", imgUrl);
+		    },
+			saveTemplateStyle(name,designType){
+				console.log(this.headerForm.img )
+				this.$refs[name].validate(valid => {
+        			if (valid) {
+        				console.log(111)
+        				// let { code,msg,data } = await postRequest(this.url, {designType:designType,headerImg:this.headerForm.img});
+        				// console.log(data)
+        			}else{
+        				this.$Message.error("数据验证失败！");
+        			}
+        		})
 			}
 		}
 	};
