@@ -9,11 +9,7 @@
           <!-- <Option value="2">超市券</Option>
           <Option value="1">周边券</Option>-->
 
-          <Option
-            v-for="item in couponTypeList"
-            :key="item.value"
-            :value="item.value"
-          >{{ item.label }}</Option>
+          <Option v-for="item in couponTypeList" :key="item.value" :value="item.value">{{ item.label }}</Option>
         </Select>
       </FormItem>
       <FormItem label="优惠券名称：" style="display:inline-block">
@@ -59,52 +55,52 @@ export default {
   props: {
     prizeType: {
       type: String,
-      default: ""
+      default: "",
     },
     couponType: {
       type: [String, Number],
-      default: 2
-    }
+      default: 2,
+    },
   },
   computed: {
     tableColumns() {
       return this.searchForm.couponType == 1 ? this.columns1 : this.columns2;
-    }
+    },
   },
-  watch:{
-    prizeType(){
+  watch: {
+    prizeType() {
       // console.log("prizeTypeprizeType",this.prizeType);
-    }
+    },
   },
   data() {
     return {
       // 优惠券搜索
       searchForm: {
         couponType: 2, //优惠券类型1：周边券、2：商超券
-        name: ""
+        name: "",
       },
       loading: false, //列表加载动画
       page: {
         pageNum: 1, //页码
         pageSize: 10, //每页数量
-        total: 0 //数据总数
+        total: 0, //数据总数
       },
       tableData: [],
       choice: {
         id: "",
-        name: ""
+        name: "",
       },
       //优惠券类型1：周边券、2：商超券/ 超市券 //优惠券类型 1：超市券 2：周边券
       // couponType
       couponTypeList: [
         {
           value: 2,
-          label: "超市券"
+          label: "超市券",
         },
         {
           value: 1,
-          label: "周边券"
-        }
+          label: "周边券",
+        },
       ],
       // 优惠券类型1：周边券、2：商超券  超市券
       columns1: [
@@ -126,36 +122,42 @@ export default {
             return h("div", [
               h("Radio", {
                 props: {
-                  value: flag
+                  value: flag,
                 },
                 on: {
                   "on-change": () => {
                     self.choice.id = id;
                     self.choice.name = name;
-                  }
-                }
-              })
+                  },
+                },
+              }),
             ]);
-          }
+          },
         },
         {
           title: "优惠券ID",
           align: "center",
           minWidth: 140,
-          key: "templateId"
+          key: "templateId",
         },
         {
           title: "优惠券名称",
           align: "center",
           minWidth: 140,
-          key: "title"
+          key: "title",
         },
         {
           title: "所属商户",
           align: "center",
           minWidth: 140,
-          key: "merchantNames"
-        }
+          key: "merchantNames",
+        },
+        {
+          title: "投放渠道",
+          align: "center",
+          minWidth: 140,
+          key: "sendChannelStr",
+        },
       ],
       // 超市券2
       columns2: [
@@ -177,31 +179,37 @@ export default {
             return h("div", [
               h("Radio", {
                 props: {
-                  value: flag
+                  value: flag,
                 },
                 on: {
                   "on-change": () => {
                     self.choice.id = id;
                     self.choice.name = name;
-                  }
-                }
-              })
+                  },
+                },
+              }),
             ]);
-          }
+          },
         },
         {
           title: "优惠券ID",
           align: "center",
           minWidth: 140,
-          key: "campId"
+          key: "campId",
         },
         {
           title: "优惠券名称",
           align: "center",
           minWidth: 140,
-          key: "name"
-        }
-      ]
+          key: "name",
+        },
+        {
+          title: "投放渠道",
+          align: "center",
+          minWidth: 140,
+          key: "sendChannelStr",
+        },
+      ],
     };
   },
   methods: {
@@ -228,16 +236,16 @@ export default {
       let data = {};
 
       // 优惠券类型1：周边券、2：商超券
-      switch(this.searchForm.couponType){
+      switch (this.searchForm.couponType) {
         case 1:
           url = "/merchantCouponTemplate/backList";
           data = {
-            isActivityCoupon:null,
+            isActivityCoupon: null,
             templateStatus: "进行中",
             title: this.searchForm.name,
-            requestFrom: 'choujiangtuan',
+            requestFrom: "choujiangtuan",
           };
-        break;
+          break;
         case 2:
           url = "/campagin/list";
           data = {
@@ -245,9 +253,9 @@ export default {
             campType: 57,
             status: 1,
             sendChannel: 1,
-            name: this.searchForm.name
+            name: this.searchForm.name,
           };
-        break;
+          break;
       }
 
       this.loading = true;
@@ -271,7 +279,7 @@ export default {
         prizeType: this.prizeType,
         couponType: this.couponType,
         id: this.id,
-        name: this.name
+        name: this.name,
       });
     },
     changeCurren(current) {
@@ -295,7 +303,7 @@ export default {
     cancel() {
       this.choice = {
         id: "",
-        name: ""
+        name: "",
       };
       this.$emit("seclectedTr-event", false);
     },
@@ -303,20 +311,19 @@ export default {
     msgOk(txt) {
       this.$Message.info({
         content: txt,
-        duration: 3
+        duration: 3,
       });
     },
 
     msgErr(txt) {
       this.$Message.error({
         content: txt,
-        duration: 3
+        duration: 3,
       });
-    }
+    },
   },
   mounted() {
     this.search();
-  }
+  },
 };
 </script>
-

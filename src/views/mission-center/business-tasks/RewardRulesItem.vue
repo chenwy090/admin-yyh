@@ -130,17 +130,19 @@
         :prop="`ruleInfoList.${index}.templateName`"
         :rules="{ required: true, validator: validateEmpty('请选择优惠券') }"
       >
-        <Row>
-          <Col span="10">
-            <Input
-              style="width:230px"
-              v-model="item.templateName"
-              :placeholder="`点击按钮选择优惠券`"
-              disabled
-            >
-              <Button @click="handleChooseCoupon" slot="append">选择</Button>
-            </Input>
-          </Col>
+        <Row style="display: flex;align-items: center;">
+          <!-- <Col span="10"> -->
+          <Input
+            style="width:230px;margin-right:5px;"
+            v-model="item.templateName"
+            :placeholder="`点击按钮选择优惠券`"
+            disabled
+          >
+            <Button @click="handleChooseCoupon" slot="append">选择</Button>
+          </Input>
+          <span>{{surplusCount}}</span>
+          <!-- </Col> -->
+          <!-- <Col span="10">{{surplusCount}}</Col> -->
         </Row>
       </FormItem>
 
@@ -179,6 +181,7 @@
           v-model="item.receiveAwardUbay"
           placeholder="请输入数字"
           clearable
+          @input.native="inputInt($event,'receiveAwardUbay')"
         />&nbsp;U贝
         <!-- 通过分享领取不享受该奖励 -->
       </FormItem>
@@ -193,6 +196,7 @@
           v-model="item.useAwardUbay"
           placeholder="请输入数字"
           clearable
+          @input.native="inputInt($event,'useAwardUbay')"
         />&nbsp;U贝
         <!-- 通过分享领取核销，不享受该奖励 -->
       </FormItem>
@@ -211,6 +215,7 @@
           v-model="item.shareReceiveAwardUbay"
           placeholder="请输入数字"
           clearable
+          @input.native="inputInt($event,'shareReceiveAwardUbay')"
         />&nbsp;U贝
       </FormItem>
       <FormItem
@@ -224,7 +229,24 @@
           v-model="item.shareUseAwardUbay"
           placeholder="请输入数字"
           clearable
+          @input.native="inputInt($event,'shareUseAwardUbay')"
         />&nbsp;U贝
+      </FormItem>
+
+      <Divider />
+
+      <FormItem
+        label="预计消耗U贝："
+        :prop="`ruleInfoList.${index}.consumeUbay`"
+        :rules="{ required: true, validator: validateUbay }"
+      >
+        <Row>
+          <Col span="10">
+            <Input style="width:230px" v-model="item.consumeUbay" placeholder="预计消耗U贝" disabled>
+              <Button :disabled="disabledComputedUbay" @click="handleComputedUbay" slot="append">计算</Button>
+            </Input>
+          </Col>
+        </Row>
       </FormItem>
 
       <!-- ------------------------------ -->
@@ -286,9 +308,9 @@
 <script>
 import { createNamespacedHelpers } from "vuex";
 const { mapState } = createNamespacedHelpers("financial");
-const { mapState: mapStateMissionCenter } = createNamespacedHelpers(
-  "missionCenter"
-);
+const { mapState: mapStateMissionCenter } = createNamespacedHelpers("missionCenter");
+
+import { postRequest } from "@/libs/axios";
 
 import BusinessList from "./BusinessList";
 import BrandList from "./BrandList";
@@ -302,13 +324,7 @@ let typeData = createTypeDate();
 
 export default {
   name: "rules-item",
-  inject: [
-    "businessTypeList",
-    "merchantTypeOption",
-    "getMoneyAndUbay",
-    "msgOk",
-    "msgErr"
-  ],
+  inject: ["businessTypeList", "merchantTypeOption", "getMoneyAndUbay", "msgOk", "msgErr"],
   created() {
     // console.log("rules-item businessTypeList",this.businessTypeList, this.msgOk);
     // 初始化数据
@@ -332,12 +348,12 @@ export default {
     BrandList,
     SuperMarket,
     CouponList,
-    UploadImage
+    UploadImage,
   },
   props: {
     index: {
       type: Number,
-      default: 0
+      default: 0,
     },
     item: {
       type: Object,
@@ -367,14 +383,26 @@ export default {
           defaultLogoList: [],
           logoUrl: "",
           defaultShareLogoList: [],
-          shareLogo: ""
+          shareLogo: "",
         };
-      }
-    }
+      },
+    },
   },
   computed: {
     ...mapState(["retailerInfoList"]),
-    ...mapStateMissionCenter(["type"])
+    ...mapStateMissionCenter(["type"]),
+    surplusCount() {
+      let { templateName, surplusCount } = this.item;
+      if (templateName) {
+        return `剩余${surplusCount}张券`;
+      } else {
+        return "";
+      }
+    },
+    disabledComputedUbay() {
+      let { templateName } = this.item;
+      return !!!templateName;
+    },
   },
   watch: {
     ["item.merchantType"]() {
@@ -411,10 +439,8 @@ export default {
       // console.log("refForm:", this.$parent.$parent);
       // console.log("refForm:", this.$parent.$parent.fields);
       // console.log("refForm:", `ruleInfoList.${this.index}.businessName`);
-      this.$parent.$parent.validateField(
-        `ruleInfoList.${this.index}.businessName`
-      );
-    }
+      this.$parent.$parent.validateField(`ruleInfoList.${this.index}.businessName`);
+    },
   },
   data() {
     return {
@@ -450,24 +476,54 @@ export default {
       payTypeList: [
         {
           id: "1",
-          name: "现金"
+          name: "现金",
         },
         {
           id: "2",
-          name: "微信"
+          name: "微信",
         },
         {
           id: "3",
-          name: "支付宝"
+          name: "支付宝",
         },
         {
           id: "4",
-          name: "银行卡"
-        }
-      ]
+          name: "银行卡",
+        },
+      ],
     };
   },
   methods: {
+    inputInt(ev, name) {
+      console.log("inputInt(ev, name)", ev, name);
+
+      let { value } = ev.target;
+      this.item[name] = value.replace(/\D/g, "");
+    },
+    async handleComputedUbay() {
+      let {
+        templateId,
+        couponType,
+        receiveAwardUbay,
+        shareReceiveAwardUbay,
+        shareUseAwardUbay,
+        useAwardUbay,
+      } = this.item;
+
+      let params = { templateId, couponType, receiveAwardUbay, shareReceiveAwardUbay, shareUseAwardUbay, useAwardUbay };
+      // 计算预估消耗U贝
+      const url = "/merchant/assignment/compute";
+      //  money: 0, // 商户余额
+      // ubay: 0, // U贝余额
+
+      let { code, msg, data } = await postRequest(url, params);
+      if (code == 200) {
+      } else {
+        // 不做 没有查询到商户余额信息 的提示
+        // this.msgErr(msg);
+      }
+    },
+
     bannerUploadSuccess(data) {
       this.item.imgUrl = data.imgUrl;
     },
@@ -516,22 +572,18 @@ export default {
 
     selectedCouponItem(data) {
       console.log("selectedCouponItem----", data);
-      let { couponType, id, name } = data;
+      let { couponType, id, name, row } = data;
       // templateId 券模板id templateName 券模板名称
 
       this.item.couponType = couponType;
       this.item.templateId = id;
       this.item.templateName = name;
+      this.item.surplusCount = row.surplusCount;
       console.log(couponType, id, name);
     },
     handleChoose() {
       //  '商户类型 0-本地商户（单店），1-本地商户（多店）' 2 商超门店、3 零售商
-      const arr = [
-        "showBusinessList",
-        "showBrandList",
-        "showSuperMarketList",
-        "retailer"
-      ];
+      const arr = ["showBusinessList", "showBrandList", "showSuperMarketList", "retailer"];
       const type = this.item.merchantType;
       this[arr[type]] = true;
     },
@@ -599,7 +651,7 @@ export default {
         }
         callback();
       };
-    }
-  }
+    },
+  },
 };
 </script>
