@@ -154,6 +154,8 @@ export default {
           let form = res.data;
           form.shopRequestList = res.data.shops;
           form.time = [form.startTime, form.endTime];
+          delete form.shopInfos;
+          delete form.shops;
           this.form = form;
           this.couponList = [form.coupons];
         }
