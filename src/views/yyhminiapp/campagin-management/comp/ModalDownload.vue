@@ -50,8 +50,8 @@ export default {
     async download(url) {
       console.log(this.params);
 
-      // const res = await downloadSteam(url, this.params);
-      const res = await getRequest(url, this.params);
+      const res = await downloadSteam(url, this.params);
+      // const res = await getRequest(url, this.params);
       
       // const res = await getRequest(url);
       console.log(111111111111111111, res);
