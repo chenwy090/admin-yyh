@@ -49,7 +49,7 @@
             <div>
               优惠券详情大图：
               <template v-if="addOrEdit == 3">
-                <img style="width: 200px;display: block;" :src="form.coupons.couponUrl" />
+                <img style="height: 120px;display: block;" :src="form.coupons.couponUrl" />
               </template>
               <template v-if="addOrEdit != 3">
                 <uploadImg
@@ -98,7 +98,7 @@
 import * as vip from "@/api/vip";
 import storeForm from "@/components/storeForm/storeForm";
 import uploadImg from "@/components/uploadImg";
-import CouponList from "@/views/CMS/contentArea/publish/CouponList";
+import CouponList from "./components/CouponList";
 export default {
   components: { storeForm, uploadImg, CouponList },
   props: ["id", "addOrEdit"],
@@ -136,7 +136,7 @@ export default {
         {
           title: "优惠券名称",
           align: "center",
-          minWidth: 140,
+          minWidth: 240,
           key: "couponName",
         },
         {
@@ -188,6 +188,7 @@ export default {
       this.form.coupons.couponId = item.id;
       this.form.coupons.couponType = item.couponType;
       this.form.coupons.couponName = item.name;
+      this.form.coupons.subTitle = item.name;
     },
     save() {
       let body = JSON.parse(JSON.stringify(this.form));

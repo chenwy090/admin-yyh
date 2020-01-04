@@ -72,7 +72,7 @@
           </ButtonGroup>
         </template>
         <template slot-scope="{ row }" slot="province">
-          <p>{{ row.provinceName }}{{ row.cityName }}</p>
+          <p>{{ row.provinceName }}/{{ row.cityName }}</p>
         </template>
         <template slot-scope="{ row }" slot="time">
           <p>{{ row.startTime }}--{{ row.endTime }}</p>
@@ -139,7 +139,13 @@
       </div>
     </Modal>
 
-    <Modal v-model="modalEditShow" title="查看特权券" :mask-closable="false" @on-cancel="modalEditShow = false">
+    <Modal
+      v-model="modalEditShow"
+      title="查看特权券"
+      :mask-closable="false"
+      width="600"
+      @on-cancel="modalEditShow = false"
+    >
       <Form :label-width="80" class="search-form">
         <Form-item label="可领城市：">
           <p>{{ modalAddData.provinceName }} > {{ modalAddData.cityName }}</p>
@@ -149,7 +155,7 @@
         </Form-item>
         <Form-item label="优惠券：">
           <p v-for="(item, index) in couponList" :key="index">
-            {{ item.couponTitle }}（ID：{{ item.couponId }} | 库存：{{ item.couponSurplusStock || 0 }}）
+            {{ item.couponTitle }}（ID：{{ item.couponId }} | 库存：{{ item.stock || 0 }}）
           </p>
         </Form-item>
         <Form-item label="状态：">
@@ -379,22 +385,22 @@ export default {
         if (this.modalAddData.id) {
           body.id = this.modalAddData.id;
           cms.vipRightsConfigEdit(body).then(res => {
-            this.modalAddShow = false;
             this.modalAddBtnShow = false;
             if (res && res.code == 200) {
               this.$Message.success("修改成功！");
               this.search();
+              this.modalAddShow = false;
             } else {
               this.$Message.error(res.msg);
             }
           });
         } else {
           cms.vipRightsConfig(body).then(res => {
-            this.modalAddShow = false;
             this.modalAddBtnShow = false;
             if (res && res.code == 200) {
               this.$Message.success("创建成功！");
               this.search();
+              this.modalAddShow = false;
             } else {
               this.$Message.error(res.msg);
             }

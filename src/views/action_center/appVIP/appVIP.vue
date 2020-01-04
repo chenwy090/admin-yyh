@@ -41,7 +41,13 @@
           <Table border width="100%" :columns="columns1" :data="tableData" :loading="tableLoading">
             <template slot-scope="{ row }" slot="action">
               <Button type="text" size="small" @click="seeInfo(row.id)">查看</Button>
-              <Button type="text" size="small" :disabled="row.status == 1" @click="editInfo(row.id)">编辑</Button>
+              <Button
+                type="text"
+                size="small"
+                :disabled="row.status == 1 || row.prizeType == 2"
+                @click="editInfo(row.id)"
+                >编辑</Button
+              >
               <Button type="text" size="small" v-if="row.status != 1" @click="upLow(row.id, row.surplusCount)"
                 >上架</Button
               >
@@ -203,7 +209,7 @@ export default {
           title: "投放时间",
           align: "center",
           minWidth: 120,
-          key: "receiveCount",
+          key: "putTime",
         },
         {
           title: "修改人",

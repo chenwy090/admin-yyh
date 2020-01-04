@@ -77,7 +77,7 @@
           </ButtonGroup>
         </template>
         <template slot-scope="{ row }" slot="province">
-          <p>{{ row.provinceName }}{{ row.cityName }}</p>
+          <p>{{ row.provinceName }}/{{ row.cityName }}</p>
         </template>
         <template slot-scope="{ row }" slot="time">
           <p>{{ row.beginTime }}--{{ row.endTime }}</p>
@@ -189,19 +189,19 @@ import {
 
 import * as cms from "@/api/cms";
 
-import CouponList from "@/components/couponList/CouponList";
+import CouponList from "./components/CouponList";
 import CompSortDrag from "@/components/CompSortDrag";
 
 const columns = [
   {
     title: "操作",
-    width: 245,
+    width: 220,
     align: "center",
     fixed: "left",
     slot: "operate",
   },
   {
-    title: "可领省/市",
+    title: "省/市",
     width: 140,
     align: "center",
     key: "province",
@@ -216,19 +216,19 @@ const columns = [
   },
   {
     title: "状态",
-    width: 190,
     align: "center",
     key: "statusDesc",
   },
   {
     title: "创建人",
-    width: 190,
+    width: 100,
     align: "center",
     key: "createBy",
   },
   {
     title: "创建时间",
     align: "right",
+    width: 190,
     key: "gmtCreate",
   },
 ];
@@ -435,29 +435,8 @@ export default {
         }
       });
     },
-    // editLabelDisplayFn(item) {
-    //   this.$Modal.confirm({
-    //     title: '申请付款',
-    //     content: '<p>您确认要提交申请付款吗？</p>',
-    //     onOk: () => {
-    //       settleBillApply({
-    //         id: item.id,
-    //         memo: '',
-    //       }).then(res => {
-    //         if (res && res.code == 200) {
-    //           this.$Message.success('申请付款成功！')
-    //           this.search()
-    //         } else {
-    //           this.$Message.error(res.msg)
-    //         }
-    //       })
-    //     },
-    //     onCancel: () => {
-    //       console.info('onCancel')
-    //     },
-    //   })
-    // },
     proviceChange(provinceCode) {
+      if (!provinceCode) return;
       this.searchForm.city = "";
       cms.cityByProvinceCode(provinceCode).then(res => {
         if (res.isSuccess) {

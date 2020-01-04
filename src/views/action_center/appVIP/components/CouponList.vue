@@ -9,11 +9,11 @@
       :closable="true"
       :mask-closable="false"
       @on-cancel="closeDialog"
-      :styles="{ top: '20px' }"
+      :styles="{top: '20px'}"
     >
       <div>
         <Tabs type="card" v-model="compName">
-          <TabPane v-for="(tab, k) in tabs" :key="k" :label="tab.label" :name="tab.compName"></TabPane>
+          <TabPane v-for="(tab,k) in tabs" :key="k" :label="tab.label" :name="tab.compName"></TabPane>
         </Tabs>
         <component
           :is="compName"
@@ -35,43 +35,44 @@ export default {
   name: "coupon-list",
   components: {
     CompMerchantLlist,
-    CompSuperMarketList,
+    CompSuperMarketList
   },
   computed: {
     tab() {
       return this.tabs[this.compName];
-    },
+    }
   },
   watch: {
     compName() {
       console.log("watch:compName", this.compName);
-    },
+    }
   },
   data() {
     return {
       isShow: true,
-      compName: "CompSuperMarketList",
+      compName: "CompMerchantLlist",
+      // 优惠券类型：包括"周边券2"、"超市券1"；
       //  couponType 优惠券类型 0-商超券 1-商户/周边券
       // 商超 /zex-mgr/coupon/superMarket/list
       // 商户 /zex-mgr/coupon/merchant/list
       tabs: {
-        CompSuperMarketList: {
-          id: Math.random(),
-          name: "xxx",
-          couponType: 1,
-          label: "商超",
-          compName: "CompSuperMarketList",
-          url: "/share/recommend/coupon/list/coupon",
-        },
         CompMerchantLlist: {
           id: Math.random(),
           name: "xxx",
-          couponType: 2,
-          label: "商户",
+          couponType: 1,
+          label: "超市券",
           compName: "CompMerchantLlist",
-          url: "/share/recommend/coupon/list/coupon",
+          url: "/campagin/activitylist"
         },
-      },
+        CompSuperMarketList: {
+          id: Math.random(),
+          name: "xxx",
+          couponType: 2,
+          label: "周边券",
+          compName: "CompSuperMarketList",
+          url: "/merchantCouponTemplate/activitylist"
+        }
+      }
     };
   },
 
@@ -95,16 +96,16 @@ export default {
     msgOk(txt) {
       this.$Message.info({
         content: txt,
-        duration: 3,
+        duration: 3
       });
     },
     msgErr(txt) {
       this.$Message.error({
         content: txt,
-        duration: 3,
+        duration: 3
       });
-    },
-  },
+    }
+  }
 };
 </script>
 

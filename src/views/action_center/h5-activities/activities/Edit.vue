@@ -92,7 +92,7 @@
               :rules="{ required: true, message: '请选择开放城市' }"
             >
               <RadioGroup v-model="formData.openCityType">
-                  <Radio label="1" v-for="(item,index) in openCityTypeOptions" :label="item.value" :key="index">{{item.label}}</Radio>
+                  <Radio v-for="(item,index) in openCityTypeOptions" :label="item.value" :key="index">{{item.label}}</Radio>
               </RadioGroup>
               <div class="change-city" v-if="formData.openCityType == 2">
                 <CheckboxGroup v-model="formData.cityCodeList">
@@ -153,11 +153,8 @@ export default {
         }else {
           //edit 修改
           this.title = "修改活动";
+          this.url = '/browsing/templateInfo/selectById'
           this.queryActivityInfo(data.id,type);
-
-
-
-          
         }
       },
       deep: true
@@ -245,7 +242,7 @@ export default {
       };
     },
     async queryActivityInfo(id,type){
-      let { code, msg ,data} = await postRequest(this.url, {id:id});
+      let { code, msg ,data} =  await postRequest(this.url, {id:id});
       if(code == 200){
         if(type == 'query'){
           this.activityTypeOption.forEach(item =>{
