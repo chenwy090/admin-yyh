@@ -77,7 +77,7 @@
           </ButtonGroup>
         </template>
         <template slot-scope="{ row }" slot="province">
-          <p>{{ row.provinceName }}{{ row.cityName }}</p>
+          <p>{{ row.provinceName }}/{{ row.cityName }}</p>
         </template>
         <template slot-scope="{ row }" slot="time">
           <p>{{ row.beginTime }}--{{ row.endTime }}</p>
@@ -201,7 +201,7 @@ const columns = [
     slot: "operate",
   },
   {
-    title: "可领省/市",
+    title: "省/市",
     width: 140,
     align: "center",
     key: "province",
