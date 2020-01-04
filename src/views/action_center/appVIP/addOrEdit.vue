@@ -49,7 +49,7 @@
             <div>
               优惠券详情大图：
               <template v-if="addOrEdit == 3">
-                <img :src="form.coupons.couponUrl" />
+                <img style="width: 200px;display: block;" :src="form.coupons.couponUrl" />
               </template>
               <template v-if="addOrEdit != 3">
                 <uploadImg
