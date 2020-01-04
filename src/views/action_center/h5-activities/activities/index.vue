@@ -177,7 +177,7 @@
       </p>
       <editStyle
         v-if="showEditStyle"
-        :showEditJackpot.sync="showEditStyle"
+        :showEditStyle.sync="showEditStyle"
         :action="editStyleAction"
         @refresh="queryTableData"></editStyle>
     </Drawer>
