@@ -14,6 +14,14 @@
         :data="tableData"
       >
         <template slot-scope="{ row }" slot="action">
+          <Button
+            size="small"
+            type="success"
+            v-clipboard:copy="row.url"
+            v-clipboard:success="onCopy"
+            v-clipboard:error="onError"
+          >复制</Button>
+          <Button size="small" type="primary" :to="row.url" target="_blank">新窗口打开</Button>
           <Poptip
             :transfer="true"
             confirm
@@ -87,6 +95,14 @@ export default {
     this.queryTableData();
   },
   methods: {
+    // 复制成功时的回调函数
+    onCopy(e) {
+      this.$Message.success("内容已复制到剪切板！");
+    },
+    // 复制失败时的回调函数
+    onError(e) {
+      this.$Message.error("抱歉，复制失败！");
+    },
     // 显示大图
     showBigImg(row) {
       this.bigImgDialog = true;

@@ -3,7 +3,7 @@ export default [
     {
         title: "操作",
         align: "center",
-        width: 150,
+        width: 250,
         fixed: "left",
         slot: "action"
     },
