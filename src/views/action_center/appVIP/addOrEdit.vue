@@ -32,6 +32,11 @@
               <Button @click="selectCoupon()">选择优惠券</Button>
               <span v-if="form.coupons.couponId">【{{ form.coupons.couponName }}】</span>
             </div>
+
+            <div style="padding:5px 0;" v-if="couponList">
+              <Table :columns="columns" :data="couponList"> </Table>
+            </div>
+
             <div>
               优惠券详情副标题：
               <Input v-model="form.coupons.subTitle" />
@@ -50,13 +55,13 @@
 
       <template v-if="form.prizeType == 2">
         <FormItem label="每人获得U贝数量：">
-          <Input placeholder="请输入每人获得U贝数量" style="width:200px">
+          <Input v-model="form.ubayInfo.amountEach" placeholder="请输入每人获得U贝数量" style="width:200px">
             <span slot="append">U贝</span>
           </Input>
         </FormItem>
 
         <FormItem label="发放份数：">
-          <InputNumber></InputNumber>
+          <InputNumber v-model="form.ubayInfo.totalAmount"></InputNumber>
         </FormItem>
       </template>
 
@@ -81,6 +86,7 @@ import uploadImg from "@/components/uploadImg";
 import CouponList from "@/views/CMS/contentArea/publish/CouponList";
 export default {
   components: { storeForm, uploadImg, CouponList },
+  props: ["id"],
   data() {
     return {
       form: {
@@ -95,13 +101,65 @@ export default {
           priority: 1,
           subTitle: "",
         },
+        ubayInfo: {
+          amountEach: 0,
+          totalAmount: 0,
+        },
       },
       couponsList: [],
       showCouponList: false,
       selectCouponData: null,
+
+      columns: [
+        // 优惠券列表、
+        {
+          title: "优惠券ID",
+          align: "center",
+          minWidth: 140,
+          key: "couponId",
+        },
+        {
+          title: "优惠券名称",
+          align: "center",
+          minWidth: 140,
+          key: "couponName",
+        },
+        {
+          title: "领券量",
+          align: "center",
+          minWidth: 120,
+          key: "receiveCount",
+        },
+        {
+          title: "剩余量",
+          align: "center",
+          minWidth: 120,
+          key: "receiveCount",
+        },
+        {
+          title: "核销量",
+          align: "center",
+          minWidth: 120,
+          key: "useCount",
+        },
+      ],
+      couponList: null,
     };
   },
-  mounted() {},
+  mounted() {
+    if (this.id) {
+      vip.exclusiveSelectById(this.id).then(res => {
+        console.info(res);
+        if (res.isSuccess) {
+          let form = res.data;
+          form.shopRequestList = res.data.shops;
+          form.time = [form.startTime, form.endTime];
+          this.form = form;
+          this.couponList = [form.coupons];
+        }
+      });
+    }
+  },
   methods: {
     goback() {
       this.$emit("changeStatus", false);
@@ -117,22 +175,41 @@ export default {
     save() {
       let body = JSON.parse(JSON.stringify(this.form));
       delete body.time;
-      console.info(body);
-      vip.exclusiveAdd(body).then(res => {
-        if (res.isSuccess) {
-          this.goback();
-          this.$Message.success("新增成功！");
-        } else {
-          this.$Message.error(res.msg);
-        }
-      });
+      switch (body.prizeType) {
+        case 1:
+          delete body.ubayInfo;
+          break;
+        case 2:
+          delete body.coupons;
+          break;
+      }
+
+      if (body.id) {
+        vip.exclusiveEdit(body).then(res => {
+          if (res.isSuccess) {
+            this.goback();
+            this.$Message.success("修改成功！");
+          } else {
+            this.$Message.error(res.msg);
+          }
+        });
+      } else {
+        vip.exclusiveAdd(body).then(res => {
+          if (res.isSuccess) {
+            this.goback();
+            this.$Message.success("新增成功！");
+          } else {
+            this.$Message.error(res.msg);
+          }
+        });
+      }
     },
   },
 };
 </script>
 <style lang="less" scoped>
 .couponsList {
-  width: 400px;
+  width: 800px;
   margin-top: 1vh;
 }
 .removeCouponsList {

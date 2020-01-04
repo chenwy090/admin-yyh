@@ -153,6 +153,15 @@ export default {
             return h("span", str);
           },
         },
+        {
+          title: "省/市",
+          align: "center",
+          width: 120,
+          render: (h, params) => {
+            let { provinceName, cityName } = params.row;
+            return h("span", provinceName + "-" + cityName);
+          },
+        },
       ],
       tableData: [],
       page: {

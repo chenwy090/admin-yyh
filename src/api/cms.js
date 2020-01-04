@@ -61,6 +61,11 @@ export function recommendCouponDetail(body) {
   return postRequest("/share/recommend/coupon/detail", body);
 }
 
+// 为你推荐  同步券 couponType 1-商超，2-周边    couponId
+export function recommendCouponRevision(body) {
+  return postRequest("/share/recommend/coupon/revision", body);
+}
+
 /// --------------筛选项---------------------
 
 // 筛选项信息

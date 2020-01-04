@@ -30,7 +30,7 @@
           </FormItem>
         </Form>
       </Card>
-      <Card :bordered="false" style="margin-bottom:2px">
+      <Card :bordered="false" style="margin-top:1vh">
         <div>
           <Row class="operation">
             <span style="margin-right:20px">app专享福利配置</span>
@@ -70,15 +70,12 @@
               <span v-else-if="row.status == 0">创建</span>
               <span v-else-if="row.status == -1">下架</span>
             </template>
-            <template slot-scope="{ row }" slot="putShop">
-              <span v-if="row.putShop == 0">全国</span>
-              <!-- <span v-else-if="row.putShop == 1">零售商</span> -->
-              <span v-else-if="row.putShop == 1">城市</span>
-              <span v-else-if="row.putShop == 2">自定义门店</span>
+            <template slot-scope="{ row }" slot="pushRange">
+              <span>{{ row.pushRange | $pushRange }}</span>
             </template>
-            <template slot-scope="{ row }" slot="couponName">
-              <span>{{ row.couponName | ellipsis }}</span>
-              <a style="margin-left:10px" @click="seeCouponInfo(row.id)">详细</a>
+            <template slot-scope="{ row }" slot="prizeName">
+              <span>{{ row.prizeName }}</span>
+              <a v-if="row.prizeType == 1" style="margin-left:10px" @click="seeCouponInfo(row.id)">查看</a>
             </template>
           </Table>
           <!-- 用户列表 -->
@@ -180,15 +177,15 @@ export default {
           title: "投放门店",
           align: "center",
           minWidth: 140,
-          key: "putShop",
-          slot: "putShop",
+          key: "pushRange",
+          slot: "pushRange",
         },
         {
           title: "福利",
           align: "center",
           width: 240,
-          key: "couponName",
-          slot: "couponName",
+          key: "prizeName",
+          slot: "prizeName",
         },
         {
           title: "剩余总量",
@@ -212,13 +209,15 @@ export default {
           title: "修改人",
           align: "center",
           minWidth: 120,
-          key: "updateBy",
+          // key: "updateBy",
+          key: "createBy",
         },
         {
           title: "修改时间",
           align: "center",
-          minWidth: 120,
-          key: "updateTime",
+          minWidth: 140,
+          // key: "updateTime",
+          key: "gmtModified",
         },
       ],
       columns2: [
@@ -227,7 +226,7 @@ export default {
           title: "优惠券",
           align: "center",
           minWidth: 140,
-          key: "couponName",
+          key: "subTitle",
         },
         {
           title: "剩余库存",
@@ -280,6 +279,9 @@ export default {
         }
       }
     },
+    $pushRange: function(value) {
+      return ["全国", "零售商", "城市", "自定义门店"][value] || "";
+    },
   },
   created: function() {
     this.search();
@@ -303,10 +305,10 @@ export default {
 
     // 查看优惠券详情
     seeCouponInfo(id) {
-      getCouponData(id).then(res => {
+      vip.exclusiveSelectCouponById(id).then(res => {
         if (res.code == 200) {
           this.seeCouponDisplay = true;
-          this.seeCouponList = res.data;
+          this.seeCouponList = [res.data];
         } else {
           this.msgErr(res.msg);
         }
@@ -409,7 +411,7 @@ export default {
         title: "删除确认",
         content: "<p>确认删除当前活动吗？</p>",
         onOk: () => {
-          delAppVip(id).then(res => {
+          vip.exclusiveDelete(id).then(res => {
             if (res.code == 200) {
               this.msgOk("删除成功");
               this.search();
