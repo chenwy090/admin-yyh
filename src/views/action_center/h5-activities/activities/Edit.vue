@@ -139,7 +139,7 @@ export default {
         let { type, data } = this.action;
         this.isShow = true;
         console.log("xxxx");
-
+        
         // 新增
         if (type == "add") {
           this.title = "创建活动";
@@ -197,8 +197,9 @@ export default {
     },
     async queryOpenCity(){
       await postRequest('/system/area/openCity/list').then(val =>{
+        this.openCityList = val.data;
         if(val.code == 200){
-          this.openCityList = val.data;
+          
         }
       })
     },
