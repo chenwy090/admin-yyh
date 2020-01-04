@@ -14,14 +14,61 @@ export default [
         width: 140
     },
     {
+        title: "模块样式",
+        key: "styleImg",
+        align: "center",
+        width: 100,
+        render:(h,params) =>{
+            return h('div', [
+                h('img', {
+                    attrs: {
+                        src: params.row.styleImg
+                    },
+                    style: {
+                        width: '40px',
+                        height: '40px'
+                    }
+                }),
+            ]);
+        }
+    },
+    {
+        title: "模块ID",
+        key: "id",
+        align: "center",
+        width: 140
+    },
+    {
         title: "排序",
-        key: "order",
+        key: "sortBy",
         align: "center",
         width: 100
     },
     {
+        title: "内容类型",
+        key: "moduleType",
+        align: "center",
+        width: 100,
+        render:(h,params) =>{
+            switch (params.row.moduleType) {
+                case 1:
+                    return h('span', '优惠券');
+                    break;
+                case 2:
+                    return h('span', '图片');
+                    break;
+            }
+        }
+    },
+    {
+        title: "内容样式",
+        key: "styleName",
+        align: "center",
+        width: 100, 
+    },
+    {
         title: "商品数量",
-        key: "productNum",
+        key: "objectNum",
         align: "center",
         width: 100
     },
@@ -34,19 +81,19 @@ export default [
     },
     {
         title: "状态",
-        key: "status",
+        key: "timeStatus",
         align: "center",
         width: 100,
         render:(h,params) =>{
-            switch (params.row.status) {
-                case 0:
-                    return h('span', '已结束');
-                    break;
+            switch (params.row.timeStatus) {
                 case 1:
                     return h('span', '未开始');
                     break;
                 case 2:
-                    return h('span', '进行中');
+                    return h('span', '已开始');
+                    break;
+                case 3:
+                    return h('span', '已结束');
                     break;
             }
         }
