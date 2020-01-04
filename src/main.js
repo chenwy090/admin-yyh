@@ -23,6 +23,10 @@ import '@babel/polyfill'
 import './directive/num-formatter'
 import "@/libs/mathUtil"; //添加数学方法扩充函数
 
+import hotzone from 'vue-hotzone';
+import VueClipboard from 'vue-clipboard2'
+
+
 
 Vue.config.productionTip = false
 Vue.use(iView);
@@ -31,6 +35,8 @@ Vue.use(TreeTable);
 Vue.component('icon', Icon);
 Vue.use(hasPermission);
 Vue.use(hasRole);
+Vue.use(hotzone);
+Vue.use(VueClipboard);
 
 // 挂载全局使用的方法
 Vue.prototype.getRequest = getRequest;

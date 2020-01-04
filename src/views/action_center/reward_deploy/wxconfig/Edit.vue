@@ -4,7 +4,7 @@
     <!--修改 提现-开关 对话框-->
     <!-- v-model="showEdit" -->
     <Modal
-      v-model="showEdit"
+      :value="showEdit"
       :title="action.title"
       :closable="true"
       :mask-closable="false"
@@ -22,17 +22,17 @@
         </FormItem>
 
         <template v-for="(item, index) in formDynamic.items">
-          <Row :key="index">
+          <Row :key="index" v-if="item.isDeleted==0">
             <Col span="12">
               <FormItem
                 :label="`微信号.${index+1}: `"
-                :prop="`items.${index}.wxnumber`"
+                :prop="`items.${index}.wechatNo`"
                 :rules="{required: true,  validator: validateEmpty('请输入微信号')}"
               >
                 <Input
                   type="text"
                   style="width:80%"
-                  v-model.trim="item.wxnumber"
+                  v-model.trim="item.wechatNo"
                   placeholder="请输入微信号"
                 ></Input>
               </FormItem>
@@ -40,12 +40,12 @@
             <Col span="6">
               <FormItem
                 :label-width="0"
-                :prop="`items.${index}.qrcodeImgUrl`"
+                :prop="`items.${index}.groupUrl`"
                 :rules="{ required: true, message: '请上传图片' }"
               >
                 <UploadImage
-                  :fileUploadType="'qrcodeImgUrl'"
-                  :defaultList="item.defaultQrcodeImgUrlList"
+                  :fileUploadType="'groupUrl'"
+                  :defaultList="item.defaultGroupUrlList"
                   @remove="removeQrcodeImgUrl(index)"
                   @uploadSuccess="qrcodeImgUrlUploadSuccess($event,index)"
                 ></UploadImage>
@@ -95,39 +95,22 @@ export default {
       handler() {
         let { type, data } = this.action;
         // this.isShow = true;
-        console.log("watch action");
+        console.log("edit watch action", data);
         // 新增
-        if (type == "add") {
-          this.url = "/activityInfo/add";
-          this.formData = createFormData();
-        } else {
+        if (type == "edit") {
           //edit 修改
-          this.url = "/activityInfo/edit";
-          this.formData = JSON.parse(JSON.stringify(data));
+          this.url = "/kefu/saveAllKefuWechatGroup";
+          this.formDynamic.items = JSON.parse(JSON.stringify(data));
         }
       },
-      deep: true,
+      immediate: true,
     },
   },
   data() {
     return {
       ruleValidate: {},
-      modal: {
-        levelName: "提现-开关",
-        isopen: false,
-      },
       isShow: true,
-      formData: createFormData(),
-      formDynamic: {
-        items: [
-          {
-            _id: Math.random(),
-            wxnumber: "",
-            qrcodeImgUrl: "",
-            defaultQrcodeImgUrlList: [],
-          },
-        ],
-      },
+      formDynamic: createFormData(),
     };
   },
   created() {},
@@ -135,16 +118,17 @@ export default {
     removeQrcodeImgUrl(index) {
       console.log("removeQrcodeImgUrl", index);
       let item = this.formDynamic.items[index];
-      item.qrcodeImgUrl = "";
-      item.defaultQrcodeImgUrlList = [];
+      item.groupUrl = "";
+      item.defaultGroupUrlList = [];
       this.formDynamic.items.splice(index, 1, item);
     },
     qrcodeImgUrlUploadSuccess({ imgUrl }, index) {
       console.log("qrcodeImgUrlUploadSuccess", imgUrl, index);
       let item = this.formDynamic.items[index];
-      item.qrcodeImgUrl = imgUrl;
-      item.defaultQrcodeImgUrlList = [{ imgUrl }];
-      this.formDynamic.items.splice(index, 1, item);
+      item.groupUrl = imgUrl;
+      item.defaultGroupUrlList = [{ imgUrl }];
+
+      // this.formDynamic.items.splice(index, 1, item);
     },
     closeDialog() {
       //关闭对话框清除表单数据
@@ -154,16 +138,20 @@ export default {
     },
 
     handleAdd() {
-      this.formDynamic.items.push({
-        _id: Math.random(),
-        wxnumber: "",
-        qrcodeImgUrl: "",
-        defaultQrcodeImgUrlList: [],
-      });
+      let item = createFormData().items[0];
+      this.formDynamic.items.push(item);
     },
     handleRemove(index) {
-      this.formDynamic.items.splice(index, 1);
-      // this.$emit("del", index);
+      let item = this.formDynamic.items[index];
+
+      if (item.id === "") {
+        //新增
+        this.formDynamic.items.splice(index, 1);
+      } else {
+        //修改
+        item.isDeleted = 1;
+        this.formDynamic.items.splice(index, 1, item);
+      }
     },
     handleSubmit(name) {
       this.$refs[name].validate(async valid => {
@@ -171,7 +159,30 @@ export default {
         if (valid) {
           this.msgOk("数据验证成功!");
           let oForm = JSON.parse(JSON.stringify(this.formDynamic));
-          let { code, msg } = await postRequest(this.url, oForm);
+
+          let { items } = oForm;
+          console.log("items:", items);
+          // 获取没有删除的数据
+          let arr = items.filter(item => item.isDeleted === 0);
+
+          // 判重
+          let json = {};
+          let flag = false;
+          for (let i = 0; i < arr.length; i++) {
+            const { wechatNo } = arr[i];
+            if (json[wechatNo]) {
+              flag = true;
+              break;
+            } else {
+              json[wechatNo] = true;
+            }
+          }
+
+          console.log("flag=>", flag);
+          return;
+
+          let allKefuWechatGroup = oForm.items;
+          let { code, msg } = await postRequest(this.url, { allKefuWechatGroup });
 
           if (code == 200) {
             this.msgOk("保存成功");

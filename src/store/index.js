@@ -14,6 +14,8 @@ import missionCenter from './modules/mission-center';
 import egg from './modules/egg';
 // 活动模板
 import template from './modules/template';
+// bigc 赏u
+import bigc from './modules/bigc';
 
 Vue.use(Vuex);
 
@@ -37,7 +39,8 @@ const store = new Vuex.Store({
         financial,
         missionCenter,
         egg,
-        template
+        template,
+        bigc
     }
 });
 
