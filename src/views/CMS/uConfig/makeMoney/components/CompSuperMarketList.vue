@@ -1,5 +1,5 @@
 <template>
-  <!-- 优惠券 商超 /zex-mgr/coupon/merchant/list -->
+  <!-- 优惠券 商超  couponType: 1 -->
   <div class="coupon-list-box">
     <row>
       <Form ref="searchItem" :model="searchItem" inline :label-width="100" class="search-form">
@@ -69,8 +69,8 @@ export default {
       default: function() {
         return {
           name: "superMarket",
-          couponType: 1,
-          label: "商超",
+          couponType: 2,
+          label: "周边券",
           compName: "CompSuperMarketList",
           url: "/share/recommend/coupon/list/coupon",
         };
@@ -84,8 +84,6 @@ export default {
         _id: "",
         id: "",
         name: "",
-        couponId: "",
-        couponName: "",
       },
       edit_loading: false,
       isCheckDisabled: false,
@@ -97,9 +95,9 @@ export default {
           width: 70,
           align: "center",
           render: (h, params) => {
-            const { _id, couponId, couponName } = params.row;
+            const { couponId, couponName } = params.row;
             let flag = false;
-            if (this.choice._id == _id) {
+            if (this.choice.id == couponId) {
               flag = true;
             } else {
               flag = false;
@@ -112,17 +110,17 @@ export default {
                 },
                 on: {
                   "on-change": () => {
-                    self.choice._id = _id;
                     self.choice.id = couponId;
                     self.choice.name = couponName;
+                    // self.choice.img = img;
                     self.choice.row = params.row;
+                    // console.log("change", JSON.stringify(self.choice));
                   },
                 },
               }),
             ]);
           },
         },
-        // 商户名称 省/市 优惠券名称 有效期
         {
           title: "优惠券ID",
           align: "center",
@@ -150,6 +148,7 @@ export default {
                 str = `${beginEffectiveDate}-${endEffectiveDate}`;
               }
             }
+
             return h("span", str);
           },
         },
@@ -159,7 +158,7 @@ export default {
           width: 120,
           render: (h, params) => {
             let { provinceName, cityName } = params.row;
-            return h("span", provinceName + "-" + cityName);
+            return h("span", provinceName + "/" + cityName);
           },
         },
       ],
@@ -194,7 +193,6 @@ export default {
         ...this.searchItem,
         ...this.page,
       };
-      delete reqParams.total;
       postRequest(this.tab.url, reqParams).then(res => {
         const {
           code,
@@ -208,8 +206,8 @@ export default {
             return item;
           });
           this.page.pageNum = current; //分页查询起始记录
-          this.page.total = total; //列表总数
           this.page.pageSize = size; //每页数据
+          this.page.total = total; //列表总数
         } else {
           this.msgErr(msg);
         }
@@ -234,14 +232,13 @@ export default {
     reset() {
       // 重置查询参数
       this.searchItem = {
-        couponId: "",
+        shopName: "",
         couponName: "",
-        merchantType: "1",
       };
 
       this.page = {
-        pageSize: 10, //页码
-        pageNum: 1, //每页数量
+        pageNum: 1, //页码
+        pageSize: 10, //每页数量
         total: 0, //数据总数
       };
 
