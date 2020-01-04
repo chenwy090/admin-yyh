@@ -37,7 +37,6 @@
                     <Option value="8">所有分享到小程序首页</Option>
                   </Select>
                 </Form-item>
-                <!--2019.12.23 注释
                 <FormItem label="否促核销核销用户:" :label-width="130">
                   <Select v-model="searchItem.isWriteoffUser" style="width:100px">
                     <Option
@@ -48,7 +47,7 @@
                   </Select>
                 </FormItem>
 
-                 <FormItem label="促核销有效期：" :label-width="120" v-if="searchItem.isWriteoffUser == 1">
+                <FormItem label="促核销有效期：" :label-width="120" v-if="searchItem.isWriteoffUser == 1">
                   <DatePicker
                     type="daterange"
                     placeholder="请选择日期"
@@ -56,7 +55,7 @@
                     :value="daterange"
                     @on-change="changeStartDate"
                   ></DatePicker>
-                </FormItem>-->
+                </FormItem>
               </span>
               <FormItem style="margin-left:-35px;" class="br">
                 <Button @click="queryTableList" type="primary" icon="ios-search">搜索</Button>
@@ -181,16 +180,16 @@ export default {
       writeoffUserList: [
         {
           value: "",
-          label: "全部"
+          label: "全部",
         },
         {
           value: 0,
-          label: "否"
+          label: "否",
         },
         {
           value: 1,
-          label: "是"
-        }
+          label: "是",
+        },
       ],
       // 促核销有效期:  startTime/endTime  格式:yyyy-MM-dd
       daterange: [],
@@ -202,7 +201,7 @@ export default {
         source: "",
         isWriteoffUser: "",
         startTime: "",
-        endTime: ""
+        endTime: "",
       },
 
       current: 1,
@@ -222,62 +221,62 @@ export default {
           render: (h, params) => {
             const text = params.row.isWriteoffUser == "1" ? "是" : "否";
             return h("span", text);
-          }
+          },
         },
         {
           title: "促核销开始时间",
           key: "startTime",
           width: 200,
-          align: "center"
+          align: "center",
         },
         {
           title: "促核销结束时间",
           key: "endTime",
           width: 200,
-          align: "center"
+          align: "center",
         },
         {
           title: "会员Id",
           key: "userVerifyCode",
           width: 200,
-          align: "center"
+          align: "center",
         },
         {
           title: "可提现余额",
           key: "withdrawalBalance",
           width: 150,
           align: "center",
-          sortable: true
+          sortable: true,
         },
         {
           title: "userId",
           key: "userId",
           width: 150,
-          align: "center"
+          align: "center",
         },
         {
           title: "手机号",
           key: "phoneNumber",
           width: 150,
-          align: "center"
+          align: "center",
         },
         {
           title: "微信昵称",
           key: "nickName",
           width: 150,
-          align: "center"
+          align: "center",
         },
         {
           title: "注册时间",
           key: "registerTime",
           width: 150,
-          align: "center"
+          align: "center",
         },
         {
           title: "注册渠道",
           key: "source",
           width: 200,
-          align: "center"
+          align: "center",
         },
         {
           title: "状态",
@@ -287,23 +286,18 @@ export default {
           render: (h, params) => {
             const row = params.row;
             const color = row.status == "1" ? "blue" : "red";
-            const text =
-              row.status == "1"
-                ? "有效"
-                : row.status == "2"
-                ? "冻结"
-                : "无账号";
+            const text = row.status == "1" ? "有效" : row.status == "2" ? "冻结" : "无账号";
 
             return h(
               "Tag",
               {
                 props: {
-                  color: color
-                }
+                  color: color,
+                },
               },
               text
             );
-          }
+          },
         },
         {
           title: "操作",
@@ -314,32 +308,30 @@ export default {
           render: (h, params) => {
             const row = params.row;
 
-            const color =
-              row.status == 1 ? "red" : row.status == 2 ? "#5cadff" : "";
-            const text =
-              row.status == 1 ? "不可赚钱" : row.status == 2 ? "恢复赚钱" : "";
+            const color = row.status == 1 ? "red" : row.status == 2 ? "#5cadff" : "";
+            const text = row.status == 1 ? "不可赚钱" : row.status == 2 ? "恢复赚钱" : "";
             return h("div", [
               h(
                 "Button",
                 {
                   props: {
                     type: "text",
-                    size: "small"
+                    size: "small",
                   },
                   style: {
                     //color: "#5cadff",
-                    color: color
+                    color: color,
                   },
                   on: {
                     click: () => {
                       this.inputUpdateAccountStatus(params.row);
-                    }
-                  }
+                    },
+                  },
                 },
                 text
-              )
+              ),
             ]);
-          }
+          },
         },
         {
           title: "操作日志",
@@ -353,22 +345,22 @@ export default {
                 {
                   props: {
                     type: "text",
-                    size: "small"
+                    size: "small",
                   },
                   style: {
-                    color: "#5cadff"
+                    color: "#5cadff",
                   },
                   on: {
                     click: () => {
                       this.editInfo(params.row);
-                    }
-                  }
+                    },
+                  },
                 },
                 "查看"
-              )
+              ),
             ]);
-          }
-        }
+          },
+        },
       ],
 
       edit_Modal_show: false,
@@ -378,7 +370,7 @@ export default {
         postCode: "",
         status: "",
         remark: "",
-        postSort: null
+        postSort: null,
       },
       edit_loading: false,
       ruleValidate: {
@@ -386,33 +378,33 @@ export default {
           {
             required: true,
             message: "岗位名称不能为空",
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
 
         postCode: [
           {
             required: true,
             message: "岗位编码不能为空",
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
 
         postSort: [
           {
             required: true,
             message: "显示顺序不能为空",
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
 
         status: [
           {
             required: true,
             message: "请选择岗位状态",
-            trigger: "change"
-          }
-        ]
+            trigger: "change",
+          },
+        ],
       },
       requestUrl: "",
       msg: "",
@@ -425,8 +417,8 @@ export default {
         userId: "",
         status: "",
         operation: "", // 操作
-        remark: "" // 备注
-      }
+        remark: "", // 备注
+      },
     };
   },
 
@@ -485,7 +477,7 @@ export default {
       const reqParams = {
         // phoneNumber: this.searchItem.phoneNumber,
         // source: this.searchItem.source,
-        ...this.searchItem
+        ...this.searchItem,
       };
 
       let url = `/mini-user/list?pageNum=${this.pageNum}&pageSize=${this.limit}`;
@@ -507,7 +499,7 @@ export default {
         postCode: "",
         status: "0",
         remark: "",
-        postSort: null
+        postSort: null,
       };
       this.edit_Modal_show = true;
       this.title = "岗位管理新增";
@@ -548,7 +540,7 @@ export default {
             postCode: this.edit_info.postCode,
             status: this.edit_info.status,
             remark: this.edit_info.remark,
-            postSort: this.edit_info.postSort
+            postSort: this.edit_info.postSort,
           };
 
           postRequest(this.requestUrl, reqParams).then(res => {
@@ -587,7 +579,7 @@ export default {
         userId: this.formCustom.userId,
         status: this.formCustom.status,
         remark: this.formCustom.remark,
-        type: this.formCustom.type
+        type: this.formCustom.type,
       };
       postRequest("/account/edit", reqParams).then(res => {
         if (res.code == 200) {
@@ -609,13 +601,13 @@ export default {
     msgOk(txt) {
       this.$Message.info({
         content: txt,
-        duration: 3
+        duration: 3,
       });
     },
     msgErr(txt) {
       this.$Message.error({
         content: txt,
-        duration: 3
+        duration: 3,
       });
     },
 
@@ -628,26 +620,24 @@ export default {
         content: `删除后不可恢复，是否继续删除？`,
         onOk: function() {
           self.$Loading.start();
-          postRequest("/system/sys-post/delete?postId=" + item.postId).then(
-            res => {
-              self.loading = false;
+          postRequest("/system/sys-post/delete?postId=" + item.postId).then(res => {
+            self.loading = false;
 
-              if (res.code == "200") {
-                self.$Message.info("删除成功！");
+            if (res.code == "200") {
+              self.$Message.info("删除成功！");
 
-                setTimeout(() => {
-                  self.pageNum = 1;
-                  self.updateTableList();
-                }, 1200);
-              } else {
-                self.$Message.error(res.msg);
-              }
+              setTimeout(() => {
+                self.pageNum = 1;
+                self.updateTableList();
+              }, 1200);
+            } else {
+              self.$Message.error(res.msg);
             }
-          );
+          });
         },
         onCancel: () => {
           self.$Message.info("点击了取消");
-        }
+        },
       });
     },
     removeInfoTest(item) {
@@ -658,32 +648,30 @@ export default {
         content: `填写原因`,
         onOk: function() {
           self.$Loading.start();
-          postRequest("/system/sys-post/delete?postId=" + item.postId).then(
-            res => {
-              self.loading = false;
+          postRequest("/system/sys-post/delete?postId=" + item.postId).then(res => {
+            self.loading = false;
 
-              if (res.code == "200") {
-                self.$Message.info("删除成功！");
+            if (res.code == "200") {
+              self.$Message.info("删除成功！");
 
-                setTimeout(() => {
-                  self.pageNum = 1;
-                  self.updateTableList();
-                }, 1200);
-              } else {
-                self.$Message.error(res.msg);
-              }
+              setTimeout(() => {
+                self.pageNum = 1;
+                self.updateTableList();
+              }, 1200);
+            } else {
+              self.$Message.error(res.msg);
             }
-          );
+          });
         },
         onCancel: () => {
           self.$Message.info("点击了取消");
-        }
+        },
       });
-    }
+    },
   },
   mounted() {
     this.init();
-  }
+  },
 };
 </script>
 

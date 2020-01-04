@@ -42,6 +42,7 @@ export default [{
         key: "statusName",
         align: "center",
         minWidth: 140,
+        slot: "auditLog"
     },
     {
         title: "状态",
