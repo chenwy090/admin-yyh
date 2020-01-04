@@ -385,22 +385,22 @@ export default {
         if (this.modalAddData.id) {
           body.id = this.modalAddData.id;
           cms.vipRightsConfigEdit(body).then(res => {
-            this.modalAddShow = false;
             this.modalAddBtnShow = false;
             if (res && res.code == 200) {
               this.$Message.success("修改成功！");
               this.search();
+              this.modalAddShow = false;
             } else {
               this.$Message.error(res.msg);
             }
           });
         } else {
           cms.vipRightsConfig(body).then(res => {
-            this.modalAddShow = false;
             this.modalAddBtnShow = false;
             if (res && res.code == 200) {
               this.$Message.success("创建成功！");
               this.search();
+              this.modalAddShow = false;
             } else {
               this.$Message.error(res.msg);
             }

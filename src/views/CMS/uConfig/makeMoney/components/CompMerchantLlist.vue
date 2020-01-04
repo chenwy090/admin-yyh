@@ -1,5 +1,5 @@
 <template>
-  <!-- 优惠券 商户 /zex-mgr/coupon/merchant/list -->
+  <!-- 优惠券 商户  couponType: 2 -->
   <div class="coupon-list-box">
     <row>
       <Form ref="searchItem" :model="searchItem" inline :label-width="100" class="search-form">
@@ -68,8 +68,8 @@ export default {
       default: function() {
         return {
           name: "merchant",
-          couponType: 2,
-          label: "商户",
+          couponType: 1,
+          label: "超市券",
           compName: "CompMerchantLlist",
           url: "/share/recommend/coupon/list/coupon",
         };
@@ -94,9 +94,9 @@ export default {
           width: 70,
           align: "center",
           render: (h, params) => {
-            const { _id, templateId: id, title: name } = params.row;
+            const { couponId, couponName } = params.row;
             let flag = false;
-            if (this.choice._id == _id) {
+            if (this.choice.id == couponId) {
               flag = true;
             } else {
               flag = false;
@@ -109,9 +109,8 @@ export default {
                 },
                 on: {
                   "on-change": () => {
-                    self.choice._id = _id;
-                    self.choice.id = id;
-                    self.choice.name = name;
+                    self.choice.id = couponId;
+                    self.choice.name = couponName;
                     self.choice.row = params.row;
                     // console.log("change", JSON.stringify(self.choice));
                   },
@@ -123,27 +122,12 @@ export default {
         {
           title: "优惠券ID",
           align: "center",
-          width: 230,
           key: "couponId",
         },
         {
           title: "优惠券名称",
           align: "center",
-          width: 230,
           key: "couponName",
-        },
-        {
-          title: "有效期",
-          align: "center",
-          key: "time",
-          render: (h, params) => {
-            let { beginEffectiveDate, endEffectiveDate } = params.row;
-            let str = "-";
-            if (beginEffectiveDate && endEffectiveDate) {
-              str = `${beginEffectiveDate}-${endEffectiveDate}`;
-            }
-            return h("span", str);
-          },
         },
         {
           title: "省/市",
@@ -151,7 +135,7 @@ export default {
           width: 120,
           render: (h, params) => {
             let { provinceName, cityName } = params.row;
-            return h("span", provinceName + "-" + cityName);
+            return h("span", provinceName + "/" + cityName);
           },
         },
       ],
@@ -163,7 +147,7 @@ export default {
       },
       tableLoading: false,
       searchItem: {
-        couponId: "",
+        shopName: "",
         couponName: "",
         merchantType: 2,
       },
@@ -186,7 +170,6 @@ export default {
         ...this.searchItem,
         ...this.page,
       };
-      delete reqParams.total;
       postRequest(this.tab.url, reqParams).then(res => {
         const {
           code,
@@ -200,8 +183,8 @@ export default {
             return item;
           });
           this.page.pageNum = current; //分页查询起始记录
-          this.page.total = total; //列表总数
           this.page.pageSize = size; //每页数据
+          this.page.total = total; //列表总数
         } else {
           this.msgErr(msg);
         }
@@ -226,9 +209,8 @@ export default {
     reset() {
       // 重置查询参数
       this.searchItem = {
-        couponId: "",
+        merchantName: "",
         couponName: "",
-        merchantType: "2",
       };
 
       this.page = {

@@ -189,7 +189,7 @@ import {
 
 import * as cms from "@/api/cms";
 
-import CouponList from "@/components/couponList/CouponList";
+import CouponList from "./components/CouponList";
 import CompSortDrag from "@/components/CompSortDrag";
 
 const columns = [
@@ -435,29 +435,8 @@ export default {
         }
       });
     },
-    // editLabelDisplayFn(item) {
-    //   this.$Modal.confirm({
-    //     title: '申请付款',
-    //     content: '<p>您确认要提交申请付款吗？</p>',
-    //     onOk: () => {
-    //       settleBillApply({
-    //         id: item.id,
-    //         memo: '',
-    //       }).then(res => {
-    //         if (res && res.code == 200) {
-    //           this.$Message.success('申请付款成功！')
-    //           this.search()
-    //         } else {
-    //           this.$Message.error(res.msg)
-    //         }
-    //       })
-    //     },
-    //     onCancel: () => {
-    //       console.info('onCancel')
-    //     },
-    //   })
-    // },
     proviceChange(provinceCode) {
+      if (!provinceCode) return;
       this.searchForm.city = "";
       cms.cityByProvinceCode(provinceCode).then(res => {
         if (res.isSuccess) {
