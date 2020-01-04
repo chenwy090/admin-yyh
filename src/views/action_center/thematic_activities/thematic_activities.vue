@@ -507,7 +507,13 @@ export default {
           align: "center",
           minWidth: 140,
           key: "merchantName"
-        }
+        },
+        {
+          title: "投放渠道",
+          align: "center",
+          minWidth: 140,
+          key: "sendChannelStr",
+        },
       ],
       // 超市券
       columns10: [
@@ -527,7 +533,13 @@ export default {
           align: "center",
           minWidth: 140,
           key: "name"
-        }
+        },
+        {
+          title: "投放渠道",
+          align: "center",
+          minWidth: 140,
+          key: "sendChannelStr",
+        },
       ],
       personGiftList: [], //抽奖活动列表数据
       CampaginList: [], //优惠活动列表数据

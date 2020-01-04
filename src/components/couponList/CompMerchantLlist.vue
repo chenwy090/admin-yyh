@@ -3,12 +3,12 @@
   <div class="coupon-list-box">
     <row>
       <Form ref="searchItem" :model="searchItem" inline :label-width="100" class="search-form">
-        <FormItem label="商户名称：">
+        <FormItem label="优惠券ID：">
           <Input
             type="text"
-            v-model="searchItem.merchantName"
+            v-model="searchItem.couponId"
             clearable
-            placeholder="请输入商户名称："
+            placeholder="请输入优惠券ID："
             style="width: 150px"
           />
         </FormItem>
@@ -44,8 +44,8 @@
       <Page
         show-total
         show-elevator
-        :current="page.page"
-        :page-size="page.size"
+        :current="page.pageNum"
+        :page-size="page.pageSize"
         :total="page.total"
         @on-change="changeCurrent"
       ></Page>
@@ -68,10 +68,10 @@ export default {
       default: function() {
         return {
           name: "merchant",
-          couponType: 1,
+          couponType: 2,
           label: "商户",
           compName: "CompMerchantLlist",
-          url: "/coupon/merchant/list",
+          url: "/share/recommend/coupon/list/coupon",
         };
       },
     },
@@ -120,62 +120,52 @@ export default {
             ]);
           },
         },
-        // 商户名称 省/市 优惠券名称 有效期
         {
-          title: "商户名称",
+          title: "优惠券ID",
           align: "center",
-          minWidth: 130,
-          key: "merchantName",
+          width: 230,
+          key: "couponId",
         },
         {
           title: "优惠券名称",
           align: "center",
           width: 230,
-          key: "title",
+          key: "couponName",
         },
         {
           title: "有效期",
           align: "center",
-          width: 180,
           key: "time",
           render: (h, params) => {
-            let { useStartTime, useEndTime } = params.row;
+            let { beginEffectiveDate, endEffectiveDate } = params.row;
             let str = "-";
-            if (useStartTime && useEndTime) {
-              str = `${useStartTime}-${useEndTime}`;
+            if (beginEffectiveDate && endEffectiveDate) {
+              str = `${beginEffectiveDate}-${endEffectiveDate}`;
             }
             return h("span", str);
           },
         },
-        // 商超  isActivityCoupon  0: 是活动券  1: 不是活动券
         {
-          title: "活动券",
+          title: "省/市",
           align: "center",
-          width: 100,
-          key: "isActivityCoupon",
-          render(h, params) {
-            let { isActivityCoupon } = params.row;
-            const arr = ["是", "否"];
-            return h("span", arr[isActivityCoupon]);
+          width: 120,
+          render: (h, params) => {
+            let { provinceName, cityName } = params.row;
+            return h("span", provinceName + "-" + cityName);
           },
-        },
-        {
-          title: "剩余券数",
-          align: "center",
-          width: 100,
-          key: "surplusCount",
         },
       ],
       tableData: [],
       page: {
-        page: 1, //页码
-        size: 10, //每页数量
+        pageNum: 1, //页码
+        pageSize: 10, //每页数量
         total: 0, //数据总数
       },
       tableLoading: false,
       searchItem: {
-        merchantName: "",
+        couponId: "",
         couponName: "",
+        merchantType: 2,
       },
     };
   },
@@ -190,12 +180,13 @@ export default {
     },
     // 获取商户列表
     queryTableData(page) {
-      this.page.page = page || 1;
+      this.page.pageNum = page || 1;
       this.tableLoading = false;
       const reqParams = {
         ...this.searchItem,
         ...this.page,
       };
+      delete reqParams.total;
       postRequest(this.tab.url, reqParams).then(res => {
         const {
           code,
@@ -208,9 +199,9 @@ export default {
             item._id = Math.random();
             return item;
           });
-          this.page.page = current; //分页查询起始记录
+          this.page.pageNum = current; //分页查询起始记录
           this.page.total = total; //列表总数
-          this.page.size = size; //每页数据
+          this.page.pageSize = size; //每页数据
         } else {
           this.msgErr(msg);
         }
@@ -235,13 +226,14 @@ export default {
     reset() {
       // 重置查询参数
       this.searchItem = {
-        merchantName: "",
+        couponId: "",
         couponName: "",
+        merchantType: "2",
       };
 
       this.page = {
-        page: 1, //页码
-        size: 10, //每页数量
+        pageNum: 1, //页码
+        pageSize: 10, //每页数量
         total: 0, //数据总数
       };
 

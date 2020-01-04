@@ -1084,6 +1084,14 @@ export default {
         {
           code: 9,
           value: "核销赠券"
+        },
+        {
+          code: 10,
+          value: "会员专享"
+        },
+        {
+          code: 11,
+          value: "app专享"
         }
       ],
       // 券码类型  0-平台生成券码
