@@ -142,16 +142,12 @@ export default {
     pageList() {
       cms.filterList(this.fromData).then(res => {
         if (res.isSuccess) {
-          let screenList = res.data.records;
-          screenList.forEach(item => {
-            item.citySelect = [
-              {
-                cityName: item.cityName,
-                cityCode: item.cityCode,
-              },
-            ];
+          this.screenList = res.data.records;
+          this.screenList.forEach(item => {
+            ~function(item) {
+              this.proviceChange(item.provinceCode, item);
+            }.bind(this)(item);
           });
-          this.screenList = screenList;
           this.totalSize = res.data.total;
           this.current = res.data.current;
         }
@@ -162,10 +158,10 @@ export default {
       this.pageList();
     },
     proviceChange(provinceCode, screenData) {
-      this.screenData.city = "";
+      if (!provinceCode) return;
       cms.filterCityByProvince(provinceCode).then(res => {
         if (res.isSuccess) {
-          screenData.citySelect = res.data;
+          this.$set(screenData, "citySelect", res.data);
         }
       });
     },

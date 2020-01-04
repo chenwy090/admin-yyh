@@ -176,6 +176,7 @@ export default {
       });
     },
     proviceChange(provinceName, index) {
+      if (!provinceName) return;
       this.cityList[index].value2 = [];
       cms.shopCity({ province: provinceName }).then(res => {
         if (res.isSuccess) {
@@ -261,6 +262,11 @@ export default {
               value2: item.city,
             };
           });
+
+          this.cityList.forEach((item, index) => {
+            this.proviceChange(item.province, index);
+          });
+
           break;
         case 3:
           this.shopListData = this.shopRequestList.map(item => {
