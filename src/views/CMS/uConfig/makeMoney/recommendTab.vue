@@ -195,7 +195,7 @@ import CompSortDrag from "@/components/CompSortDrag";
 const columns = [
   {
     title: "操作",
-    width: 245,
+    width: 220,
     align: "center",
     fixed: "left",
     slot: "operate",
@@ -216,19 +216,19 @@ const columns = [
   },
   {
     title: "状态",
-    width: 190,
     align: "center",
     key: "statusDesc",
   },
   {
     title: "创建人",
-    width: 190,
+    width: 100,
     align: "center",
     key: "createBy",
   },
   {
     title: "创建时间",
     align: "right",
+    width: 190,
     key: "gmtCreate",
   },
 ];
