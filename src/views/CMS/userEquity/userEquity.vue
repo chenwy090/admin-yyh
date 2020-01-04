@@ -139,7 +139,13 @@
       </div>
     </Modal>
 
-    <Modal v-model="modalEditShow" title="查看特权券" :mask-closable="false" @on-cancel="modalEditShow = false">
+    <Modal
+      v-model="modalEditShow"
+      title="查看特权券"
+      :mask-closable="false"
+      width="600"
+      @on-cancel="modalEditShow = false"
+    >
       <Form :label-width="80" class="search-form">
         <Form-item label="可领城市：">
           <p>{{ modalAddData.provinceName }} > {{ modalAddData.cityName }}</p>
@@ -149,7 +155,7 @@
         </Form-item>
         <Form-item label="优惠券：">
           <p v-for="(item, index) in couponList" :key="index">
-            {{ item.couponTitle }}（ID：{{ item.couponId }} | 库存：{{ item.couponSurplusStock || 0 }}）
+            {{ item.couponTitle }}（ID：{{ item.couponId }} | 库存：{{ item.stock || 0 }}）
           </p>
         </Form-item>
         <Form-item label="状态：">
