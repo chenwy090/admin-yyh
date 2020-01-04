@@ -329,12 +329,9 @@ export default {
           this.modalAddData = res.data;
           this.modalAddData.time = [this.modalAddData.startTime, this.modalAddData.endTime];
           this.couponList = JSON.parse(res.data.couponList);
-          this.citySelect = [
-            {
-              cityName: this.modalAddData.cityName,
-              cityCode: this.modalAddData.cityCode,
-            },
-          ];
+
+          this.proviceChange(this.modalAddData.provinceCode);
+
           this.modalAddShow = true;
         } else {
           this.$Message.error(res.msg);
@@ -471,6 +468,7 @@ export default {
     //   })
     // },
     proviceChange(provinceCode) {
+      if (!provinceCode) return;
       this.searchForm.city = "";
       cms.filterCityByProvince(provinceCode).then(res => {
         if (res.isSuccess) {

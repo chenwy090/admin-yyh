@@ -46,6 +46,7 @@
         </Row>
       </template>
     </Form>
+    <TableList ref="tableRef"></TableList>
   </div>
 </template>
 
@@ -56,9 +57,12 @@ import createFormData from "./createFormData";
 
 import UploadImage from "./UploadImage";
 
+// 表格
+import TableList from "./tableList";
+
 export default {
   name: "sys-upload-image",
-  components: { UploadImage },
+  components: { UploadImage, TableList },
   props: {
     showEdit: {
       type: Boolean,
@@ -144,6 +148,8 @@ export default {
       item.imgUrl = imgUrl;
       item.defaultImgUrlList = [{ imgUrl }];
       this.formDynamic.items.splice(index, 1, item);
+
+      this.$refs.tableRef.add({ title: "xxxxx", url: imgUrl });
     },
 
     handleAdd() {
