@@ -43,7 +43,7 @@
             <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEdit('query',row)">
               查看模块   
             </Button>
-            <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px">
+            <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEditContent('query',row)">
               查看模块内容   
             </Button>
           </template>
