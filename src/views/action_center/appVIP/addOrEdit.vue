@@ -48,12 +48,16 @@
             </div>
             <div>
               优惠券详情大图：
-              <!-- couponUrl -->
-              <uploadImg
-                :disabled="addOrEdit == 3"
-                :uploadImg="form.coupons.couponUrl"
-                @handleSuccess="url => (form.coupons.couponUrl = url)"
-              ></uploadImg>
+              <template v-if="addOrEdit == 3">
+                <img :src="form.coupons.couponUrl" />
+              </template>
+              <template v-if="addOrEdit != 3">
+                <uploadImg
+                  :disabled="addOrEdit == 3"
+                  :uploadImg="form.coupons.couponUrl"
+                  @handleSuccess="url => (form.coupons.couponUrl = url)"
+                ></uploadImg>
+              </template>
             </div>
           </Card>
         </FormItem>
