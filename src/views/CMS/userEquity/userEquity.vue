@@ -72,7 +72,7 @@
           </ButtonGroup>
         </template>
         <template slot-scope="{ row }" slot="province">
-          <p>{{ row.provinceName }}{{ row.cityName }}</p>
+          <p>{{ row.provinceName }}/{{ row.cityName }}</p>
         </template>
         <template slot-scope="{ row }" slot="time">
           <p>{{ row.startTime }}--{{ row.endTime }}</p>
