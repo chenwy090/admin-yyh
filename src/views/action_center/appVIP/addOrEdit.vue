@@ -4,12 +4,16 @@
     <Form :label-width="120">
       <FormItem label="投放方式：">
         <RadioGroup v-model="form.prizeType">
-          <Radio :label="1">优惠券</Radio>
-          <Radio :label="2" style="margin-left:20px">U贝</Radio>
+          <Radio :label="1" :disabled="addOrEdit == 3">优惠券</Radio>
+          <Radio :label="2" :disabled="addOrEdit == 3" style="margin-left:20px">U贝</Radio>
         </RadioGroup>
       </FormItem>
 
-      <storeForm :pushRange.sync="form.pushRange" :shopRequestList.sync="form.shopRequestList"></storeForm>
+      <storeForm
+        :disabled="addOrEdit == 3"
+        :pushRange.sync="form.pushRange"
+        :shopRequestList.sync="form.shopRequestList"
+      ></storeForm>
 
       <FormItem label="投放时间：">
         <DatePicker
@@ -18,6 +22,7 @@
           placeholder="请选择投放时间"
           @on-change="[form.startTime, form.endTime] = $event"
           v-model="form.time"
+          :disabled="addOrEdit == 3"
           style="width: 200px"
         >
         </DatePicker>
@@ -29,7 +34,7 @@
             <!-- <Icon class="removeCouponsList" slot="extra" @click="removeCouponsList(index)" type="md-close" /> -->
             <!-- couponsList -->
             <div>
-              <Button @click="selectCoupon()">选择优惠券</Button>
+              <Button :disabled="addOrEdit == 3" @click="selectCoupon()">选择优惠券</Button>
               <span v-if="form.coupons.couponId">【{{ form.coupons.couponName }}】</span>
             </div>
 
@@ -39,12 +44,13 @@
 
             <div>
               优惠券详情副标题：
-              <Input v-model="form.coupons.subTitle" />
+              <Input :disabled="addOrEdit == 3" v-model="form.coupons.subTitle" />
             </div>
             <div>
               优惠券详情大图：
               <!-- couponUrl -->
               <uploadImg
+                :disabled="addOrEdit == 3"
                 :uploadImg="form.coupons.couponUrl"
                 @handleSuccess="url => (form.coupons.couponUrl = url)"
               ></uploadImg>
@@ -55,20 +61,25 @@
 
       <template v-if="form.prizeType == 2">
         <FormItem label="每人获得U贝数量：">
-          <Input v-model="form.ubayInfo.amountEach" placeholder="请输入每人获得U贝数量" style="width:200px">
+          <Input
+            :disabled="addOrEdit == 3"
+            v-model="form.ubayInfo.amountEach"
+            placeholder="请输入每人获得U贝数量"
+            style="width:200px"
+          >
             <span slot="append">U贝</span>
           </Input>
         </FormItem>
 
         <FormItem label="发放份数：">
-          <InputNumber v-model="form.ubayInfo.totalAmount"></InputNumber>
+          <InputNumber :disabled="addOrEdit == 3" v-model="form.ubayInfo.totalAmount"></InputNumber>
         </FormItem>
       </template>
 
       <FormItem>
         <Button @click="goback">返回</Button>
 
-        <Button style="margin-left:10px" type="success" @click="save">保存</Button>
+        <Button v-if="addOrEdit != 3" style="margin-left:10px" type="success" @click="save">保存</Button>
       </FormItem>
     </Form>
 
@@ -86,7 +97,7 @@ import uploadImg from "@/components/uploadImg";
 import CouponList from "@/views/CMS/contentArea/publish/CouponList";
 export default {
   components: { storeForm, uploadImg, CouponList },
-  props: ["id"],
+  props: ["id", "addOrEdit"],
   data() {
     return {
       form: {

@@ -2,7 +2,7 @@
   <div class="label_manage">
     <Card>
       <Form ref="searchForm" :model="searchForm" inline :label-width="70" class="search-form">
-        <Form-item label="省/市" prop="status">
+        <Form-item label="省/市">
           <Select
             v-model="searchForm.provinceCode"
             placeholder="请选择省"
@@ -19,7 +19,7 @@
           </Select>
         </Form-item>
 
-        <FormItem label="有效期" prop="settleTime">
+        <FormItem label="有效期">
           <DatePicker
             transfer
             type="daterange"
@@ -33,7 +33,7 @@
 
         <Form-item label="状态" prop="status">
           <Select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 150px;">
-            <Option :value="0">全部</Option>
+            <Option :value="''">全部</Option>
             <Option :value="1">待发布</Option>
             <Option :value="2">进行中</Option>
             <Option :value="3">已终止</Option>
@@ -77,6 +77,9 @@
         <template slot-scope="{ row }" slot="time">
           <p>{{ row.startTime }}--{{ row.endTime }}</p>
         </template>
+        <template slot-scope="{ row }" slot="status">
+          <p>{{ row.status | $status }}</p>
+        </template>
       </Table>
       <!-- 用户列表 -->
       <!-- 分页 -->
@@ -112,13 +115,13 @@
           </Select>
         </Form-item>
 
-        <Form-item label="有效期">
+        <Form-item label="有效期" prop="time">
           <DatePicker
             transfer
             type="daterange"
             placeholder="请选择有效期"
             @on-change="[modalAddData.startTime, modalAddData.endTime] = $event"
-            v-model="searchForm.time"
+            v-model="modalAddData.time"
             style="width: 200px"
           >
           </DatePicker>
@@ -126,7 +129,7 @@
         <Form-item label="优惠券">
           <Row><Button :disabled="couponList.length === 3" @click="showCouponList = true">添加</Button></Row>
           <template v-for="(item, index) in couponList">
-            <Tag closable @on-close="couponListRemove(index)">{{ item.name }}</Tag>
+            <Tag closable @on-close="couponListRemove(index)">{{ item.couponTitle }}</Tag>
           </template>
         </Form-item>
       </Form>
@@ -142,15 +145,15 @@
           <p>{{ modalAddData.provinceName }} > {{ modalAddData.cityName }}</p>
         </Form-item>
         <Form-item label="有效期：">
-          <p>{{ modalAddData.beginTime }} -- {{ modalAddData.endTime }}</p>
+          <p>{{ modalAddData.startTime }} -- {{ modalAddData.endTime }}</p>
         </Form-item>
         <Form-item label="优惠券：">
-          <p v-for="(item, index) in modalAddData.coupons" :key="index">
-            {{ item.couponName }}（ID：{{ item.couponId }} | 库存：{{ item.couponSurplusStock || 0 }}）
+          <p v-for="(item, index) in couponList" :key="index">
+            {{ item.couponTitle }}（ID：{{ item.couponId }} | 库存：{{ item.couponSurplusStock || 0 }}）
           </p>
         </Form-item>
         <Form-item label="状态：">
-          <p>{{ modalAddData.statusDesc }}</p>
+          <p>{{ modalAddData.status | $status }}</p>
         </Form-item>
       </Form>
       <div slot="footer">
@@ -203,6 +206,7 @@ const columns = [
     width: 190,
     align: "center",
     key: "status",
+    slot: "status",
   },
   {
     title: "创建人",
@@ -224,7 +228,7 @@ export default {
       searchForm: {
         pageNum: 1,
         pageSize: 10,
-        status: 2,
+        status: "",
         startTime: "",
         endTime: "",
       },
@@ -241,30 +245,14 @@ export default {
       modalAddBtnShow: false,
       modalAddData: {},
       modalAddValidate: {
-        merchantName: {
+        time: {
           required: true,
-          message: "商户不能为空",
-          trigger: "change",
-        },
-        settleTimeStart: {
-          required: true,
-          message: "结算周期不能为空",
+          message: "有效期不能为空",
           validator: (rule, value, callback) => {
-            if (!value) {
-              callback(new Error("请选择结算日期"));
-            } else {
+            if (value) {
               callback();
-            }
-          },
-        },
-        settleTimeEnd: {
-          required: true,
-          message: "结算周期不能为空",
-          validator: (rule, value, callback) => {
-            if (!value) {
-              callback(new Error("请选择结算日期"));
             } else {
-              callback();
+              callback(new Error("请选择有效期"));
             }
           },
         },
@@ -278,6 +266,11 @@ export default {
 
       modalEditShow: false,
     };
+  },
+  filters: {
+    $status: function(val) {
+      return ["待发布", "进行中", "已终止", "已结束"][+val - 1] || "";
+    },
   },
   mounted() {
     this.getList();
@@ -328,7 +321,14 @@ export default {
       cms.vipRightsDetail(item.id).then(res => {
         if (res.isSuccess) {
           this.modalAddData = res.data;
-          this.couponList = res.data.couponItemList;
+          this.modalAddData.time = [this.modalAddData.startTime, this.modalAddData.endTime];
+          this.couponList = JSON.parse(res.data.couponList);
+          this.citySelect = [
+            {
+              cityName: this.modalAddData.cityName,
+              cityCode: this.modalAddData.cityCode,
+            },
+          ];
           this.modalAddShow = true;
         } else {
           this.$Message.error(res.msg);
@@ -339,7 +339,7 @@ export default {
       cms.vipRightsDetail(item.id).then(res => {
         if (res.isSuccess) {
           this.modalAddData = res.data;
-          this.couponList = res.data.couponItemList;
+          this.couponList = JSON.parse(res.data.couponList);
           this.modalEditShow = true;
         } else {
           this.$Message.error(res.msg);
@@ -363,6 +363,16 @@ export default {
             };
           }),
         };
+
+        if (!body.provinceCode || !body.cityCode) {
+          this.$Message.error("请选择可领城市");
+          return;
+        }
+
+        if (!(body.couponItemList instanceof Array && body.couponItemList.length > 0)) {
+          this.$Message.error("请选择优惠券");
+          return;
+        }
 
         this.modalAddBtnShow = true;
 
@@ -398,17 +408,14 @@ export default {
         title: "删除",
         content: "<p>您确定要删除该记录吗？</p>",
         onOk: () => {
-          // settleBillApply({
-          //   id: item.id,
-          //   memo: "",
-          // }).then(res => {
-          //   if (res && res.code == 200) {
-          //     this.$Message.success("申请付款成功！");
-          //     this.search();
-          //   } else {
-          //     this.$Message.error(res.msg);
-          //   }
-          // });
+          cms.vipRightsDelete(item.id).then(res => {
+            if (res.isSuccess) {
+              this.$Message.success("删除成功！");
+              this.search();
+            } else {
+              this.$Message.error(res.msg);
+            }
+          });
         },
         onCancel: () => {
           console.info("onCancel");
@@ -420,17 +427,14 @@ export default {
         title: "终止",
         content: "<p>您确定要终止该记录吗？</p>",
         onOk: () => {
-          // settleBillApply({
-          //   id: item.id,
-          //   memo: "",
-          // }).then(res => {
-          //   if (res && res.code == 200) {
-          //     this.$Message.success("申请付款成功！");
-          //     this.search();
-          //   } else {
-          //     this.$Message.error(res.msg);
-          //   }
-          // });
+          cms.vipRightsStop(item.id).then(res => {
+            if (res.isSuccess) {
+              this.$Message.success("终止成功！");
+              this.search();
+            } else {
+              this.$Message.error(res.msg);
+            }
+          });
         },
         onCancel: () => {
           console.info("onCancel");
@@ -472,7 +476,7 @@ export default {
       let _data = {
         couponType: data.couponType,
         couponId: data.id,
-        name: data.name,
+        couponTitle: data.name,
       };
       if (this.couponList.filter(item => item.id == _data.couponId).length > 0) {
         this.$Message.error("优惠券有重复，请重新选择");
