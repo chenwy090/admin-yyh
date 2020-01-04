@@ -98,7 +98,7 @@
 import * as vip from "@/api/vip";
 import storeForm from "@/components/storeForm/storeForm";
 import uploadImg from "@/components/uploadImg";
-import CouponList from "@/views/CMS/contentArea/publish/CouponList";
+import CouponList from "./components/CouponList";
 export default {
   components: { storeForm, uploadImg, CouponList },
   props: ["id", "addOrEdit"],
