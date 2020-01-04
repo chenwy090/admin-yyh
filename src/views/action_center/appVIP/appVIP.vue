@@ -203,7 +203,7 @@ export default {
           title: "投放时间",
           align: "center",
           minWidth: 120,
-          key: "receiveCount",
+          key: "putTime",
         },
         {
           title: "修改人",
