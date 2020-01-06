@@ -177,14 +177,14 @@ export default {
     },
     visibleChange(visible) {
       if (visible) {
-        this.$emit("update:shopListData", this.shopIdList);
+        this.$emit("update:shopListData", [...this.shopIdList]);
       }
       this.$emit("update:visible", false);
     },
   },
   mounted() {
     this.getList();
-    this.shopIdList = this.shopListData;
+    this.shopIdList = [...this.shopListData];
   },
 };
 </script>
