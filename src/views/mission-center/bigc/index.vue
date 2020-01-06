@@ -102,7 +102,7 @@ export default {
       if (code == 200) {
         arr.forEach(name => {
           let imgUrl = data[name] || "";
-          data[`default${firstUpperCase(name)}List`] = [{ imgUrl }];
+          data[`default${firstUpperCase(name)}List`] = imgUrl ? [{ imgUrl }] : [];
         });
 
         console.log("queryBigcById:", data);

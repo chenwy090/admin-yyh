@@ -30,7 +30,7 @@
             clearable
           />
         </FormItem>
-        <FormItem label="顶部图片：" prop="headerImgUrl" :rules="{ required: true, message: '请上传图片' }">
+        <FormItem label="顶部图片：" prop="headerImgUrl" :rules="{ required: false, message: '请上传图片' }">
           <UploadImage
             :fileUploadType="'headerImgUrl'"
             :defaultList="formData[`default${firstUpperCase('headerImgUrl')}List`]"
@@ -41,7 +41,7 @@
         <FormItem
           label="我的奖励按钮："
           prop="rewardButtonUrl"
-          :rules="{ required: true, message: '请上传图片' }"
+          :rules="{ required: false, message: '请上传图片' }"
         >
           <UploadImage
             :fileUploadType="'rewardButtonUrl'"
@@ -53,7 +53,7 @@
         <FormItem
           label="活动规则按钮："
           prop="eventRuleButtonUrl"
-          :rules="{ required: true, message: '请上传图片' }"
+          :rules="{ required: false, message: '请上传图片' }"
         >
           <UploadImage
             :fileUploadType="'eventRuleButtonUrl'"
@@ -91,7 +91,7 @@
         <FormItem
           label="分享区顶部图："
           prop="couponHeaderImgUrl"
-          :rules="{ required: true, message: '请上传图片' }"
+          :rules="{ required: false, message: '请上传图片' }"
         >
           <UploadImage
             :fileUploadType="'couponHeaderImgUrl'"
@@ -137,7 +137,7 @@
             clearable
           />
         </FormItem>
-        <FormItem
+        <!-- <FormItem
           label="券名称背景颜色："
           prop="couponNameBackground"
           :rules="{ required: true, message: '券名称背景颜色不能为空' }"
@@ -148,7 +148,7 @@
             placeholder="页面背景"
             clearable
           />
-        </FormItem>
+        </FormItem>-->
         <FormItem
           label="分享区、规则区背景颜色："
           prop="shareBackground"
@@ -160,6 +160,10 @@
             placeholder="页面背景"
             clearable
           />
+        </FormItem>
+        <FormItem label="预览二维码：">
+          <img :src="qrcode" style="width:100px;" />
+          <Button type="primary" @click="getQrcode">生成二维码</Button>
         </FormItem>
       </Form>
     </div>
@@ -174,7 +178,7 @@ import { createNamespacedHelpers } from "vuex";
 const { mapState, mapMutations } = createNamespacedHelpers("bigc");
 
 import util from "@/libs/util";
-import { postRequest } from "@/libs/axios";
+import { getRequest, postRequest } from "@/libs/axios";
 import createFormData from "./createFormData";
 import UploadImage from "./UploadImage";
 
@@ -210,6 +214,7 @@ export default {
   },
   data() {
     return {
+      qrcode: "", //预览二维码
       formData: createFormData(),
     };
   },
@@ -230,6 +235,24 @@ export default {
     closeDialog() {
       console.log("closeDialog");
       this.setShowBigc(false); //关闭对话框
+    },
+    async getQrcode() {
+
+      if(this.qrcode){
+        return;
+      }
+      // 赏U任务详情,生成二维码
+      const url = "/merchant/assignment/qrcode";
+      //assignmentId
+      const { code, data, msg } = await getRequest(url, { assignmentId: this.assignmentId });
+
+      if (code == 200) {
+        console.log("qrcode:", data);
+        this.qrcode = `data:image/png;base64,${data}`;
+      } else {
+        // msgOk msgErr
+        return this.msgErr(msg);
+      }
     },
     handleSubmit(name) {
       this.$refs[name].validate(async valid => {

@@ -457,16 +457,18 @@ export default {
       /*this.searchItem.status = ""*/
       this.updateTableList();
     },
-
     //搜索
     queryTableList() {
+      let re = /^1[3|4|5|8][0-9]\d{4,8}$/;
+      let { phoneNumber } = this.searchItem;
+      if (!re.test(phoneNumber)) {
+        return this.$Message.error("请输入正确的手机号");
+      }
       this.pageNum = 1;
       this.totalSize = 0;
       this.updateTableList();
     },
-
     //分页
-
     changeCurrent(current) {
       this.pageNum = current;
       this.updateTableList();
@@ -670,7 +672,7 @@ export default {
     },
   },
   mounted() {
-    this.init();
+    // this.init();
   },
 };
 </script>
