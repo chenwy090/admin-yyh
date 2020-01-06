@@ -14,8 +14,8 @@
               <Option value="2">自定义门店</Option>
             </Select>
           </FormItem>
-          <FormItem label="福利类型: " :label-width="85">
-            <Select v-model="searchData.type" style="width:200px">
+          <FormItem label="福利类型: " :label-width="85" prop="prizeType">
+            <Select v-model="searchData.prizeType" style="width:200px">
               <Option value="0">全部</Option>
               <Option value="1">优惠券</Option>
               <Option value="2">U贝</Option>
@@ -259,6 +259,7 @@ export default {
         // 查询参数
         couponName: "",
         putShop: "",
+        prizeType: "",
         pageNum: 1, //页码
         pageSize: 10, //每页数量
       },

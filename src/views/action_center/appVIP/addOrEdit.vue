@@ -23,7 +23,8 @@
           @on-change="[form.startTime, form.endTime] = $event"
           v-model="form.time"
           :disabled="addOrEdit == 3"
-          style="width: 200px"
+          :options="m_dateOptions"
+          style="width: 240px"
         >
         </DatePicker>
       </FormItem>
@@ -34,7 +35,7 @@
             <!-- <Icon class="removeCouponsList" slot="extra" @click="removeCouponsList(index)" type="md-close" /> -->
             <!-- couponsList -->
             <div>
-              <Button :disabled="addOrEdit == 3" @click="selectCoupon()">选择优惠券</Button>
+              <Button type="primary" :disabled="addOrEdit == 3" @click="selectCoupon()">选择优惠券</Button>
               <span v-if="form.coupons.couponId">【{{ form.coupons.couponName }}】</span>
             </div>
 
@@ -44,7 +45,12 @@
 
             <div>
               优惠券详情副标题：
-              <Input :disabled="addOrEdit == 3" v-model="form.coupons.subTitle" />
+              <Input
+                :disabled="addOrEdit == 3"
+                placeholder="请填写优惠券详情副标题"
+                v-model="form.coupons.subTitle"
+                style="width:300px;"
+              />
             </div>
             <div>
               优惠券详情大图：
@@ -159,6 +165,12 @@ export default {
         },
       ],
       couponList: null,
+
+      m_dateOptions: {
+        disabledDate(date) {
+          return date && date.valueOf() < Date.now() - 86400000;
+        },
+      },
     };
   },
   mounted() {

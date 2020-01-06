@@ -320,6 +320,9 @@ export default {
       this.$refs[name].resetFields();
       this.searchForm.cityCode = "";
       this.searchForm.provinceCode = "";
+      this.searchForm.time = [];
+      this.searchForm.beginTime = "";
+      this.searchForm.endTime = "";
       if (name == "searchForm") {
         this.search();
       }
@@ -344,8 +347,6 @@ export default {
           this.$Message.error("请选择优惠券！");
           return;
         }
-
-        console.info(this.couponList);
 
         this.modalAddData.coupons = this.couponList.map((item, index, list) => {
           return {
