@@ -162,8 +162,8 @@
           />
         </FormItem>
         <FormItem label="预览二维码：">
-          <img :src="qrcode" style="width:100px;" />
-          <Button type="primary" @click="getQrcode">生成二维码</Button>
+          <img :src="qrcode" style="width:150px;" />
+          <Button style="margin-left:20px;" type="primary" @click="getQrcode">生成二维码</Button>
         </FormItem>
       </Form>
     </div>
@@ -237,8 +237,7 @@ export default {
       this.setShowBigc(false); //关闭对话框
     },
     async getQrcode() {
-
-      if(this.qrcode){
+      if (this.qrcode) {
         return;
       }
       // 赏U任务详情,生成二维码

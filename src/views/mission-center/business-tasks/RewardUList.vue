@@ -40,12 +40,6 @@
             type="success"
             size="small"
             style="margin-right: 5px"
-            @click="toBigc('add',row)"
-          >新增页面配置</Button>
-          <Button
-            type="success"
-            size="small"
-            style="margin-right: 5px"
             @click="toBigc('edit',row)"
           >编辑页面配置</Button>
           <!-- 

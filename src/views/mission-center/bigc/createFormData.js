@@ -23,10 +23,6 @@ export default function createFormData() {
         defaultHeaderImgUrlList: [],
         defaultRewardButtonUrlList: [],
 
-
-
-
-
         // pageTitle: "", //页面标题:
         // pageBackground: "", //页面背景:
         // headerImgUrl: "", // 顶部图片：
