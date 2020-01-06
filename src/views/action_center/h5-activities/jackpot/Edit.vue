@@ -76,9 +76,15 @@
           </div>
         </li>
         <li class="qs-item">
-          <label class="label">导航背景：</label>
+          <label class="label">导航默认背景：</label>
           <div class="value">
-            {{formData.background}}
+            {{formData.navigationDefaultBackground}}
+          </div>
+        </li>
+        <li class="qs-item">
+          <label class="label">导航选中背景：</label>
+          <div class="value">
+            {{formData.navigationBackground}}
           </div>
         </li>
       </ul>
@@ -190,22 +196,22 @@
             </FormItem>
             <FormItem
               label="导航默认背景："
-              prop="background"  :rules="{required: true,message:'输入导航背景'}"
+              prop="navigationDefaultBackground"  :rules="{required: true,message:'输入导航背景'}"
             >
                <Input
                   style="width:300px"
-                  v-model="formData.background"
+                  v-model="formData.navigationDefaultBackground"
                   placeholder="请填写色值"
                   clearable
                 />
             </FormItem>
             <FormItem
               label="导航选中背景："
-              prop="navigationDefaultBackground"  :rules="{required: true,message:'输入导航背景'}"
+              prop="navigationBackground"  :rules="{required: true,message:'输入导航背景'}"
             >
                <Input
                   style="width:300px"
-                  v-model="formData.navigationDefaultBackground"
+                  v-model="formData.navigationBackground"
                   placeholder="请填写色值"
                   clearable
                 />
@@ -290,13 +296,13 @@ export default {
         order:'',
         iconImg:'',
         defaultIconImgList:[],
-        background:'',
+        navigationDefaultBackground:'', //导航默认颜色
         titleImg:'',
         defaultImgList:[],
         type:'',
         template:'',
         total:'',
-        navigationDefaultBackground:''
+        navigationBackground:'' //导航选中颜色
       },
       ruleValidate: {},
       contentTypeOption:[{label:'优惠券',value:1},{label:'图片',value:2}],
@@ -327,7 +333,8 @@ export default {
         order:'',
         iconImg:'',
         defaultIconImgList:[],
-        background:'',
+        navigationBackground:'',
+        navigationDefaultBackground:'',
         titleImg:'',
         defaultImgList:[],
         type:'',
@@ -377,7 +384,7 @@ export default {
             order:sortBy,
             iconImg:navigationIcon,
             defaultIconImgList:[{imgUrl:navigationIcon}],
-            background:navigationBackground,
+            navigationBackground:navigationBackground,
             titleImg:titleImgUrl,
             defaultImgList:[{imgUrl:titleImgUrl}],
             type:moduleType,
@@ -399,14 +406,14 @@ export default {
       this.$refs[name].validate(async valid => {
         
         if (valid) {
-          const {formData:{id,name,beginTime,endTime,order,iconImg,background,titleImg,type,template,total,navigationDefaultBackground}} = this;
+          const {formData:{id,name,beginTime,endTime,order,iconImg,navigationBackground,titleImg,type,template,total,navigationDefaultBackground}} = this;
           let params = {
             id:id,
             browsingId:this.activityId,
             endTime:endTime,
             moduleType:type,
             name:name,
-            navigationBackground:background,
+            navigationBackground:navigationBackground,
             navigationIcon:iconImg,
             showStock:total,
             sortBy:order,
@@ -529,7 +536,7 @@ export default {
       align-items:center;
     }
     .label{
-      width:80px;
+      width:100px;
     }
     .value{
       flex:1;

@@ -39,8 +39,18 @@
             </li>
             <li class="item">
               <span class="label">活动链接：</span>
-              <div class="value">{{activityInfo.h5Url}}<Button type="primary" size="small" style="margin-left:20px;">复制链接</Button></div>
+              <div class="value">
+                <input v-model="h5Url" ref="code" style="border:0;outline:0;width:100%;color:#515a6e" />
+              </div>
             </li>
+            <div class="item">
+              <span class="label"></span>
+              <div class="value">
+                <Button type="primary" @click="copyUrl">复制链接</Button>
+                <Button type="primary" style="margin:0 10px;" @click="downLoadImg(1)">下载太阳码1</Button>
+                <Button type="primary" @click="downLoadImg(2)">下载太阳码2</Button>
+              </div>
+            </div>
           </ul>
 
 
@@ -108,6 +118,23 @@
         <Button @click="closeDialog" style="margin-left: 8px">取消</Button>
       </div>
     </Modal>
+
+    <Modal
+      v-model="isShowCode"
+      :closable="true"
+      :mask-closable="false"
+      @on-cancel="closeDialogCode"
+      :styles="{top: '20px'}"
+      width="500"
+      title="下载太阳码"
+    >
+      <div class="code-img-url"><img :src="codeUrl" /></div>
+      <div slot="footer">
+        <Button @click="closeDialogCode" style="margin-left: 8px">取消</Button>
+      </div>
+    </Modal>
+
+
   </div>
 </template>
 <script>
@@ -172,7 +199,10 @@ export default {
       ruleValidate: {},
       openCityTypeOptions:[{label:'全部城市',value:1},{label:'指定城市',value:2}],
       openCityList:[],
-      activityInfo:{}
+      activityInfo:{},
+      h5Url:'',
+      isShowCode:false,
+      codeUrl:''
     };
   },
   async created(){
@@ -190,7 +220,9 @@ export default {
     },
     closeDialog() {
       //关闭对话框清除表单数据
-      // this.$refs.formValidate.resetFields();
+      if(this.$refs['form']){
+        this.$refs['form'].resetFields();
+      }
       console.log("closeDialog");
       this.isShow = false;
       // this.$emit(`update:showExchange`, false);
@@ -252,6 +284,7 @@ export default {
             }
           })
           this.activityInfo = data;
+          this.h5Url = this.activityInfo.h5Url;
         }else{
           this.url = "/browsing/templateInfo/edit";
           //获取city的code
@@ -280,6 +313,29 @@ export default {
       }else{
         this.msgErr(msg);
       }
+    },
+    copyUrl(){
+      let copyText = this.$refs.code; 
+      copyText.select(); // 选择对象
+      document.execCommand("Copy");
+    },
+    downLoadImg(id){
+      
+      if( this.activityInfo.qrcodeList.length == 0){
+        this.msgErr('暂无太阳码');
+        return false;
+      }
+      this.isShowCode = true;
+      if(id == 1){
+        this.codeUrl = this.activityInfo.qrcodeList[0].qrcodeUrl;
+      }else{
+        this.codeUrl = this.activityInfo.qrcodeList[1].qrcodeUrl;
+      }
+      console.log(this.activityInfo)
+    },
+    closeDialogCode(){
+      this.isShowCode = false;
+      this.codeUrl = "";
     },
     // 全局提示
     msgOk(txt) {
@@ -313,6 +369,15 @@ export default {
     }
     .value{
       flex:1
+    }
+  }
+  .code-img-url{
+    width:200px;
+    height:200px;
+    margin:0 auto;
+    img{
+      max-width:100%;
+      max-height:100%;
     }
   }
 </style>

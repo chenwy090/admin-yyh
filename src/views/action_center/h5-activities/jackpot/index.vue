@@ -3,7 +3,7 @@
   <div class="edit">
     <Card :bordered="false" style="margin-bottom:2px">
       <Row type="flex" justify="start">
-        <Button type="primary" icon="md-add" class="marginLeft20" @click="addOrEdit('add')">新增模块</Button>
+        <Button type="primary" icon="md-add" class="marginLeft20" @click="addOrEdit('add')" v-if="action.type != 'query'">新增模块</Button>
         <Button icon="md-refresh" class="marginLeft20" @click="refresh">刷新</Button>
       </Row>
     </Card>
@@ -17,37 +17,46 @@
         :data="tableData"
       >
         <template slot-scope="{ row }" slot="action">
-          <template v-if="row.timeStatus == 1">
-            <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEdit('edit',row)">
-              编辑模块   
-            </Button>
-            <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEditContent('add',row)">
-              编辑模块内容   
-            </Button>
-            <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="delItem(row)">
-              删除   
-            </Button>
-          </template>
-          <template v-else-if="row.timeStatus == 2">
-            <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px"  @click="addOrEdit('query',row)">
-              查看模块   
-            </Button>
+          <template v-if="action.type == 'query'">
             <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEditContent('query',row)">
-              查看模块内容   
+                查看模块内容   
             </Button>
-            <Button  type="text" size="small" style="color:red;margin-right: 5px" @click="stopModule(row.id)">
-              结束模块   
+            <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEdit('query',row)">
+                查看模块   
             </Button>
           </template>
           <template v-else>
-            <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEdit('query',row)">
-              查看模块   
-            </Button>
-            <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEditContent('query',row)">
-              查看模块内容   
-            </Button>
+            <template v-if="row.timeStatus == 1">
+              <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEdit('edit',row)">
+                编辑模块   
+              </Button>
+              <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEditContent('add',row)">
+                编辑模块内容   
+              </Button>
+              <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="delItem(row)">
+                删除   
+              </Button>
+            </template>
+            <template v-else-if="row.timeStatus == 2">
+              <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px"  @click="addOrEdit('query',row)">
+                查看模块   
+              </Button>
+              <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEditContent('query',row)">
+                查看模块内容   
+              </Button>
+              <Button  type="text" size="small" style="color:red;margin-right: 5px" @click="stopModule(row.id)">
+                结束模块   
+              </Button>
+            </template>
+            <template v-else>
+              <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEdit('query',row)">
+                查看模块   
+              </Button>
+              <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEditContent('query',row)">
+                查看模块内容   
+              </Button>
+            </template>
           </template>
-
          
 
 
@@ -165,8 +174,6 @@ export default {
     },
     
     async delItem(row) {
-      this.msgOk("正在删除...");
-      // /activity/prizepool/delete
       const url = "/browsing/templateModule/delete";
       const { code, msg } = await postRequest(url, { id: row.id });
       if (code == 200) {

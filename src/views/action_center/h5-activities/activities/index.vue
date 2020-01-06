@@ -62,7 +62,7 @@
           <Button
             type="text"
             size="small"
-            style="color:#2db7f5;margin-right: 5px" @click="addOrEditJackpot('edit',row)" v-if="row.status == 1">
+            style="color:#2db7f5;margin-right: 5px" @click="addOrEditJackpot('edit',row)" v-if="row.status == 1 || row.status == 2">
             编辑活动模块
           </Button>
           <Button
@@ -74,7 +74,7 @@
           <Button
             type="text"
             size="small"
-            style="color:#2db7f5;margin-right: 5px" @click="addOrEditStyle('edit',row)" v-if="row.status == 1">
+            style="color:#2db7f5;margin-right: 5px" @click="addOrEditStyle('edit',row)" v-if="row.status == 1 || row.status == 2">
             编辑活动样式
           </Button>
           <Button
