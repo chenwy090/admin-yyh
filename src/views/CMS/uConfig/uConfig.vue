@@ -68,9 +68,9 @@ export default {
       });
     },
   },
-  mounted() {
-    // 开发用 TODO
-    // this.linkTo("bannerPage");
+  mounted() {},
+  destroyed() {
+    this.linkTo("cms");
   },
 };
 </script>

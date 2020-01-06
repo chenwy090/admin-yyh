@@ -25,7 +25,7 @@
             type="daterange"
             placeholder="请选择有效期"
             @on-change="[searchForm.startTime, searchForm.endTime] = $event"
-            v-model="searchForm.settleTime"
+            v-model="searchForm.time"
             style="width: 200px"
           >
           </DatePicker>
@@ -96,7 +96,14 @@
       <!-- 分页 -->
     </Card>
 
-    <Modal v-model="modalAddShow" title="特权券" :mask-closable="false" @on-cancel="modalAddShow = false">
+    <Modal v-model="modalAddShow" :mask-closable="false" @on-cancel="modalAddShow = false">
+      <p slot="header">
+        <span>特权券</span>
+        <span style="padding-left:10px;font-weight: 400;color: red;"
+          >商超券（限时抢购券）、周边券（体验券）不允许设为特权券</span
+        >
+      </p>
+
       <Form :model="modalAddData" ref="modalAddForm2" :label-width="70" class="search-form" :rules="modalAddValidate">
         <Form-item label="可领城市" prop="status">
           <Select
@@ -313,6 +320,11 @@ export default {
     // 重置form表单
     resetForm(name) {
       this.$refs[name].resetFields();
+      this.searchForm.time = [];
+      this.searchForm.startTime = "";
+      this.searchForm.endTime = "";
+      this.searchForm.provinceCode = "";
+      this.searchForm.cityCode = "";
       if (name == "searchForm") {
         this.search();
       }

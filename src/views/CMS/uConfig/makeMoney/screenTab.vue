@@ -10,6 +10,9 @@
 
       <template v-for="(screenData, index) in screenList">
         <Card style="margin-top:1vh;">
+          <div slot="extra" style="cursor: pointer;" @click="screenDelete(screenData, index)">
+            <Icon size="20" color="#af1c1c" type="md-trash" />
+          </div>
           <Form :model="screenData" ref="modalAddForm2" :label-width="70" class="search-form" :rules="modalAddValidate">
             <Form-item label="城市" prop="status">
               <Select
@@ -173,7 +176,7 @@ export default {
       screenData.industryVO.splice(index, 1);
     },
     screenAdd() {
-      this.screenList.push({
+      this.screenList.unshift({
         industryVO: [],
         citySelect: [],
       });
@@ -199,6 +202,35 @@ export default {
         } else {
           this.$Message.error(res.msg);
         }
+      });
+    },
+    screenDelete(item, index) {
+      if (!item.id) {
+        this.screenList.splice(index, 1);
+        return;
+      }
+      this.$Modal.confirm({
+        title: "删除",
+        content: "<p>您确定要删除该记录吗？</p>",
+        onOk: () => {
+          cms
+            .filterDelete({
+              provinceCode: item.provinceCode,
+              cityCode: item.cityCode,
+              id: item.id,
+            })
+            .then(res => {
+              if (res.isSuccess) {
+                this.$Message.success("删除成功！");
+                this.search();
+              } else {
+                this.$Message.error(res.msg);
+              }
+            });
+        },
+        onCancel: () => {
+          console.info("onCancel");
+        },
       });
     },
   },
@@ -229,5 +261,8 @@ export default {
 }
 .page {
   margin-top: 1vh;
+}
+.ivu-card-extra {
+  z-index: 9999999;
 }
 </style>

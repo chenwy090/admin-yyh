@@ -92,6 +92,11 @@ export function filterCityByProvince(provinceCode) {
   return getRequest(`/system/area/businessCity/${provinceCode}`);
 }
 
+// 筛选项信息
+export function filterDelete(body) {
+  return postRequest("/filter/delete", body);
+}
+
 /// ----------------------特权券------------------------------
 
 // 特权券 详情
