@@ -422,6 +422,10 @@ export default {
             titleImgUrl:titleImg,
             navigationDefaultBackground:navigationDefaultBackground
           }
+          if(template == ""){
+            this.msgErr('请选择内容的展示方式');
+            return false;
+          }
           console.log(params+'新增模块')
           let { code, msg } = await postRequest(this.url, params);
 

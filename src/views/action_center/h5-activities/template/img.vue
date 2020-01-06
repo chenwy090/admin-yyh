@@ -265,9 +265,9 @@
 			        <Page
 			          show-total
 			          show-elevator
-			          :current="page1.pageNum"
-			          :page-size="page1.pageSize"
-			          :total="page1.total"
+			          :current="page.pageNum"
+			          :page-size="page.pageSize"
+			          :total="page.total"
 			          @on-change="changeCurrent1"
 			        ></Page>
 		      	</Row>
@@ -318,9 +318,11 @@
 		        if(type == 'add'){
 		        	this.imgTitle = '增加图片';
 		        	this.daterange = [];
+		        	this.url = "/browsing/templateImg/add";
 		        }else if(type == 'edit'){
 		        	this.imgTitle = '编辑图片';
 		        	this.setFormDataValue(data.data)
+		        	this.url = "/browsing/templateImg/edit";
 		        }else if(type == 'query'){
 		        	this.imgTitle = '查看图片';
 		        	this.setFormDataValue(data.data)
@@ -336,6 +338,7 @@
   		},
   		data(){
 			return{
+				url:'',
 				imgTitle:'',
 				browsingId:'',
 				moduleId:'',
@@ -433,7 +436,7 @@
 				this.queryCouponList(pageNum)
 			},
 			changeCurrent1(pageNum){
-
+				this.operationInfoList(pageNum)
 			},
 			closeDialog(){
 
@@ -617,16 +620,33 @@
         					isDelete:0
         				};
         				if(urlType == 3){
+        					if(this.formData.checkContentId == ""){
+        						this.msgErr('请选择跳转的优惠券')
+        						return false
+        					}
         					params.couponType = this.searchDataYhq.type;
         					params.couponId = this.formData.checkContentId;
         				}else if(urlType == 4){
+        					if(this.formData.checkContentId == ""){
+        						this.msgErr('请选择跳转的专题')
+        						return false
+        					}
         					params.operationId = this.formData.checkContentId;
         				}else if(urlType == 5){
+        					if(this.formData.checkContentId == ""){
+        						this.msgErr('请选择跳转的抽奖团')
+        						return false
+        					}
         					params.groupType = this.formData.urlType1;
         					params.groupId = this.formData.checkContentId;
+        				}else{
+        					if(url == ""){
+        						this.msgErr('请输入跳转地址')
+        						return false
+        					}
         				}
         				console.log(params)
-        				let { code, msg } = await postRequest('/browsing/templateImg/add', params);
+        				let { code, msg } = await postRequest(this.url, params);
         				if(code == 200){
         					this.msgOk("保存成功");
 		    				this.$refs['formWrap'].resetFields();
@@ -642,27 +662,31 @@
         		})
        		},
        		async operationInfoList(pageNum){
-				this.page1.pageNum = pageNum || 1;
-				this.page1 = {
-			        pageNum: pageNum || 1, //页码
-			        pageSize: 10, //每页数量
-			        total: 0 //数据总数
-			    }
+    //    			console.log(pageNum)
+				// this.page1.pageNum = pageNum || 1;
+				// this.page1 = {
+			 //        pageNum: pageNum || 1, //页码
+			 //        pageSize: 10, //每页数量
+			 //        total: 0 //数据总数
+			 //    }
+			 	console.log('搜索专题')
+			  
       			this.loading = true;
 				const {searchData:{name}} = this;
 				let params = {
 					name:name,
-					pageNum:this.page1.pageNum,
-					pageSize:this.page1.pageSize
+					pageNum:this.page.pageNum,
+					pageSize:this.page.pageSize
 				}
-				
+
+				//return false
 				let {code,msg,data,current,total,size} = await postRequest('/browsing/templateInfo/operationInfo/list',params);
 				if(code == 200){
 					this.loading = false;
 					this.data = data.records;
-					this.page1.pageNum = current; //分页查询起始记录
-          			this.page1.total = total; //列表总数
-          			this.page1.pageSize = size; //每页数据
+					this.page.pageNum = data.current; //分页查询起始记录
+          			this.page.total = data.total; //列表总数
+          			this.page.pageSize = data.size; //每页数据
 				}else{
 					this.loading = false;
 					this.data = [];
@@ -670,12 +694,7 @@
 				}
 			},
 			async drawDailyGroupList(pageNum){
-				this.page1.pageNum = pageNum || 1;
-				this.page1 = {
-			        pageNum: pageNum || 1, //页码
-			        pageSize: 10, //每页数量
-			        total: 0 //数据总数
-			    }
+				this.page.pageNum = pageNum || 1;
       			this.loading = true;
 				const {searchData:{name1,status}} = this;
 				let params = {
@@ -689,9 +708,9 @@
 				if(code == 200){
 					this.loading = false;
 					this.data = data.records;
-					this.page1.pageNum = current; //分页查询起始记录
-          			this.page1.total = total; //列表总数
-          			this.page1.pageSize = size; //每页数据
+					this.page.pageNum = data.current; //分页查询起始记录
+          			this.page.total = data.total; //列表总数
+          			this.page.pageSize = data.size; //每页数据
 				}else{
 					this.loading = false;
 					this.data = [];
@@ -703,14 +722,23 @@
       			this.loading = true;
 				const {searchDataYhq:{name,id,type}} = this;
 				let params = {
-					// couponName:name.trim(),
-					// templateId:id.trim(),
+					couponName:name.trim(),
+					templateId:id.trim(),
 					couponType:type,
 					pageNum:this.page.pageNum,
 					pageSize:this.page.pageSize
 				}
 				let {code,msg,data,current,total,size} = await postRequest('/browsing/templateCoupon/list',params);
 				if(code == 200){
+					if(data.dataList == null){
+						this.dataYhq = [];
+						this.page = {
+					        pageNum: 1, //页码
+					        pageSize: 10, //每页数量
+					        total: 0 //数据总数
+					    };
+						return false
+					}
 					this.dataYhq = data.dataList;
 					this.page.pageNum = data.pageNum; //分页查询起始记录
           			this.page.total = data.totalCount; //列表总数
@@ -723,12 +751,16 @@
        		setTab(value){
 				this.currentChoose = '';
 				if(value == 'yhqM'){
-					this.searchData.type = 1;
+					this.searchDataYhq.type = 1;
+					this.searchDataYhq.name = "";
+					this.searchDataYhq.id = "";
 					this.page.pageSize = 10;
 					this.columnsYhq.pop();
 					this.queryCouponList();
 				}else{
-					this.searchData.type = 2;
+					this.searchDataYhq.type = 2;
+					this.searchDataYhq.name = "";
+					this.searchDataYhq.id = "";
 					this.page.pageSize = 10;
 					this.columnsYhq.push({title:'有效期',
 			    	key:'useEndDate',
@@ -750,6 +782,7 @@
 			        pageSize: 10, //每页数量
 			        total: 0 //数据总数
 			    };
+			    this.queryCouponList();
 		      }else if(type == 'ddd'){
 		      	this.searchData = {
 					name:'',
@@ -760,17 +793,27 @@
 					beginTime:'',
 					endTime:''
 				};
+				this.page = {
+			        pageNum: 1, //页码
+			        pageSize: 10, //每页数量
+			        total: 0 //数据总数
+			    };
 		      	this.page1 = {
 			        pageNum: 1, //页码
 			        pageSize: 10, //每页数量
 			        total: 0 //数据总数
-			    };	
+			    };
+			    if(this.formData.urlType == 4){
+			    	this.operationInfoList()
+			    }else if(this.formData.urlType == 5){
+			    	this.drawDailyGroupList();
+			    }
 		      }
 		      
 		      
 
 		      //重新查询一遍
-		      this.queryTableData();
+		      //this.queryTableData();
 		    },
 		    validateTime(rule, value, callback) {
 		        this.$nextTick(_=>{
