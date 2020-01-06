@@ -145,10 +145,9 @@ export default {
               str = "永久有效";
             } else {
               if (beginEffectiveDate && endEffectiveDate) {
-                str = `${beginEffectiveDate}-${endEffectiveDate}`;
+                str = `${beginEffectiveDate} - ${endEffectiveDate}`;
               }
             }
-
             return h("span", str);
           },
         },

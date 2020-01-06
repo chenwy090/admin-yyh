@@ -130,6 +130,25 @@ export default {
           align: "center",
           key: "title",
         },
+        {
+          title: "有效期",
+          align: "center",
+          key: "time",
+          render: (h, params) => {
+            let { dateType, startDate: startDate, endDate: endDate } = params.row;
+            let str = "-";
+
+            if (dateType == 2) {
+              str = "永久有效";
+            } else {
+              if (startDate && endDate) {
+                str = `${startDate}-${endDate}`;
+              }
+            }
+
+            return h("span", str);
+          },
+        },
       ],
       tableData: [],
       page: {

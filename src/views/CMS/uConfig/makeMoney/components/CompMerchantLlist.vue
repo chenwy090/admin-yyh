@@ -130,6 +130,25 @@ export default {
           key: "couponName",
         },
         {
+          title: "有效期",
+          align: "center",
+          key: "time",
+          render: (h, params) => {
+            let { dateType, beginEffectiveDate, endEffectiveDate } = params.row;
+            let str = "-";
+
+            if (dateType == 2) {
+              str = "永久有效";
+            } else {
+              if (beginEffectiveDate && endEffectiveDate) {
+                str = `${beginEffectiveDate} - ${endEffectiveDate}`;
+              }
+            }
+
+            return h("span", str);
+          },
+        },
+        {
           title: "省/市",
           align: "center",
           width: 120,
