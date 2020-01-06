@@ -82,7 +82,7 @@
     </div>
     <Edit :action="jackpotAction" @refresh="queryTableData"></Edit>
     <!--新增模块内容-->
-    <EditTemplate :action="templateAction"></EditTemplate>
+    <EditTemplate :action="templateAction" @refresh="queryTableData"></EditTemplate>
 
 
   </div>

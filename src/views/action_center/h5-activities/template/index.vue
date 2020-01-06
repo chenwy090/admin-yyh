@@ -9,7 +9,7 @@
 	    >
 	      <div slot="header" style="overflow:hidden;">
 	        <span>{{templateTitle}}</span>
-	        <Button type="dashed" style="float:right" @click="showTemplateDetail = false">返回上一级</Button>
+	        <Button type="dashed" style="float:right"  @click="backToMoudle">返回上一级</Button>
 	      </div>
 	      <div>
 	        <Form
@@ -35,7 +35,7 @@
 		          		<Button
 				            type="text"
 				            size="small"
-				            style="color:#2db7f5;margin-right: 5px" @click="addContetByType('edit',row)" v-if="row.heraldStatus == '待预告' || row.heraldStatus == '预告中'">
+				            style="color:#2db7f5;margin-right: 5px" @click="addContetByType('edit',row)" v-if="row.heraldStatus == '未开始'">
 				            编辑
 				        </Button>
 				        <Button
@@ -67,7 +67,7 @@
 		          		<Button
 				            type="text"
 				            size="small"
-				            style="color:#2db7f5;margin-right: 5px" @click="addContetByType('edit',row)" v-if="row.heraldStatus == '待预告' || row.heraldStatus == '预告中'">
+				            style="color:#2db7f5;margin-right: 5px" @click="addContetByType('edit',row)" v-if="row.heraldStatus == '未开始'">
 				            编辑
 				        </Button>
 				        <Button
@@ -434,6 +434,10 @@
                         
                     }
                 });
+		    },
+		    backToMoudle(){
+		    	this.showTemplateDetail = false;
+		    	this.$emit('refresh')
 		    },
 		    // 全局提示
 		    msgOk(txt) {

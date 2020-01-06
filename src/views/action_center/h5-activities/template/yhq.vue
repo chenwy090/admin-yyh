@@ -34,7 +34,7 @@
 						            ></Input>
 						        </FormItem>
 						        <Button type="primary" icon="md-search" class="marginLeft20" @click="queryCouponList()">搜索</Button>
-					          	<Button icon="md-refresh" class="marginLeft20" click="reset">重置</Button>
+					          	<Button icon="md-refresh" class="marginLeft20" click="reset" @click="reset">重置</Button>
 					        </Form>
 				      	</Card>
 				    </div>
@@ -80,7 +80,7 @@
 							            ></Input>
 							        </FormItem>
 							        <Button type="primary" icon="md-search" class="marginLeft20" @click="queryCouponList()">搜索</Button>
-						          	<Button icon="md-refresh" class="marginLeft20" click="reset">重置</Button>
+						          	<Button icon="md-refresh" class="marginLeft20" click="reset" @click="reset">重置</Button>
 						        </Form>
 					      	</Card>
 					    </div>
@@ -209,6 +209,10 @@
 			              @on-change="changeTime"
 			            ></DatePicker>
 					</FormItem>
+					<FormItem label=" ">
+						活动开始、结束时间：{{activityTime}} <br />
+						券开始、结束时间：{{useTime}}
+					</FormItem>
 				</Form>
 			</template>
 			<div slot="footer">
@@ -241,11 +245,14 @@
 		        	this.isShow = true;
 		        	this.yhqDetail = false;
 		        	this.daterange = [];
+		        	this.currentChoose = "";
 		        	this.yhqTitle = '增加优惠券';
+		        	this.url= "/browsing/templateCoupon/add";
 		        }else if(type == 'edit'){
 		        	this.yhqDetail = true;
 		        	this.isShow = false;
 		        	this.yhqTitle = '编辑优惠券';
+		        	this.url = '/browsing/templateCoupon/edit';
 		        	this.setFormDataVaule(data.data)
 		        }else if(type == 'query'){
 		        	this.yhqDetail = true;
@@ -266,9 +273,12 @@
   		},
 		data(){
 			return{
+				url:'',
 				yhqTitle:'',
 				moduleId:'',
 				browsingId:'',
+				useTime:'',
+				activityTime:'',
 				searchData:{
 					name:'',
 					id:'',
@@ -365,7 +375,7 @@
 				//显示优惠券的信息
 				this.yhqDetail = true;
 				console.log(this.currentTableRow)
-				const {currentTableRow:{templateId,surplusCount,mainTitle,subTitle,imgUrl}} = this;
+				const {currentTableRow:{templateId,surplusCount,mainTitle,subTitle,imgUrl,useStartDate,useEndDate}} = this;
 				this.formData = {
 					id:'',
 					templateId : templateId,
@@ -379,20 +389,31 @@
 					isYg:"",
 			    	isYgValue:""
 				}
+				this.useTime = (useStartDate == null ? "" : useStartDate) + '--' + useEndDate; //券的时间
+				this.activityTime = ""
 			},
 			async queryCouponList(pageNum){
 				this.page.pageNum = pageNum || 1;
       			this.loading = true;
 				const {searchData:{name,id,type}} = this;
 				let params = {
-					// couponName:name.trim(),
-					// templateId:id.trim(),
+					couponName:name.trim(),
+					templateId:id.trim(),
 					couponType:type,
 					pageNum:this.page.pageNum,
 					pageSize:this.page.pageSize
 				}
 				let {code,msg,data,current,total,size} = await postRequest('/browsing/templateCoupon/list',params);
 				if(code == 200){
+					if(data.dataList == null){
+						this.dataYhq = [];
+						this.page = {
+					        pageNum: 1, //页码
+					        pageSize: 10, //每页数量
+					        total: 0 //数据总数
+					    };
+						return false
+					}
 					this.dataYhq = data.dataList;
 					this.page.pageNum = data.pageNum; //分页查询起始记录
           			this.page.total = data.totalCount; //列表总数
@@ -407,11 +428,15 @@
 				if(value == 'yhqM'){
 					this.searchData.type = 1;
 					this.page.pageSize = 10;
+					this.searchData.name = "";
+					this.searchData.id = "";
 					this.columnsYhq.pop();
 					this.queryCouponList();
 				}else{
 					this.searchData.type = 2;
 					this.page.pageSize = 10;
+					this.searchData.name = "";
+					this.searchData.id = "";
 					this.columnsYhq.push({title:'有效期',
 			    	key:'useEndDate',
 			    	align:"center"})
@@ -480,7 +505,7 @@
 		    				params.heraldType = '';
 		    			}
 		    			console.log(params)
-		    			let { code, msg } = await postRequest('/browsing/templateCoupon/add', params);
+		    			let { code, msg } = await postRequest(this.url, params);
 		    			if(code == 200){
 		    				this.msgOk("保存成功");
 		    				this.$refs['form'].resetFields();
@@ -501,7 +526,8 @@
 		      this.formData.endTime = endTime;
 		    },
 		    backToYhq(){
-		    	this.yhqDetail = false
+		    	this.yhqDetail = false;
+		    	this.isShow = true;
 		    },
 		    validateTime(rule, value, callback) {
 
