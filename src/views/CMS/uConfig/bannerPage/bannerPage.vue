@@ -21,7 +21,7 @@
                   :options="options1"
                   @on-change="
                     datetime => {
-                      changeDateTime(datetime, 1)
+                      changeDateTime(datetime, 1);
                     }
                   "
                 ></DatePicker>
@@ -35,7 +35,7 @@
                   :options="options2"
                   @on-change="
                     datetime => {
-                      changeDateTime(datetime, 2)
+                      changeDateTime(datetime, 2);
                     }
                   "
                 ></DatePicker>
@@ -66,6 +66,7 @@
           <Card>
             <Row class="operation">
               <Button type="primary" icon="md-add" @click="addStaff">新增</Button>
+              <Button type="success" icon="md-refresh" @click="search">刷新</Button>
             </Row>
             <Row>
               <Table
@@ -121,7 +122,7 @@
                   >
                 </template>
                 <template slot-scope="{ row }" slot="status">
-                  <div>{{ ['待上架', '上架', '下架'][row.status] }}</div>
+                  <div>{{ ["待上架", "上架", "下架"][row.status] }}</div>
                 </template>
                 <template slot-scope="{ row }" slot="type">
                   <!-- <div>{{ ['全部', '小程序', 'android', 'ios'][row.type] }}</div> -->
@@ -162,25 +163,25 @@
 </template>
 
 <script>
-import { postRequest, getRequest, getSyncRequest } from '@/libs/axios'
-import AddOrEdit from './addOrEditModal'
-import showDetail from './showDetailModal'
+import { postRequest, getRequest, getSyncRequest } from "@/libs/axios";
+import AddOrEdit from "./addOrEditModal";
+import showDetail from "./showDetailModal";
 export default {
-  name: 'bannerPage',
-  inject: ['linkTo'],
+  name: "bannerPage",
+  inject: ["linkTo"],
   components: { AddOrEdit, showDetail },
   data() {
     return {
       typeList: [
-        { value: '0', label: '全部' },
-        { value: '1', label: '小程序' },
-        { value: '2', label: 'android' },
-        { value: 3, label: 'ios' },
+        { value: "0", label: "全部" },
+        { value: "1", label: "小程序" },
+        { value: "2", label: "android" },
+        { value: 3, label: "ios" },
       ],
       statusList: [
-        { value: 0, label: '待上架' },
-        { value: 1, label: '上架' },
-        { value: 2, label: '下架' },
+        { value: 0, label: "待上架" },
+        { value: 1, label: "上架" },
+        { value: 2, label: "下架" },
       ],
       TableLoading: false,
       auditing: 0,
@@ -188,159 +189,159 @@ export default {
       current: 1,
       listData: [],
       selectDataList: [],
-      confirmValue: '',
+      confirmValue: "",
       tableColumns: [
         {
-          title: '操作',
+          title: "操作",
           width: 250,
-          align: 'center',
-          slot: 'action',
-          fixed: 'left',
+          align: "center",
+          slot: "action",
+          fixed: "left",
         },
         {
-          title: '门店',
+          title: "门店",
           width: 200,
-          align: 'center',
-          key: 'shopName',
+          align: "center",
+          key: "shopName",
           render: (h, params) => {
-            return h('div', [
+            return h("div", [
               h(
-                'Tooltip',
+                "Tooltip",
                 {
-                  props: { placement: 'top' },
+                  props: { placement: "top" },
                 },
                 [
                   h(
-                    'span',
+                    "span",
                     {
                       style: {
-                        display: 'inline-block',
-                        width: params.column._width * 0.85 + 'px',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
+                        display: "inline-block",
+                        width: params.column._width * 0.85 + "px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
                       },
                     },
                     params.row.shopName
                   ),
                   h(
-                    'span',
+                    "span",
                     {
-                      slot: 'content',
-                      style: { whiteSpace: 'normal', wordBreak: 'break-all' },
+                      slot: "content",
+                      style: { whiteSpace: "normal", wordBreak: "break-all" },
                     },
                     params.row.shopName
                   ),
                 ]
               ),
-            ])
+            ]);
           },
         },
         {
-          title: '标题',
+          title: "标题",
           width: 150,
-          align: 'center',
-          key: 'title',
+          align: "center",
+          key: "title",
         },
         {
-          title: '内容Id',
+          title: "内容Id",
           width: 100,
-          align: 'center',
-          key: 'id',
+          align: "center",
+          key: "id",
         },
         {
-          title: '终端',
+          title: "终端",
           width: 140,
-          align: 'center',
-          slot: 'type',
+          align: "center",
+          slot: "type",
         },
         {
-          title: '运营位类型',
+          title: "运营位类型",
           minWidth: 100,
-          align: 'center',
-          key: 'bannerType',
+          align: "center",
+          key: "bannerType",
         },
         {
-          title: '已选活动',
+          title: "已选活动",
           minWidth: 200,
-          align: 'center',
-          key: 'content',
+          align: "center",
+          key: "content",
           render: (h, params) => {
-            return h('div', [
+            return h("div", [
               h(
-                'Tooltip',
+                "Tooltip",
                 {
-                  props: { placement: 'top' },
+                  props: { placement: "top" },
                 },
                 [
                   h(
-                    'span',
+                    "span",
                     {
                       style: {
-                        display: 'inline-block',
-                        width: params.column._width * 0.85 + 'px',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
+                        display: "inline-block",
+                        width: params.column._width * 0.85 + "px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
                       },
                     },
                     params.row.content
                   ),
                   h(
-                    'span',
+                    "span",
                     {
-                      slot: 'content',
-                      style: { whiteSpace: 'normal', wordBreak: 'break-all' },
+                      slot: "content",
+                      style: { whiteSpace: "normal", wordBreak: "break-all" },
                     },
                     params.row.content
                   ),
                 ]
               ),
-            ])
+            ]);
           },
         },
         {
-          title: '运营位置',
+          title: "运营位置",
           minWidth: 200,
-          align: 'center',
-          key: 'location',
+          align: "center",
+          key: "location",
         },
         {
-          title: '运营图片',
+          title: "运营图片",
           minWidth: 200,
-          align: 'center',
-          slot: 'image',
+          align: "center",
+          slot: "image",
         },
         {
-          title: '运营状态',
+          title: "运营状态",
           minWidth: 200,
-          align: 'center',
-          slot: 'status',
+          align: "center",
+          slot: "status",
         },
         {
-          title: '开始时间',
+          title: "开始时间",
           minWidth: 200,
-          align: 'center',
-          key: 'startTime',
+          align: "center",
+          key: "startTime",
         },
         {
-          title: '结束时间',
+          title: "结束时间",
           minWidth: 200,
-          align: 'center',
-          key: 'endTime',
+          align: "center",
+          key: "endTime",
         },
         {
-          title: '创建人',
+          title: "创建人",
           minWidth: 200,
-          align: 'center',
-          key: 'operator',
+          align: "center",
+          key: "operator",
         },
       ],
       searchForm: {
-        shopName: '',
-        title: '',
-        startTime: '',
-        endTime: '',
+        shopName: "",
+        title: "",
+        startTime: "",
+        endTime: "",
         pageNum: 1,
         pageSize: 10,
         status: null,
@@ -350,222 +351,222 @@ export default {
       ShowViewDialogVisible: false,
       options1: {},
       options2: {},
-    }
+    };
   },
   created() {
-    console.log(2)
-    this.loadTableData()
+    console.log(2);
+    this.loadTableData();
   },
   activated() {
-    console.log(1)
-    this.loadTableData()
+    console.log(1);
+    this.loadTableData();
   },
   filters: {
     $showType(val) {
-      if (!val) return ''
-      let list = ['小程序', 'android', 'ios']
-      let list2 = val.split(',')
-      return list2.map(l => list[+l - 1]).join(',')
+      if (!val) return "";
+      let list = ["小程序", "android", "ios"];
+      let list2 = val.split(",");
+      return list2.map(l => list[+l - 1]).join(",");
     },
   },
   methods: {
     changeDateTime(datetime, index) {
       switch (index) {
         case 1:
-          this.searchForm.startTime = datetime + ' 00:00:00'
+          this.searchForm.startTime = datetime + " 00:00:00";
           this.options2 = {
             disabledDate(date) {
-              return date.valueOf() < new Date(datetime) - 1000 * 60 * 60 * 24
+              return date.valueOf() < new Date(datetime) - 1000 * 60 * 60 * 24;
             },
-          }
-          break
+          };
+          break;
         case 2:
-          this.searchForm.endTime = datetime + ' 23:59:59'
+          this.searchForm.endTime = datetime + " 23:59:59";
           this.options1 = {
             disabledDate(date) {
-              return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24 || date.valueOf() > new Date(datetime)
+              return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24 || date.valueOf() > new Date(datetime);
             },
-          }
-          break
+          };
+          break;
       }
     },
     search() {
-      this.searchForm.pageNum = 1
-      this.current = 1
-      this.loadTableData()
+      this.searchForm.pageNum = 1;
+      this.current = 1;
+      this.loadTableData();
     },
     reset() {
-      this.searchForm.shopName = ''
-      this.searchForm.startTime = ''
-      this.searchForm.endTime = ''
-      this.searchForm.status = null
-      this.searchForm.type = 0
-      this.searchForm.pageNum = 1
-      this.current = 1
-      this.loadTableData()
+      this.searchForm.shopName = "";
+      this.searchForm.startTime = "";
+      this.searchForm.endTime = "";
+      this.searchForm.status = null;
+      this.searchForm.type = 0;
+      this.searchForm.pageNum = 1;
+      this.current = 1;
+      this.loadTableData();
     },
     loadTableData(page) {
-      this.searchForm.pageNum = page || 1
-      this.totalSize = 0
-      this.listData = []
-      this.TableLoading = true
+      this.searchForm.pageNum = page || 1;
+      this.totalSize = 0;
+      this.listData = [];
+      this.TableLoading = true;
       postRequest(
         `/banner/setting/getPlantFromSetting?pageNum=${this.searchForm.pageNum}&pageSize=10`,
         this.searchForm
       ).then(res => {
-        this.TableLoading = false
-        if (res.code === '200') {
-          this.totalSize = res.data.total
-          this.listData = res.data.records
+        this.TableLoading = false;
+        if (res.code === "200") {
+          this.totalSize = res.data.total;
+          this.listData = res.data.records;
         } else {
-          this.$Message.error('获取数据失败')
+          this.$Message.error("获取数据失败");
         }
-      })
+      });
     },
     addStaff() {
-      this.AddViewDialogVisible = true
-      this.$emit('closeTab', true)
+      this.AddViewDialogVisible = true;
+      this.$emit("closeTab", true);
       this.$nextTick(() => {
-        this.$refs['AddOrEdit'].resetRow()
-      })
+        this.$refs["AddOrEdit"].resetRow();
+      });
     },
     edit(row) {
-      this.AddViewDialogVisible = true
-      this.$emit('closeTab', true)
+      this.AddViewDialogVisible = true;
+      this.$emit("closeTab", true);
       this.$nextTick(() => {
-        this.$refs['AddOrEdit'].resetRow(row)
-        this.$refs['AddOrEdit'].getData(row.id)
-      })
+        this.$refs["AddOrEdit"].resetRow(row);
+        this.$refs["AddOrEdit"].getData(row.id);
+      });
     },
     showDetail(row) {
-      console.log(12)
-      this.ShowViewDialogVisible = true
-      this.$emit('closeTab', true)
+      console.log(12);
+      this.ShowViewDialogVisible = true;
+      this.$emit("closeTab", true);
       this.$nextTick(() => {
-        this.$refs['showDetail'].resetRow(row)
-      })
+        this.$refs["showDetail"].resetRow(row);
+      });
     },
     del(row) {
-      var confirmValue = ''
+      var confirmValue = "";
       this.$Modal.confirm({
-        title: '删除原因',
+        title: "删除原因",
         render: h => {
-          return h('textarea', {
+          return h("textarea", {
             props: {
-              class: 'confirm-textarea',
+              class: "confirm-textarea",
               rows: 3,
               autofocus: true,
-              placeholder: 'Please enter your name...',
+              placeholder: "Please enter your name...",
             },
             style: {
-              width: '100%',
-              height: '100px',
-              padding: '5px',
-              outline: 'none',
+              width: "100%",
+              height: "100px",
+              padding: "5px",
+              outline: "none",
             },
             on: {
               input: val => {
-                confirmValue = val.data
+                confirmValue = val.data;
               },
             },
-          })
+          });
         },
         onOk: () => {
           if (!confirmValue) {
-            this.$Message.error('请输入下架原因')
-            return
+            this.$Message.error("请输入下架原因");
+            return;
           }
           postRequest(`/banner/setting/undercarriage`, { id: row.id, type: 3, remark: confirmValue }).then(res => {
-            this.TableLoading = false
-            if (res.code === '200') {
-              this.search()
+            this.TableLoading = false;
+            if (res.code === "200") {
+              this.search();
             } else {
-              this.$Message.error(res.msg)
+              this.$Message.error(res.msg);
             }
-          })
+          });
         },
         onCancel: () => {},
-      })
+      });
     },
     upper(row) {
-      var confirmValue = ''
+      var confirmValue = "";
       this.$Modal.confirm({
-        title: '确认上架',
+        title: "确认上架",
         onOk: () => {
           postRequest(`/banner/setting/undercarriage`, { id: row.id, type: 2, remark: confirmValue }).then(res => {
-            this.TableLoading = false
-            if (res.code === '200') {
-              this.search()
+            this.TableLoading = false;
+            if (res.code === "200") {
+              this.search();
             } else {
-              this.$Message.error(res.msg)
+              this.$Message.error(res.msg);
             }
-          })
+          });
         },
         onCancel: () => {},
-      })
+      });
     },
     stop(row) {
-      var confirmValue = ''
+      var confirmValue = "";
       this.$Modal.confirm({
-        title: '下架原因',
+        title: "下架原因",
         render: h => {
-          return h('textarea', {
+          return h("textarea", {
             props: {
               rows: 3,
               autofocus: true,
-              placeholder: 'Please enter your name...',
+              placeholder: "Please enter your name...",
             },
             style: {
-              width: '100%',
-              height: '100px',
-              padding: '5px',
-              outline: 'none',
+              width: "100%",
+              height: "100px",
+              padding: "5px",
+              outline: "none",
             },
             on: {
               input: val => {
-                confirmValue = val.data
+                confirmValue = val.data;
               },
             },
-          })
+          });
         },
         onOk: () => {
           if (!confirmValue) {
-            this.$Message.error('请输入下架原因')
-            return
+            this.$Message.error("请输入下架原因");
+            return;
           }
           postRequest(`/banner/setting/undercarriage`, { id: row.id, type: 1, remark: confirmValue }).then(res => {
-            this.TableLoading = false
-            if (res.code === '200') {
-              this.search()
+            this.TableLoading = false;
+            if (res.code === "200") {
+              this.search();
             } else {
-              this.$Message.error(res.msg)
+              this.$Message.error(res.msg);
             }
-          })
+          });
         },
         onCancel: () => {},
-      })
+      });
     },
     handleSelect(selection, index) {
-      this.selectDataList = selection
+      this.selectDataList = selection;
     },
     batchAudit() {},
     changeCurrent(current) {
       if (this.searchForm.pageNum != current) {
-        this.searchForm.pageNum = current
-        this.loadTableData(current)
+        this.searchForm.pageNum = current;
+        this.loadTableData(current);
       }
     },
     closeTab(e) {
-      this.AddViewDialogVisible = false
-      this.ShowViewDialogVisible = false
-      this.$emit('closeTab', false)
+      this.AddViewDialogVisible = false;
+      this.ShowViewDialogVisible = false;
+      this.$emit("closeTab", false);
     },
     close() {
-      this.$emit('close', false)
-      this.linkTo('cms')
+      this.$emit("close", false);
+      this.linkTo("cms");
     },
   },
-}
+};
 </script>
 
 <style scoped>
@@ -577,5 +578,8 @@ export default {
   height: 100px;
   padding: 5px;
   outline: none;
+}
+.page {
+  margin-top: 1vh;
 }
 </style>
