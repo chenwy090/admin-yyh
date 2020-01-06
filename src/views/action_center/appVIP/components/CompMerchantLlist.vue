@@ -3,10 +3,19 @@
   <div class="coupon-list-box">
     <row>
       <Form ref="searchItem" :model="searchItem" inline :label-width="100" class="search-form">
+        <FormItem label="商超名称：">
+          <Input
+            type="text"
+            v-model="searchItem.shopName"
+            clearable
+            placeholder="请输入商超名称"
+            style="width: 150px"
+          />
+        </FormItem>
         <FormItem label="优惠券名称：">
           <Input
             type="text"
-            v-model="searchItem.name"
+            v-model="searchItem.couponName"
             clearable
             placeholder="请输入优惠券名称"
             style="width: 150px"
@@ -62,10 +71,10 @@ export default {
           couponType: 1,
           label: "超市券",
           compName: "CompMerchantLlist",
-          url: "/campagin/activitylist"
+          url: "/coupon/superMarket/list",
         };
-      }
-    }
+      },
+    },
   },
   data() {
     return {
@@ -73,7 +82,7 @@ export default {
       choice: {
         _id: "",
         id: "",
-        name: ""
+        name: "",
       },
       edit_loading: false,
       isCheckDisabled: false,
@@ -85,7 +94,7 @@ export default {
           width: 70,
           align: "center",
           render: (h, params) => {
-            const { campId: id, name, couponImg: img } = params.row;
+            const { templateId: id, title: name } = params.row;
             let flag = false;
             if (this.choice.id == id) {
               flag = true;
@@ -96,42 +105,44 @@ export default {
             return h("div", [
               h("Radio", {
                 props: {
-                  value: flag
+                  value: flag,
                 },
                 on: {
                   "on-change": () => {
                     self.choice.id = id;
                     self.choice.name = name;
-                    self.choice.img = img;
                     self.choice.row = params.row;
                     // console.log("change", JSON.stringify(self.choice));
-                  }
-                }
-              })
+                  },
+                },
+              }),
             ]);
-          }
+          },
         },
         {
           title: "优惠券ID",
           align: "center",
-          key: "campId"
+          width: 230,
+          key: "templateId",
         },
         {
           title: "优惠券名称",
           align: "center",
-          key: "name"
-        }
+          key: "title",
+        },
       ],
       tableData: [],
       page: {
         pageNum: 1, //页码
         pageSize: 10, //每页数量
-        total: 0 //数据总数
+        total: 0, //数据总数
       },
       tableLoading: false,
       searchItem: {
-        name: ""
-      }
+        couponName: "",
+        shopName: "",
+        isActivityCoupon: true,
+      },
     };
   },
 
@@ -149,13 +160,17 @@ export default {
       this.tableLoading = false;
       const reqParams = {
         ...this.searchItem,
-        ...this.page
+        // ...this.page,
+        ...{
+          page: this.page.pageNum,
+          size: this.page.pageSize,
+        },
       };
       postRequest(this.tab.url, reqParams).then(res => {
         const {
           code,
           data: { current, total, size, records },
-          msg
+          msg,
         } = res;
 
         if (code == 200) {
@@ -190,14 +205,15 @@ export default {
     reset() {
       // 重置查询参数
       this.searchItem = {
-        merchantName: "",
-        couponName: ""
+        couponName: "",
+        shopName: "",
+        isActivityCoupon: true,
       };
 
       this.page = {
         pageNum: 1, //页码
         pageSize: 10, //每页数量
-        total: 0 //数据总数
+        total: 0, //数据总数
       };
 
       this.queryTableData();
@@ -210,19 +226,19 @@ export default {
     msgOk(txt) {
       this.$Message.info({
         content: txt,
-        duration: 3
+        duration: 3,
       });
     },
     msgErr(txt) {
       this.$Message.error({
         content: txt,
-        duration: 3
+        duration: 3,
       });
-    }
+    },
   },
   mounted() {
     this.queryTableData();
-  }
+  },
 };
 </script>
 

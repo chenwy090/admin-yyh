@@ -3,10 +3,19 @@
   <div class="coupon-list-box">
     <row>
       <Form ref="searchItem" :model="searchItem" inline :label-width="100" class="search-form">
+        <FormItem label="商户名称：">
+          <Input
+            type="text"
+            v-model="searchItem.merchantName"
+            clearable
+            placeholder="请输入商户名称"
+            style="width: 150px"
+          />
+        </FormItem>
         <FormItem label="优惠券名称：">
           <Input
             type="text"
-            v-model="searchItem.title"
+            v-model="searchItem.couponName"
             clearable
             placeholder="请输入优惠券名称"
             style="width: 150px"
@@ -63,10 +72,10 @@ export default {
           couponType: 2,
           label: "周边券",
           compName: "CompSuperMarketList",
-          url: "/merchantCouponTemplate/activitylist"
+          url: "/coupon/merchant/list",
         };
-      }
-    }
+      },
+    },
   },
   data() {
     return {
@@ -74,7 +83,7 @@ export default {
       choice: {
         _id: "",
         id: "",
-        name: ""
+        name: "",
       },
       edit_loading: false,
       isCheckDisabled: false,
@@ -86,11 +95,7 @@ export default {
           width: 70,
           align: "center",
           render: (h, params) => {
-            const {
-              templateId: id,
-              title: name,
-              couponSmallImg: img
-            } = params.row;
+            const { templateId: id, title: name, couponSmallImg: img } = params.row;
             let flag = false;
             if (this.choice.id == id) {
               flag = true;
@@ -101,7 +106,7 @@ export default {
             return h("div", [
               h("Radio", {
                 props: {
-                  value: flag
+                  value: flag,
                 },
                 on: {
                   "on-change": () => {
@@ -110,30 +115,30 @@ export default {
                     self.choice.img = img;
                     self.choice.row = params.row;
                     // console.log("change", JSON.stringify(self.choice));
-                  }
-                }
-              })
+                  },
+                },
+              }),
             ]);
-          }
+          },
         },
         {
           title: "优惠券ID",
           align: "center",
           width: 230,
-          key: "templateId"
+          key: "templateId",
         },
         {
           title: "优惠券名称",
           align: "center",
           width: 230,
-          key: "title"
+          key: "title",
         },
         {
           title: "有效期",
           align: "center",
           key: "time",
           render: (h, params) => {
-            let { dateType, startDate, endDate } = params.row;
+            let { dateType, useStartTime: startDate, useEndTime: endDate } = params.row;
             let str = "-";
 
             if (dateType == 2) {
@@ -145,11 +150,11 @@ export default {
             }
 
             return h("span", str);
-          }
-        }
+          },
+        },
         /*
         商超    isActivityCoupon  0: 是活动券  1: 不是活动券
-        周边券  isActivityCoupon 是否活动券 0: 不是活动券  1: 活动券 
+        周边券  isActivityCoupon 是否活动券 0: 不是活动券  1: 活动券
         */
         // {
         //   title: "活动券",
@@ -167,12 +172,14 @@ export default {
       page: {
         pageNum: 1, //页码
         pageSize: 10, //每页数量
-        total: 0 //数据总数
+        total: 0, //数据总数
       },
       tableLoading: false,
       searchItem: {
-        title: ""
-      }
+        couponName: "",
+        merchantName: "",
+        isActivityCoupon: true,
+      },
     };
   },
 
@@ -190,13 +197,17 @@ export default {
       this.tableLoading = false;
       const reqParams = {
         ...this.searchItem,
-        ...this.page
+        // ...this.page,
+        ...{
+          page: this.page.pageNum,
+          size: this.page.pageSize,
+        },
       };
       postRequest(this.tab.url, reqParams).then(res => {
         const {
           code,
           data: { current, total, size, records },
-          msg
+          msg,
         } = res;
 
         if (code == 200) {
@@ -231,14 +242,15 @@ export default {
     reset() {
       // 重置查询参数
       this.searchItem = {
-        shopName: "",
-        couponName: ""
+        couponName: "",
+        merchantName: "",
+        isActivityCoupon: true,
       };
 
       this.page = {
         pageNum: 1, //页码
         pageSize: 10, //每页数量
-        total: 0 //数据总数
+        total: 0, //数据总数
       };
 
       this.queryTableData();
@@ -251,19 +263,19 @@ export default {
     msgOk(txt) {
       this.$Message.info({
         content: txt,
-        duration: 3
+        duration: 3,
       });
     },
     msgErr(txt) {
       this.$Message.error({
         content: txt,
-        duration: 3
+        duration: 3,
       });
-    }
+    },
   },
   mounted() {
     this.queryTableData();
-  }
+  },
 };
 </script>
 

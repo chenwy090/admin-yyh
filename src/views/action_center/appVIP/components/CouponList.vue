@@ -9,11 +9,11 @@
       :closable="true"
       :mask-closable="false"
       @on-cancel="closeDialog"
-      :styles="{top: '20px'}"
+      :styles="{ top: '20px' }"
     >
       <div>
         <Tabs type="card" v-model="compName">
-          <TabPane v-for="(tab,k) in tabs" :key="k" :label="tab.label" :name="tab.compName"></TabPane>
+          <TabPane v-for="(tab, k) in tabs" :key="k" :label="tab.label" :name="tab.compName"></TabPane>
         </Tabs>
         <component
           :is="compName"
@@ -35,17 +35,17 @@ export default {
   name: "coupon-list",
   components: {
     CompMerchantLlist,
-    CompSuperMarketList
+    CompSuperMarketList,
   },
   computed: {
     tab() {
       return this.tabs[this.compName];
-    }
+    },
   },
   watch: {
     compName() {
       console.log("watch:compName", this.compName);
-    }
+    },
   },
   data() {
     return {
@@ -62,7 +62,7 @@ export default {
           couponType: 1,
           label: "超市券",
           compName: "CompMerchantLlist",
-          url: "/campagin/activitylist"
+          url: "/coupon/superMarket/list",
         },
         CompSuperMarketList: {
           id: Math.random(),
@@ -70,9 +70,9 @@ export default {
           couponType: 2,
           label: "周边券",
           compName: "CompSuperMarketList",
-          url: "/merchantCouponTemplate/activitylist"
-        }
-      }
+          url: "/coupon/merchant/list",
+        },
+      },
     };
   },
 
@@ -96,16 +96,16 @@ export default {
     msgOk(txt) {
       this.$Message.info({
         content: txt,
-        duration: 3
+        duration: 3,
       });
     },
     msgErr(txt) {
       this.$Message.error({
         content: txt,
-        duration: 3
+        duration: 3,
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
