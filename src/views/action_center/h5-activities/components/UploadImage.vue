@@ -16,7 +16,7 @@
         :headers="userToken"
         :action="url"
         accept="image"
-        :format="['gif','jpg','jpeg','png','bmp']"
+        :format="['jpg','png']"
         :on-format-error="handleFormatError"
         :show-upload-list="false"
         :default-file-list="defaultList"
@@ -146,7 +146,7 @@ export default {
       this.$Message.error("图片不大于2M");
     },
     handleFormatError() {
-      this.msgErr("只能上传gif,jpg,jpeg,png,bmp格式,请重新上传");
+      this.msgErr("只能上传jpg,png格式,请重新上传");
     },
     handleBeforeUpload(file) {
       console.log(file);

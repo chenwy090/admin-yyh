@@ -8,7 +8,7 @@
 	      :styles="styles"
 	    >
 	      <div slot="header" style="overflow:hidden;">
-	        <span>编辑模板内容</span>
+	        <span>{{templateTitle}}</span>
 	        <Button type="dashed" style="float:right" @click="showTemplateDetail = false">返回上一级</Button>
 	      </div>
 	      <div>
@@ -18,51 +18,71 @@
 	          :model="formData"
 	          :label-width="100"
 	        >
-	          <FormItem label="内容选择：" prop="type">
+	          <FormItem label="内容选择：" prop="type" v-if="action.type != 'query'">
 	            <Button type="primary" size="small" @click="addContetByType('add')">添加</Button>
 	          </FormItem>
 	          <Table :columns="columnsYhq" :data="data" border :loading="loading" v-if="formData.type == 1">
 	          	<template slot-scope="{ row }" slot="action">
-	          		<Button
-			            type="text"
-			            size="small"
-			            style="color:#2db7f5;margin-right: 5px" @click="addContetByType('edit',row)">
-			            编辑
-			        </Button>
-			        <Button
-			            type="text"
-			            size="small"
-			            style="color:#2db7f5;margin-right: 5px" @click="deleteList(row)">
-			            删除
-			        </Button>
-			        <Button
-			            type="text"
-			            size="small"
-			            style="color:#2db7f5;margin-right: 5px" @click="addContetByType('query',row)">
-			            查看
-			        </Button>
+	          		<template v-if="action.type == 'query'">
+	          			<Button
+				            type="text"
+				            size="small"
+				            style="color:#2db7f5;margin-right: 5px" @click="addContetByType('query',row)">
+				            查看
+				        </Button>
+	          		</template>
+	          		<template v-else>
+		          		<Button
+				            type="text"
+				            size="small"
+				            style="color:#2db7f5;margin-right: 5px" @click="addContetByType('edit',row)" v-if="row.heraldStatus == '待预告' || row.heraldStatus == '预告中'">
+				            编辑
+				        </Button>
+				        <Button
+				            type="text"
+				            size="small"
+				            style="color:#2db7f5;margin-right: 5px" @click="deleteList(row)">
+				            删除
+				        </Button>
+				        <Button
+				            type="text"
+				            size="small"
+				            style="color:#2db7f5;margin-right: 5px" @click="addContetByType('query',row)">
+				            查看
+				        </Button>
+				    </template>
 	          	</template>
 	          </Table>
 	          <Table :columns="columnsImg" :data="data" border :loading="loading" v-if="formData.type == 2">
 	          	<template slot-scope="{ row }" slot="action">
-	          		<Button
-			            type="text"
-			            size="small"
-			            style="color:#2db7f5;margin-right: 5px" @click="addContetByType('edit',row)">
-			            编辑
-			        </Button>
-			        <Button
-			            type="text"
-			            size="small"
-			            style="color:#2db7f5;margin-right: 5px" @click="deleteList(row)">
-			            删除
-			        </Button>
-			        <Button
-			            type="text"
-			            size="small"
-			            style="color:#2db7f5;margin-right: 5px" @click="addContetByType('query',row)">
-			            查看
-			        </Button>
+	          		<template v-if="action.type == 'query'">
+	          			<Button
+				            type="text"
+				            size="small"
+				            style="color:#2db7f5;margin-right: 5px" @click="addContetByType('query',row)">
+				            查看
+				        </Button>
+	          		</template>
+	          		<template v-else>
+		          		<Button
+				            type="text"
+				            size="small"
+				            style="color:#2db7f5;margin-right: 5px" @click="addContetByType('edit',row)" v-if="row.heraldStatus == '待预告' || row.heraldStatus == '预告中'">
+				            编辑
+				        </Button>
+				        <Button
+				            type="text"
+				            size="small"
+				            style="color:#2db7f5;margin-right: 5px" @click="deleteList(row)">
+				            删除
+				        </Button>
+				        <Button
+				            type="text"
+				            size="small"
+				            style="color:#2db7f5;margin-right: 5px" @click="addContetByType('query',row)">
+				            查看
+				        </Button>
+				    </template>
 	          	</template>
 	          </Table>
 	          	<!-- 分页器 -->
@@ -104,6 +124,7 @@
 		},
 		data(){
 			return{
+				templateTitle:'',
 				showTemplateDetail:false,
 			    styles: {
 			        height: "calc(100% - 55px)",
@@ -331,7 +352,12 @@
 		        this.showTemplateDetail = true;
 		        this.formData.type = data.moduleType;
 		        this.formData.moduleId = data.id;
-		        this.formData.browsingId = data.browsingId
+		        this.formData.browsingId = data.browsingId;
+		        if(type == 'query'){
+		        	this.templateTitle = '查看模块内容'
+		        }else{
+		        	this.templateTitle = '编辑模块内容'
+		        }
 		        console.log("模块内容------");
 		        console.log(data)
 		        console.log("模块内容");
