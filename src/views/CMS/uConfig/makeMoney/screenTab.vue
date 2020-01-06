@@ -262,7 +262,4 @@ export default {
 .page {
   margin-top: 1vh;
 }
-.ivu-card-extra {
-  z-index: 9999999;
-}
 </style>
