@@ -208,7 +208,7 @@ export default {
               h(
                 "Tooltip",
                 {
-                  props: { placement: "top" },
+                  props: { placement: "top", transfer: true },
                 },
                 [
                   h(
