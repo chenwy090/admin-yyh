@@ -264,11 +264,10 @@ export default {
           required: true,
           message: "有效期不能为空",
           validator: (rule, value, callback) => {
-            value = value.filter(item => !!item);
-            if (!value.length) {
-              callback(new Error("请选择有效期"));
-            } else {
+            if (value) {
               callback();
+            } else {
+              callback(new Error("请选择有效期"));
             }
           },
         },
@@ -285,7 +284,7 @@ export default {
   },
   mounted() {
     this.getList();
-    cms.provinceList().then(res => {
+    cms.filterProvince().then(res => {
       if (res.isSuccess) {
         this.proviceSelect = res.data;
       }
@@ -438,7 +437,12 @@ export default {
     proviceChange(provinceCode) {
       if (!provinceCode) return;
       this.searchForm.city = "";
-      cms.cityByProvinceCode(provinceCode).then(res => {
+      // cms.cityByProvinceCode(provinceCode).then(res => {
+      //   if (res.isSuccess) {
+      //     this.citySelect = res.data;
+      //   }
+      // });
+      cms.filterCityByProvince(provinceCode).then(res => {
         if (res.isSuccess) {
           this.citySelect = res.data;
         }
