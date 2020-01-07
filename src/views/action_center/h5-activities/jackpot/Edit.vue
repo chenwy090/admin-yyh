@@ -343,6 +343,7 @@ export default {
       };
       console.log("closeDialog");
       this.isShow = false;
+      this.$emit('refresh')
       // this.$emit(`update:showExchange`, false);
     },
     async queryTemplateType(){
