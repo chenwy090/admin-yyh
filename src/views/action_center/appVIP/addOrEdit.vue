@@ -252,6 +252,14 @@ export default {
             break;
           case 2:
             delete body.coupons;
+            if (body.ubayInfo.amountEach <= 0) {
+              this.$Message.error("每人获得U贝数量不能小于0");
+              return;
+            }
+            if (!body.ubayInfo.totalAmount <= 0) {
+              this.$Message.error("发放份数不能小于0");
+              return;
+            }
             break;
         }
 

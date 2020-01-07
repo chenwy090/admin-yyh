@@ -79,8 +79,10 @@
                 @on-selection-change="handleSelect"
               >
                 <template slot-scope="{ row }" slot="action">
+                  <!-- { value: 0, label: "待上架" }, { value: 1, label: "上架" }, { value: 2, label: "下架" }, -->
+
                   <Button
-                    v-if="row.status === '0'"
+                    v-if="row.status === '0' || row.status == '2'"
                     type="success"
                     style="margin-right: 5px"
                     size="small"
@@ -105,7 +107,7 @@
                     >删除</Button
                   >
                   <Button
-                    v-if="row.status === '0'"
+                    v-if="row.status === '0' || row.status == '2'"
                     type="error"
                     style="margin-right: 5px"
                     size="small"
