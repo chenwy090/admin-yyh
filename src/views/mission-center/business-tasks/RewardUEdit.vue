@@ -149,6 +149,7 @@ export default {
             merchantType: 0,
             merchantId: "", // 商户id
             merhcantName: "", // 商户名称
+            couponSubheadTemp:"", //副标题
             brandId: "", // 品牌id
             brandName: "", // 品牌名称
             anticipatedUbay: "", // 预计消耗u贝数量

@@ -122,8 +122,6 @@ export default {
         //刷新列表数据
         this.$emit("refresh");
         this.msgOk("文件上传成功");
-      } else if (code == 500) {
-        this.msgErr(data);
       } else {
         this.msgErr(msg);
       }
