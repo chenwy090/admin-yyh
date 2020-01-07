@@ -1,8 +1,9 @@
-export default function createFormData() {
+// createFormData
+export default function () {
     return {
         assignmentId: "",//商户任务id 对应列表的id
         id: "",//页面配置id
-        pageTitle: "白猫", //页面标题: 分享赢现金蒙牛 白猫
+        pageTitle: "分享赢现金", //页面标题: 分享赢现金蒙牛 白猫
         pageBackground: "#C3E4E2", //页面背景:  C3E4E2 F2BCD4
         headerImgUrl: "https://image.52ash.cn/wx_mini/GfNMTjDnhZ.png", // 顶部图片：
         rewardButtonUrl: "https://image.52ash.cn/wx_mini/pmBzn3LzD0.png", // 我的奖励按钮:
@@ -35,6 +36,5 @@ export default function createFormData() {
         // couponBoxImgUrl: "", //券框图片：
         // couponWaveImgUrl: "", // 券波浪图片：
         // shareBackground: "", //分享区背景颜色
-        // eventRuleBackground: "", // 活动规则背景颜色：
     };
 }

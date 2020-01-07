@@ -346,7 +346,7 @@ export default {
       console.log(arr);
       let [beginTime, endTime] = arr;
       if (beginTime) {
-        startTime += ` 00:00:00`;
+        beginTime += ` 00:00:00`;
         endTime += ` 23:59:59`;
       }
       console.log(beginTime, endTime);

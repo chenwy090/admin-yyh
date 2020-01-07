@@ -38,8 +38,11 @@
               </Button>
             </template>
             <template v-else-if="row.timeStatus == 2">
-              <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px"  @click="addOrEdit('query',row)">
+              <!-- <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px"  @click="addOrEdit('query',row)">
                 查看模块   
+              </Button> -->
+              <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEdit('edit',row)">
+                编辑模块   
               </Button>
               <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEditContent('query',row)">
                 查看模块内容   

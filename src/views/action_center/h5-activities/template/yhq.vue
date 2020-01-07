@@ -210,8 +210,8 @@
 			            ></DatePicker>
 					</FormItem>
 					<FormItem label=" ">
-						活动开始、结束时间：{{activityTime}} <br />
-						券开始、结束时间：{{useTime}}
+						券活动开始、结束时间：{{activityTime}} 
+						
 					</FormItem>
 				</Form>
 			</template>
@@ -348,7 +348,8 @@
 			    daterange: [],
 			    yGOptions:[{label:'全程预告',value:1},{label:'提前24小时',value:2},{label:'提前12小时',value:3}],
 			    currentTableRow:'',
-			    isYgOption:[{label:'否',value:0},{label:'是',value:1}]
+			    isYgOption:[{label:'否',value:0},{label:'是',value:1}],
+			    currentMouldId:''
 			}
 		},
 		async created(){
@@ -375,9 +376,9 @@
 				//显示优惠券的信息
 				this.yhqDetail = true;
 				console.log(this.currentTableRow)
-				const {currentTableRow:{templateId,surplusCount,mainTitle,subTitle,imgUrl,useStartDate,useEndDate}} = this;
+				const {currentTableRow:{templateId,surplusCount,mainTitle,subTitle,imgUrl,useStartDate,useEndDate,startDate,endDate}} = this;
 				this.formData = {
-					id:'',
+					id:this.currentMouldId,
 					templateId : templateId,
 					surplusCount:surplusCount,
 					mainTitle:mainTitle,
@@ -389,8 +390,9 @@
 					isYg:"",
 			    	isYgValue:""
 				}
-				this.useTime = (useStartDate == null ? "" : useStartDate) + '--' + useEndDate; //券的时间
-				this.activityTime = ""
+				//赋值
+				//this.useTime = (useStartDate == null ? "" : useStartDate) + '--' + useEndDate; //券的时间
+				this.activityTime = startDate + '--' + endDate;
 			},
 			async queryCouponList(pageNum){
 				this.page.pageNum = pageNum || 1;
@@ -462,7 +464,7 @@
 		    },
 		    setFormDataVaule(data){
 		    	//回显数据
-		    	const {mainTitle,id,templateId,subTitle,surplusCount,contentType,isHerald,heraldType,startTime,endTime,jumpType,imgUrl} = data;
+		    	const {mainTitle,id,templateId,subTitle,surplusCount,contentType,isHerald,heraldType,startTime,endTime,jumpType,imgUrl,startDate,endDate} = data;
 		    	this.formData = {
 			    	id:id,
 			    	templateId:templateId,
@@ -476,6 +478,7 @@
 			    	mainTitle:mainTitle,
 			    	subTitle:subTitle
 			    };
+			    this.activityTime = startDate + '--' + endDate;
 			    this.daterange = [startTime, endTime];
 		    },
 		    handleSubmitSave(name){
@@ -510,6 +513,8 @@
 		    				this.msgOk("保存成功");
 		    				this.$refs['form'].resetFields();
 		    				this.yhqDetail = false;
+		    				this.isShow = false;
+		    				this.$emit('refresh')
 		    			}else{
 		    				this.msgErr(msg);
 		    			}
@@ -526,8 +531,12 @@
 		      this.formData.endTime = endTime;
 		    },
 		    backToYhq(){
+		    	console.log(this.formData)
+		    	this.daterange = [];
 		    	this.yhqDetail = false;
 		    	this.isShow = true;
+		    	this.currentChoose = "";
+		    	this.currentMouldId = this.formData.id;
 		    },
 		    validateTime(rule, value, callback) {
 

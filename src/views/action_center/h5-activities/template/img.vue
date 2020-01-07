@@ -80,7 +80,7 @@
 						<span style="margin-left:10px;">图片限JPG、PNG格式，1MB以内，建议比例1:1</span>
 					</FormItem>
 					<FormItem label="跳转类型：" prop="urlType" :rules="{required: true,message:'跳转类型'}">
-			            <Select v-model="formData.urlType" placeholder="请选择">
+			            <Select v-model="formData.urlType" placeholder="请选择" @on-change="changeUrlType">
 			            	<Option v-for="item in urlTypeOptions" :value="item.value" :label="item.label" :key="item.value"></Option>
 			            </Select>
 			            <!--内链外链需要输入条状的链接地址-->
@@ -268,7 +268,7 @@
 			          :current="page.pageNum"
 			          :page-size="page.pageSize"
 			          :total="page.total"
-			          @on-change="changeCurrent1"
+			          @on-change="changeCurrent"
 			        ></Page>
 		      	</Row>
 			</div>
@@ -380,9 +380,11 @@
 					id:'',
 					type:1
 				},
+				currentChoose:'',
 				columnsYhq:[{
 			        title: "选择",
 			        align: "center",
+			        key:"templateId",
 			        width: 100,
 			        render:(h,params) =>{
 			        	let id = params.row.templateId;
@@ -433,7 +435,13 @@
 		},
 		methods:{
 			changeCurrent(pageNum) {
-				this.queryCouponList(pageNum)
+				if(this.formData.urlType == 3){
+					this.queryCouponList(pageNum)
+				}else if(this.formData.urlType == 4){
+					this.operationInfoList(pageNum)
+				}else if(this.formData.urlType == 5){
+					this.drawDailyGroupList();
+				}
 			},
 			changeCurrent1(pageNum){
 				this.operationInfoList(pageNum)
@@ -449,8 +457,11 @@
 			    this.formData.img = imgUrl;
 			    this.formData.defaultImgList = [{ imgUrl }];
 			},
+			changeUrlType(){
+				this.currentChoose = "";
+				this.formData.checkContentId = "";
+			},
 			addImgContent(type){
-				
 				if(type == 4){
 					this.isShowImg = true;
 					let columns = [{
@@ -496,7 +507,7 @@
 				    ///browsing/templateInfo/operationInfo/list
 				    this.columns = columns;
 				   	this.operationInfoList();
-				   	this.currentChoose = "";
+				   	this.currentChoose = this.formData.checkContentId;
 					
 					
 					
@@ -545,11 +556,11 @@
 					this.columns = columns;
 					///browsing/templateInfo/drawDailyGroup/list
 					this.drawDailyGroupList();
-				   	this.currentChoose = "";
+				   	this.currentChoose = this.formData.checkContentId;
 				}else if(type == 3){
 					//优惠券
 					this.isShowImg = true;
-					this.currentChoose = "";
+					this.currentChoose = this.formData.checkContentId;
 					this.queryCouponList()
 				}
 			},
