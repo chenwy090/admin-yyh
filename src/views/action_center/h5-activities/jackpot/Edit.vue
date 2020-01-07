@@ -125,6 +125,8 @@
             </div>
             <span style="margin-left:10px;">限JPG、PNG格式，1MB以内，宽度建议 750px</span>
           </FormItem>
+          <!-- {{action.type}}
+          {{moudleStatus}} -->
           <FormItem
             label="适用时间："
             prop="beginTime"
@@ -137,6 +139,7 @@
               style="display:inline-block;width: 300px"
               :value="daterange"
               @on-change="changeTime"
+              :disabled="(action.type == 'edit' && moudleStatus == 2) ? true : false"
             ></DatePicker>
           </FormItem>
           <FormItem
@@ -273,6 +276,7 @@ export default {
           this.url = "/browsing/templateModule/selectById";
           this.formData.id = data.id;
           this.objectNum = data.objectNum;
+          this.moudleStatus = data.timeStatus; // 编辑的时候 如果状态为已开始 2 使用时间不能修改
           console.log(this.formData.objectNum)
           this.queryTemplateModule(type);
         }
@@ -308,7 +312,8 @@ export default {
       contentTypeOption:[{label:'优惠券',value:1},{label:'图片',value:2}],
       totalTypeOption:[{label:'是',value:1},{label:'否',value:0}],
       templateTypeOption:[],
-      objectNum:0
+      objectNum:0,
+      moudleStatus:''
     };
   },
   async created(){

@@ -56,43 +56,43 @@
         <template slot-scope="{ row }" slot="action">
           
             <!--待上架状态-->
-          <Button type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="updateStatus(row,2)" v-if="row.status == 1">上架</Button>
-          <Button type="text" size="small" style="color:#2db7f5;margin-right: 5px"  @click="addOrEdit('query',row)">查看活动</Button>
-          <Button type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEdit('edit',row)" v-if="row.status == 1">编辑活动</Button>
+          <Button type="text" size="small" style="color:red;margin-right: 5px" @click="updateStatus(row,2)" v-if="row.status == 1">上架</Button>
+          <Button type="text" size="small" style="margin-right: 5px"  @click="addOrEdit('query',row)" class="view-style-class">查看活动</Button>
+          <Button type="text" size="small" style="margin-right: 5px" @click="addOrEdit('edit',row)" v-if="row.status == 1" class="edit-style-class">编辑活动</Button>
           <Button
             type="text"
             size="small"
-            style="color:#2db7f5;margin-right: 5px" @click="addOrEditJackpot('edit',row)" v-if="row.status == 1 || row.status == 2">
+            style="margin-right: 5px" @click="addOrEditJackpot('edit',row)" v-if="row.status == 1 || row.status == 2" class="edit-style-class">
             编辑活动模块
           </Button>
           <Button
             type="text"
             size="small"
-            style="color:#2db7f5;margin-right: 5px"  @click="addOrEditJackpot('query',row)" v-if="row.status != 1">
+            style="margin-right: 5px"  @click="addOrEditJackpot('query',row)" v-if="row.status != 1" class="view-style-class">
             查看活动模块
           </Button>
           <Button
             type="text"
             size="small"
-            style="color:#2db7f5;margin-right: 5px" @click="addOrEditStyle('edit',row)" v-if="row.status == 1 || row.status == 2">
+            style="margin-right: 5px" @click="addOrEditStyle('edit',row)" v-if="row.status == 1 || row.status == 2" class="edit-style-class">
             编辑活动样式
           </Button>
           <Button
             type="text"
             size="small"
-            style="color:#2db7f5;margin-right: 5px" @click="addOrEditStyle('query',row)" v-if="row.status != 1">
+            style="margin-right: 5px" @click="addOrEditStyle('query',row)" v-if="row.status != 1" class="view-style-class">
             查看活动样式
           </Button>
           <Button
             type="text"
             size="small"
-            style="color:#2db7f5;margin-right: 5px" @click="addOrEditShare('edit',row)" v-if="row.status == 1">
+            style="margin-right: 5px" @click="addOrEditShare('edit',row)" v-if="row.status == 1" class="edit-style-class">
             编辑分享内容
           </Button>
           <Button
             type="text"
             size="small"
-            style="color:#2db7f5;margin-right: 5px" @click="addOrEditShare('query',row)" v-if="row.status != 1">
+            style="margin-right: 5px" @click="addOrEditShare('query',row)" v-if="row.status != 1" class="view-style-class">
             查看分享内容
           </Button>
 
@@ -109,7 +109,7 @@
             cancel-text="取消"
             word-wrap
           >
-            <Button type="text" size="small" style="color:red;margin-right: 5px">下架</Button>
+            <Button type="text" size="small" style="color:red;margin-right: 5px">结束活动</Button>
           </Poptip>
 
         </template>
@@ -366,13 +366,13 @@ export default {
         this.msgErr("已经下架的活动不能进行此操作");
       }
 
-      let { code, data } = await postRequest(url, { id, status });
+      let { code, data,msg } = await postRequest(url, { id, status });
 
 
       if (code == 200) {
         this.queryTableData(this.page.pageNum);
       } else {
-        this.msgErr(code + " 数据加载失败!");
+        this.msgErr(msg);
       }
     },
     cancelUpdateStatus() {
@@ -498,5 +498,11 @@ export default {
 }
 .marginLeft20 {
   margin-left: 20px;
+}
+.view-style-class{
+  color: #2d8cf0 ;
+}
+.edit-style-class{
+  color: #19be6b;
 }
 </style>

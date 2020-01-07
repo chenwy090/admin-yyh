@@ -145,10 +145,10 @@ export default {
       let item = this.formDynamic.items[index];
 
       if (item.id === "") {
-        //新增
+        //新增 直接删除
         this.formDynamic.items.splice(index, 1);
       } else {
-        //修改
+        //修改 更改状态
         item.isDeleted = 1;
         this.formDynamic.items.splice(index, 1, item);
       }
@@ -157,7 +157,7 @@ export default {
       this.$refs[name].validate(async valid => {
         // console.log(JSON.stringify(this.formValidate));
         if (valid) {
-          this.msgOk("数据验证成功!");
+          // this.msgOk("数据验证成功!");
           let oForm = JSON.parse(JSON.stringify(this.formDynamic));
 
           let { items } = oForm;
@@ -167,11 +167,13 @@ export default {
 
           // 判重
           let json = {};
-          let flag = false;
+          let flag = false; // 默认没有重复的微信号
+          let no = ""; //微信号
           for (let i = 0; i < arr.length; i++) {
             const { wechatNo } = arr[i];
             if (json[wechatNo]) {
-              flag = true;
+              flag = true; //有重复的微信好
+              no = wechatNo;
               break;
             } else {
               json[wechatNo] = true;
@@ -179,10 +181,12 @@ export default {
           }
 
           console.log("flag=>", flag);
-          return;
 
-          let allKefuWechatGroup = oForm.items;
-          let { code, msg } = await postRequest(this.url, { allKefuWechatGroup });
+          if (flag) {
+            return this.msgErr(`${no}微信号重复`);
+          }
+
+          let { code, msg } = await postRequest(this.url, { allKefuWechatGroup: items });
 
           if (code == 200) {
             this.msgOk("保存成功");
