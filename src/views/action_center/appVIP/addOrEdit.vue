@@ -1,8 +1,8 @@
 <template>
   <Card>
     <!--  -->
-    <Form :label-width="120">
-      <FormItem label="投放方式：">
+    <Form :model="form" :label-width="120" ref="formData" :rules="modalAddValidate">
+      <FormItem label="投放方式：" required>
         <RadioGroup v-model="form.prizeType">
           <Radio :label="1" :disabled="addOrEdit == 3">优惠券</Radio>
           <Radio :label="2" :disabled="addOrEdit == 3" style="margin-left:20px">U贝</Radio>
@@ -13,9 +13,10 @@
         :disabled="addOrEdit == 3"
         :pushRange.sync="form.pushRange"
         :shopRequestList.sync="form.shopRequestList"
+        :required="true"
       ></storeForm>
 
-      <FormItem label="投放时间：">
+      <FormItem label="投放时间：" required prop="time">
         <DatePicker
           transfer
           type="daterange"
@@ -30,7 +31,7 @@
       </FormItem>
 
       <template v-if="form.prizeType == 1">
-        <FormItem label="优惠券：">
+        <FormItem label="优惠券：" required>
           <Card class="couponsList">
             <!-- <Icon class="removeCouponsList" slot="extra" @click="removeCouponsList(index)" type="md-close" /> -->
             <!-- couponsList -->
@@ -40,7 +41,7 @@
             </div>
 
             <div style="padding:5px 0;" v-if="couponList">
-              <Table :columns="columns" :data="couponList"> </Table>
+              <Table border :columns="columns" :data="couponList"> </Table>
             </div>
 
             <div>
@@ -126,11 +127,30 @@ export default {
           amountEach: 0,
           totalAmount: 0,
         },
+        startTime: "",
+        endTime: "",
       },
       couponsList: [],
       showCouponList: false,
       selectCouponData: null,
-
+      modalAddValidate: {
+        time: {
+          required: true,
+          message: "请选择投放时间",
+          validator: (rule, value, callback) => {
+            if (value) {
+              value = value.filter(i => i);
+              if (value.length) {
+                callback();
+              } else {
+                callback(new Error("请选择有效期"));
+              }
+            } else {
+              callback(new Error("请选择有效期"));
+            }
+          },
+        },
+      },
       columns: [
         // 优惠券列表、
         {
@@ -200,39 +220,61 @@ export default {
       this.form.coupons.couponId = item.id;
       this.form.coupons.couponType = item.couponType;
       this.form.coupons.couponName = item.name;
-      this.form.coupons.subTitle = item.name;
+      // this.form.coupons.subTitle = item.name;
     },
     save() {
-      let body = JSON.parse(JSON.stringify(this.form));
-      delete body.time;
-      switch (body.prizeType) {
-        case 1:
-          delete body.ubayInfo;
-          break;
-        case 2:
-          delete body.coupons;
-          break;
-      }
+      this.$refs["formData"].validate(valid => {
+        if (!valid) return;
+        let body = JSON.parse(JSON.stringify(this.form));
+        delete body.time;
 
-      if (body.id) {
-        vip.exclusiveEdit(body).then(res => {
-          if (res.isSuccess) {
-            this.goback();
-            this.$Message.success("修改成功！");
-          } else {
-            this.$Message.error(res.msg);
-          }
-        });
-      } else {
-        vip.exclusiveAdd(body).then(res => {
-          if (res.isSuccess) {
-            this.goback();
-            this.$Message.success("新增成功！");
-          } else {
-            this.$Message.error(res.msg);
-          }
-        });
-      }
+        if (!body.startTime || !body.endTime) {
+          this.$Message.error("请选择投放时间！");
+          return;
+        }
+
+        switch (body.prizeType) {
+          case 1:
+            delete body.ubayInfo;
+
+            if (!body.coupons.couponId) {
+              this.$Message.error("请选择优惠券！");
+              return;
+            }
+            if (!body.coupons.subTitle) {
+              this.$Message.error("请填写优惠券详情副标题！");
+              return;
+            }
+            if (!body.coupons.couponUrl) {
+              this.$Message.error("请上传优惠券详情大图！");
+              return;
+            }
+            break;
+          case 2:
+            delete body.coupons;
+            break;
+        }
+
+        if (body.id) {
+          vip.exclusiveEdit(body).then(res => {
+            if (res.isSuccess) {
+              this.goback();
+              this.$Message.success("修改成功！");
+            } else {
+              this.$Message.error(res.msg);
+            }
+          });
+        } else {
+          vip.exclusiveAdd(body).then(res => {
+            if (res.isSuccess) {
+              this.goback();
+              this.$Message.success("新增成功！");
+            } else {
+              this.$Message.error(res.msg);
+            }
+          });
+        }
+      });
     },
   },
 };

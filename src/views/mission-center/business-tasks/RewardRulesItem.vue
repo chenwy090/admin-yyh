@@ -130,6 +130,21 @@
         </Row>
       </FormItem>
 
+      <FormItem
+        label="副标题："
+        :prop="`ruleInfoList.${index}.couponSubheadTemp`"
+        :rules="{required: true,  validator: validateEmpty('请输入奖品名称',10)}"
+      >
+        <Tooltip trigger="focus" title="提醒" content="最多10个汉字" placement="right">
+          <Input
+            style="width:200px"
+            v-model.trim="item.couponSubheadTemp"
+            placeholder="请输入副标题，10字以内"
+            clearable
+          />
+        </Tooltip>
+      </FormItem>
+
       <!-- <FormItem
         label="截止时间："
         :prop="`ruleInfoList.${index}.endTime`"
@@ -299,6 +314,7 @@ import { createNamespacedHelpers } from "vuex";
 const { mapState } = createNamespacedHelpers("financial");
 const { mapState: mapStateMissionCenter } = createNamespacedHelpers("missionCenter");
 
+import util from "@/libs/util";
 import { postRequest } from "@/libs/axios";
 
 import BusinessList from "./BusinessList";
@@ -355,6 +371,7 @@ export default {
           businessName: "",
           merchantId: "", // 商户id
           merhcantName: "", // 商户名称
+          couponSubheadTemp:"", //副标题
           brandId: "", // 品牌id
           brandName: "", // 品牌名称
           anticipatedUbay: "", // 预计消耗u贝数量  计算ubay
@@ -632,12 +649,16 @@ export default {
       }
       callback();
     },
-    validateEmpty(msg) {
+    validateEmpty(msg, len = 20) {
       return function(rule, value, callback) {
         value += "";
         value = value.trim();
         if (value == "") {
           return callback(msg);
+        }
+        let length = util.getByteLen(value);
+        if (length > len * 2) {
+          return callback(`最多只能输入${len}个汉字`);
         }
         callback();
       };

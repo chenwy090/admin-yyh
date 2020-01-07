@@ -1110,12 +1110,12 @@ export default {
 
             console.log(this.formShareModal.shareData);
 
-            this.formShareModal.shareData.forEach(function(v) {
-              v.value = Number(v.value) || 0;
-              if (v.name == "分享奖励") {
-                v.value = 0;
-              }
-            });
+            // this.formShareModal.shareData.forEach(function(v) {
+            //   v.value = Number(v.value) || 0;
+            //   if (v.name == "分享奖励") {
+            //     v.value = 0;
+            //   }
+            // });
             this.shareDisplay = true;
           } else {
             this.$Message.error("未查询到数据");

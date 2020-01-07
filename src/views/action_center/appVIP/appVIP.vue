@@ -77,7 +77,10 @@
               <span v-else-if="row.status == -1">下架</span>
             </template>
             <template slot-scope="{ row }" slot="pushRange">
-              <span>{{ row.pushRange | $pushRange }}</span>
+              <span>
+                {{ row.pushRange | $pushRange }}
+                <a v-if="row.pushRange" style="margin-left:10px" @click="seeCouponListFun(row.id)">查看门店</a>
+              </span>
             </template>
             <template slot-scope="{ row }" slot="prizeName">
               <span>{{ row.prizeName }}</span>
@@ -127,7 +130,18 @@
         </div>
       </div>
     </Modal>
+
     <!-- 选择商户对话框 -->
+    <Modal v-model="seeCouponListDisplay" title="查看活动门店" :closable="false" :mask-closable="false" footer-hide>
+      <div style="overflow: auto;max-height: 500px;">
+        <p style="padding: 2px 0;" v-for="item in seeCouponListData">{{ item }}</p>
+      </div>
+      <div style="margin-top: 20px;overflow: hidden;">
+        <div style="float: right;" slot="footer">
+          <Button style="margin-right: 20px" @click="seeCouponListDisplay = false">关闭</Button>
+        </div>
+      </div>
+    </Modal>
 
     <!-- 下架对话框 -->
     <Modal v-model="lowDisplay" title="下架原因" :closable="false" :mask-closable="false" footer-hide width="350">
@@ -160,6 +174,8 @@ export default {
     return {
       seeCouponDisplay: false, // 查看优惠券详情
       seeCouponList: [], // 查看优惠券列表
+      seeCouponListDisplay: false, // 查看门店详情
+      seeCouponListData: [], // 查看门店详情
       // 下架原因
       lowId: null,
       lowTxt: "",
@@ -182,7 +198,7 @@ export default {
         {
           title: "投放门店",
           align: "center",
-          minWidth: 140,
+          minWidth: 160,
           key: "pushRange",
           slot: "pushRange",
         },
@@ -208,7 +224,7 @@ export default {
         {
           title: "投放时间",
           align: "center",
-          minWidth: 120,
+          minWidth: 180,
           key: "putTime",
         },
         {
@@ -221,7 +237,7 @@ export default {
         {
           title: "修改时间",
           align: "center",
-          minWidth: 140,
+          minWidth: 170,
           // key: "updateTime",
           key: "gmtModified",
         },
@@ -321,7 +337,15 @@ export default {
         }
       });
     },
-
+    seeCouponListFun(id) {
+      vip.exclusiveSelectShopsById(id).then(res => {
+        if (res.code == 200) {
+          this.seeCouponListDisplay = true;
+          this.seeCouponListData = res.data;
+          console.info(res);
+        }
+      });
+    },
     // 新增编辑返回数据
     addOrEditChange(e) {
       this.addOrEditDisplay = e;
@@ -352,6 +376,9 @@ export default {
     // 列表
     getAppVipListFn(obj) {
       this.tableLoading = true;
+      if (!obj.couponName) delete obj.couponName;
+      if (!obj.putShop) delete obj.putShop;
+      if (!obj.prizeType) delete obj.prizeType;
       vip.exclusiveList(obj).then(res => {
         if (res.code == 200) {
           this.tableData = res.data.records;

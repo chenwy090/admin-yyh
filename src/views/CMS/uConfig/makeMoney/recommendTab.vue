@@ -100,7 +100,7 @@
 
     <Modal v-model="modalAddShow" title="推荐券" :mask-closable="false" @on-cancel="modalAddShow = false">
       <Form :model="modalAddData" ref="modalAddForm2" :label-width="70" class="search-form" :rules="modalAddValidate">
-        <Form-item label="可领城市">
+        <Form-item label="可领城市" required>
           <Select
             v-model="modalAddData.provinceCode"
             placeholder="请选择省"
@@ -128,7 +128,7 @@
           >
           </DatePicker>
         </Form-item>
-        <Form-item label="优惠券">
+        <Form-item label="优惠券" required>
           <Row
             ><Button @click="showCouponList = true">添加</Button>
             <span style="color:#999;margin-left:1vh;">拖动调整顺序</span></Row

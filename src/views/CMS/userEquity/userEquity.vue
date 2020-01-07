@@ -105,7 +105,7 @@
       </p>
 
       <Form :model="modalAddData" ref="modalAddForm2" :label-width="70" class="search-form" :rules="modalAddValidate">
-        <Form-item label="可领城市" prop="status">
+        <Form-item label="可领城市" required>
           <Select
             v-model="modalAddData.provinceCode"
             placeholder="请选择省"
@@ -133,7 +133,7 @@
           >
           </DatePicker>
         </Form-item>
-        <Form-item label="优惠券">
+        <Form-item label="优惠券" required>
           <Row><Button :disabled="couponList.length === 3" @click="showCouponList = true">添加</Button></Row>
           <template v-for="(item, index) in couponList">
             <Tag closable @on-close="couponListRemove(index)">{{ item.couponTitle }}</Tag>
@@ -205,13 +205,14 @@ const columns = [
   },
   {
     title: "可领省/市",
-    width: 140,
+    minWidth: 140,
     align: "center",
     slot: "province",
   },
   {
     title: "有效期",
     align: "center",
+    width: 190,
     slot: "time",
   },
   {
@@ -223,13 +224,14 @@ const columns = [
   },
   {
     title: "创建人",
-    width: 190,
     align: "center",
+    width: 100,
     key: "createBy",
   },
   {
     title: "创建时间",
     align: "right",
+    minWidth: 180,
     key: "gmtCreate",
   },
 ];
@@ -330,7 +332,7 @@ export default {
       }
     },
     addManualDisplayFn() {
-      this.$refs["modalAddForm2"].resetFields();
+      // this.$refs["modalAddForm2"].resetFields();
       this.modalAddShow = true;
       this.modalAddData = {};
       this.couponList = [];

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <FormItem label="投放门店：">
+    <FormItem label="投放门店：" :required="required">
       <RadioGroup v-model="modal.pushRange" @on-change="changeData">
         <Radio v-for="item in storeTypeList" :key="item.value" :label="item.value" :disabled="disabled">{{
           item.label
@@ -32,6 +32,7 @@
           :data="shopRequestListInfo"
           style="margin-top:1vh"
           v-if="shopRequestListInfo"
+          border
         >
         </Table>
       </FormItem>
@@ -87,6 +88,7 @@
           :data="shopRequestListInfo"
           style="margin-top:1vh"
           v-if="shopRequestListInfo"
+          border
         >
         </Table>
       </FormItem>
@@ -97,6 +99,7 @@
         <div style="margin-bottom: 1vh;">
           <Button :disabled="disabled" style="margin-bottom: 1vh;" @click="showSelectShopFun()">选择门店</Button>
           <Table
+            border
             :columns="[
               { title: '门店编号', key: 'shopId' },
               { title: '商超门店名称', key: 'shopName' },
@@ -121,7 +124,7 @@ import storeView from "./store";
 import * as cms from "@/api/cms";
 export default {
   components: { storeView },
-  props: ["pushRange", "shopRequestList", "shopRequestListInfo", "disabled"],
+  props: ["pushRange", "shopRequestList", "shopRequestListInfo", "disabled", "required"],
   data() {
     return {
       modal: {
