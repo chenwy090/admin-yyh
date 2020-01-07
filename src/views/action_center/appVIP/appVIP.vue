@@ -22,6 +22,14 @@
               <Option value="2">U贝</Option>
             </Select>
           </FormItem>
+          <FormItem label="状态: " :label-width="85" prop="status">
+            <Select v-model="searchData.status" style="width:200px" clearable>
+              <Option value="''">全部</Option>
+              <Option value="0">未上架</Option>
+              <Option value="1">上架</Option>
+              <Option value="-1">下架</Option>
+            </Select>
+          </FormItem>
           <FormItem label="优惠券: " :label-width="85">
             <Input
               style="width:200px"
@@ -91,6 +99,9 @@
             <template slot-scope="{ row }" slot="prizeName">
               <span>{{ row.prizeName }}</span>
               <a v-if="row.prizeType == 1" style="margin-left:10px" @click="seeCouponInfo(row.id)">查看</a>
+            </template>
+            <template slot-scope="{ row }" slot="status">
+              <span>{{ row.status | $status }}</span>
             </template>
           </Table>
           <!-- 用户列表 -->
@@ -228,11 +239,19 @@ export default {
           key: "receiveCount",
         },
         {
+          title: "状态",
+          align: "center",
+          minWidth: 180,
+          key: "status",
+          slot: "status",
+        },
+        {
           title: "投放时间",
           align: "center",
           minWidth: 180,
           key: "putTime",
         },
+
         {
           title: "修改人",
           align: "center",
@@ -282,6 +301,7 @@ export default {
         couponName: "",
         putShop: "",
         prizeType: "",
+        status: "",
         pageNum: 1, //页码
         pageSize: 10, //每页数量
       },
@@ -310,6 +330,21 @@ export default {
     },
     $pushRange: function(value) {
       return ["全国", "零售商", "城市", "自定义门店"][value] || "";
+    },
+    $status: function(value) {
+      switch (value) {
+        case 0:
+        case "0":
+          return "未上架";
+        case 1:
+        case "1":
+          return "上架";
+        case -1:
+        case "-1":
+          return "下架";
+        default:
+          return "";
+      }
     },
   },
   created: function() {
