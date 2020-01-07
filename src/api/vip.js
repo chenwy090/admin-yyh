@@ -40,3 +40,8 @@ export function exclusiveDelete(id) {
 export function exclusiveSelectCouponById(id) {
   return postRequest(`/exclusive/selectCouponById?id=${id}`);
 }
+
+// 查询某个列表门店
+export function exclusiveSelectShopsById(id) {
+  return postRequest(`/exclusive/selectShops?id=${id}`);
+}

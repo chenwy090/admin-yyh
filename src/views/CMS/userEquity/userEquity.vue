@@ -205,13 +205,14 @@ const columns = [
   },
   {
     title: "可领省/市",
-    width: 140,
+    minWidth: 140,
     align: "center",
     slot: "province",
   },
   {
     title: "有效期",
     align: "center",
+    width: 190,
     slot: "time",
   },
   {
@@ -223,13 +224,14 @@ const columns = [
   },
   {
     title: "创建人",
-    width: 190,
     align: "center",
+    width: 100,
     key: "createBy",
   },
   {
     title: "创建时间",
     align: "right",
+    minWidth: 180,
     key: "gmtCreate",
   },
 ];
