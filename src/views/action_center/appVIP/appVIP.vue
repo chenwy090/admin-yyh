@@ -7,22 +7,29 @@
       <Card :bordered="false" style="margin-bottom:2px">
         <Form inline>
           <FormItem label="投放门店: " :label-width="85">
-            <Select v-model="searchData.putShop" style="width:200px">
+            <Select v-model="searchData.putShop" style="width:200px" clearable>
+              <Option value="">全部</Option>
               <Option value="0">全国</Option>
-              <!-- <Option value="1">零售商</Option> -->
-              <Option value="1">城市</Option>
-              <Option value="2">自定义门店</Option>
+              <Option value="1">零售商</Option>
+              <Option value="2">城市</Option>
+              <Option value="3">自定义门店</Option>
             </Select>
           </FormItem>
           <FormItem label="福利类型: " :label-width="85" prop="prizeType">
-            <Select v-model="searchData.prizeType" style="width:200px">
-              <Option value="0">全部</Option>
+            <Select v-model="searchData.prizeType" style="width:200px" clearable>
+              <Option value="">全部</Option>
               <Option value="1">优惠券</Option>
               <Option value="2">U贝</Option>
             </Select>
           </FormItem>
           <FormItem label="优惠券: " :label-width="85">
-            <Input style="width:200px" type="text" v-model="searchData.couponName" placeholder="请输入"></Input>
+            <Input
+              style="width:200px"
+              type="text"
+              v-model="searchData.couponName"
+              placeholder="请输入"
+              clearable
+            ></Input>
           </FormItem>
           <FormItem style="margin-left:35px;" class="br">
             <Button type="primary" icon="ios-search" @click="search">搜索</Button>
@@ -48,14 +55,13 @@
                 @click="editInfo(row.id)"
                 >编辑</Button
               >
-              <Button type="text" size="small" v-if="row.status != 1" @click="upLow(row.id, row.surplusCount)"
-                >上架</Button
-              >
+              <Button type="text" size="small" v-if="row.status != 1" @click="upLow(row)">上架</Button>
               <Button
                 type="text"
                 size="small"
                 v-else
                 @click="
+                  lowTxt = '';
                   lowDisplay = true;
                   lowId = row.id;
                 "
@@ -149,7 +155,7 @@
       <div style="margin-top: 20px;overflow: hidden;">
         <div style="float: right;" slot="footer">
           <Button style="margin-right: 20px" @click="lowDisplay = false">取消</Button>
-          <Button type="primary" @click="updateType(lowId, -1)">确定</Button>
+          <Button type="primary" @click="lowerShelf()">确定</Button>
         </div>
       </div>
     </Modal>
@@ -392,50 +398,82 @@ export default {
       });
     },
 
-    // 上架
-    upLow(id, surplusCount) {
-      if (surplusCount < 5000) {
-        // 少于5000提示
-        this.$Modal.confirm({
-          title: "提示",
-          content: "当前活动中优惠券数量少于5000张",
-          okText: "继续上架",
-          cancelText: "取消",
-          onOk: () => {
-            this.updateType(id, 1);
-          },
-          onCancel: () => {},
-        });
-      } else {
-        this.updateType(id, 1);
-      }
-    },
+    // 上架 TODO
+    upLow({ id, surplusCount }) {
+      let body = {
+        id: id,
+        status: 1,
+      };
+      vip.exclusiveUpdateStatus(body).then(res => {
+        if (res.isSuccess) {
+          this.msgOk("操作成功");
+          this.search();
+        } else {
+          this.msgErr(res.msg);
+        }
+      });
 
-    // 修改活动状态
-    updateType(id, type) {
-      if (type == -1 && !this.lowTxt) {
+      // if (surplusCount < 5000) {
+      //   // 少于5000提示
+      //   this.$Modal.confirm({
+      //     title: "提示",
+      //     content: "当前活动中优惠券数量少于5000张",
+      //     okText: "继续上架",
+      //     cancelText: "取消",
+      //     onOk: () => {
+      //       this.updateType(id, 1);
+      //     },
+      //     onCancel: () => {},
+      //   });
+      // } else {
+      //   this.updateType(id, 1);
+      // }
+    },
+    // 下架
+    lowerShelf() {
+      if (!this.lowTxt) {
         this.msgErr("请输入下架原因");
         return;
       }
-      updateStatus(id, type, this.lowTxt).then(res => {
-        if (res.code == 200) {
-          this.msgOk("操作成功");
-          this.search();
-          if (type == -1) {
-            this.lowTxt = "";
-          }
+      let body = {
+        id: this.lowId,
+        status: -1,
+        reason: this.lowTxt,
+      };
+      vip.exclusiveUpdateStatus(body).then(res => {
+        if (res.isSuccess) {
           this.lowDisplay = false;
+          this.search();
         } else {
-          setTimeout(() => {
-            this.$Modal.warning({
-              title: "提示",
-              content: res.msg,
-              okText: "我知道了",
-            });
-          }, 1000);
+          this.msgErr(res.msg);
         }
       });
     },
+    // 修改活动状态 TODO
+    // updateType(id, type) {
+    //   if (type == -1 && !this.lowTxt) {
+    //     this.msgErr("请输入下架原因");
+    //     return;
+    //   }
+    //   updateStatus(id, type, this.lowTxt).then(res => {
+    //     if (res.code == 200) {
+    //       this.msgOk("操作成功");
+    //       this.search();
+    //       if (type == -1) {
+    //         this.lowTxt = "";
+    //       }
+    //       this.lowDisplay = false;
+    //     } else {
+    //       setTimeout(() => {
+    //         this.$Modal.warning({
+    //           title: "提示",
+    //           content: res.msg,
+    //           okText: "我知道了",
+    //         });
+    //       }, 1000);
+    //     }
+    //   });
+    // },
 
     // 删除
     delAppVipFn(id) {

@@ -45,3 +45,13 @@ export function exclusiveSelectCouponById(id) {
 export function exclusiveSelectShopsById(id) {
   return postRequest(`/exclusive/selectShops?id=${id}`);
 }
+
+// 上下架活动
+export function exclusiveUpdateStatus({ id, status, reason }) {
+  return postRequest(`/exclusive/updateStatus?id=${id}&status=${status}&reason=${reason}`);
+}
+
+// 上下架
+// export const updateStatus = (id, status, reason) => {
+//   return postRequest(`/exclusive/updateStatus?id=${id}&status=${status}&reason=${reason}`)
+// }

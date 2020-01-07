@@ -207,6 +207,18 @@
                 ></InputNumber>
                 <span style="color:red">&nbsp;&nbsp; %</span>
               </FormItem>
+              <FormItem :label="'倍数'" :label-width="50">
+                <InputNumber
+                  :min="1"
+                  :step="0.1"
+                  :disabled="index !== levelRatio.length - 1"
+                  v-model="item.times"
+                  placeholder="请输入"
+                  style="width:100px"
+                  @on-change="statusCheckChange"
+                ></InputNumber>
+                <span style="color:red">&nbsp;&nbsp; %</span>
+              </FormItem>
               <div v-if="index === 0">
                 <Icon
                   @click="discountRatioAdd"
@@ -304,19 +316,43 @@
               </Tooltip>
             </FormItem> -->
 
-            <FormItem label="后续获得折扣比例百分比" required>
-              <Tooltip trigger="focus" title="提醒" content="范围在(0~100)  (只能输入整数)" placement="right">
+            <!--  -->
+            <div style="display: flex;justify-content: flex-start;">
+              <FormItem label="后续获得折扣比例百分比" required>
+                <Tooltip trigger="focus" title="提醒" content="范围在(0~100)  (只能输入整数)" placement="right">
+                  <InputNumber
+                    :max="100"
+                    :min="0"
+                    v-model="edit_info.laterDiscountRatio"
+                    placeholder="请输入"
+                    style="width:300px"
+                    @on-change="statusCheckChange"
+                  ></InputNumber>
+                  <span style="color:red">&nbsp;&nbsp; %</span>
+                </Tooltip>
+              </FormItem>
+              <FormItem :label="'每隔'" :label-width="50">
                 <InputNumber
-                  :max="100"
                   :min="0"
-                  v-model="edit_info.laterDiscountRatio"
+                  v-model="edit_info.laterDiscountSpace"
                   placeholder="请输入"
-                  style="width:300px"
+                  style="width:150px"
                   @on-change="statusCheckChange"
                 ></InputNumber>
-                <span style="color:red">&nbsp;&nbsp; %</span>
-              </Tooltip>
-            </FormItem>
+              </FormItem>
+              <FormItem :label="'次后倍数'" :label-width="60">
+                <InputNumber
+                  :min="1"
+                  :step="0.1"
+                  v-model="edit_info.laterDiscountTimes"
+                  placeholder="请输入"
+                  style="width:100px"
+                  @on-change="statusCheckChange"
+                ></InputNumber>
+              </FormItem>
+            </div>
+            <!--  -->
+
             <FormItem label="随机因子" required>
               <Tooltip trigger="focus" title="提醒" content="范围在1±random_seed之间（0.1~0.5）" placement="right">
                 <InputNumber
@@ -364,6 +400,19 @@
                 style="width:300px"
                 @on-change="statusCheckChange"
               ></InputNumber>
+            </FormItem>
+
+            <FormItem label="最终最大金额" required>
+              <InputNumber
+                :step="0.1"
+                :min="0"
+                v-model="edit_info.mostDiscount"
+                placeholder="请输入"
+                style="width:300px"
+                @on-change="statusCheckChange"
+              ></InputNumber>
+              <span>&nbsp;&nbsp; 元</span>
+              <span style="color:red">（最多不超过5元）</span>
             </FormItem>
 
             <FormItem :label-width="220">
@@ -447,6 +496,7 @@ export default {
           numberStart: 1,
           numberEnd: 1,
           ratio: 0,
+          times: 1,
         },
       ],
       edit_loading: false,
@@ -525,6 +575,7 @@ export default {
                   numberStart: numberStart,
                   numberEnd: count,
                   ratio: item.ratio * 100,
+                  times: item.times,
                 };
                 numberStart = count + 1;
                 return obj;
@@ -682,6 +733,11 @@ export default {
         return;
       }
 
+      if (this.edit_info.mostDiscount > 5) {
+        this.$Message.error("最终最大金额不能大于5元");
+        return;
+      }
+
       if (this.status == "add") {
         this.getUrl = "/campaginGrabInfoSet/add";
         this.msg = "新增成功";
@@ -700,6 +756,7 @@ export default {
         return {
           receiveCount: item.numberEnd,
           ratio: item.ratio / 100,
+          times: item.times,
         };
       });
       const reqParams = {
@@ -724,6 +781,11 @@ export default {
         // discountRatio: this.edit_info.discountRatio / 100,
         discountRatio: this.edit_info.laterDiscountRatio / 100,
         laterDiscountRatio: this.edit_info.laterDiscountRatio / 100,
+
+        laterDiscountSpace: this.edit_info.laterDiscountSpace,
+        laterDiscountTimes: this.edit_info.laterDiscountTimes,
+        mostDiscount: this.edit_info.mostDiscount,
+
         levelRatio: JSON.stringify(levelRatio), //阶段折扣
       };
 
@@ -811,6 +873,7 @@ export default {
         numberStart: 0,
         numberEnd: 0,
         ratio: 0,
+        times: 1,
       });
       this.discountRatioChange();
     },

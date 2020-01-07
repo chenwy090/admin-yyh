@@ -73,6 +73,7 @@ export default {
         pageSize: 10,
         status: null,
         type: 0,
+        enabled: 1,
       },
       dataList: [],
       shopIdList: [],
