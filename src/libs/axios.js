@@ -27,7 +27,7 @@ function checkData(data) {
   if (!(data instanceof Array) && typeof data == "object" && data && JSON.stringify(data) != "{}") {
     body = {};
     Object.entries(data).forEach(([key, value]) => {
-      if (value != "" && value != null && value != undefined) {
+      if (value !== "" && value !== null && value !== undefined) {
         body[key] = value;
       }
     });
