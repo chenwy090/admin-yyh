@@ -3,7 +3,7 @@
     <Card :bordered="false" style="margin-bottom:2px">
       <Form ref="searchForm" label-position="right" :label-width="80" :model="searchForm" inline>
         <FormItem label="门店" span="24" style="width:25%" prop="shopId">
-          <Input v-model="searchForm.shopId" placeholder="门店shopId" clearable />
+          <Input v-model="searchForm.shopId" placeholder="商户编号" clearable />
         </FormItem>
         <FormItem label="门店" span="24" style="width:25%" prop="shopName">
           <Input v-model="searchForm.shopName" placeholder="门店名称" clearable />
@@ -20,7 +20,7 @@
     <Card>
       <Row>
         <Col span="19">
-          <Table :data="dataList" :columns="columns" @on-selection-change="listSelect" ref="selection"> </Table>
+          <Table :data="dataList" border :columns="columns" @on-selection-change="listSelect" ref="selection"> </Table>
         </Col>
         <Col span="5" style="padding-left: 1vh;">
           <H3

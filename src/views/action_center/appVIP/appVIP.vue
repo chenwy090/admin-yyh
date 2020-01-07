@@ -77,7 +77,10 @@
               <span v-else-if="row.status == -1">下架</span>
             </template>
             <template slot-scope="{ row }" slot="pushRange">
-              <span>{{ row.pushRange | $pushRange }}</span>
+              <span>
+                {{ row.pushRange | $pushRange }}
+                <a v-if="row.pushRange" style="margin-left:10px" @click="seeCouponListFun(row.id)">查看门店</a>
+              </span>
             </template>
             <template slot-scope="{ row }" slot="prizeName">
               <span>{{ row.prizeName }}</span>
@@ -182,7 +185,7 @@ export default {
         {
           title: "投放门店",
           align: "center",
-          minWidth: 140,
+          minWidth: 160,
           key: "pushRange",
           slot: "pushRange",
         },
@@ -321,7 +324,7 @@ export default {
         }
       });
     },
-
+    seeCouponListFun(id) {},
     // 新增编辑返回数据
     addOrEditChange(e) {
       this.addOrEditDisplay = e;
