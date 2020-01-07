@@ -9,7 +9,7 @@
       </div>
 
       <template v-for="(screenData, index) in screenList">
-        <Card style="margin-top:1vh;">
+        <Card style="margin-top:1vh;" :key="screenData.id + index">
           <div slot="extra" style="cursor: pointer;" @click="screenDelete(screenData, index)">
             <Icon size="20" color="#af1c1c" type="md-trash" />
           </div>
@@ -21,13 +21,13 @@
                 style="width:100px"
                 @on-change="proviceChange($event, screenData)"
               >
-                <Option v-for="item in proviceSelect" :value="item.provinceCode" :key="item.provinceCode">{{
+                <Option v-for="item in proviceSelect" :value="item.provinceCode" :key="item.provinceId">{{
                   item.provinceName
                 }}</Option>
               </Select>
               /
               <Select v-model="screenData.cityCode" placeholder="请选择市" style="width:100px">
-                <Option v-for="item in screenData.citySelect" :value="item.cityCode" :key="item.cityCode">{{
+                <Option v-for="item in screenData.citySelect" :value="item.cityCode" :key="item.cityId">{{
                   item.cityName
                 }}</Option>
               </Select>
@@ -146,13 +146,13 @@ export default {
       cms.filterList(this.fromData).then(res => {
         if (res.isSuccess) {
           this.screenList = res.data.records;
+          this.totalSize = res.data.total;
+          this.current = res.data.current;
           this.screenList.forEach(item => {
             ~function(item) {
               this.proviceChange(item.provinceCode, item);
             }.bind(this)(item);
           });
-          this.totalSize = res.data.total;
-          this.current = res.data.current;
         }
       });
     },
@@ -166,6 +166,7 @@ export default {
         if (res.isSuccess) {
           this.$set(screenData, "citySelect", res.data);
         }
+        console.info(screenData);
       });
     },
     modalAddOk() {

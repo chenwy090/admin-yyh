@@ -305,6 +305,7 @@ export default {
       let body = {
         ...this.searchForm,
       };
+      delete body.time;
       cms.vipRightsList(body).then(res => {
         this.TableLoading = false;
         if (res && res.code == 200) {

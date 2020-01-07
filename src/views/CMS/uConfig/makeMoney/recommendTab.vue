@@ -33,7 +33,7 @@
 
         <Form-item label="状态" prop="status">
           <Select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 150px;">
-            <Option :value="''">全部</Option>
+            <Option :value="-1">全部</Option>
             <Option :value="0">待发布</Option>
             <Option :value="1">进行中</Option>
             <Option :value="2">已终止</Option>
@@ -240,7 +240,7 @@ export default {
       searchForm: {
         pageNum: 1,
         pageSize: 10,
-        status: "",
+        status: -1,
         beginTime: "",
         endTime: "",
         time: "",
@@ -300,7 +300,7 @@ export default {
       let body = {
         ...this.searchForm,
       };
-      delete body.daterange;
+      delete body.time;
       cms.recommendCouponList(body).then(res => {
         this.TableLoading = false;
         if (res && res.code == 200) {
@@ -318,6 +318,7 @@ export default {
     // 重置form表单
     resetForm(name) {
       this.$refs[name].resetFields();
+      this.searchForm.status = -1;
       this.searchForm.cityCode = "";
       this.searchForm.provinceCode = "";
       this.searchForm.time = [];
@@ -338,7 +339,10 @@ export default {
       this.$refs[name].validate(valid => {
         if (!valid) return;
 
-        if (!this.modalAddData.provinceCode || !this.modalAddData.cityCode) {
+        let body = JSON.parse(JSON.stringify(this.modalAddData));
+        delete body.time;
+
+        if (!body.provinceCode || !body.cityCode) {
           this.$Message.error("请选择省市！");
           return;
         }
@@ -348,9 +352,9 @@ export default {
           return;
         }
 
-        this.modalAddData.coupons = this.couponList.map((item, index, list) => {
+        body.coupons = this.couponList.map((item, index, list) => {
           return {
-            id: item.id,
+            couponId: item.id,
             rankNum: list.length - index,
             couponName: item.name,
             shareId: item.row.shareId,
@@ -359,10 +363,10 @@ export default {
 
         this.modalAddBtnShow = true;
 
-        cms.recommendCouponSave(this.modalAddData).then(res => {
+        cms.recommendCouponSave(body).then(res => {
           this.modalAddBtnShow = false;
           if (res && res.code == 200) {
-            this.$Message.success(this.modalAddData.id ? "编辑成功！" : "新增成功！");
+            this.$Message.success(body.id ? "编辑成功！" : "新增成功！");
             this.modalAddShow = false;
             this.search();
           } else {
