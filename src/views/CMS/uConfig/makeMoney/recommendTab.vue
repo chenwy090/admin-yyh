@@ -33,7 +33,7 @@
 
         <Form-item label="状态" prop="status">
           <Select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 150px;">
-            <Option :value="''">全部</Option>
+            <Option :value="-1">全部</Option>
             <Option :value="0">待发布</Option>
             <Option :value="1">进行中</Option>
             <Option :value="2">已终止</Option>
@@ -240,7 +240,7 @@ export default {
       searchForm: {
         pageNum: 1,
         pageSize: 10,
-        status: "",
+        status: -1,
         beginTime: "",
         endTime: "",
         time: "",
@@ -300,7 +300,7 @@ export default {
       let body = {
         ...this.searchForm,
       };
-      delete body.daterange;
+      delete body.time;
       cms.recommendCouponList(body).then(res => {
         this.TableLoading = false;
         if (res && res.code == 200) {
@@ -318,6 +318,7 @@ export default {
     // 重置form表单
     resetForm(name) {
       this.$refs[name].resetFields();
+      this.searchForm.status = -1;
       this.searchForm.cityCode = "";
       this.searchForm.provinceCode = "";
       this.searchForm.time = [];
