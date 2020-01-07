@@ -106,22 +106,6 @@
       <FormItem label="商户余额：">{{money}}&nbsp;元</FormItem>
       <FormItem label="U贝余额：">{{ubay}}&nbsp;贝</FormItem>
       <!-- :rules="{required: true,  validator: validateEmpty('请填写流水号'), trigger: 'blur'}" -->
-      <FormItem
-        label="消耗U贝："
-        :prop="`ruleInfoList.${index}.anticipatedUbay`"
-        :rules="{ required: true, validator: validateUbay }"
-      >
-        <Row>
-          <Col span="10">
-            <Input
-              style="width:230px"
-              v-model="item.anticipatedUbay"
-              placeholder="请输入需要消耗U贝的数量"
-              clearable
-            />
-          </Col>
-        </Row>
-      </FormItem>
 
       <!-- templateId  券模板id  templateName 券模板名称 -->
       <!-- :rules="{ required: true, validator: validateBusinessName }" -->
@@ -237,12 +221,17 @@
 
       <FormItem
         label="预计消耗U贝："
-        :prop="`ruleInfoList.${index}.consumeUbay`"
+        :prop="`ruleInfoList.${index}.anticipatedUbay`"
         :rules="{ required: true, validator: validateUbay }"
       >
         <Row>
           <Col span="10">
-            <Input style="width:230px" v-model="item.consumeUbay" placeholder="预计消耗U贝" disabled>
+            <Input
+              style="width:230px"
+              v-model="item.anticipatedUbay"
+              placeholder="预计消耗U贝"
+              @input.native="inputInt($event,'anticipatedUbay')"
+            >
               <Button :disabled="disabledComputedUbay" @click="handleComputedUbay" slot="append">计算</Button>
             </Input>
           </Col>
@@ -368,7 +357,7 @@ export default {
           merhcantName: "", // 商户名称
           brandId: "", // 品牌id
           brandName: "", // 品牌名称
-          anticipatedUbay: "", // 预计消耗u贝数量
+          anticipatedUbay: "", // 预计消耗u贝数量  计算ubay
           couponType: 0, //优惠券类型 0-商超券 1-商户/周边券
           templateId: "", //券模板id
           templateName: "", //券模板名称
@@ -518,9 +507,10 @@ export default {
 
       let { code, msg, data } = await postRequest(url, params);
       if (code == 200) {
+        this.item.anticipatedUbay = data;
       } else {
         // 不做 没有查询到商户余额信息 的提示
-        // this.msgErr(msg);
+        this.msgErr(msg);
       }
     },
 

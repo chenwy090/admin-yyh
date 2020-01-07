@@ -50,16 +50,9 @@ export default {
   watch: {
     action: {
       async handler(val, oldVal) {
-        let { type, data } = this.action;
-
-        // 新增
-        if (type == "add") {
-          this.bigcData = createFormData();
-        } else {
-          //edit 修改
-          let bigcData = await this.queryBigcById(data.id);
-          this.bigcData = bigcData;
-        }
+        let { data } = this.action;
+        //add/edit 新增/修改
+        this.bigcData = await this.queryBigcById(data.id);
         console.log("watch bigc edit action:", type, this.bigcData);
       },
       deep: true,
@@ -87,7 +80,7 @@ export default {
     async queryBigcById(id) {
       // 根据Id获取详情
       const url = "/merchant/assignment/page/detail";
-      const { code, data } = await getRequest(url, { id });
+      let { code, data, msg } = await getRequest(url, { id });
 
       const arr = [
         "headerImgUrl",
@@ -100,13 +93,17 @@ export default {
       ];
 
       if (code == 200) {
-        arr.forEach(name => {
-          let imgUrl = data[name] || "";
-          data[`default${firstUpperCase(name)}List`] = [{ imgUrl }];
-        });
-
+        if (data) {
+          // 编辑
+          arr.forEach(name => {
+            let imgUrl = data[name] || "";
+            data[`default${firstUpperCase(name)}List`] = imgUrl ? [{ imgUrl }] : [];
+          });
+        } else {
+          // 新增
+          data = createFormData();
+        }
         console.log("queryBigcById:", data);
-
         return data;
       } else {
         // msgOk msgErr
