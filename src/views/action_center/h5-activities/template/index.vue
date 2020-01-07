@@ -27,7 +27,7 @@
 	          			<Button
 				            type="text"
 				            size="small"
-				            style="color:#2db7f5;margin-right: 5px" @click="addContetByType('query',row)">
+				            style="margin-right: 5px" @click="addContetByType('query',row)" class="edit-style-class">
 				            查看
 				        </Button>
 	          		</template>
@@ -35,19 +35,19 @@
 		          		<Button
 				            type="text"
 				            size="small"
-				            style="color:#2db7f5;margin-right: 5px" @click="addContetByType('edit',row)" v-if="row.heraldStatus == '未开始'">
+				            style="margin-right: 5px" @click="addContetByType('edit',row)" v-if="row.heraldStatus == '未开始'"  class="view-style-class">
 				            编辑
 				        </Button>
 				        <Button
 				            type="text"
 				            size="small"
-				            style="color:#2db7f5;margin-right: 5px" @click="deleteList(row)">
+				            style="color:red;margin-right: 5px" @click="deleteList(row)">
 				            删除
 				        </Button>
 				        <Button
 				            type="text"
 				            size="small"
-				            style="color:#2db7f5;margin-right: 5px" @click="addContetByType('query',row)">
+				            style="margin-right: 5px" @click="addContetByType('query',row)"  class="edit-style-class">
 				            查看
 				        </Button>
 				    </template>
@@ -59,7 +59,7 @@
 	          			<Button
 				            type="text"
 				            size="small"
-				            style="color:#2db7f5;margin-right: 5px" @click="addContetByType('query',row)">
+				            style="margin-right: 5px" @click="addContetByType('query',row)"  class="edit-style-class">
 				            查看
 				        </Button>
 	          		</template>
@@ -67,19 +67,19 @@
 		          		<Button
 				            type="text"
 				            size="small"
-				            style="color:#2db7f5;margin-right: 5px" @click="addContetByType('edit',row)" v-if="row.heraldStatus == '未开始'">
+				            style="margin-right: 5px" @click="addContetByType('edit',row)" v-if="row.heraldStatus == '未开始'"  class="view-style-class">
 				            编辑
 				        </Button>
 				        <Button
 				            type="text"
 				            size="small"
-				            style="color:#2db7f5;margin-right: 5px" @click="deleteList(row)">
+				            style="color:red;margin-right: 5px" @click="deleteList(row)">
 				            删除
 				        </Button>
 				        <Button
 				            type="text"
 				            size="small"
-				            style="color:#2db7f5;margin-right: 5px" @click="addContetByType('query',row)">
+				            style="margin-right: 5px" @click="addContetByType('query',row)"  class="edit-style-class">
 				            查看
 				        </Button>
 				    </template>
@@ -472,5 +472,11 @@
       max-height:100%;
     }
   }
+}
+.view-style-class{
+  color: #19be6b ;
+}
+.edit-style-class{
+  color: #2d8cf0;
 }
 </style>

@@ -18,22 +18,22 @@
       >
         <template slot-scope="{ row }" slot="action">
           <template v-if="action.type == 'query'">
-            <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEditContent('query',row)">
+            <Button  type="text" size="small" style="margin-right: 5px" @click="addOrEditContent('query',row)" class="edit-style-class">
                 查看模块内容   
             </Button>
-            <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEdit('query',row)">
+            <Button  type="text" size="small" style="margin-right: 5px" @click="addOrEdit('query',row)" class="edit-style-class">
                 查看模块   
             </Button>
           </template>
           <template v-else>
             <template v-if="row.timeStatus == 1">
-              <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEdit('edit',row)">
+              <Button  type="text" size="small" style="margin-right: 5px" @click="addOrEdit('edit',row)" class="view-style-class">
                 编辑模块   
               </Button>
-              <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEditContent('add',row)">
+              <Button  type="text" size="small" style="margin-right: 5px" @click="addOrEditContent('add',row)" class="view-style-class">
                 编辑模块内容   
               </Button>
-              <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="delItem(row)">
+              <Button  type="text" size="small" style="color:red;margin-right: 5px" @click="delItem(row)">
                 删除   
               </Button>
             </template>
@@ -41,10 +41,10 @@
               <!-- <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px"  @click="addOrEdit('query',row)">
                 查看模块   
               </Button> -->
-              <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEdit('edit',row)">
+              <Button  type="text" size="small" style="margin-right: 5px" @click="addOrEdit('edit',row)" class="view-style-class">
                 编辑模块   
               </Button>
-              <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEditContent('query',row)">
+              <Button  type="text" size="small" style="margin-right: 5px" @click="addOrEditContent('query',row)" class="edit-style-class">
                 查看模块内容   
               </Button>
               <Button  type="text" size="small" style="color:red;margin-right: 5px" @click="stopModule(row.id)">
@@ -52,10 +52,10 @@
               </Button>
             </template>
             <template v-else>
-              <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEdit('query',row)">
+              <Button  type="text" size="small" style="margin-right: 5px" @click="addOrEdit('query',row)" class="edit-style-class">
                 查看模块   
               </Button>
-              <Button  type="text" size="small" style="color:#2db7f5;margin-right: 5px" @click="addOrEditContent('query',row)">
+              <Button  type="text" size="small" style="margin-right: 5px" @click="addOrEditContent('query',row)" class="edit-style-class">
                 查看模块内容   
               </Button>
             </template>
@@ -311,5 +311,11 @@ export default {
       max-height:100%;
     }
   }
+}
+.view-style-class{
+  color: #19be6b ;
+}
+.edit-style-class{
+  color: #2d8cf0;
 }
 </style>

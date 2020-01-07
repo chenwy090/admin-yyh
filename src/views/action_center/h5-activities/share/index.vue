@@ -140,7 +140,7 @@
         					shareImgUrl:img,
         					shareText:content
         				}
-        				let {code,msg} = postRequest('/browsing/templateInfo/editShare',params);
+        				let {code,msg} = await postRequest('/browsing/templateInfo/editShare',params);
         				if (code == 200) {
 				            this.msgOk("保存成功");
 				            // 关闭对话框
