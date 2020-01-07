@@ -350,7 +350,7 @@ export default {
 
         this.modalAddData.coupons = this.couponList.map((item, index, list) => {
           return {
-            id: item.id,
+            couponId: item.id,
             rankNum: list.length - index,
             couponName: item.name,
             shareId: item.row.shareId,

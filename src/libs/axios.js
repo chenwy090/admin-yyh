@@ -22,12 +22,23 @@ axios.defaults.timeout = 15000;
 //   }
 // );
 
-function checkData() {}
+function checkData(data) {
+  let body = data;
+  if (!(data instanceof Array) && typeof data == "object" && data && JSON.stringify(data) != "{}") {
+    body = {};
+    Object.entries(data).forEach(([key, value]) => {
+      if (value != "" && value != null && value != undefined) {
+        body[key] = value;
+      }
+    });
+  }
+  return body;
+}
 
 // http response 拦截器
 axios.interceptors.request.use(
   config => {
-    let data = config.data;
+    config.data = checkData(config.data);
     return config;
   },
   error => Promise.reject(error)
