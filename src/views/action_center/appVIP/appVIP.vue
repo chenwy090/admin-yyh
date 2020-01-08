@@ -24,7 +24,7 @@
           </FormItem>
           <FormItem label="状态: " :label-width="85" prop="status">
             <Select v-model="searchData.status" style="width:200px" clearable>
-              <Option value="''">全部</Option>
+              <Option value="">全部</Option>
               <Option value="0">未上架</Option>
               <Option value="1">上架</Option>
               <Option value="-1">下架</Option>
@@ -273,7 +273,7 @@ export default {
           title: "优惠券",
           align: "center",
           minWidth: 140,
-          key: "subTitle",
+          key: "couponName",
         },
         {
           title: "剩余库存",
