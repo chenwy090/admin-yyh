@@ -72,14 +72,14 @@
 
       <template v-if="form.prizeType == 2">
         <FormItem label="每人获得U贝数量：">
-          <Input
+          <InputNumber
             :disabled="addOrEdit == 3"
             v-model="form.ubayInfo.amountEach"
             placeholder="请输入每人获得U贝数量"
             style="width:200px"
           >
-            <span slot="append">U贝</span>
-          </Input>
+          </InputNumber>
+          <span> U贝</span>
         </FormItem>
 
         <FormItem label="发放份数：">
@@ -256,7 +256,7 @@ export default {
               this.$Message.error("每人获得U贝数量不能小于0");
               return;
             }
-            if (!body.ubayInfo.totalAmount <= 0) {
+            if (body.ubayInfo.totalAmount <= 0) {
               this.$Message.error("发放份数不能小于0");
               return;
             }
