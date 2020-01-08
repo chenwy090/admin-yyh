@@ -416,6 +416,12 @@
 					    };
 						return false
 					}
+					if(type == 2){
+						for(let i = 0; i < data.dataList.length;i++){
+							let item = data.dataList[i];
+							item.time = item.startDate + item.endDate;
+						}
+					}
 					this.dataYhq = data.dataList;
 					this.page.pageNum = data.pageNum; //分页查询起始记录
           			this.page.total = data.totalCount; //列表总数
@@ -440,7 +446,7 @@
 					this.searchData.name = "";
 					this.searchData.id = "";
 					this.columnsYhq.push({title:'有效期',
-			    	key:'useEndDate',
+			    	key:'time',
 			    	align:"center"})
 			    	this.queryCouponList();
 				}

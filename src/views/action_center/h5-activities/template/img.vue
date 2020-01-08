@@ -123,7 +123,7 @@
 		<Modal v-model="isShowImg" :closable="false"
 	      :mask-closable="false"
 	      :styles="{top: '20px'}"
-	      width="800"
+	      width="850"
 	      title="内容选择">
 	      	<div class="search-wrap" v-if="formData.urlType == 3">
 	      		<Tabs type="card" @on-click="setTab">
@@ -318,6 +318,8 @@
 		        if(type == 'add'){
 		        	this.imgTitle = '增加图片';
 		        	this.daterange = [];
+		        	this.formData.img = "";
+		        	this.formData.defaultImgList = [];
 		        	this.url = "/browsing/templateImg/add";
 		        }else if(type == 'edit'){
 		        	this.imgTitle = '编辑图片';
@@ -585,7 +587,23 @@
 		    		this.$refs['formWrap'].resetFields();
 		    	}
 		    	this.isShow = false;
+		    	this.resetFormValue();
 		    	this.$emit('refresh');
+		    },
+		    resetFormValue(){
+		    	this.formData = {
+					id:'',
+					img:'',
+					urlType:'',
+					url:'',
+					urlType1:'', //1抽奖团还是2抽奖广场
+					defaultImgList:[],
+					beginTime:'',
+					endTime:'',
+					isYg:'',
+					checkContentId:'',
+					isYgValue:''
+				};
 		    },
 		    setFormDataValue(data){
 		    	//回显
@@ -598,6 +616,8 @@
 		    	}else if(jumpType == 5){
 		    		__id = groupId;
 		    	}
+		    	// console.log(__id)
+		    	// return false;
 		    	this.formData = {
 					id:id,
 					img:imgUrl,
@@ -656,11 +676,19 @@
         						return false
         					}
         				}
+        				if(isYg == 1){
+        					if(isYgValue == ""){
+        						this.msgErr('请选择预告类型');
+        						return false;
+        					}
+        				}
         				console.log(params)
+        				//return false
         				let { code, msg } = await postRequest(this.url, params);
         				if(code == 200){
         					this.msgOk("保存成功");
 		    				this.$refs['formWrap'].resetFields();
+		    				this.resetFormValue();
 		    				this.isShow = false;
 		    				this.formData.checkContentId = "";
 		    				this.$emit("refresh");
@@ -750,6 +778,12 @@
 					    };
 						return false
 					}
+					if(type == 2){
+						for(let i = 0; i < data.dataList.length;i++){
+							let item = data.dataList[i];
+							item.time = item.startDate + item.endDate;
+						}
+					}
 					this.dataYhq = data.dataList;
 					this.page.pageNum = data.pageNum; //分页查询起始记录
           			this.page.total = data.totalCount; //列表总数
@@ -774,7 +808,7 @@
 					this.searchDataYhq.id = "";
 					this.page.pageSize = 10;
 					this.columnsYhq.push({title:'有效期',
-			    	key:'useEndDate',
+			    	key:'time',
 			    	align:"center"})
 			    	this.queryCouponList();
 				}
