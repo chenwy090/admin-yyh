@@ -6,7 +6,7 @@
         <Icon type="ios-information-circle"></Icon>
         <span>赏U页面配置</span>
       </p>
-      <Edit :bigcData="bigcData"></Edit>
+      <Edit v-if="showBigc" :bigcData="bigcData"></Edit>
     </Drawer>
   </div>
 </template>
@@ -53,7 +53,7 @@ export default {
         let { data } = this.action;
         //add/edit 新增/修改
         this.bigcData = await this.queryBigcById(data.id);
-        console.log("watch bigc edit action:", type, this.bigcData);
+        console.log("watch bigc edit action:", this.bigcData);
       },
       deep: true,
     },
