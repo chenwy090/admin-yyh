@@ -273,7 +273,7 @@ export default {
           title: "优惠券",
           align: "center",
           minWidth: 140,
-          key: "subTitle",
+          key: "couponName",
         },
         {
           title: "剩余库存",

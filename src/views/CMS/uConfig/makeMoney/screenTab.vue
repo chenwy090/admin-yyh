@@ -34,16 +34,7 @@
             </Form-item>
             <Form-item label="筛选项">
               <Row
-                ><Button
-                  size="small"
-                  type="success"
-                  @click="
-                    selectData = screenData;
-                    modalAddShow = true;
-                    tagsValue = [];
-                  "
-                  >设置筛选项</Button
-                >
+                ><Button size="small" type="success" @click="showModal(screenData)">设置筛选项</Button>
                 <span style="padding-left:10px;color:#999;">拖拽设置顺序</span>
               </Row>
 
@@ -168,6 +159,11 @@ export default {
         }
         console.info(screenData);
       });
+    },
+    showModal(screenData) {
+      this.selectData = screenData;
+      this.modalAddShow = true;
+      this.tagsValue = this.selectData.industryVO.map(item => item.industryId);
     },
     modalAddOk() {
       this.selectData.industryVO = this.tagsList.filter(item => this.tagsValue.includes(item.industryId));
