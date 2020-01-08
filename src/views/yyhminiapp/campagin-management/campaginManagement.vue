@@ -9,9 +9,21 @@
       <div v-if="tab_model == '57'">
         <Row>
           <!-- 搜索 -->
-          <Form ref="search" :model="search" inline :label-width="120" style="display:inline-block;">
+          <Form
+            ref="search"
+            :model="search"
+            inline
+            :label-width="120"
+            style="display:inline-block;"
+          >
             <Form-item label="活动ID" :label-width="100">
-              <Input type="text" v-model="search.campId" clearable placeholder="请输入活动ID" style="width: 200px" />
+              <Input
+                type="text"
+                v-model="search.campId"
+                clearable
+                placeholder="请输入活动ID"
+                style="width: 200px"
+              />
             </Form-item>
             <span v-if="drop">
               <Form-item label="优惠券模板ID" :label-width="100">
@@ -23,7 +35,13 @@
                 />
               </Form-item>
               <Form-item label="活动名称" :label-width="100">
-                <Input type="text" v-model="search.name" clearable placeholder="请输入活动名称" style="width: 200px" />
+                <Input
+                  type="text"
+                  v-model="search.name"
+                  clearable
+                  placeholder="请输入活动名称"
+                  style="width: 200px"
+                />
               </Form-item>
               <!-- <Form-item label="活动标签" :label-width="100">
 
@@ -56,7 +74,11 @@
 
               <Form-item label="投放渠道" :label-width="100">
                 <Select v-model="search.sendChannel" placeholder="请选择" style="width: 200px">
-                  <Option v-for="item in res_list" :value="item.dictValue" :key="item.id">{{ item.dictLabel }}</Option>
+                  <Option
+                    v-for="item in res_list"
+                    :value="item.dictValue"
+                    :key="item.id"
+                  >{{ item.dictLabel }}</Option>
                 </Select>
               </Form-item>
             </span>
@@ -104,21 +126,33 @@
             </template>
 
             <template slot-scope="{ row }" slot="getrules">
-              <span style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;">{{
+              <span
+                style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;"
+              >
+                {{
                 row.rules
-              }}</span>
+                }}
+              </span>
             </template>
 
             <template slot-scope="{ row }" slot="getcouponValueDesc">
-              <span style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;">{{
+              <span
+                style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;"
+              >
+                {{
                 row.couponValueDesc
-              }}</span>
+                }}
+              </span>
             </template>
 
             <template slot-scope="{ row }" slot="getdoorsillDesc">
-              <span style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;">{{
+              <span
+                style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;"
+              >
+                {{
                 row.doorsillDesc
-              }}</span>
+                }}
+              </span>
             </template>
           </Table>
         </Row>
@@ -150,7 +184,11 @@
               placeholder="请输入选择appid"
               @on-change="statusCheckChange"
             >
-              <Option v-for="item in appId_info" :value="item.appid" :key="item.appid">{{ item.appName }}</Option>
+              <Option
+                v-for="item in appId_info"
+                :value="item.appid"
+                :key="item.appid"
+              >{{ item.appName }}</Option>
             </Select>
           </FormItem>
 
@@ -305,11 +343,19 @@
           </FormItem>
 
           <FormItem label="优惠券模板" required>
-            <Button type="dashed" @click="resInfo" :style="{ width: '150px' }" @on-change="statusCheckChange"
-              >选择模版</Button
-            >
+            <Button
+              type="dashed"
+              @click="resInfo"
+              :style="{ width: '150px' }"
+              @on-change="statusCheckChange"
+            >选择模版</Button>
 
-            <Tag checkable color="error" v-if="add_info.ticketTemplateId" style="margin-left: 3%">已选择</Tag>
+            <Tag
+              checkable
+              color="error"
+              v-if="add_info.ticketTemplateId"
+              style="margin-left: 3%"
+            >已选择</Tag>
           </FormItem>
 
           <FormItem v-if="add_info.ticketName">
@@ -354,8 +400,7 @@
               @click="groupInfo(add_info.campId)"
               :style="{ width: '150px' }"
               @on-change="statusCheckChange"
-              >拼团设置</Button
-            >
+            >拼团设置</Button>
           </FormItem>
 
           <FormItem style="{'margin-top':'54px'}">
@@ -365,8 +410,7 @@
               :loading="add_loading"
               style="width:150px;"
               :disabled="isCheckDisabled"
-              >保存</Button
-            >
+            >保存</Button>
           </FormItem>
         </Form>
         <!--分享奖励配置-->
@@ -377,7 +421,12 @@
           :label-width="180"
           style="margin-top:20px"
         >
-          <FormItem v-for="item in formShareModal.shareData" :key="item.id" :label="item.name" required>
+          <FormItem
+            v-for="item in formShareModal.shareData"
+            :key="item.id"
+            :label="item.name"
+            required
+          >
             <!-- <span v-if="item.name!= '倍数'&&item.name!= '上限'">&nbsp;优惠面额 X</span> -->
             <!-- :disabled="item.name=='分享奖励'" -->
             <InputNumber
@@ -400,7 +449,14 @@
 
     <Modal v-model="res_Modal_show" width="700" title="选择模版">
       <Form :model="res_info" ref="res_info" :label-width="100" :styles="{ top: '10px' }">
-        <Table border ref="selection" :columns="res_columns" :data="res_list" size="small" height="300"></Table>
+        <Table
+          border
+          ref="selection"
+          :columns="res_columns"
+          :data="res_list"
+          size="small"
+          height="300"
+        ></Table>
       </Form>
 
       <div slot="footer">
@@ -415,7 +471,11 @@
 
     <!-- 1 领优惠基础设置 -->
     <div v-if="basicSetPage">
-      <basicSet :basicSetPage.sync="basicSetPage" @changeStatus="showbasicSetStatus" :camp_Info="camp_Info"></basicSet>
+      <basicSet
+        :basicSetPage.sync="basicSetPage"
+        @changeStatus="showbasicSetStatus"
+        :camp_Info="camp_Info"
+      ></basicSet>
     </div>
 
     <!-- 2 要优惠拼团设置  [领优惠---规则设置]-->
@@ -845,7 +905,7 @@ export default {
                     size: "small",
                   },
                   style: {
-                    display: params.row.status == 1 ? "none" : "inline-block",
+                    display: "inline-block",
                     color: "#5cadff",
                   },
                   on: {
@@ -868,7 +928,7 @@ export default {
                     size: "small",
                   },
                   style: {
-                    display: params.row.status == 1 ? "none" : "inline-block",
+                    display: "inline-block",
                     color: "#5cadff",
                   },
                   on: {
