@@ -69,7 +69,7 @@ export default {
         return {
           name: "merchant",
           couponType: 1,
-          label: "超市券",
+          label: "周边券",
           compName: "CompMerchantLlist",
           url: "/share/recommend/coupon/list/coupon",
         };

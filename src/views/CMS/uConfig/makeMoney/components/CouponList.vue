@@ -60,7 +60,7 @@ export default {
           id: Math.random(),
           name: "xxx",
           couponType: 1,
-          label: "超市券",
+          label: "周边券",
           compName: "CompMerchantLlist",
           // url: "/campagin/activitylist"
           url: "/share/recommend/coupon/list/coupon",
@@ -69,7 +69,7 @@ export default {
           id: Math.random(),
           name: "xxx",
           couponType: 2,
-          label: "周边券",
+          label: "商超券",
           compName: "CompSuperMarketList",
           // url: "/merchantCouponTemplate/activitylist"
           url: "/share/recommend/coupon/list/coupon",

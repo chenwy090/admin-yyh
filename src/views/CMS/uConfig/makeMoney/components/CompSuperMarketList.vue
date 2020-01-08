@@ -70,7 +70,7 @@ export default {
         return {
           name: "superMarket",
           couponType: 2,
-          label: "周边券",
+          label: "商超券",
           compName: "CompSuperMarketList",
           url: "/share/recommend/coupon/list/coupon",
         };
