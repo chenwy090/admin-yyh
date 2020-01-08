@@ -123,7 +123,7 @@
 		<Modal v-model="isShowImg" :closable="false"
 	      :mask-closable="false"
 	      :styles="{top: '20px'}"
-	      width="800"
+	      width="850"
 	      title="内容选择">
 	      	<div class="search-wrap" v-if="formData.urlType == 3">
 	      		<Tabs type="card" @on-click="setTab">
@@ -778,6 +778,12 @@
 					    };
 						return false
 					}
+					if(type == 2){
+						for(let i = 0; i < data.dataList.length;i++){
+							let item = data.dataList[i];
+							item.time = item.startDate + item.endDate;
+						}
+					}
 					this.dataYhq = data.dataList;
 					this.page.pageNum = data.pageNum; //分页查询起始记录
           			this.page.total = data.totalCount; //列表总数
@@ -802,7 +808,7 @@
 					this.searchDataYhq.id = "";
 					this.page.pageSize = 10;
 					this.columnsYhq.push({title:'有效期',
-			    	key:'useEndDate',
+			    	key:'time',
 			    	align:"center"})
 			    	this.queryCouponList();
 				}
