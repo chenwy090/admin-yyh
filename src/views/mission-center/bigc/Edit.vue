@@ -163,7 +163,11 @@
         </FormItem>
         <FormItem label="预览二维码：">
           <img :src="qrcode" style="width:150px;" />
-          <Button style="margin-left:20px;" type="primary" @click="getQrcode">生成二维码</Button>
+          <Button
+            style="margin-left:20px;"
+            type="primary"
+            @click="getQrcode"
+          >{{qrcode?"刷新二维码":"生成二维码"}}</Button>
         </FormItem>
       </Form>
     </div>
@@ -237,16 +241,13 @@ export default {
       this.setShowBigc(false); //关闭对话框
     },
     async getQrcode() {
-      if (this.qrcode) {
-        return;
-      }
       // 赏U任务详情,生成二维码
       const url = "/merchant/assignment/qrcode";
       //assignmentId
       const { code, data, msg } = await getRequest(url, { assignmentId: this.assignmentId });
 
       if (code == 200) {
-        console.log("qrcode:", data);
+        // console.log("qrcode:", data);
         this.qrcode = `data:image/png;base64,${data}`;
       } else {
         // msgOk msgErr
@@ -257,7 +258,7 @@ export default {
       this.$refs[name].validate(async valid => {
         // console.log(JSON.stringify(this.formValidate));
         if (valid) {
-          this.msgOk("数据验证成功!");
+          // this.msgOk("数据验证成功!");
 
           let oForm = JSON.parse(JSON.stringify(this.formData));
           oForm.assignmentId = this.assignmentId;
@@ -270,7 +271,7 @@ export default {
           if (code == 200) {
             this.msgOk("保存成功");
             // 关闭对话框
-            this.closeDialog();
+            // this.closeDialog();
           } else {
             this.msgErr(msg);
           }
