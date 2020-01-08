@@ -730,6 +730,7 @@ export default {
 
           if (d1 >= d2) {
             let msg = "活动开奖时间不能小于等于活动开始时间";
+            this.submitDisabled = false;
             return this.msgErr(msg);
           }
         }

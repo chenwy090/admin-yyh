@@ -24,7 +24,14 @@ axios.defaults.timeout = 15000;
 
 function checkData(data) {
   let body = data;
-  if (!(data instanceof Array) && typeof data == "object" && data && JSON.stringify(data) != "{}") {
+  if (
+    !(data instanceof Array) &&
+    typeof data == "object" &&
+    data &&
+    JSON.stringify(data) != "{}" &&
+    ((data.hasOwnProperty("pageNum") && data.hasOwnProperty("pageSize")) ||
+      (data.hasOwnProperty("page") && data.hasOwnProperty("size")))
+  ) {
     body = {};
     Object.entries(data).forEach(([key, value]) => {
       if (value !== "" && value !== null && value !== undefined) {
