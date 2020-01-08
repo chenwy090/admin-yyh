@@ -7,7 +7,7 @@
             v-model="searchForm.provinceCode"
             placeholder="请选择省"
             style="width:100px"
-            @on-change="proviceChange($event)"
+            @on-change="proviceChange($event, 1)"
           >
             <Option v-for="item in proviceSelect" :value="item.provinceCode" :key="item.provinceCode">{{
               item.provinceName
@@ -110,7 +110,7 @@
             v-model="modalAddData.provinceCode"
             placeholder="请选择省"
             style="width:100px"
-            @on-change="proviceChange($event)"
+            @on-change="proviceChange($event, 2)"
           >
             <Option v-for="item in proviceSelect" :value="item.provinceCode" :key="item.provinceCode">{{
               item.provinceName
@@ -118,7 +118,7 @@
           </Select>
           /
           <Select v-model="modalAddData.cityCode" placeholder="请选择市" style="width:100px">
-            <Option v-for="item in citySelect" :value="item.cityCode" :key="item.cityCode">{{ item.cityName }}</Option>
+            <Option v-for="item in citySelect2" :value="item.cityCode" :key="item.cityCode">{{ item.cityName }}</Option>
           </Select>
         </Form-item>
 
@@ -258,7 +258,10 @@ export default {
       loading: false,
       modalAddShow: false,
       modalAddBtnShow: false,
-      modalAddData: {},
+      modalAddData: {
+        provinceCode: "",
+        cityCode: "",
+      },
       modalAddValidate: {
         time: {
           required: true,
@@ -276,6 +279,7 @@ export default {
 
       proviceSelect: [],
       citySelect: [],
+      citySelect2: [],
       showCouponList: false,
       couponList: [],
 
@@ -335,7 +339,10 @@ export default {
     addManualDisplayFn() {
       // this.$refs["modalAddForm2"].resetFields();
       this.modalAddShow = true;
-      this.modalAddData = {};
+      this.modalAddData = {
+        provinceCode: "",
+        cityCode: "",
+      };
       this.couponList = [];
     },
     editManualDisplayFn(item) {
@@ -344,12 +351,14 @@ export default {
           this.modalAddData = res.data;
           this.modalAddData.time = [this.modalAddData.startTime, this.modalAddData.endTime];
           this.couponList = JSON.parse(res.data.couponList);
-
-          this.proviceChange(this.modalAddData.provinceCode);
-
+          this.proviceChange(this.modalAddData.provinceCode, 2);
+          let cityCode = this.modalAddData.cityCode;
+          this.$nextTick(() => {
+            this.modalAddData.cityCode = cityCode;
+          });
           this.modalAddShow = true;
         } else {
-          this.$Message.error(res.msg);
+          this.$Message.error(res.msg || "网络错误！");
         }
       });
     },
@@ -482,12 +491,19 @@ export default {
     //     },
     //   })
     // },
-    proviceChange(provinceCode) {
+    proviceChange(provinceCode, type) {
       if (!provinceCode) return;
-      this.searchForm.city = "";
       cms.filterCityByProvince(provinceCode).then(res => {
         if (res.isSuccess) {
-          this.citySelect = res.data;
+          switch (type) {
+            case 1:
+              this.searchForm.city = "";
+              this.citySelect = res.data;
+              break;
+            case 2:
+              this.citySelect2 = res.data;
+              break;
+          }
         }
       });
     },
