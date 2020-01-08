@@ -50,8 +50,10 @@
                 :disabled="addOrEdit == 3"
                 placeholder="请填写优惠券详情副标题"
                 v-model="form.coupons.subTitle"
+                :maxlength="15"
                 style="width:300px;"
               />
+              <span style="color: #999;padding-left:10px">最多15个字符</span>
             </div>
             <div>
               优惠券详情大图：
