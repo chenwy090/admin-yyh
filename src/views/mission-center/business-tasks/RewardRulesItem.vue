@@ -414,7 +414,7 @@ export default {
     ...mapStateMissionCenter(["type"]),
     surplusCount() {
       let { templateName, surplusCount } = this.item;
-      if (templateName) {
+      if (templateName && surplusCount) {
         return `剩余${surplusCount}张券`;
       } else {
         return "";
