@@ -124,7 +124,8 @@
 		},
 		data(){
 			return{
-				activityTime:'',
+				moduleStartTime:'',
+				moduleEndTime:'',
 				templateTitle:'',
 				showTemplateDetail:false,
 			    styles: {
@@ -354,7 +355,8 @@
 		        this.formData.type = data.moduleType;
 		        this.formData.moduleId = data.id;
 		        this.formData.browsingId = data.browsingId;
-		        this.activityTime = data.time;
+		        this.moduleStartTime = data.startTime;
+		        this.moduleEndTime = data.endTime;
 		        if(type == 'query'){
 		        	this.templateTitle = '查看模块内容'
 		        }else{
@@ -400,7 +402,8 @@
 				        	moduleId:this.formData.moduleId,//模板id
 				        	browsingId:this.formData.browsingId ,//活动Id
 				        	data:data,
-				        	moduleTime:this.activityTime //模块的的开始时间结束时间
+				        	moduleStartTime:this.moduleStartTime, //模块的的开始时间结束时间
+				        	moduleEndTime:this.moduleEndTime //模块的的开始时间结束时间
 				        }
 				    };
 		    	}else{
@@ -412,7 +415,8 @@
 				        	moduleId:this.formData.moduleId,//模板id
 				        	browsingId:this.formData.browsingId, //活动Id
 				        	data:data,
-				        	moduleTime:this.activityTime //模块的的开始时间结束时间
+				        	moduleStartTime:this.moduleStartTime, //模块的的开始时间结束时间
+				        	moduleEndTime:this.moduleEndTime //模块的的开始时间结束时间
 				        }
 		    		}
 		    	}

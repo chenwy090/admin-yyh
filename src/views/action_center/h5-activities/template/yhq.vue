@@ -211,7 +211,7 @@
 					</FormItem>
 					<FormItem label=" ">
 						券活动开始、结束时间：{{activityTime}} 
-						模块开始、结束时间:{{moduleTime}}
+						模块开始、结束时间:{{moduleStartTime}} -- {{moduleEndTime}}
 					</FormItem>
 				</Form>
 			</template>
@@ -245,7 +245,7 @@
 		        if(type == 'add'){
 		        	this.isShow = true;
 		        	this.yhqDetail = false;
-		        	this.daterange = [];
+		        	//this.daterange = [];
 		        	this.currentChoose = "";
 		        	this.yhqTitle = '增加优惠券';
 		        	this.url= "/browsing/templateCoupon/add";
@@ -264,7 +264,9 @@
 		        console.log("优惠券");
 		        this.moduleId = data.moduleId;
 		        this.browsingId = data.browsingId;
-		        this.moduleTime = data.moduleTime;
+		        this.moduleStartTime = data.moduleStartTime;
+		        this.moduleEndTime = data.moduleEndTime;
+		        
 		        console.log(data.data)
 		        console.log(data)
 		        this.queryCouponList();
@@ -275,7 +277,8 @@
   		},
 		data(){
 			return{
-				moduleTime:'',
+				moduleStartTime:'',
+				moduleEndTime:'',
 				url:'',
 				yhqTitle:'',
 				moduleId:'',
@@ -379,7 +382,7 @@
 				//显示优惠券的信息
 				this.yhqDetail = true;
 				console.log(this.currentTableRow)
-				const {currentTableRow:{templateId,surplusCount,mainTitle,subTitle,imgUrl,useStartDate,useEndDate,startDate,endDate}} = this;
+				const {currentTableRow:{templateId,surplusCount,mainTitle,subTitle,imgUrl,useStartDate,useEndDate,startDate,endDate},moduleStartTime,moduleEndTime} = this;
 				this.formData = {
 					id:this.currentMouldId,
 					templateId : templateId,
@@ -388,14 +391,15 @@
 					subTitle:subTitle,
 					img:imgUrl,
 					defaultImgList:[{imgUrl:imgUrl}],
-					beginTime:"",
-					endTime:"",
+					beginTime:moduleStartTime,
+					endTime:moduleEndTime,
 					isYg:"",
 			    	isYgValue:""
 				}
 				//赋值
+				this.daterange = [moduleStartTime,moduleEndTime]
 				//this.useTime = (useStartDate == null ? "" : useStartDate) + '--' + useEndDate; //券的时间
-				this.activityTime = startDate + '--' + endDate;
+				this.activityTime = (startDate == null ? '' : startDate) + '--' + (endDate == null ? '' : endDate);
 			},
 			async queryCouponList(pageNum){
 				this.page.pageNum = pageNum || 1;
