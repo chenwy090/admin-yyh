@@ -286,6 +286,9 @@ export default {
   },
   mounted() {
     this.initData();
+    this.modal.pushRange = this.pushRange;
+    this.modal.shopRequestList = this.shopRequestList;
+    this.echoData();
   },
 };
 </script>
