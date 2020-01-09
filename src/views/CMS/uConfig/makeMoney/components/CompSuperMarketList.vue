@@ -95,9 +95,9 @@ export default {
           width: 70,
           align: "center",
           render: (h, params) => {
-            const { couponId, couponName } = params.row;
+            const { couponId, couponName, shareId, provinceName, cityName } = params.row;
             let flag = false;
-            if (this.choice.id == couponId) {
+            if (this.choice.shareId == shareId) {
               flag = true;
             } else {
               flag = false;
@@ -111,10 +111,11 @@ export default {
                 on: {
                   "on-change": () => {
                     self.choice.id = couponId;
+                    self.choice.shareId = shareId;
                     self.choice.name = couponName;
-                    // self.choice.img = img;
+                    self.choice.provinceName = provinceName;
+                    self.choice.cityName = cityName;
                     self.choice.row = params.row;
-                    // console.log("change", JSON.stringify(self.choice));
                   },
                 },
               }),

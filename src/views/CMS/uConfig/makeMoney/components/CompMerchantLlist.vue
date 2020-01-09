@@ -36,8 +36,10 @@
       :columns="tableColumns"
       :data="tableData"
       :loading="tableLoading"
+      highlight-row
       class="bussiness-list"
-    ></Table>
+    >
+    </Table>
     <Row type="flex" justify="end" class="page">
       <!-- show-total 显示总数 共{{ total }}条 -->
       <!-- show-elevator 显示电梯，可以快速切换到某一页  跳至 xx 页-->
@@ -82,6 +84,7 @@ export default {
       choice: {
         _id: "",
         id: "",
+        shareId: "",
         name: "",
       },
       edit_loading: false,
@@ -94,9 +97,9 @@ export default {
           width: 70,
           align: "center",
           render: (h, params) => {
-            const { couponId, couponName } = params.row;
+            const { couponId, couponName, shareId, provinceName, cityName } = params.row;
             let flag = false;
-            if (this.choice.id == couponId) {
+            if (this.choice.shareId == shareId) {
               flag = true;
             } else {
               flag = false;
@@ -110,15 +113,22 @@ export default {
                 on: {
                   "on-change": () => {
                     self.choice.id = couponId;
+                    self.choice.shareId = shareId;
                     self.choice.name = couponName;
+                    self.choice.provinceName = provinceName;
+                    self.choice.cityName = cityName;
                     self.choice.row = params.row;
-                    // console.log("change", JSON.stringify(self.choice));
                   },
                 },
               }),
             ]);
           },
         },
+        // {
+        //   title: "选择",
+        //   align: "center",
+        //   slot: "selection",
+        // },
         {
           title: "优惠券ID",
           align: "center",

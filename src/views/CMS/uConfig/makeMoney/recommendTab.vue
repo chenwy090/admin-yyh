@@ -105,6 +105,7 @@
             v-model="modalAddData.provinceCode"
             placeholder="请选择省"
             style="width:100px"
+            :disabled="modalAddData.status == 1"
             @on-change="proviceChange($event)"
           >
             <Option v-for="item in proviceSelect" :value="item.provinceCode" :key="item.provinceCode">{{
@@ -112,7 +113,12 @@
             }}</Option>
           </Select>
           /
-          <Select v-model="modalAddData.cityCode" placeholder="请选择市" style="width:100px">
+          <Select
+            v-model="modalAddData.cityCode"
+            :disabled="modalAddData.status == 1"
+            placeholder="请选择市"
+            style="width:100px"
+          >
             <Option v-for="item in citySelect" :value="item.cityCode" :key="item.cityCode">{{ item.cityName }}</Option>
           </Select>
         </Form-item>
@@ -124,6 +130,7 @@
             placeholder="请选择有效期"
             @on-change="[modalAddData.beginTime, modalAddData.endTime] = $event"
             v-model="modalAddData.time"
+            :disabled="modalAddData.status == 1"
             style="width: 200px"
           >
           </DatePicker>
@@ -136,7 +143,9 @@
           <CompSortDrag :list="couponList">
             <template v-for="(item, index) in couponList">
               <Row :key="index"
-                ><Tag closable @on-close="couponListRemove(index)">{{ item.name }}</Tag></Row
+                ><Tag closable @on-close="couponListRemove(index)">{{
+                  item.name + `【${item.provinceName + item.cityName}】`
+                }}</Tag></Row
               >
             </template>
           </CompSortDrag>
@@ -454,7 +463,7 @@ export default {
       });
     },
     selectedCouponItem(data) {
-      if (this.couponList.filter(item => item.id == data.id).length > 0) {
+      if (this.couponList.filter(item => item.shareId == data.shareId).length > 0) {
         this.$Message.error("优惠券有重复，请重新选择");
         return;
       }

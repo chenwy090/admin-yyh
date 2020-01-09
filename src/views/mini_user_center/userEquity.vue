@@ -111,13 +111,19 @@
             placeholder="请选择省"
             style="width:100px"
             @on-change="proviceChange($event, 2)"
+            :disabled="modalAddData.status == 2"
           >
             <Option v-for="item in proviceSelect" :value="item.provinceCode" :key="item.provinceCode">{{
               item.provinceName
             }}</Option>
           </Select>
           /
-          <Select v-model="modalAddData.cityCode" placeholder="请选择市" style="width:100px">
+          <Select
+            v-model="modalAddData.cityCode"
+            :disabled="modalAddData.status == 2"
+            placeholder="请选择市"
+            style="width:100px"
+          >
             <Option v-for="item in citySelect2" :value="item.cityCode" :key="item.cityCode">{{ item.cityName }}</Option>
           </Select>
         </Form-item>
@@ -129,6 +135,7 @@
             placeholder="请选择有效期"
             @on-change="[modalAddData.startTime, modalAddData.endTime] = $event"
             v-model="modalAddData.time"
+            :disabled="modalAddData.status == 2"
             style="width: 200px"
           >
           </DatePicker>

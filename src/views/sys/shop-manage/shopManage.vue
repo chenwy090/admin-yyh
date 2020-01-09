@@ -118,7 +118,7 @@
           <Table
             border
             width="100%"
-            :columns="columns6"
+            :columns="tableColumns"
             :data="store_data_list"
             :loading="TableLoading"
           >
@@ -213,10 +213,12 @@
 import addStore from "./components/addStore";
 import { getShopList, delShop, getXls, upXls } from "@/api/sys";
 import { baseUrl } from "@/api/index";
+import tableColumns from "./columns";
+
 export default {
   name: "store-management",
   components: {
-    addStore
+    addStore,
   },
   data() {
     return {
@@ -224,120 +226,11 @@ export default {
       dropDownContent: "展开",
       dropDownIcon: "ios-arrow-down",
       TableLoading: false, // 加载动画
-      columns6: [
-        //门店列表
-        {
-          title: "操作",
-          key: "operation",
-          minWidth: 145,
-          align: "center",
-          slot: "action",
-          fixed: "left"
-        },
-        {
-          title: "知而行店号",
-          key: "shopId",
-          minWidth: 80,
-          align: "center"
-        },
-        {
-          title: "门店名称",
-          key: "shopName",
-          minWidth: 145,
-          align: "center"
-        },
-        {
-          title: "门店类型",
-          key: "categories",
-          minWidth: 145,
-          align: "center"
-        },
-        {
-          title: "所在省份",
-          key: "province",
-          minWidth: 145,
-          align: "center"
-        },
-        {
-          title: "所在城市",
-          key: "city",
-          minWidth: 145,
-          align: "center"
-        },
-        {
-          title: "详细地址",
-          key: "address",
-          minWidth: 205,
-          align: "center"
-        },
-        {
-          title: "经度",
-          key: "longitude",
-          minWidth: 105,
-          align: "center"
-        },
-        {
-          title: "纬度",
-          key: "latitude",
-          minWidth: 105,
-          align: "center"
-        },
-        {
-          title: "状态",
-          key: "enabled",
-          minWidth: 80,
-          align: "center",
-          slot: "enabled"
-        },
-        {
-          title: "零售商编号",
-          key: "venderId",
-          minWidth: 130,
-          align: "center"
-        },
-        {
-          title: "零售商名称",
-          key: "venderName",
-          minWidth: 130,
-          align: "center"
-        },
-        {
-          title: "零售商自有店号",
-          key: "venderShopId",
-          minWidth: 80,
-          align: "center"
-        },
-        {
-          title: "创建人",
-          key: "createBy",
-          minWidth: 145,
-          align: "center"
-        },
-        {
-          title: "创建时间",
-          key: "createTime",
-          minWidth: 165,
-          align: "center",
-          slot: "createTime"
-        },
-        {
-          title: "修改人",
-          key: "updateBy",
-          minWidth: 145,
-          align: "center"
-        },
-        {
-          title: "修改时间",
-          key: "updateTime",
-          minWidth: 165,
-          align: "center",
-          slot: "updateTime"
-        }
-      ],
+      tableColumns,
       store_data: {
         shopId: "", //知而行门店号
         shopName: "", //门店名称
-        venderName: "" //零售商名称
+        venderName: "", //零售商名称
       },
       store_data_list: [], //列表数据
       current: 1, //当前页面
@@ -345,7 +238,7 @@ export default {
       uploadShopModal: false, //上传门店模态框
       importStoreInfo: {
         appid: "",
-        filePath: ""
+        filePath: "",
       }, //上传门店
       addStorePage: false,
       type: 1, //1--表示新增、2--表示编辑
@@ -364,8 +257,8 @@ export default {
       deriveForm: {
         shopId: "",
         venderName: "",
-        shopName: ""
-      }
+        shopName: "",
+      },
     };
   },
   created: function() {
@@ -413,29 +306,22 @@ export default {
         }
       });
     },
-
     // 新增门店
-    addStore: function() {
+    addStore() {
       this.addStorePage = true;
       this.type = 1;
     },
-
     // 传值到编辑门店
-    editStore: function(row) {
+    editStore(row) {
       this.addStorePage = true;
       this.type = 2;
-      // this.storeItem = this.store_data_list[row];
-      // let obj = {}
-      // obj = row
       this.storeItem = row;
     },
-
     // 传值到删除
     inputDeleteStore(id) {
       this.delShopId = id;
       this.delShopDisplay = true;
     },
-
     // 删除
     deleteStore: function() {
       delShop(this.delShopId).then(res => {
@@ -519,14 +405,14 @@ export default {
     msgOk(txt) {
       this.$Message.info({
         content: txt,
-        duration: 3
+        duration: 3,
       });
     },
 
     msgErr(txt) {
       this.$Message.error({
         content: txt,
-        duration: 3
+        duration: 3,
       });
     },
 
@@ -571,7 +457,7 @@ export default {
       this.uploadShopModal = true;
       this.closeBtn = false;
       this.uploadToken = {
-        jwttoken: localStorage.getItem("jwttoken")
+        jwttoken: localStorage.getItem("jwttoken"),
       };
     },
 
@@ -600,8 +486,7 @@ export default {
     handleItemFormatError(file) {
       this.$Notice.warning({
         title: "文件格式不正确",
-        desc:
-          "文件 " + file.name + " 格式不正确，请上传 xlsx 或 xls 格式的表格。"
+        desc: "文件 " + file.name + " 格式不正确，请上传 xlsx 或 xls 格式的表格。",
       });
     },
     handleBeforeItemUpload() {
@@ -628,7 +513,7 @@ export default {
 
     changeData() {
       this.changeDisplay = false;
-    }
+    },
 
     // 导出门店对话框状态改变触发函数
     // changeUpload(status) {
@@ -645,8 +530,8 @@ export default {
         var time = value.slice(11, 19);
         return date + " " + time;
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
