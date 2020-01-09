@@ -188,9 +188,11 @@
 	        height:100px;
 	        border:1px #ddd solid;
 	        line-height:100px;
+	        text-align:center;
 	      }
 	      img{
-	        width:100%;
+	        max-width:100%;
+	        max-height:100%;
 	        vertical-align:middle;
 	      }
 	    }

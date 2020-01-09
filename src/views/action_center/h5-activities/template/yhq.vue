@@ -174,10 +174,10 @@
 						</Input>
 						<span style="color:#ff5200">券当前剩余库存：{{formData.surplusCount}}</span>
 					</FormItem>
-					<FormItem label="主标题：" prop="mainTitle" :rules="{required: true,message:'输入主标题'}">
+					<FormItem label="主标题：" prop="mainTitle" :rules="{required: true,validator: validateEmpty('请输入主标题名称',50)}">
 						<Input v-model="formData.mainTitle"></Input>
 					</FormItem>
-					<FormItem label="副标题：" prop="subTitle" :rules="{required: true,message:'输入副标题'}">
+					<FormItem label="副标题：" prop="subTitle" :rules="{required: true,validator: validateEmpty('请输入副标题名称',50)}">
 						<Input v-model="formData.subTitle"></Input>
 					</FormItem>
 					<FormItem label="券图片：" prop="img" :rules="{required: true,message:'输入图片'}">
@@ -211,7 +211,7 @@
 					</FormItem>
 					<FormItem label=" ">
 						券活动开始、结束时间：{{activityTime}} 
-						
+						模块开始、结束时间:{{moduleTime}}
 					</FormItem>
 				</Form>
 			</template>
@@ -224,6 +224,7 @@
 	</div>
 </template>
 <script>
+	import util from "@/libs/util";
 	import UploadImage from "../components/UploadImage";
 	import { postRequest } from "@/libs/axios";
 	export default{
@@ -263,8 +264,9 @@
 		        console.log("优惠券");
 		        this.moduleId = data.moduleId;
 		        this.browsingId = data.browsingId;
+		        this.moduleTime = data.moduleTime;
 		        console.log(data.data)
-		        
+		        console.log(data)
 		        this.queryCouponList();
 		        
 		      },
@@ -273,6 +275,7 @@
   		},
 		data(){
 			return{
+				moduleTime:'',
 				url:'',
 				yhqTitle:'',
 				moduleId:'',
@@ -567,6 +570,20 @@
 		            callback();
 		        });
 
+		    },
+		    validateEmpty(msg, len = 6) {
+		      return function(rule, value, callback) {
+		        value += "";
+		        value = value.trim();
+		        if (value == "") {
+		          return callback(msg);
+		        }
+		        let length = util.getByteLen(value);
+		        if (length > len * 2) {
+		          return callback(`最多只能输入${len}个汉字`);
+		        }
+		        callback();
+		      };
 		    },
 		    // 全局提示
 		    msgOk(txt) {
