@@ -342,7 +342,7 @@
             <FormItem
               label="最高优惠额"
               prop="upperDiscountAmount"
-              :rules="{ required: true, validator: checkIsPositiveIntegerEx0 }"
+              :rules="{ required: true, validator: checkIsPositiveIntegerEx02 }"
             >
               <Tooltip trigger="focus" title="提醒" content="单位元" placement="right">
                 <InputNumber
@@ -359,7 +359,7 @@
             <FormItem
               label="团长优惠金额放大倍数"
               prop="addMultiple"
-              :rules="{ required: true, validator: checkIsPositiveIntegerEx0 }"
+              :rules="{ required: true, validator: checkIsPositiveIntegerEx02 }"
             >
               <InputNumber
                 :min="0"
@@ -373,7 +373,7 @@
             <FormItem
               label="最终最大金额"
               prop="mostDiscount"
-              :rules="{ required: true, validator: checkIsPositiveIntegerEx0 }"
+              :rules="{ required: true, validator: checkIsPositiveIntegerEx02 }"
             >
               <InputNumber
                 :step="0.1"
@@ -735,8 +735,6 @@ export default {
           return
         }
       }
-
-      console.info(validate)
 
       this.$refs["formValite"].validate(valid => {
         if (!valid) return;
