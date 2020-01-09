@@ -1,121 +1,129 @@
 <template>
   <div>
-    <FormItem label="投放门店：" :required="required">
+    <!-- <FormItem label="投放门店：" :required="required">
       <RadioGroup v-model="modal.pushRange" @on-change="changeData">
         <Radio v-for="item in storeTypeList" :key="item.value" :label="item.value" :disabled="disabled">{{
           item.label
         }}</Radio>
       </RadioGroup>
-    </FormItem>
+    </FormItem> -->
+
+    <div style="padding-bottom:10px">
+      <template v-if="!disabled">
+        <RadioGroup v-model="modal.pushRange" @on-change="changeData">
+          <Radio v-for="item in storeTypeList" :key="item.value" :label="item.value" :disabled="disabled">{{
+            item.label
+          }}</Radio>
+        </RadioGroup>
+      </template>
+      <template v-if="disabled">
+        <span>{{ storeTypeList[modal.pushRange].label }}</span>
+      </template>
+    </div>
 
     <template v-if="modal.pushRange == 1">
-      <FormItem>
-        <Select
-          :disabled="disabled"
-          v-model="modal.venderName"
-          placeholder="请选择零售商"
-          @on-change="changeData"
-          style="width:200px"
-        >
-          <Option v-for="item in sysShopInfoData" h :value="item.venderName" :key="item.venderName">{{
-            item.venderName
-          }}</Option>
-        </Select>
+      <Select
+        :disabled="disabled"
+        v-model="modal.venderName"
+        placeholder="请选择零售商"
+        @on-change="changeData"
+        style="width:200px;padding:5px 0;"
+      >
+        <Option v-for="(item, index) in sysShopInfoData" h :value="item.venderName" :key="item.venderId + index">{{
+          item.venderName
+        }}</Option>
+      </Select>
 
-        <Table
-          :columns="[
-            { title: '门店编号', key: 'shopId' },
-            { title: '商超门店名称', key: 'shopName' },
-            { title: '零售商', key: 'venderName' },
-            { title: '地址', key: 'address' },
-          ]"
-          :data="shopRequestListInfo"
-          style="margin-top:1vh"
-          v-if="shopRequestListInfo"
-          border
-        >
-        </Table>
-      </FormItem>
+      <Table
+        :columns="[
+          { title: '门店编号', key: 'shopId' },
+          { title: '商超门店名称', key: 'shopName' },
+          { title: '零售商', key: 'venderName' },
+          { title: '地址', key: 'address' },
+        ]"
+        :data="shopRequestListInfo"
+        style="margin-top:1vh"
+        v-if="shopRequestListInfo"
+        border
+      >
+      </Table>
     </template>
 
     <template v-if="modal.pushRange == 2">
-      <FormItem label="选择城市">
-        <Row style="margin-bottom: 1vh;">
-          <Icon @click="cityAdd" class="tag-add" size="30" color="#2d8cf0" type="ios-add-circle-outline" />
-        </Row>
-        <template v-for="(item, index) in cityList">
-          <Row :key="index">
-            <Col style="width:400px" span="10">
-              <Select
-                v-model="item.value1"
-                placeholder="请选择省"
-                style="width:150px"
-                :disabled="disabled"
-                @on-change="proviceChange($event, index)"
-              >
-                <Option v-for="item in proviceSelect" :value="item" :key="item">{{ item }}</Option>
-              </Select>
-              /
-              <Select
-                :disabled="disabled"
-                v-model="item.value2"
-                placeholder="请选择市"
-                style="width:200px"
-                @on-change="changeData"
-              >
-                <Option v-for="item in item.cityList" :value="item" :key="item">{{ item }}</Option>
-              </Select>
-            </Col>
-            <Col span="2">
-              <Icon
-                @click="cityRemove(index)"
-                class="tag-remove"
-                size="30"
-                color="#ffb08f"
-                type="ios-remove-circle-outline"
-              />
-            </Col>
-          </Row>
-        </template>
+      <template v-for="(item, index) in cityList">
+        <div style="display: flex;justify-content: flex-start;align-items: center;">
+          <Select
+            v-model="item.value1"
+            placeholder="请选择省"
+            style="width:150px;padding:5px 0;"
+            :disabled="disabled"
+            @on-change="proviceChange($event, index)"
+          >
+            <Option v-for="item in proviceSelect" :value="item" :key="item">{{ item }}</Option>
+          </Select>
+          <span style="padding: 0 10px;">/</span>
+          <Select
+            :disabled="disabled"
+            v-model="item.value2"
+            placeholder="请选择市"
+            style="width:200px;padding:5px 0;"
+            @on-change="changeData"
+          >
+            <Option v-for="item in item.cityList" :value="item" :key="item">{{ item }}</Option>
+          </Select>
+          <Icon
+            v-if="!disabled"
+            @click="cityRemove(index)"
+            class="tag-remove"
+            size="30"
+            color="#ffb08f"
+            type="ios-remove-circle-outline"
+          />
+          <Icon
+            v-if="!disabled && index == 0"
+            @click="cityAdd"
+            class="tag-add"
+            size="30"
+            color="#2d8cf0"
+            type="ios-add-circle-outline"
+          />
+        </div>
+      </template>
+      <Table
+        :columns="[
+          { title: '门店编号', key: 'shopId' },
+          { title: '商超门店名称', key: 'shopName' },
+          { title: '零售商', key: 'venderName' },
+          { title: '地址', key: 'address' },
+        ]"
+        :data="shopRequestListInfo"
+        style="margin-top:1vh"
+        v-if="shopRequestListInfo"
+        border
+      >
+      </Table>
+    </template>
 
+    <template v-if="modal.pushRange == 3">
+      <div style="margin-bottom: 1vh;">
+        <Button v-if="!disabled" style="margin-bottom: 1vh;" @click="showSelectShopFun()">选择门店</Button>
         <Table
+          border
           :columns="[
             { title: '门店编号', key: 'shopId' },
             { title: '商超门店名称', key: 'shopName' },
             { title: '零售商', key: 'venderName' },
             { title: '地址', key: 'address' },
           ]"
-          :data="shopRequestListInfo"
-          style="margin-top:1vh"
-          v-if="shopRequestListInfo"
-          border
+          :data="shopListData"
         >
         </Table>
-      </FormItem>
-    </template>
-
-    <template v-if="modal.pushRange == 3">
-      <FormItem>
-        <div style="margin-bottom: 1vh;">
-          <Button :disabled="disabled" style="margin-bottom: 1vh;" @click="showSelectShopFun()">选择门店</Button>
-          <Table
-            border
-            :columns="[
-              { title: '门店编号', key: 'shopId' },
-              { title: '商超门店名称', key: 'shopName' },
-              { title: '零售商', key: 'venderName' },
-              { title: '地址', key: 'address' },
-            ]"
-            :data="shopListData"
-          >
-          </Table>
-        </div>
-        <storeView
-          :visible.sync="showSelectShop"
-          :shopListData.sync="shopListData"
-          @update:shopListData="changeData"
-        ></storeView>
-      </FormItem>
+      </div>
+      <storeView
+        :visible.sync="showSelectShop"
+        :shopListData.sync="shopListData"
+        @update:shopListData="changeData"
+      ></storeView>
     </template>
   </div>
 </template>
@@ -155,12 +163,10 @@ export default {
   computed: {},
   watch: {
     pushRange(val, oVal) {
-      console.info(val, oVal);
-      this.modal.pushRange = val;
+      this.modal.pushRange = val || 0;
     },
     shopRequestList(val, oVal) {
       if (this.isChangeData) return;
-      console.info(val, oVal);
       this.modal.shopRequestList = val;
       this.echoData();
     },
@@ -195,12 +201,7 @@ export default {
     showSelectShopFun2(val) {
       this.showSelectShop = val;
     },
-    // shopListDataFun(list) {
-    //   this.shopListData = list
-    //   console.info(list)
-    // },
     cityAdd() {
-      if (this.disabled) return;
       this.cityList.push({
         value1: "",
         value2: "",
@@ -209,7 +210,7 @@ export default {
       this.changeData();
     },
     cityRemove(index) {
-      if (this.disabled) return;
+      if (this.cityList.length == 1) return;
       this.cityList.splice(index, 1);
       this.changeData();
     },
@@ -286,6 +287,9 @@ export default {
   },
   mounted() {
     this.initData();
+    this.modal.pushRange = this.pushRange || 0;
+    this.modal.shopRequestList = this.shopRequestList || [];
+    this.echoData();
   },
 };
 </script>

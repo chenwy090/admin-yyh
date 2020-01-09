@@ -91,7 +91,9 @@
 
       <!-- 门店类型： storeType 0 全国 1门店 -->
 
-      <storeForm :pushRange.sync="form.storeType" :shopRequestList.sync="form.drawDailyShopList"></storeForm>
+      <FormItem label="投放门店：" required>
+        <storeForm :pushRange.sync="form.storeType" :shopRequestList.sync="form.drawDailyShopList"></storeForm>
+      </FormItem>
 
       <!-- <FormItem label="投放门店：">
         <RadioGroup v-model="form.storeType">

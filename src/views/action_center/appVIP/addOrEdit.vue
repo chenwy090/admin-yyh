@@ -9,12 +9,14 @@
         </RadioGroup>
       </FormItem>
 
-      <storeForm
-        :disabled="addOrEdit == 3"
-        :pushRange.sync="form.pushRange"
-        :shopRequestList.sync="form.shopRequestList"
-        :required="true"
-      ></storeForm>
+      <FormItem label="投放门店：" required>
+        <storeForm
+          :disabled="addOrEdit == 3"
+          :pushRange.sync="form.pushRange"
+          :shopRequestList.sync="form.shopRequestList"
+          :required="true"
+        ></storeForm>
+      </FormItem>
 
       <FormItem label="投放时间：" required prop="time">
         <DatePicker
