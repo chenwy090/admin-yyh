@@ -419,7 +419,7 @@
 					if(type == 2){
 						for(let i = 0; i < data.dataList.length;i++){
 							let item = data.dataList[i];
-							item.time = item.startDate + item.endDate;
+							item.time = item.startDate + '--' + item.endDate;
 						}
 					}
 					this.dataYhq = data.dataList;

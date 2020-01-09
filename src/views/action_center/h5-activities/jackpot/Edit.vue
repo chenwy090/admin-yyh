@@ -63,7 +63,7 @@
           </div>
         </li>
         <li class="qs-item">
-          <label class="label">库存：</label>
+          <label class="label">库存显示：</label>
           <div class="value">
             <template v-if="formData.total == 1">显示</template>
             <template v-if="formData.total == 0">不显示</template>
@@ -176,7 +176,7 @@
                 </div>
               </RadioGroup>
             </FormItem>
-            <FormItem label="库存：" prop="total" :rules="{required: true,message:'输入库存'}">
+            <FormItem label="库存显示：" prop="total" :rules="{required: true,message:'输入是否显示库存'}">
                <RadioGroup v-model="formData.total">
                   <Radio v-for="(item,index) in totalTypeOption" :label="item.value" :key="index">{{item.label}}</Radio>
               </RadioGroup>
@@ -346,6 +346,9 @@ export default {
         template:'',
         total:''
       };
+      if(this.$refs.form){
+        this.$refs['form'].resetFields();
+      }
       console.log("closeDialog");
       this.isShow = false;
       this.$emit('refresh')

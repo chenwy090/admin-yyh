@@ -240,7 +240,7 @@ export default {
       statusOption: {
         "1": "待上架",
         "2": "已上架",
-        "3": "已下架"
+        "3": "已结束"
       },
       activityTypeOption: [
         // {
