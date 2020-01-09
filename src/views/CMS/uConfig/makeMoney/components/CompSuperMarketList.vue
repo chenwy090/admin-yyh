@@ -83,6 +83,7 @@ export default {
       choice: {
         _id: "",
         id: "",
+        shareId: "",
         name: "",
       },
       edit_loading: false,

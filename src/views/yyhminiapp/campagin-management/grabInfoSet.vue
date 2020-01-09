@@ -221,7 +221,10 @@
               </FormItem>
               <div v-if="index === 0">
                 <Icon
-                  @click="discountRatioAdd"
+                  @click="
+                    discountRatioAdd();
+                    statusCheckChange();
+                  "
                   class="tag-add"
                   size="30"
                   color="#2d8cf0"
@@ -231,7 +234,10 @@
 
               <div v-if="index === levelRatio.length - 1 && index !== 0">
                 <Icon
-                  @click="discountRatioRemove(index)"
+                  @click="
+                    discountRatioRemove(index);
+                    statusCheckChange();
+                  "
                   class="tag-remove"
                   size="30"
                   color="#ffb08f"

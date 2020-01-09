@@ -475,29 +475,6 @@ export default {
         },
       });
     },
-
-    // editLabelDisplayFn(item) {
-    //   this.$Modal.confirm({
-    //     title: '申请付款',
-    //     content: '<p>您确认要提交申请付款吗？</p>',
-    //     onOk: () => {
-    //       settleBillApply({
-    //         id: item.id,
-    //         memo: '',
-    //       }).then(res => {
-    //         if (res && res.code == 200) {
-    //           this.$Message.success('申请付款成功！')
-    //           this.search()
-    //         } else {
-    //           this.$Message.error(res.msg)
-    //         }
-    //       })
-    //     },
-    //     onCancel: () => {
-    //       console.info('onCancel')
-    //     },
-    //   })
-    // },
     proviceChange(provinceCode, type) {
       if (!provinceCode) return;
       cms.filterCityByProvince(provinceCode).then(res => {

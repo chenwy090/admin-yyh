@@ -143,9 +143,7 @@
           <CompSortDrag :list="couponList">
             <template v-for="(item, index) in couponList">
               <Row :key="index"
-                ><Tag closable @on-close="couponListRemove(index)">{{
-                  item.name + `【${item.provinceName + item.cityName}】`
-                }}</Tag></Row
+                ><Tag closable @on-close="couponListRemove(index)">{{ item.name }}</Tag></Row
               >
             </template>
           </CompSortDrag>
@@ -426,6 +424,7 @@ export default {
           this.modalAddData.time = [res.data.beginTime, res.data.endTime];
           this.couponList = res.data.coupons.map(item => {
             return {
+              couponId: item.couponId,
               id: item.couponId,
               name: item.couponName,
               row: { shareId: item.shareId },
