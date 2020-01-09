@@ -242,6 +242,7 @@
         				let { code,msg } = await postRequest('/browsing/templateInfo/design/edit', _params);
         				if(code == 200){
         					this.msgOk("保存成功");
+        					this.queryStyle()
         				}else{
         					this.msgErr(msg);
         				}
