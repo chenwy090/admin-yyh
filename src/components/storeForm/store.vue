@@ -2,11 +2,11 @@
   <Modal v-model="visible2" width="900" @on-ok="visibleChange(true)" @on-cancel="visibleChange(false)">
     <Card :bordered="false" style="margin-bottom:2px">
       <Form ref="searchForm" label-position="right" :label-width="80" :model="searchForm" inline>
-        <FormItem label="门店" span="24" style="width:25%" prop="shopId">
-          <Input v-model="searchForm.shopId" placeholder="商户编号" clearable />
+        <FormItem label="门店编号" span="24" style="width:25%" prop="shopId">
+          <Input v-model="searchForm.shopId" placeholder="请输入门店编号" clearable />
         </FormItem>
-        <FormItem label="门店" span="24" style="width:25%" prop="shopName">
-          <Input v-model="searchForm.shopName" placeholder="门店名称" clearable />
+        <FormItem label="门店名称" span="24" style="width:25%" prop="shopName">
+          <Input v-model="searchForm.shopName" placeholder="请输入门店名称" clearable />
         </FormItem>
 
         <FormItem span="24" :label-width="1" style="width:23%">
