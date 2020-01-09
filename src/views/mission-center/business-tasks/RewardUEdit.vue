@@ -49,7 +49,7 @@
           </FormItem>
 
           <!-- 必填项 -->
-          <FormItem label="任务规则：">
+          <!-- <FormItem label="任务规则：">
             <Row>
               <Col span="10">
                 <Tooltip trigger="focus" title="提醒" content="最多500个汉字" placement="right">
@@ -64,6 +64,25 @@
                 </Tooltip>
               </Col>
             </Row>
+          </FormItem>-->
+          ruleDescribe:{{formData.ruleDescribe}}
+          <hr />
+          newRuleDescribe:{{formData.newRuleDescribe}}
+          <FormItem
+            label="任务规则："
+            prop="newRuleDescribe"
+            :rules="{ required: true, message: '请输入任务规则' }"
+          >
+            <Row>
+              <Col span="10">
+                <EditorBar
+                  v-model="formData.ruleDescribe"
+                  :content="formData.ruleDescribe"
+                  @on-change="change"
+                  @on-blur="blur"
+                ></EditorBar>
+              </Col>
+            </Row>
           </FormItem>
         </Row>
         <Row class="task-reward-Rules">
@@ -73,7 +92,9 @@
             prop="ruleInfoList"
             :rules="{ required: true, validator: validateRewardRules }"
           >
-            <Button type="primary" icon="md-add-circle" size="small" @click="addRewardRules">新增</Button>
+            <template v-if="formData.isStop!==1">
+              <Button type="primary" icon="md-add-circle" size="small" @click="addRewardRules">新增</Button>
+            </template>
           </FormItem>
 
           <RewardRulesItem
@@ -97,20 +118,25 @@
 import { addOrEdit } from "@/api/sys";
 
 import comm from "@/mixins/common";
+
+import EditorBar from "@/components/EditorBar";
+
 import RewardRulesItem from "./RewardRulesItem";
 
 export default {
   name: "reward-u-edit",
   mixins: [comm],
-  inject: ["getMoneyAndUbay", "msgOk", "msgErr"],
+  // inject: ["getMoneyAndUbay", "msgOk", "msgErr"],
+  inject: ["getMoneyAndUbay"],
   components: {
-    RewardRulesItem
+    EditorBar,
+    RewardRulesItem,
   },
   props: {
     showDeduction: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   data() {
     const validateRemarks = (rule, value, callback) => {
@@ -132,7 +158,7 @@ export default {
         height: "calc(100% - 55px)",
         overflow: "auto",
         paddingBottom: "53px",
-        position: "static"
+        position: "static",
       },
       formData: {
         // 任务信息
@@ -142,6 +168,7 @@ export default {
         endTime: "", // 任务结束时间
         daterange: [], // 任务时间数组
         ruleDescribe: "", //规则描述
+        newRuleDescribe: "",
         // 奖励规则
         ruleInfoList: [
           {
@@ -149,7 +176,7 @@ export default {
             merchantType: 0,
             merchantId: "", // 商户id
             merhcantName: "", // 商户名称
-            couponSubheadTemp:"", //副标题
+            couponSubheadTemp: "", //副标题
             brandId: "", // 品牌id
             brandName: "", // 品牌名称
             anticipatedUbay: "", // 预计消耗u贝数量
@@ -167,11 +194,11 @@ export default {
             defaultLogoList: [],
             logoUrl: "",
             defaultShareLogoList: [],
-            shareLogo: ""
-          }
-        ]
+            shareLogo: "",
+          },
+        ],
       },
-      ruleValidate: {}
+      ruleValidate: {},
     };
   },
   created() {
@@ -188,6 +215,14 @@ export default {
     this.$store.state.missionCenter.data = {};
   },
   methods: {
+    change(val) {
+      console.log("change:", val);
+      this.formData.newRuleDescribe = val;
+    },
+    blur(val) {
+      console.log("blur:", val);
+      this.formData.newRuleDescribe = val;
+    },
     goback() {
       console.log("reward-u");
       this.$store.dispatch("missionCenter/changeCompName", "reward-u");
@@ -229,7 +264,7 @@ export default {
         defaultLogoList: [],
         logoUrl: "",
         defaultShareLogoList: [],
-        shareLogo: ""
+        shareLogo: "",
       });
     },
 
@@ -244,12 +279,7 @@ export default {
       this.$refs[name].validate(async valid => {
         // console.log(JSON.stringify(this.formValidate));
         if (valid) {
-          const validateZero = [
-            "receiveAwardUbay",
-            "useAwardUbay",
-            "shareReceiveAwardUbay",
-            "shareUseAwardUbay"
-          ];
+          const validateZero = ["receiveAwardUbay", "useAwardUbay", "shareReceiveAwardUbay", "shareUseAwardUbay"];
 
           let flag = this.formData.ruleInfoList.some(item => {
             let len = 0;
@@ -268,15 +298,12 @@ export default {
           this.msgOk("数据验证成功!");
           let oForm = JSON.parse(JSON.stringify(this.formData));
 
-          const { ruleInfoList } = oForm;
+          const { newRuleDescribe, ruleInfoList } = oForm;
+          oForm.ruleDescribe = newRuleDescribe; //规则描述
 
           oForm.ruleInfoList = ruleInfoList.map(item => {
             // 提交的时候清理数据
-            const {
-              merchantType: type,
-              businessId: id,
-              businessName: name
-            } = item;
+            const { merchantType: type, businessId: id, businessName: name } = item;
 
             if (type == 0) {
               item.merchantId = id;
@@ -352,17 +379,27 @@ export default {
         const reg = /^(0|[1-9]\d*)(\s|$|\.\d{1,2}\b)/;
 
         if (!reg.test(value)) {
-          return callback(
-            new Error("请输入大于等于0的金额，小数点最多包含两位小数")
-          );
+          return callback(new Error("请输入大于等于0的金额，小数点最多包含两位小数"));
         }
       } else {
         return callback(new Error("请输入[0.01—99999.99]之间的数"));
       }
 
       callback();
-    }
-  }
+    },
+    msgOk(txt) {
+      this.$Message.info({
+        content: txt,
+        duration: 3,
+      });
+    },
+    msgErr(txt) {
+      this.$Message.error({
+        content: txt,
+        duration: 3,
+      });
+    },
+  },
 };
 </script>
 <style scoped>

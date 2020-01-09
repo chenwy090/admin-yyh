@@ -255,6 +255,7 @@ export default {
       }
     },
     handleSubmit(name) {
+
       this.$refs[name].validate(async valid => {
         // console.log(JSON.stringify(this.formValidate));
         if (valid) {
