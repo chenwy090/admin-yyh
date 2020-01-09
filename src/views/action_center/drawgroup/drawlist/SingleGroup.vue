@@ -672,10 +672,44 @@ export default {
           formData.bigPrize = this.formatFormData(formData.bigPrizeTemp);
           formData.normalPrize = this.formatFormData(formData.normalPrizeTemp);
           formData.groupType = 1;
-          if (formData.storeType == 0) {
-            //全国
-            formData.drawDailyShopList = [];
+
+          let shopReques = false;
+          let shopRequesMsg = "";
+          switch (formData.storeType) {
+            case 0:
+              shopReques = true;
+              formData.drawDailyShopList = [];
+              break;
+            case 1:
+              shopRequesMsg = "请选择零售商";
+              if (formData.drawDailyShopList instanceof Array && formData.drawDailyShopList[0]) {
+                let item = formData.drawDailyShopList[0];
+                if (item && item.venderName) {
+                  shopReques = true;
+                }
+              }
+              break;
+            case 2:
+              shopRequesMsg = "请选择城市";
+              formData.drawDailyShopList.forEach(item => {
+                shopReques = false;
+                if (item.province && item.city) shopReques = true;
+              });
+              break;
+            case 3:
+              shopRequesMsg = "请选择门店";
+              if (formData.drawDailyShopList instanceof Array && formData.drawDailyShopList.length) {
+                c;
+                shopReques = true;
+              }
+              break;
           }
+          if (!shopReques) {
+            this.$Message.error(shopRequesMsg);
+            this.submitDisabled = false;
+            return;
+          }
+
           postRequest(url, formData).then(res => {
             if (res.code == 200) {
               this.$emit("closeFormModal-event");
