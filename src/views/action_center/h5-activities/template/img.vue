@@ -121,6 +121,10 @@
 			              @on-change="changeTime"
 			            ></DatePicker>
 					</FormItem>
+					<FormItem label=" ">
+						<template  v-if="formData.urlType == 3">券活动开始、结束时间：{{activityTime}} <br /></template>
+						模块开始、结束时间:{{moduleStartTime}} -- {{moduleEndTime}}
+					</FormItem>
 		        </Form>
 		    </template>
 	        <div slot="footer">
@@ -324,9 +328,13 @@
 		        this.isShow = true;
 		        this.moduleId = data.moduleId;
 		        this.browsingId = data.browsingId;
+		        this.moduleStartTime = data.moduleStartTime;
+		        this.moduleEndTime = data.moduleEndTime;
 		        if(type == 'add'){
 		        	this.imgTitle = '增加图片';
-		        	this.daterange = [];
+		        	this.formData.beginTime = data.moduleStartTime;
+		        	this.formData.endTime = data.moduleEndTime;
+		        	this.daterange = [data.moduleStartTime,data.moduleEndTime];
 		        	this.formData.img = "";
 		        	this.formData.defaultImgList = [];
 		        	this.url = "/browsing/templateImg/add";
@@ -349,6 +357,10 @@
   		},
   		data(){
 			return{
+				currentTableRow:'',
+				activityTime:'',
+				moduleStartTime:'',
+				moduleEndTime:'',
 				url:'',
 				imgTitle:'',
 				browsingId:'',
@@ -415,6 +427,7 @@
 			                    'on-change': () => {
 			                      self.currentChoose = id;
 			                      self.currentTableRow = params.row;
+			                      self.activityTime = params.row.startDate + '--' + params.row.endDate;
 			                    }
 			                  }
 			                })
@@ -616,7 +629,7 @@
 		    },
 		    setFormDataValue(data){
 		    	//回显
-		    	const {id,templateId,mainTitle,subTitle,surplusCount,contentType,isHerald,heraldStatus,heraldType,startTime,endTime,jumpType,imgUrl,operationId,groupId,groupType,linkUrl} = data;
+		    	const {id,templateId,mainTitle,subTitle,surplusCount,contentType,isHerald,heraldStatus,heraldType,startTime,endTime,jumpType,imgUrl,operationId,groupId,groupType,linkUrl,startDate,endDate} = data;
 		    	let __id = "";
 		    	if(jumpType == 3){
 		    		__id = templateId == null ? '' :templateId;
@@ -640,6 +653,7 @@
 					isYgValue:heraldType,
 					checkContentId:__id
 				};
+				this.activityTime = (startDate == null ? '' : startDate) + '--' + (endDate == null ? '' : endDate);
 				this.daterange = [startTime,endTime]
 		    },
 		    handleSubmit(name){
