@@ -86,7 +86,7 @@
           <Button
             type="text"
             size="small"
-            style="margin-right: 5px" @click="addOrEditShare('edit',row)" v-if="row.status == 1" class="edit-style-class">
+            style="margin-right: 5px" @click="addOrEditShare('edit',row)" v-if="row.status == 1 || row.status == 2" class="edit-style-class">
             编辑分享内容
           </Button>
           <Button
