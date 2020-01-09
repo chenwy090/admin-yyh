@@ -66,12 +66,14 @@
             <Col span="18">
               <!-- 门店类型： storeType 0 全国  1零售商 2城市  3门店 -->
               <!-- 自定义门店 -->
-              <storeForm
-                :pushRange.sync="modal.pushRange"
-                :shopRequestList.sync="modal.shopRequestList"
-                :shopRequestListInfo.sync="modal.shopInfos"
-                disabled
-              ></storeForm>
+              <FormItem label="投放门店">
+                <storeForm
+                  :pushRange.sync="modal.pushRange"
+                  :shopRequestList.sync="modal.shopRequestList"
+                  :shopRequestListInfo.sync="modal.shopInfos"
+                  disabled
+                ></storeForm>
+              </FormItem>
 
               <!-- 门店类型： storeType 0 全国 1门店 -->
               <!-- <FormItem label="投放门店：">

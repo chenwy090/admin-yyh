@@ -15,7 +15,7 @@
         >
           <span class="title" style="width: 8em">{{ el[1] }}:</span>
           <template v-if="el[1] === '投放门店'">
-            <Form :label-width="80" label-position="left">
+            <Form :label-width="80" label-position="left" style="flex: 1;">
               <storeForm
                 :pushRange.sync="dataList.storeType"
                 :disabled="true"
@@ -215,6 +215,7 @@ export default {
   display: flex;
   margin: 0.5em 0.8em;
   color: #666;
+  justify-content: start;
 }
 .yyh-modal {
   .title {
