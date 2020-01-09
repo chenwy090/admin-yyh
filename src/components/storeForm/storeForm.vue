@@ -106,7 +106,7 @@
 
     <template v-if="modal.pushRange == 3">
       <div style="margin-bottom: 1vh;">
-        <Button :disabled="disabled" style="margin-bottom: 1vh;" @click="showSelectShopFun()">选择门店</Button>
+        <Button v-if="!disabled" style="margin-bottom: 1vh;" @click="showSelectShopFun()">选择门店</Button>
         <Table
           border
           :columns="[
