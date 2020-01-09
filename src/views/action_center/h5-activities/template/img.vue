@@ -85,11 +85,20 @@
 			            </Select>
 			            <!--内链外链需要输入条状的链接地址-->
 			            <Input placeholder="请输跳转链接地址" v-model="formData.url" v-if="formData.urlType == 1 || formData.urlType == 2" style="margin-top:5px;"></Input>
-			            <div class="urltype-change-wrap" v-if="formData.urlType == 3 || formData.urlType == 4 || formData.urlType == 5">
+			            <div class="urltype-change-wrap" v-if="formData.urlType == 3 || formData.urlType == 4">
+			            	<div>
+			            		<span class="change-title">选择内容</span>&nbsp;&nbsp; {{formData.checkContentId}} &nbsp;&nbsp;<Button type="dashed" @click="addImgContent(formData.urlType)">请选择</Button>
+			            	</div>
 			            	<RadioGroup v-model="formData.urlType1" v-if="formData.urlType == 5">
 				                <Radio v-for="(item,index) in groupTypeOption" :label="item.value" :key="index">{{item.label}}</Radio>
 				            </RadioGroup>
-				            <div>
+				            
+			            </div>
+			            <div class="urltype-change-wrap" v-if="formData.urlType == 5">
+			            	<RadioGroup v-model="formData.urlType1">
+				                <Radio v-for="(item,index) in groupTypeOption" :label="item.value" :key="index">{{item.label}}</Radio>
+				            </RadioGroup>
+			            	<div v-if="formData.urlType1 == 1">
 			            		<span class="change-title">选择内容</span>&nbsp;&nbsp; {{formData.checkContentId}} &nbsp;&nbsp;<Button type="dashed" @click="addImgContent(formData.urlType)">请选择</Button>
 			            	</div>
 			            </div>
@@ -610,11 +619,11 @@
 		    	const {id,templateId,mainTitle,subTitle,surplusCount,contentType,isHerald,heraldStatus,heraldType,startTime,endTime,jumpType,imgUrl,operationId,groupId,groupType,linkUrl} = data;
 		    	let __id = "";
 		    	if(jumpType == 3){
-		    		__id = templateId
+		    		__id = templateId == null ? '' :templateId;
 		    	}else if(jumpType == 4){
-		    		__id = operationId;
+		    		__id = operationId == null ? '' : operationId;
 		    	}else if(jumpType == 5){
-		    		__id = groupId;
+		    		__id = groupId == null ? '': groupId;
 		    	}
 		    	// console.log(__id)
 		    	// return false;
@@ -664,12 +673,16 @@
         					}
         					params.operationId = this.formData.checkContentId;
         				}else if(urlType == 5){
-        					if(this.formData.checkContentId == ""){
-        						this.msgErr('请选择跳转的抽奖团')
-        						return false
-        					}
+        					if(this.formData.urlType1 == 1){
+        						console.log(this.formData.checkContentId)
+	        					if(this.formData.checkContentId == ""){
+	        						this.msgErr('请选择跳转的抽奖团')
+	        						return false
+	        					}
+	        					params.groupId = this.formData.checkContentId;
+	        				}
         					params.groupType = this.formData.urlType1;
-        					params.groupId = this.formData.checkContentId;
+        					
         				}else{
         					if(url == ""){
         						this.msgErr('请输入跳转地址')
@@ -781,7 +794,7 @@
 					if(type == 2){
 						for(let i = 0; i < data.dataList.length;i++){
 							let item = data.dataList[i];
-							item.time = item.startDate + item.endDate;
+							item.time = item.startDate + '--' + item.endDate;
 						}
 					}
 					this.dataYhq = data.dataList;
