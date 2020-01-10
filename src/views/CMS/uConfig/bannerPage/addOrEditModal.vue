@@ -579,13 +579,13 @@ export default {
         return;
       }
       if (this.modal.type == 2 && this.choujiangType == "抽奖广场") {
-        this.modal.value = "0";
+        this.modal.value = "";
         this.modal.content = "0";
       }
       if (this.modal.type == 3 || this.modal.type == 4) {
         this.modal.content = this.modal.value;
       }
-      if (!this.modal.value || !this.modal.content) {
+      if ((!this.modal.value || !this.modal.content) && !(this.modal.type == 2 && this.choujiangType == "抽奖广场")) {
         this.$Message.error("请选择内容或链接");
         return;
       }

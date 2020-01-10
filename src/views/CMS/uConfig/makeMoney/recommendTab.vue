@@ -100,7 +100,7 @@
 
     <Modal v-model="modalAddShow" title="推荐券" :mask-closable="false" @on-cancel="modalAddShow = false">
       <Form :model="modalAddData" ref="modalAddForm2" :label-width="70" class="search-form" :rules="modalAddValidate">
-        <Form-item label="可领城市" required>
+        <Form-item label="推荐城市" required>
           <Select
             v-model="modalAddData.provinceCode"
             placeholder="请选择省"
@@ -157,7 +157,7 @@
 
     <Modal v-model="modalEditShow" title="查看优惠券" :mask-closable="false" @on-cancel="modalEditShow = false">
       <Form :label-width="80" class="search-form">
-        <Form-item label="可领城市：">
+        <Form-item label="推荐城市：">
           <p>{{ merchantData.provinceName }} > {{ merchantData.cityName }}</p>
         </Form-item>
         <Form-item label="有效期：">
