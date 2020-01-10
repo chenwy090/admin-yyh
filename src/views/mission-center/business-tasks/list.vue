@@ -25,41 +25,41 @@ export default {
         "0": "商户",
         "1": "品牌",
         "2": "商超门店",
-        "3": "零售商"
+        "3": "零售商",
       },
       businessTypeList: [
         {
           value: 0,
-          label: "商户" //本地商户（单店）
+          label: "商户", //本地商户（单店）
         },
         {
           value: 1,
-          label: "品牌" //本地商户（多店）
+          label: "品牌", //本地商户（多店）
         },
         {
           value: 2,
-          label: "商超门店"
+          label: "商超门店",
         },
         {
           value: 3,
-          label: "零售商"
-        }
+          label: "零售商",
+        },
       ],
       getMoneyAndUbay: this.getMoneyAndUbay,
       // 全局提示
       msgOk: this.msgOk,
-      msgErr: this.msgErr
+      msgErr: this.msgErr,
     };
   },
   components: {
     [RewardUList.name]: RewardUList,
     [RewardUEdit.name]: RewardUEdit,
-    [RewardUData.name]: RewardUData
+    [RewardUData.name]: RewardUData,
   },
   computed: {
     ...mapGetters({
-      compName: "getCompName"
-    })
+      compName: "getCompName",
+    }),
   },
   data() {
     return {};
@@ -106,20 +106,21 @@ export default {
     msgOk(txt) {
       this.$Message.info({
         content: txt,
-        duration: 3
+        duration: 3,
       });
     },
     msgErr(txt) {
       this.$Message.error({
         content: txt,
-        duration: 3
+        duration: 3,
       });
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="less">
 .bussiness-tasks {
+  background-color: #fff;
   .header {
     height: 24px;
     line-height: 24px;

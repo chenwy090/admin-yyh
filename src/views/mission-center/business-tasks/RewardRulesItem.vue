@@ -29,12 +29,17 @@
         <Row type="flex" justify="space-between" class="code-row-bg">
           <Col span="10">
             <RadioGroup v-model="item.merchantType">
-              <Radio v-for="item in businessTypeList" :label="item.value" :key="item.value">
-                <span>{{item.label}}</span>
+              <Radio
+                v-for="it in businessTypeList"
+                :label="it.value"
+                :key="it.value"
+                :disabled="item.isStop==1"
+              >
+                <span>{{it.label}}</span>
               </Radio>
             </RadioGroup>
           </Col>
-          <Col span="2">
+          <Col span="2" v-if="item.isStop!==1">
             <Button
               type="error"
               icon="md-trash"
@@ -62,7 +67,7 @@
                 :placeholder="`点击按钮选择${businessTypeLabel}`"
                 disabled
               >
-                <Button @click="handleChoose" slot="append">选择</Button>
+                <Button v-if="item.isStop!==1" @click="handleChoose" slot="append">选择</Button>
               </Input>
             </template>
             <template v-else>
@@ -122,7 +127,7 @@
             :placeholder="`点击按钮选择优惠券`"
             disabled
           >
-            <Button @click="handleChooseCoupon" slot="append">选择</Button>
+            <Button v-if="item.isStop!==1" @click="handleChooseCoupon" slot="append">选择</Button>
           </Input>
           <span>{{surplusCount}}</span>
           <!-- </Col> -->
@@ -176,6 +181,7 @@
       >
         每领取一张券，奖励领取者
         <Input
+          :disabled="item.isStop==1"
           style="display:inline-block;width:100px"
           v-model="item.receiveAwardUbay"
           placeholder="请输入数字"
@@ -191,6 +197,7 @@
       >
         每核销一张券，奖励领取者
         <Input
+          :disabled="item.isStop==1"
           style="display:inline-block;width:100px"
           v-model="item.useAwardUbay"
           placeholder="请输入数字"
@@ -210,6 +217,7 @@
       >
         分享券被领取，奖励分享者
         <Input
+          :disabled="item.isStop==1"
           style="display:inline-block;width:100px"
           v-model="item.shareReceiveAwardUbay"
           placeholder="请输入数字"
@@ -224,6 +232,7 @@
       >
         分享券被核销，奖励分享者
         <Input
+          :disabled="item.isStop==1"
           style="display:inline-block;width:100px"
           v-model="item.shareUseAwardUbay"
           placeholder="请输入数字"
@@ -242,12 +251,18 @@
         <Row>
           <Col span="10">
             <Input
+              :disabled="item.isStop==1"
               style="width:230px"
               v-model="item.anticipatedUbay"
               placeholder="预计消耗U贝"
               @input.native="inputInt($event,'anticipatedUbay')"
             >
-              <Button :disabled="disabledComputedUbay" @click="handleComputedUbay" slot="append">计算</Button>
+              <Button
+                v-if="item.isStop!==1"
+                :disabled="disabledComputedUbay"
+                @click="handleComputedUbay"
+                slot="append"
+              >计算</Button>
             </Input>
           </Col>
         </Row>
@@ -371,7 +386,7 @@ export default {
           businessName: "",
           merchantId: "", // 商户id
           merhcantName: "", // 商户名称
-          couponSubheadTemp:"", //副标题
+          couponSubheadTemp: "", //副标题
           brandId: "", // 品牌id
           brandName: "", // 品牌名称
           anticipatedUbay: "", // 预计消耗u贝数量  计算ubay
@@ -399,7 +414,7 @@ export default {
     ...mapStateMissionCenter(["type"]),
     surplusCount() {
       let { templateName, surplusCount } = this.item;
-      if (templateName) {
+      if (templateName && surplusCount) {
         return `剩余${surplusCount}张券`;
       } else {
         return "";
