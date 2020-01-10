@@ -355,6 +355,7 @@ export default {
     addInfo(type) {
       this.addOrEdit = type;
       this.addOrEditDisplay = true;
+      this.id = 0;
     },
     editInfo(id) {
       this.addOrEdit = 2;
