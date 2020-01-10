@@ -521,7 +521,20 @@
 				    },{
 				    	title: "状态",
 				        key: "status",
-				        align: "center"
+				        align: "center",
+				        render:(h,params) =>{
+		            switch (params.row.status) {
+		                case 1:
+		                    return h('span', '上架');
+		                    break;
+		                case -1:
+		                    return h('span', '下架');
+		                    break;
+		                case 0:
+		                    return h('span', '创建');
+		                    break;
+		            }
+		        	}
 				    },{
 				    	title:'专题内容名称',
 				    	key:'name',
