@@ -20,9 +20,9 @@
           <span slot="desc"></span>
         </Alert>
 
-        <Card>
-          <Form :label-width="240">
-            <FormItem label="每人每天开团次数" required>
+        <Form :label-width="240" ref="formValite" :model="edit_info" :rules="formValite">
+          <Card>
+            <FormItem label="每人每天开团次数" prop="dailyOpenTimes" :rules="{ required: true, validator: checkIsPositiveIntegerEx0 }">
               <Tooltip trigger="focus" title="提醒" content="只能输入整数" placement="right">
                 <InputNumber
                   :min="0"
@@ -46,7 +46,7 @@
               <span>（只能输入整数）</span>
             </FormItem>-->
 
-            <FormItem label="成团人数" required>
+            <FormItem label="成团人数" prop="groupCount" :rules="{ required: true, validator: checkIsPositiveIntegerEx0 }">
               <Tooltip trigger="focus" title="提醒" content="只能输入整数" placement="right">
                 <InputNumber
                   :min="0"
@@ -60,7 +60,7 @@
               </Tooltip>
             </FormItem>
 
-            <FormItem label="拼团限时(分钟)" required>
+            <FormItem label="拼团限时(分钟)" prop="limitTime" :rules="{ required: true, validator: checkIsPositiveIntegerEx0 }">
               <Tooltip
                 trigger="focus"
                 title="提醒"
@@ -79,7 +79,7 @@
               </Tooltip>
             </FormItem>
 
-            <FormItem label="每人每天参团限制次数" required>
+            <FormItem label="每人每天参团限制次数" prop="dailyJoinGroupTimes" :rules="{ required: true, validator: checkIsPositiveIntegerEx0 }">
               <Tooltip trigger="focus" title="提醒" content="只能输入整数" placement="right">
                 <InputNumber
                   :min="0"
@@ -103,7 +103,7 @@
               <span>（只能输入整数）</span>
             </FormItem>-->
 
-            <FormItem label="每人每天接受分享奖励限制次数" required>
+            <FormItem label="每人每天接受分享奖励限制次数" prop="dailyAcceptShareTimes" :rules="{ required: true, validator: checkIsPositiveIntegerEx0 }">
               <Tooltip trigger="focus" title="提醒" content="只能输入整数" placement="right">
                 <InputNumber
                   :min="0"
@@ -116,7 +116,7 @@
               <span style="color:red">&nbsp;&nbsp;次</span>
             </FormItem>
 
-            <FormItem label="助力得全场满减现金券面额下限百分比" required>
+            <FormItem label="助力得全场满减现金券面额下限百分比" prop="helpAwardLower" :rules="{ required: true, validator: checkIsPositiveIntegerEx0 }">
               <Tooltip trigger="focus" title="提醒" content="范围为(0~100)  (只能输入整数)" placement="right">
                 <InputNumber
                   :max="100"
@@ -130,7 +130,7 @@
               </Tooltip>
             </FormItem>
 
-            <FormItem label="助力得全场满减现金券面额上限百分比" required>
+            <FormItem label="助力得全场满减现金券面额上限百分比" prop="helpAwardUpper" :rules="{ required: true, validator: checkIsPositiveIntegerEx0 }">
               <Tooltip trigger="focus" title="提醒" content="范围为(0~100)  (只能输入整数)" placement="right">
                 <InputNumber
                   :max="100"
@@ -157,7 +157,7 @@
               </Tooltip>
             </FormItem>-->
 
-            <FormItem label="接受分享领用现金券金额比例" required>
+            <FormItem label="接受分享领用现金券金额比例" prop="acceptPercent" :rules="{ required: true, validator: checkIsPositiveIntegerEx0 }">
               <Tooltip trigger="focus" title="提醒" content="范围为(0~100)  (只能输入整数)" placement="right">
                 <InputNumber
                   :max="100"
@@ -170,102 +170,38 @@
                 <span style="color:red">&nbsp;&nbsp; %</span>
               </Tooltip>
             </FormItem>
-          </Form>
         </Card>
 
-        <Card>
+        <Card style="margin-top:1vh;">
           <Alert>
             <h4>要优惠算法参数</h4>
           </Alert>
-          <!-- levelRatio : [{"receiveCount":12,"ratio":0.2}] -->
-          <Form :label-width="240">
-            <div v-for="(item, index) in levelRatio" :key="index" style="display: flex;justify-content: flex-start;">
-              <FormItem>
-                <span>{{ item.numberStart }}--</span>
-                <InputNumber
-                  v-model="item.numberEnd"
-                  placeholder="请输入"
-                  style="width:80px"
-                  :min="item.numberStart + 1"
-                  :disabled="index !== levelRatio.length - 1"
-                  @on-change="
-                    statusCheckChange();
-                    discountRatioChange(index);
-                  "
-                ></InputNumber>
-                <span>次 </span>
-              </FormItem>
-              <FormItem :label="'折扣比例百分比'" :label-width="100">
-                <InputNumber
-                  :max="100"
-                  :min="0"
-                  :disabled="index !== levelRatio.length - 1"
-                  v-model="item.ratio"
-                  placeholder="请输入"
-                  style="width:150px"
-                  @on-change="statusCheckChange"
-                ></InputNumber>
-                <span style="color:red">&nbsp;&nbsp; %</span>
-              </FormItem>
-              <FormItem :label="'倍数'" :label-width="50">
-                <InputNumber
-                  :min="1"
-                  :step="0.1"
-                  :disabled="index !== levelRatio.length - 1"
-                  v-model="item.times"
-                  placeholder="请输入"
-                  style="width:100px"
-                  @on-change="statusCheckChange"
-                ></InputNumber>
-                <span style="color:red">&nbsp;&nbsp; %</span>
-              </FormItem>
-              <div v-if="index === 0">
-                <Icon
-                  @click="
-                    discountRatioAdd();
-                    statusCheckChange();
-                  "
-                  class="tag-add"
-                  size="30"
-                  color="#2d8cf0"
-                  type="ios-add-circle-outline"
-                />
-              </div>
-
-              <div v-if="index === levelRatio.length - 1 && index !== 0">
-                <Icon
-                  @click="
-                    discountRatioRemove(index);
-                    statusCheckChange();
-                  "
-                  class="tag-remove"
-                  size="30"
-                  color="#ffb08f"
-                  type="ios-remove-circle-outline"
-                />
-              </div>
-            </div>
-
-            <!-- <Row v-for="(item, index) in levelRatio" :key="index">
-              <Col span="8">
-                <FormItem :label="index + 1 + '阶段折扣'">
-                  <span>{{ item.numberStart }}--{{ item.numberStart + item.receiveCount }}<span>次</span></span>
+            <Form ref="formValite2" :label-width="100">
+              <div v-for="(item, index) in levelRatio" :key="index" style="display: flex;justify-content: flex-start;">
+                <FormItem prop="numberEnd" >
+                  <span>{{ item.numberStart }}--</span>
                   <InputNumber
-                    v-model="item.receiveCount"
+                    v-model="item.numberEnd"
                     placeholder="请输入"
-                    style="width:80px"
+                    style="width:120px"
+                    :min="item.numberStart + 1"
+                    :disabled="index !== levelRatio.length - 1"
                     @on-change="
                       statusCheckChange();
                       discountRatioChange(index);
                     "
                   ></InputNumber>
+                  <span>次 </span>
                 </FormItem>
-              </Col>
-              <Col span="6">
-                <FormItem :label="'折扣比例百分比'" :label-width="100">
+                <FormItem
+                  :label="'折扣比例百分比'"
+                  :label-width="120"
+                  prop="ratio"
+                >
                   <InputNumber
                     :max="100"
                     :min="0"
+                    :disabled="index !== levelRatio.length - 1"
                     v-model="item.ratio"
                     placeholder="请输入"
                     style="width:150px"
@@ -273,58 +209,57 @@
                   ></InputNumber>
                   <span style="color:red">&nbsp;&nbsp; %</span>
                 </FormItem>
-              </Col>
-              <Col span="1" v-if="index === 0">
-                <Icon
-                  @click="discountRatioAdd"
-                  class="tag-add"
-                  size="30"
-                  color="#2d8cf0"
-                  type="ios-add-circle-outline"
-                />
-              </Col>
-              <Col span="1" v-if="index !== 0">
-                <Icon
-                  @click="discountRatioRemove(index)"
-                  class="tag-remove"
-                  size="30"
-                  color="#ffb08f"
-                  type="ios-remove-circle-outline"
-                />
-              </Col>
-            </Row> -->
-          </Form>
+                <FormItem
+                  :label="'倍数'"
+                  :label-width="60"
+                  prop="times"
 
-          <Form :label-width="240">
-            <!-- <FormItem label="前" required>
-              <Tooltip trigger="focus" title="提醒" content="只能输入整数" placement="right">
-                <InputNumber
-                  :min="0"
-                  v-model="edit_info.receiveCount"
-                  placeholder="请输入"
-                  style="width:100px"
-                  @on-change="statusCheckChange"
-                ></InputNumber>
-                <span style="color:red">&nbsp;&nbsp;次</span>
-              </Tooltip>
-            </FormItem>
-            <FormItem label="折扣比例百分比" required>
-              <Tooltip trigger="focus" title="提醒" content="范围在(0~100)  (只能输入整数)" placement="right">
-                <InputNumber
-                  :max="100"
-                  :min="0"
-                  v-model="edit_info.discountRatio"
-                  placeholder="请输入"
-                  style="width:300px"
-                  @on-change="statusCheckChange"
-                ></InputNumber>
-                <span style="color:red">&nbsp;&nbsp; %</span>
-              </Tooltip>
-            </FormItem> -->
+                >
+                  <InputNumber
+                    :min="0"
+                    :step="0.1"
+                    :disabled="index !== levelRatio.length - 1"
+                    v-model="item.times"
+                    placeholder="请输入"
+                    style="width:150px"
+                    @on-change="statusCheckChange"
+                  ></InputNumber>
+                </FormItem>
+                <div v-if="index === 0">
+                  <Icon
+                    @click="
+                      discountRatioAdd();
+                      statusCheckChange();
+                    "
+                    class="tag-add"
+                    size="30"
+                    color="#2d8cf0"
+                    type="ios-add-circle-outline"
+                  />
+                </div>
 
-            <!--  -->
-            <div style="display: flex;justify-content: flex-start;">
-              <FormItem label="后续获得折扣比例百分比" required>
+                <div v-if="index === levelRatio.length - 1 && index !== 0">
+                  <Icon
+                    @click="
+                      discountRatioRemove(index);
+                      statusCheckChange();
+                    "
+                    class="tag-remove"
+                    size="30"
+                    color="#ffb08f"
+                    type="ios-remove-circle-outline"
+                  />
+                </div>
+              </div>
+            </Form>
+
+
+            <div style="display: flex;justify-content: flex-start;padding-top:10px;">
+              <FormItem
+                label="后续获得折扣比例百分比"
+                prop="laterDiscountRatio"
+                :rules="{ required: true, validator: checkIsPositiveIntegerEx0 }"
+              >
                 <Tooltip trigger="focus" title="提醒" content="范围在(0~100)  (只能输入整数)" placement="right">
                   <InputNumber
                     :max="100"
@@ -337,7 +272,12 @@
                   <span style="color:red">&nbsp;&nbsp; %</span>
                 </Tooltip>
               </FormItem>
-              <FormItem :label="'每隔'" :label-width="50">
+              <FormItem
+                :label="'每隔'"
+                :label-width="70"
+                prop="laterDiscountSpace"
+                :rules="{ required: true, validator: checkIsPositiveIntegerEx0 }"
+              >
                 <InputNumber
                   :min="0"
                   v-model="edit_info.laterDiscountSpace"
@@ -346,24 +286,34 @@
                   @on-change="statusCheckChange"
                 ></InputNumber>
               </FormItem>
-              <FormItem :label="'次后倍数'" :label-width="60">
+              <FormItem
+                :label="'次后倍数'"
+                :label-width="100"
+                prop="laterDiscountTimes"
+                :rules="{ required: true, validator: checkIsPositiveIntegerEx02 }"
+              >
                 <InputNumber
-                  :min="1"
+                  :min="0"
                   :step="0.1"
                   v-model="edit_info.laterDiscountTimes"
                   placeholder="请输入"
-                  style="width:100px"
+                  style="width:150px"
                   @on-change="statusCheckChange"
                 ></InputNumber>
               </FormItem>
             </div>
             <!--  -->
 
-            <FormItem label="随机因子" required>
+            <FormItem
+              label="随机因子"
+              prop="randomSeed"
+              :rules="{ required: true, validator: checkIsPositiveIntegerEx02 }"
+            >
               <Tooltip trigger="focus" title="提醒" content="范围在1±random_seed之间（0.1~0.5）" placement="right">
                 <InputNumber
                   :max="0.5"
                   :min="0.1"
+                  :step="0.1"
                   v-model="edit_info.randomSeed"
                   placeholder="请输入"
                   style="width:300px"
@@ -372,7 +322,11 @@
               </Tooltip>
             </FormItem>
 
-            <FormItem label="最低优惠额" required>
+            <FormItem
+              label="最低优惠额"
+              prop="lowerDiscountAmount"
+              :rules="{ required: true, validator: checkIsPositiveIntegerEx02 }"
+            >
               <Tooltip trigger="focus" title="提醒" content="单位元" placement="right">
                 <InputNumber
                   :min="0"
@@ -385,7 +339,11 @@
               </Tooltip>
             </FormItem>
 
-            <FormItem label="最高优惠额" required>
+            <FormItem
+              label="最高优惠额"
+              prop="upperDiscountAmount"
+              :rules="{ required: true, validator: checkIsPositiveIntegerEx02 }"
+            >
               <Tooltip trigger="focus" title="提醒" content="单位元" placement="right">
                 <InputNumber
                   :min="0"
@@ -398,7 +356,11 @@
               </Tooltip>
             </FormItem>
 
-            <FormItem label="团长优惠金额放大倍数" required>
+            <FormItem
+              label="团长优惠金额放大倍数"
+              prop="addMultiple"
+              :rules="{ required: true, validator: checkIsPositiveIntegerEx02 }"
+            >
               <InputNumber
                 :min="0"
                 v-model="edit_info.addMultiple"
@@ -408,7 +370,11 @@
               ></InputNumber>
             </FormItem>
 
-            <FormItem label="最终最大金额" required>
+            <FormItem
+              label="最终最大金额"
+              prop="mostDiscount"
+              :rules="{ required: true, validator: checkIsPositiveIntegerEx02 }"
+            >
               <InputNumber
                 :step="0.1"
                 :min="0"
@@ -435,7 +401,6 @@
                 >返回</Button
               >
             </FormItem>
-          </Form>
 
           <row>
             特定barcode金额：
@@ -452,6 +417,9 @@
             ></FileImport>
           </row>
         </Card>
+        </Form>
+
+
       </p>
     </Card>
   </div>
@@ -510,6 +478,7 @@ export default {
       getUrl: "",
       msg: "",
       isCheckDisabled: true,
+      formValite: {},
     };
   },
 
@@ -517,6 +486,21 @@ export default {
     this.init();
   },
   methods: {
+    checkIsPositiveIntegerEx0(rule, value, callback) {
+      var reg = /^([0-9][0-9]*)$/;
+      if (reg.test(value)) {
+        callback();
+      } else {
+        callback(new Error("请输入大于等于0的正整数"));
+      }
+    },
+    checkIsPositiveIntegerEx02(rule, value, callback) {
+      if (value > 0) {
+        callback();
+      } else {
+        callback(new Error("请输入大于0的数"));
+      }
+    },
     uploadFileName(filename) {
       this.edit_info.fileName = filename;
     },
@@ -580,7 +564,7 @@ export default {
                 let obj = {
                   numberStart: numberStart,
                   numberEnd: count,
-                  ratio: item.ratio * 100,
+                  ratio: Number((item.ratio * 100).toFixed()),
                   times: item.times,
                 };
                 numberStart = count + 1;
@@ -719,93 +703,105 @@ export default {
       //   return;
       // }
 
-      if (!this.edit_info.lowerDiscountAmount && this.edit_info.lowerDiscountAmount != 0) {
-        this.$Message.error("最低优惠额不能为空");
-        return;
-      }
-
-      if (!this.edit_info.upperDiscountAmount && this.edit_info.upperDiscountAmount != 0) {
-        this.$Message.error("最高优惠额不能为空");
-        return;
-      }
-
-      if (this.edit_info.lowerDiscountAmount > this.edit_info.upperDiscountAmount) {
-        this.$Message.error("'最低优惠额'不能大于'最高优惠额'");
-        return;
-      }
-
-      if (!this.edit_info.randomSeed) {
-        this.$Message.error("随机因子不能为空");
-        return;
-      }
-
       if (this.edit_info.mostDiscount > 5) {
         this.$Message.error("最终最大金额不能大于5元");
         return;
       }
 
-      if (this.status == "add") {
-        this.getUrl = "/campaginGrabInfoSet/add";
-        this.msg = "新增成功";
-      } else {
-        this.getUrl = "/campaginGrabInfoSet/edit";
-        this.msg = "编辑成功";
-      }
+      let validate = [
+        {
+          bo: true,
+          msg: '阶梯次数不能为小于0'
+        },
+        {
+          bo: true,
+          msg: '阶梯折扣比例百分比范围只能0~100的整数'
+        },
+        {
+          bo: true,
+          msg: '阶梯倍数不能为小于0'
+        },
+      ]
+      this.levelRatio.forEach(item => {
+        if(item.numberEnd <= 0) validate[0].bo = false;
+        if(item.ratio <= 0) validate[1].bo = false;
+        if(item.times <= 0) validate[2].bo = false;
+      })
 
-      if (!this.ruleValidate()) {
-        return;
-      }
-
-      this.edit_loading = true;
-
-      let levelRatio = this.levelRatio.map(item => {
-        return {
-          receiveCount: item.numberEnd,
-          ratio: item.ratio / 100,
-          times: item.times,
-        };
-      });
-      const reqParams = {
-        campId: this.edit_info.campId,
-        addMultiple: this.edit_info.addMultiple,
-        // addOpenRequiredScore: this.edit_info.addOpenRequiredScore,
-        dailyAcceptShareTimes: this.edit_info.dailyAcceptShareTimes,
-        // dailyFreeOpenTimes: this.edit_info.dailyFreeOpenTimes,
-        dailyJoinGroupTimes: this.edit_info.dailyJoinGroupTimes,
-        dailyOpenTimes: this.edit_info.dailyOpenTimes,
-
-        groupCount: this.edit_info.groupCount,
-        helpAwardLower: this.edit_info.helpAwardLower / 100,
-        helpAwardUpper: this.edit_info.helpAwardUpper / 100,
-        limitTime: this.edit_info.limitTime * 60,
-        lowerDiscountAmount: this.edit_info.lowerDiscountAmount,
-        randomSeed: this.edit_info.randomSeed,
-        // shareUseRakeBackPercent: this.edit_info.shareUseRakeBackPercent / 100,
-        upperDiscountAmount: this.edit_info.upperDiscountAmount,
-        acceptPercent: this.edit_info.acceptPercent / 100,
-        receiveCount: this.edit_info.receiveCount,
-        // discountRatio: this.edit_info.discountRatio / 100,
-        discountRatio: this.edit_info.laterDiscountRatio / 100,
-        laterDiscountRatio: this.edit_info.laterDiscountRatio / 100,
-
-        laterDiscountSpace: this.edit_info.laterDiscountSpace,
-        laterDiscountTimes: this.edit_info.laterDiscountTimes,
-        mostDiscount: this.edit_info.mostDiscount,
-
-        levelRatio: JSON.stringify(levelRatio), //阶段折扣
-      };
-
-      postRequest(this.getUrl, reqParams).then(res => {
-        this.edit_loading = false;
-        if (res.code == 200) {
-          this.$Message.info(this.msg);
-          this.isCheckDisabled = true;
-          setTimeout(() => {
-            this.goback();
-          }, 1200);
-        } else {
-          this.$Message.error(res.msg);
+      for (let index = 0; index < validate.length; index++) {
+        const item = validate[index];
+        if(!item.bo){
+          this.$Message.error(item.msg);
+          return
         }
+      }
+
+      this.$refs["formValite"].validate(valid => {
+        if (!valid) return;
+
+        if (this.status == "add") {
+          this.getUrl = "/campaginGrabInfoSet/add";
+          this.msg = "新增成功";
+        } else {
+          this.getUrl = "/campaginGrabInfoSet/edit";
+          this.msg = "编辑成功";
+        }
+
+        if (!this.ruleValidate()) {
+          return;
+        }
+
+        this.edit_loading = true;
+
+        let levelRatio = this.levelRatio.map(item => {
+          return {
+            receiveCount: item.numberEnd,
+            ratio: item.ratio / 100,
+            times: item.times,
+          };
+        });
+        const reqParams = {
+          campId: this.edit_info.campId,
+          addMultiple: this.edit_info.addMultiple,
+          // addOpenRequiredScore: this.edit_info.addOpenRequiredScore,
+          dailyAcceptShareTimes: this.edit_info.dailyAcceptShareTimes,
+          // dailyFreeOpenTimes: this.edit_info.dailyFreeOpenTimes,
+          dailyJoinGroupTimes: this.edit_info.dailyJoinGroupTimes,
+          dailyOpenTimes: this.edit_info.dailyOpenTimes,
+
+          groupCount: this.edit_info.groupCount,
+          helpAwardLower: this.edit_info.helpAwardLower / 100,
+          helpAwardUpper: this.edit_info.helpAwardUpper / 100,
+          limitTime: this.edit_info.limitTime * 60,
+          lowerDiscountAmount: this.edit_info.lowerDiscountAmount,
+          randomSeed: this.edit_info.randomSeed,
+          // shareUseRakeBackPercent: this.edit_info.shareUseRakeBackPercent / 100,
+          upperDiscountAmount: this.edit_info.upperDiscountAmount,
+          acceptPercent: this.edit_info.acceptPercent / 100,
+          receiveCount: this.edit_info.receiveCount,
+          // discountRatio: this.edit_info.discountRatio / 100,
+          discountRatio: this.edit_info.laterDiscountRatio / 100,
+          laterDiscountRatio: this.edit_info.laterDiscountRatio / 100,
+
+          laterDiscountSpace: this.edit_info.laterDiscountSpace,
+          laterDiscountTimes: this.edit_info.laterDiscountTimes,
+          mostDiscount: this.edit_info.mostDiscount,
+
+          levelRatio: JSON.stringify(levelRatio), //阶段折扣
+        };
+
+        postRequest(this.getUrl, reqParams).then(res => {
+          this.edit_loading = false;
+          if (res.code == 200) {
+            this.$Message.info(this.msg);
+            this.isCheckDisabled = true;
+            setTimeout(() => {
+              this.goback();
+            }, 1200);
+          } else {
+            this.$Message.error(res.msg);
+          }
+        });
       });
     },
 
@@ -896,6 +892,11 @@ export default {
           item2.numberStart = item.numberEnd + 1;
           if (item2.numberEnd === 0) item2.numberEnd = item2.numberStart + 1;
         }
+      }
+    },
+    blurChangeNumber(item, key, min = 0) {
+      if (item) {
+        item[key] < min ? (item[key] = min) : item[key];
       }
     },
   },

@@ -58,7 +58,8 @@
           <Button type="success" size="small" style="margin-right: 5px" @click="toData(row)">数据</Button>
           <!-- 只有“待审核、审核通过未开始”状态，才会显示“编辑” -->
 
-          <template v-if="row.status==0||row.status==2">
+          <!--2020.01.09修改 isStop=2/3 在“已结束、已终止”状态，无编辑操作 -->
+          <template v-if="!(row.isStop==2||row.isStop==3) || row.status==0 || row.status==2">
             <Button
               type="primary"
               size="small"
@@ -105,7 +106,7 @@
           </template>
         </template>
         <template slot-scope="{ row }" slot="auditLog">
-          <span v-if="row.status!=2">2222{{row.statusName}}</span>
+          <span v-if="row.status!=2">{{row.statusName}}</span>
           <Button
             v-else
             type="error"
@@ -340,8 +341,8 @@ export default {
         // 审核 status 状态  isStop 是否终止 1-中止，0-正常
 
         // statusOption/isStopOption
-        const { isStop, status, startTime, endTime, ruleInfoList } = data;
-
+        const { isStop, status, startTime, endTime, ruleDescribe, ruleInfoList } = data;
+        data.newRuleDescribe = ruleDescribe; //规则描述 富文本
         data.statusName = this.statusOption[status]; //审核
         data.isStopName = this.isStopOption[isStop]; //状态
         data.daterange = [startTime, endTime];
@@ -349,6 +350,11 @@ export default {
           // item.imgUrl = "https://image.52iuh.cn/wx_mini/LGHFWoUdOt.jpg";
           // item.logoUrl = "https://image.52iuh.cn/wx_mini/vENhDz3BZg.png";
           const { merchantType, merchantId, brandId, name, imgUrl, logoUrl, shareLogo } = item;
+
+          item.status = status;
+          item.statusName = data.statusName;
+          item.isStop = isStop;
+          item.isStopName = data.isStopName;
           let row = null;
           // 商户类型 0-本地商户（单店），1-本地商户（多店）
           item.merchantTypeName = this.merchantTypeOption[merchantType];

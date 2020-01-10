@@ -33,6 +33,7 @@ import CompSuperMarketList from "./CompSuperMarketList";
 
 export default {
   name: "coupon-list",
+  props: ["searchForm"],
   components: {
     CompMerchantLlist,
     CompSuperMarketList,
@@ -41,6 +42,14 @@ export default {
     tab() {
       return this.tabs[this.compName];
     },
+    getSearchForm() {
+      return this.searchForm;
+    },
+  },
+  provide() {
+    return {
+      searchForm: this.getSearchForm,
+    };
   },
   watch: {
     compName() {
@@ -77,7 +86,6 @@ export default {
       },
     };
   },
-
   methods: {
     // 关闭商户选择框
     cancel() {

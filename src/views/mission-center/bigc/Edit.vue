@@ -169,6 +169,15 @@
             @click="getQrcode"
           >{{qrcode?"刷新二维码":"生成二维码"}}</Button>
         </FormItem>
+        <FormItem label="链接地址：">
+          <Input type="text" style="width:50%" disabled :value="linkUrl" placeholder="链接地址"></Input>
+          <Button
+            type="success"
+            v-clipboard:copy="linkUrl"
+            v-clipboard:success="onCopy"
+            v-clipboard:error="onError"
+          >复制</Button>
+        </FormItem>
       </Form>
     </div>
     <div class="demo-drawer-footer">
@@ -219,6 +228,7 @@ export default {
   data() {
     return {
       qrcode: "", //预览二维码
+      linkUrl: "", //生成链接地址
       formData: createFormData(),
     };
   },
@@ -226,6 +236,14 @@ export default {
   methods: {
     ...mapMutations(["setShowBigc"]),
     firstUpperCase,
+    // 复制成功时的回调函数
+    onCopy(e) {
+      this.$Message.success("内容已复制到剪切板！");
+    },
+    // 复制失败时的回调函数
+    onError(e) {
+      this.$Message.error("抱歉，复制失败！");
+    },
     removeImg(name) {
       console.log("removeImg", name);
       this.formData[name] = "";
@@ -247,8 +265,12 @@ export default {
       const { code, data, msg } = await getRequest(url, { assignmentId: this.assignmentId });
 
       if (code == 200) {
+        let { url, env, assignmentId: id, text: base64 } = data;
         // console.log("qrcode:", data);
-        this.qrcode = `data:image/png;base64,${data}`;
+        this.qrcode = `data:image/png;base64,${base64}`;
+        url = url.split("view")[0];
+        url = url.replace("http","https");
+        this.linkUrl = `${url}${id}`;
       } else {
         // msgOk msgErr
         return this.msgErr(msg);

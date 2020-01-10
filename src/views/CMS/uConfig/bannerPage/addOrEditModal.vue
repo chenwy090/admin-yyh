@@ -138,10 +138,14 @@
                 <DatePicker
                   style="width: 275px;"
                   placeholder="请选择时间"
-                  type="datetimerange"
+                  type="daterange"
                   :options="options1"
                   :value="[modal.startTime, modal.endTime]"
-                  @on-change="[modal.startTime, modal.endTime] = $event"
+                  @on-change="
+                    [modal.startTime, modal.endTime] = $event;
+                    modal.startTime += ' 00:00:00';
+                    modal.endTime += ' 23:59:59';
+                  "
                 ></DatePicker>
               </FormItem>
             </Col>
@@ -282,7 +286,7 @@ export default {
         value: "",
         content: "",
         couponType: "",
-        // pushRange:0,
+        pushRange: 0,
         shopRequestList: [],
         location: "",
         businessLayer: "",
@@ -458,6 +462,7 @@ export default {
         startTime: "",
         endTime: "",
         image: "",
+        pushRange: 0,
       };
       this.drawDailyShopList = [
         {
@@ -579,13 +584,13 @@ export default {
         return;
       }
       if (this.modal.type == 2 && this.choujiangType == "抽奖广场") {
-        this.modal.value = "0";
+        this.modal.value = "";
         this.modal.content = "0";
       }
       if (this.modal.type == 3 || this.modal.type == 4) {
         this.modal.content = this.modal.value;
       }
-      if (!this.modal.value || !this.modal.content) {
+      if ((!this.modal.value || !this.modal.content) && !(this.modal.type == 2 && this.choujiangType == "抽奖广场")) {
         this.$Message.error("请选择内容或链接");
         return;
       }
@@ -650,14 +655,14 @@ export default {
         this.$Message.error("请选择时间");
         return;
       }
-      if (new Date(this.modal.startTime) < new Date()) {
-        this.$Message.error("开始时间要大于当前时间");
-        return;
-      }
-      if (new Date(this.modal.startTime) >= new Date(this.modal.endTime)) {
-        this.$Message.error("开始时间不能大于等于结束时间");
-        return;
-      }
+      // if (new Date(this.modal.startTime) < new Date()) {
+      //   this.$Message.error("开始时间要大于当前时间");
+      //   return;
+      // }
+      // if (new Date(this.modal.startTime) >= new Date(this.modal.endTime)) {
+      //   this.$Message.error("开始时间不能大于等于结束时间");
+      //   return;
+      // }
       if (!this.modal.image) {
         this.$Message.error("请上传图片");
         return;
@@ -704,7 +709,7 @@ export default {
                 onOk: () => {},
               });
             } else {
-              this.$Message.error(res.msg || "");
+              this.$Message.error(res.msg || "系统错误！");
             }
           });
         } else {
@@ -727,7 +732,7 @@ export default {
                 onOk: () => {},
               });
             } else {
-              this.$Message.error(res.msg);
+              this.$Message.error(res.msg || "系统错误！");
             }
           });
         }
@@ -743,6 +748,11 @@ export default {
         if (res.code == "200") {
           this.modal.title = res.data.bannerInfo.title;
           this.modal.type = res.data.bannerInfo.type;
+
+          // 后台配置优惠券类型有 6 7 前端只显示 6类型
+          if (this.modal.type == 7) {
+            this.modal.type = 6;
+          }
           this.modal.image = res.data.bannerInfo.image;
           this.modal.value = res.data.bannerInfo.value;
           this.modal.content = res.data.bannerInfo.content;

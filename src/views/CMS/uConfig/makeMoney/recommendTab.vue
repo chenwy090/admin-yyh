@@ -100,13 +100,16 @@
 
     <Modal v-model="modalAddShow" title="推荐券" :mask-closable="false" @on-cancel="modalAddShow = false">
       <Form :model="modalAddData" ref="modalAddForm2" :label-width="70" class="search-form" :rules="modalAddValidate">
-        <Form-item label="可领城市" required>
+        <Form-item label="推荐城市" required>
           <Select
             v-model="modalAddData.provinceCode"
             placeholder="请选择省"
             style="width:100px"
             :disabled="modalAddData.status == 1"
-            @on-change="proviceChange($event)"
+            @on-change="
+              proviceChange($event);
+              couponList = [];
+            "
           >
             <Option v-for="item in proviceSelect" :value="item.provinceCode" :key="item.provinceCode">{{
               item.provinceName
@@ -121,6 +124,7 @@
           >
             <Option v-for="item in citySelect" :value="item.cityCode" :key="item.cityCode">{{ item.cityName }}</Option>
           </Select>
+          <span style="color:#999;margin-left:1vh;">改变推荐城市优惠券将清空</span>
         </Form-item>
 
         <Form-item label="有效期" prop="time">
@@ -131,13 +135,14 @@
             @on-change="[modalAddData.beginTime, modalAddData.endTime] = $event"
             v-model="modalAddData.time"
             :disabled="modalAddData.status == 1"
+            :options="options1"
             style="width: 200px"
           >
           </DatePicker>
         </Form-item>
         <Form-item label="优惠券" required>
           <Row
-            ><Button @click="showCouponList = true">添加</Button>
+            ><Button @click="showCouponListAdd">添加</Button>
             <span style="color:#999;margin-left:1vh;">拖动调整顺序</span></Row
           >
           <CompSortDrag :list="couponList">
@@ -157,7 +162,7 @@
 
     <Modal v-model="modalEditShow" title="查看优惠券" :mask-closable="false" @on-cancel="modalEditShow = false">
       <Form :label-width="80" class="search-form">
-        <Form-item label="可领城市：">
+        <Form-item label="推荐城市：">
           <p>{{ merchantData.provinceName }} > {{ merchantData.cityName }}</p>
         </Form-item>
         <Form-item label="有效期：">
@@ -180,6 +185,7 @@
     <CouponList
       v-if="showCouponList"
       :showCouponList.sync="showCouponList"
+      :searchForm="searchForm2"
       @seclectedTr-event="selectedCouponItem"
     ></CouponList>
   </div>
@@ -254,6 +260,7 @@ export default {
         provinceCode: "",
         cityCode: "",
       },
+      searchForm2: {}, // CMS
 
       current: 1,
       totalSize: 1, //总条数
@@ -287,6 +294,11 @@ export default {
       couponList: [],
 
       modalEditShow: false,
+      options1: {
+        disabledDate(date) {
+          return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24;
+        },
+      },
     };
   },
   mounted() {
@@ -470,6 +482,19 @@ export default {
     },
     couponListRemove(index) {
       this.couponList.splice(index, 1);
+    },
+    //添加优惠券判断
+    showCouponListAdd() {
+      console.info();
+      if (this.modalAddData.provinceCode && this.modalAddData.cityCode) {
+        this.searchForm2 = {
+          cityCode: this.modalAddData.cityCode,
+          provinceCode: this.modalAddData.provinceCode,
+        };
+        this.showCouponList = true;
+        return;
+      }
+      this.$Message.error("请选择推荐城市！");
     },
   },
 };
