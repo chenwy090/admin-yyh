@@ -771,7 +771,7 @@ export default {
             break;
           case 3:
             shopRequesMsg = "请选择门店";
-            if (formData.drawDailyShopList instanceof Array && formData.drawDailyShopList.length) {c
+            if (formData.drawDailyShopList instanceof Array && formData.drawDailyShopList.length) {
               shopReques = true;
             }
             break;

@@ -654,6 +654,7 @@ export default {
     },
     handleSubmit(name) {
       this.$refs[name].validate(valid => {
+        console.info(valid);
         if (valid) {
           let { openDrawTimeType, startTime, openDrawTime } = this.form;
           if (openDrawTimeType == 1) {
@@ -699,7 +700,6 @@ export default {
             case 3:
               shopRequesMsg = "请选择门店";
               if (formData.drawDailyShopList instanceof Array && formData.drawDailyShopList.length) {
-                c;
                 shopReques = true;
               }
               break;
