@@ -9,6 +9,7 @@
     "yyhDev": "vue-cli-service serve --mode yyhDev",
     "build": "vue-cli-service build",
     "test": "vue-cli-service build --mode test",
+    "uat": "vue-cli-service build --mode uat",
     "pro": "vue-cli-service build --mode production"
   },
   "dependencies": {
