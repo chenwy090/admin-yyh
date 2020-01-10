@@ -106,7 +106,7 @@
           </template>
         </template>
         <template slot-scope="{ row }" slot="auditLog">
-          <span v-if="row.status!=2">2222{{row.statusName}}</span>
+          <span v-if="row.status!=2">{{row.statusName}}</span>
           <Button
             v-else
             type="error"
