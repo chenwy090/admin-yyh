@@ -61,7 +61,7 @@ export default {
     // compress 是否显示压缩 Switch 开关
     compress: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     label: {
       type: String,
@@ -103,7 +103,7 @@ export default {
   },
   data() {
     return {
-      switchStatus: false,//压缩switch开关
+      switchStatus: true,//压缩switch开关
       // doCompress 传 1是压缩 0是不压缩
       doCompress: 0,
       width: 0,
