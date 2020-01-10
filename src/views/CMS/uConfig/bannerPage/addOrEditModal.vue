@@ -38,7 +38,7 @@
         <Row class="padding-left-12" v-if="modal.type == 3 || modal.type == 4">
           <Col span="18">
             <FormItem label="链接">
-              <Input type="text" v-model="modal.value" placeholder="请输入链接" style="width: 100%"></Input>
+              <Input type="text" v-model.trim="modal.value" placeholder="请输入链接" style="width: 100%"></Input>
             </FormItem>
           </Col>
         </Row>
