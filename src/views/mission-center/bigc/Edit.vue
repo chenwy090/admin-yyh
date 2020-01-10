@@ -269,6 +269,7 @@ export default {
         // console.log("qrcode:", data);
         this.qrcode = `data:image/png;base64,${base64}`;
         url = url.split("view")[0];
+        url = url.replace("http","https");
         this.linkUrl = `${url}${id}`;
       } else {
         // msgOk msgErr

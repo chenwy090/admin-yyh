@@ -3,7 +3,7 @@ export default function createFormData() {
         items: [
             {
                 _id: Math.random(),
-                wxnumber: '', //微信号
+                title: '', //标题
                 imgUrl: '',// 图片地址
                 defaultImgUrlList: [],
             },
