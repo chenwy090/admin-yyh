@@ -12,6 +12,15 @@
             style="width: 150px"
           />
         </FormItem>
+        <FormItem label="优惠券ID：">
+          <Input
+            type="text"
+            v-model="searchItem.couponId"
+            clearable
+            placeholder="请输入优惠券ID"
+            style="width: 150px"
+          />
+        </FormItem>
         <FormItem label="优惠券名称：">
           <Input
             type="text"
@@ -72,10 +81,10 @@ export default {
           couponType: 1,
           label: "商超",
           compName: "CompSuperMarketList",
-          url: "/coupon/superMarket/list"
+          url: "/coupon/superMarket/list",
         };
-      }
-    }
+      },
+    },
   },
   data() {
     return {
@@ -83,7 +92,7 @@ export default {
       choice: {
         _id: "",
         id: "",
-        name: ""
+        name: "",
       },
       edit_loading: false,
       isCheckDisabled: false,
@@ -106,7 +115,7 @@ export default {
             return h("div", [
               h("Radio", {
                 props: {
-                  value: flag
+                  value: flag,
                 },
                 on: {
                   "on-change": () => {
@@ -115,24 +124,24 @@ export default {
                     self.choice.name = name;
                     self.choice.row = params.row;
                     // console.log("change", JSON.stringify(self.choice));
-                  }
-                }
-              })
+                  },
+                },
+              }),
             ]);
-          }
+          },
         },
         // 商户名称 省/市 优惠券名称 有效期
         {
           title: "商户名称",
           align: "center",
           minWidth: 130,
-          key: "shopName"
+          key: "shopName",
         },
         {
           title: "优惠券名称",
           align: "center",
           width: 230,
-          key: "title"
+          key: "title",
         },
         {
           title: "有效期",
@@ -152,7 +161,7 @@ export default {
             }
 
             return h("span", str);
-          }
+          },
         },
         // 商超  isActivityCoupon  0: 是活动券  1: 不是活动券
         {
@@ -164,20 +173,21 @@ export default {
             let { isActivityCoupon } = params.row;
             const arr = ["是", "否"];
             return h("span", arr[isActivityCoupon]);
-          }
-        }
+          },
+        },
       ],
       tableData: [],
       page: {
         page: 1, //页码
         size: 10, //每页数量
-        total: 0 //数据总数
+        total: 0, //数据总数
       },
       tableLoading: false,
       searchItem: {
         shopName: "",
-        couponName: ""
-      }
+        couponName: "",
+        couponId: "",
+      },
     };
   },
 
@@ -195,13 +205,13 @@ export default {
       this.tableLoading = false;
       const reqParams = {
         ...this.searchItem,
-        ...this.page
+        ...this.page,
       };
       postRequest(this.tab.url, reqParams).then(res => {
         const {
           code,
           data: { current, total, size, records },
-          msg
+          msg,
         } = res;
 
         if (code == 200) {
@@ -237,13 +247,13 @@ export default {
       // 重置查询参数
       this.searchItem = {
         shopName: "",
-        couponName: ""
+        couponName: "",
       };
 
       this.page = {
         page: 1, //页码
         size: 10, //每页数量
-        total: 0 //数据总数
+        total: 0, //数据总数
       };
 
       this.queryTableData();
@@ -256,19 +266,19 @@ export default {
     msgOk(txt) {
       this.$Message.info({
         content: txt,
-        duration: 3
+        duration: 3,
       });
     },
     msgErr(txt) {
       this.$Message.error({
         content: txt,
-        duration: 3
+        duration: 3,
       });
-    }
+    },
   },
   mounted() {
     this.queryTableData();
-  }
+  },
 };
 </script>
 

@@ -29,12 +29,17 @@
         <Row type="flex" justify="space-between" class="code-row-bg">
           <Col span="10">
             <RadioGroup v-model="item.merchantType">
-              <Radio v-for="item in businessTypeList" :label="item.value" :key="item.value">
-                <span>{{item.label}}</span>
+              <Radio
+                v-for="it in businessTypeList"
+                :label="it.value"
+                :key="it.value"
+                :disabled="item.isStop==1"
+              >
+                <span>{{it.label}}</span>
               </Radio>
             </RadioGroup>
           </Col>
-          <Col span="2">
+          <Col span="2" v-if="item.isStop!==1">
             <Button
               type="error"
               icon="md-trash"
@@ -62,7 +67,7 @@
                 :placeholder="`点击按钮选择${businessTypeLabel}`"
                 disabled
               >
-                <Button @click="handleChoose" slot="append">选择</Button>
+                <Button v-if="item.isStop!==1" @click="handleChoose" slot="append">选择</Button>
               </Input>
             </template>
             <template v-else>
@@ -106,22 +111,6 @@
       <FormItem label="商户余额：">{{money}}&nbsp;元</FormItem>
       <FormItem label="U贝余额：">{{ubay}}&nbsp;贝</FormItem>
       <!-- :rules="{required: true,  validator: validateEmpty('请填写流水号'), trigger: 'blur'}" -->
-      <FormItem
-        label="消耗U贝："
-        :prop="`ruleInfoList.${index}.anticipatedUbay`"
-        :rules="{ required: true, validator: validateUbay }"
-      >
-        <Row>
-          <Col span="10">
-            <Input
-              style="width:230px"
-              v-model="item.anticipatedUbay"
-              placeholder="请输入需要消耗U贝的数量"
-              clearable
-            />
-          </Col>
-        </Row>
-      </FormItem>
 
       <!-- templateId  券模板id  templateName 券模板名称 -->
       <!-- :rules="{ required: true, validator: validateBusinessName }" -->
@@ -130,18 +119,35 @@
         :prop="`ruleInfoList.${index}.templateName`"
         :rules="{ required: true, validator: validateEmpty('请选择优惠券') }"
       >
-        <Row>
-          <Col span="10">
-            <Input
-              style="width:230px"
-              v-model="item.templateName"
-              :placeholder="`点击按钮选择优惠券`"
-              disabled
-            >
-              <Button @click="handleChooseCoupon" slot="append">选择</Button>
-            </Input>
-          </Col>
+        <Row style="display: flex;align-items: center;">
+          <!-- <Col span="10"> -->
+          <Input
+            style="width:230px;margin-right:5px;"
+            v-model="item.templateName"
+            :placeholder="`点击按钮选择优惠券`"
+            disabled
+          >
+            <Button v-if="item.isStop!==1" @click="handleChooseCoupon" slot="append">选择</Button>
+          </Input>
+          <span>{{surplusCount}}</span>
+          <!-- </Col> -->
+          <!-- <Col span="10">{{surplusCount}}</Col> -->
         </Row>
+      </FormItem>
+
+      <FormItem
+        label="副标题："
+        :prop="`ruleInfoList.${index}.couponSubheadTemp`"
+        :rules="{required: true,  validator: validateEmpty('请输入奖品名称',10)}"
+      >
+        <Tooltip trigger="focus" title="提醒" content="最多10个汉字" placement="right">
+          <Input
+            style="width:200px"
+            v-model.trim="item.couponSubheadTemp"
+            placeholder="请输入副标题，10字以内"
+            clearable
+          />
+        </Tooltip>
       </FormItem>
 
       <!-- <FormItem
@@ -175,10 +181,12 @@
       >
         每领取一张券，奖励领取者
         <Input
+          :disabled="item.isStop==1"
           style="display:inline-block;width:100px"
           v-model="item.receiveAwardUbay"
           placeholder="请输入数字"
           clearable
+          @input.native="inputInt($event,'receiveAwardUbay')"
         />&nbsp;U贝
         <!-- 通过分享领取不享受该奖励 -->
       </FormItem>
@@ -189,10 +197,12 @@
       >
         每核销一张券，奖励领取者
         <Input
+          :disabled="item.isStop==1"
           style="display:inline-block;width:100px"
           v-model="item.useAwardUbay"
           placeholder="请输入数字"
           clearable
+          @input.native="inputInt($event,'useAwardUbay')"
         />&nbsp;U贝
         <!-- 通过分享领取核销，不享受该奖励 -->
       </FormItem>
@@ -207,10 +217,12 @@
       >
         分享券被领取，奖励分享者
         <Input
+          :disabled="item.isStop==1"
           style="display:inline-block;width:100px"
           v-model="item.shareReceiveAwardUbay"
           placeholder="请输入数字"
           clearable
+          @input.native="inputInt($event,'shareReceiveAwardUbay')"
         />&nbsp;U贝
       </FormItem>
       <FormItem
@@ -220,11 +232,40 @@
       >
         分享券被核销，奖励分享者
         <Input
+          :disabled="item.isStop==1"
           style="display:inline-block;width:100px"
           v-model="item.shareUseAwardUbay"
           placeholder="请输入数字"
           clearable
+          @input.native="inputInt($event,'shareUseAwardUbay')"
         />&nbsp;U贝
+      </FormItem>
+
+      <Divider />
+
+      <FormItem
+        label="预计消耗U贝："
+        :prop="`ruleInfoList.${index}.anticipatedUbay`"
+        :rules="{ required: true, validator: validateUbay }"
+      >
+        <Row>
+          <Col span="10">
+            <Input
+              :disabled="item.isStop==1"
+              style="width:230px"
+              v-model="item.anticipatedUbay"
+              placeholder="预计消耗U贝"
+              @input.native="inputInt($event,'anticipatedUbay')"
+            >
+              <Button
+                v-if="item.isStop!==1"
+                :disabled="disabledComputedUbay"
+                @click="handleComputedUbay"
+                slot="append"
+              >计算</Button>
+            </Input>
+          </Col>
+        </Row>
       </FormItem>
 
       <!-- ------------------------------ -->
@@ -286,9 +327,10 @@
 <script>
 import { createNamespacedHelpers } from "vuex";
 const { mapState } = createNamespacedHelpers("financial");
-const { mapState: mapStateMissionCenter } = createNamespacedHelpers(
-  "missionCenter"
-);
+const { mapState: mapStateMissionCenter } = createNamespacedHelpers("missionCenter");
+
+import util from "@/libs/util";
+import { postRequest } from "@/libs/axios";
 
 import BusinessList from "./BusinessList";
 import BrandList from "./BrandList";
@@ -302,13 +344,7 @@ let typeData = createTypeDate();
 
 export default {
   name: "rules-item",
-  inject: [
-    "businessTypeList",
-    "merchantTypeOption",
-    "getMoneyAndUbay",
-    "msgOk",
-    "msgErr"
-  ],
+  inject: ["businessTypeList", "merchantTypeOption", "getMoneyAndUbay", "msgOk", "msgErr"],
   created() {
     // console.log("rules-item businessTypeList",this.businessTypeList, this.msgOk);
     // 初始化数据
@@ -332,12 +368,12 @@ export default {
     BrandList,
     SuperMarket,
     CouponList,
-    UploadImage
+    UploadImage,
   },
   props: {
     index: {
       type: Number,
-      default: 0
+      default: 0,
     },
     item: {
       type: Object,
@@ -350,9 +386,10 @@ export default {
           businessName: "",
           merchantId: "", // 商户id
           merhcantName: "", // 商户名称
+          couponSubheadTemp: "", //副标题
           brandId: "", // 品牌id
           brandName: "", // 品牌名称
-          anticipatedUbay: "", // 预计消耗u贝数量
+          anticipatedUbay: "", // 预计消耗u贝数量  计算ubay
           couponType: 0, //优惠券类型 0-商超券 1-商户/周边券
           templateId: "", //券模板id
           templateName: "", //券模板名称
@@ -367,14 +404,26 @@ export default {
           defaultLogoList: [],
           logoUrl: "",
           defaultShareLogoList: [],
-          shareLogo: ""
+          shareLogo: "",
         };
-      }
-    }
+      },
+    },
   },
   computed: {
     ...mapState(["retailerInfoList"]),
-    ...mapStateMissionCenter(["type"])
+    ...mapStateMissionCenter(["type"]),
+    surplusCount() {
+      let { templateName, surplusCount } = this.item;
+      if (templateName && surplusCount) {
+        return `剩余${surplusCount}张券`;
+      } else {
+        return "";
+      }
+    },
+    disabledComputedUbay() {
+      let { templateName } = this.item;
+      return !!!templateName;
+    },
   },
   watch: {
     ["item.merchantType"]() {
@@ -411,10 +460,8 @@ export default {
       // console.log("refForm:", this.$parent.$parent);
       // console.log("refForm:", this.$parent.$parent.fields);
       // console.log("refForm:", `ruleInfoList.${this.index}.businessName`);
-      this.$parent.$parent.validateField(
-        `ruleInfoList.${this.index}.businessName`
-      );
-    }
+      this.$parent.$parent.validateField(`ruleInfoList.${this.index}.businessName`);
+    },
   },
   data() {
     return {
@@ -450,24 +497,55 @@ export default {
       payTypeList: [
         {
           id: "1",
-          name: "现金"
+          name: "现金",
         },
         {
           id: "2",
-          name: "微信"
+          name: "微信",
         },
         {
           id: "3",
-          name: "支付宝"
+          name: "支付宝",
         },
         {
           id: "4",
-          name: "银行卡"
-        }
-      ]
+          name: "银行卡",
+        },
+      ],
     };
   },
   methods: {
+    inputInt(ev, name) {
+      console.log("inputInt(ev, name)", ev, name);
+
+      let { value } = ev.target;
+      this.item[name] = value.replace(/\D/g, "");
+    },
+    async handleComputedUbay() {
+      let {
+        templateId,
+        couponType,
+        receiveAwardUbay,
+        shareReceiveAwardUbay,
+        shareUseAwardUbay,
+        useAwardUbay,
+      } = this.item;
+
+      let params = { templateId, couponType, receiveAwardUbay, shareReceiveAwardUbay, shareUseAwardUbay, useAwardUbay };
+      // 计算预估消耗U贝
+      const url = "/merchant/assignment/compute";
+      //  money: 0, // 商户余额
+      // ubay: 0, // U贝余额
+
+      let { code, msg, data } = await postRequest(url, params);
+      if (code == 200) {
+        this.item.anticipatedUbay = data;
+      } else {
+        // 不做 没有查询到商户余额信息 的提示
+        this.msgErr(msg);
+      }
+    },
+
     bannerUploadSuccess(data) {
       this.item.imgUrl = data.imgUrl;
     },
@@ -516,22 +594,18 @@ export default {
 
     selectedCouponItem(data) {
       console.log("selectedCouponItem----", data);
-      let { couponType, id, name } = data;
+      let { couponType, id, name, row } = data;
       // templateId 券模板id templateName 券模板名称
 
       this.item.couponType = couponType;
       this.item.templateId = id;
       this.item.templateName = name;
+      this.item.surplusCount = row.surplusCount;
       console.log(couponType, id, name);
     },
     handleChoose() {
       //  '商户类型 0-本地商户（单店），1-本地商户（多店）' 2 商超门店、3 零售商
-      const arr = [
-        "showBusinessList",
-        "showBrandList",
-        "showSuperMarketList",
-        "retailer"
-      ];
+      const arr = ["showBusinessList", "showBrandList", "showSuperMarketList", "retailer"];
       const type = this.item.merchantType;
       this[arr[type]] = true;
     },
@@ -590,16 +664,20 @@ export default {
       }
       callback();
     },
-    validateEmpty(msg) {
+    validateEmpty(msg, len = 20) {
       return function(rule, value, callback) {
         value += "";
         value = value.trim();
         if (value == "") {
           return callback(msg);
         }
+        let length = util.getByteLen(value);
+        if (length > len * 2) {
+          return callback(`最多只能输入${len}个汉字`);
+        }
         callback();
       };
-    }
-  }
+    },
+  },
 };
 </script>

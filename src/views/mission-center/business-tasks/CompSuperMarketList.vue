@@ -165,7 +165,13 @@ export default {
             const arr = ["是", "否"];
             return h("span", arr[isActivityCoupon]);
           }
-        }
+        },
+        {
+          title: "剩余券数",
+          align: "center",
+          width: 100,
+          key: "surplusCount",
+        },
       ],
       tableData: [],
       page: {

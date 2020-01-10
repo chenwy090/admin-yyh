@@ -32,6 +32,7 @@
 nbproject
 thumbs.db
 *.iml
+yarn.lock
 
 # Folders to ignore
 .hg

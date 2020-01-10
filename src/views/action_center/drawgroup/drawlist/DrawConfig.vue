@@ -6,20 +6,14 @@
         <Form inline>
           <FormItem label="团类型" :label-width="60">
             <Select v-model="searchData.groupType" style="width:100px">
-              <Option
-                v-for="item in groupTypeList"
-                :value="item.value"
-                :key="item.value+item.label"
-              >{{ item.label }}</Option>
+              <Option v-for="item in groupTypeList" :value="item.value" :key="item.value + item.label">{{
+                item.label
+              }}</Option>
             </Select>
           </FormItem>
           <FormItem label="状态" :label-width="60">
             <Select v-model="searchData.status" style="width:100px">
-              <Option
-                v-for="item in statusList"
-                :value="item.value"
-                :key="item.value"
-              >{{ item.label }}</Option>
+              <Option v-for="item in statusList" :value="item.value" :key="item.value">{{ item.label }}</Option>
             </Select>
           </FormItem>
           <FormItem label="抽奖id：" :label-width="85">
@@ -39,7 +33,7 @@
           </FormItem>
           <FormItem :label-width="0">
             <Button type="primary" icon="ios-search" @click="queryTableList()">搜索</Button>
-            <Button icon="md-refresh"  class="marginLeft20" @click="reset">重置</Button>
+            <Button icon="md-refresh" class="marginLeft20" @click="reset">重置</Button>
           </FormItem>
         </Form>
         <Row type="flex" justify="start">
@@ -56,34 +50,21 @@
           <!--
             0：未上架 1:未开始 2:进行中 3:开奖中 4:已开奖 5:已下架  6紧急下架
             查看  0-6
-            编辑 05(创建后未上架0、已下架5的活动，才可编辑)  上架 05   下架 1 
-            紧急下架  2 
+            编辑 05(创建后未上架0、已下架5的活动，才可编辑)  上架 05   下架 1
+            紧急下架  2
           -->
-          <Button
-            type="success"
-            size="small"
-            style="margin-right: 5px"
-            @click="checkDetailsFn(row)"
-          >查看</Button>
-          <template v-if="row.status == 0 ||row.status == 5">
-            <Button
-              type="primary"
-              size="small"
-              style="margin-right: 5px"
-              @click="addOrEdit('edit',row)"
-            >编辑</Button>
+          <Button type="success" size="small" style="margin-right: 5px" @click="checkDetailsFn(row)">查看</Button>
+          <template v-if="row.status == 0 || row.status == 5">
+            <Button type="primary" size="small" style="margin-right: 5px" @click="addOrEdit('edit', row)">编辑</Button>
             <Button type="success" size="small" @click="updateOperationStatus(row)">上架</Button>
           </template>
           <template v-else-if="row.status == 1">
             <Button type="warning" size="small" @click="underUpdateOperationStatus(row)">下架</Button>
           </template>
           <template v-else-if="row.status == 2">
-            <Button
-              type="error"
-              size="small"
-              style="margin-left: 5px"
-              @click="underUpdateOperationStatus(row)"
-            >紧急下架</Button>
+            <Button type="error" size="small" style="margin-left: 5px" @click="underUpdateOperationStatus(row)"
+              >紧急下架</Button
+            >
           </template>
         </template>
         <template slot-scope="{ row }" slot="createAndModifiedBy">
@@ -94,18 +75,10 @@
         </template>
 
         <template slot-scope="{ row }" slot="totalPlayer">
-          <a
-            @click="showTotalPlayer(row.id)"
-            class="underline"
-            href="javascript:;"
-          >{{ row.totalPlayer }}</a>
+          <a @click="showTotalPlayer(row.id)" class="underline" href="javascript:;">{{ row.totalPlayer }}</a>
         </template>
         <template slot-scope="{ row }" slot="totalTicket">
-          <a
-            @click="showTotalTicket(row.id)"
-            class="underline"
-            href="javascript:;"
-          >{{ row.totalTicket }}</a>
+          <a @click="showTotalTicket(row.id)" class="underline" href="javascript:;">{{ row.totalTicket }}</a>
         </template>
         <template slot-scope="{ row }" slot="result">
           <Button type="success" size="small" @click="queryResult(row)">查看</Button>
@@ -157,7 +130,7 @@
             <Input
               v-model="formValidate.reason"
               type="textarea"
-              :autosize="{minRows: 2,maxRows: 5}"
+              :autosize="{ minRows: 2, maxRows: 5 }"
               placeholder="填写下架原因..."
             ></Input>
           </FormItem>
@@ -177,13 +150,7 @@
 import multiFormData from "./multiGroupFromData";
 import singleFormData from "./singleGroupFromData";
 import { postRequest } from "@/libs/axios";
-import {
-  putup,
-  putoff,
-  queryLuckDrawList,
-  queryTotalPlayerList,
-  queryTotalTicketList
-} from "@/api/sys";
+import { putup, putoff, queryLuckDrawList, queryTotalPlayerList, queryTotalTicketList } from "@/api/sys";
 import columns, { totalPlayerColumns, totalTicketColumns } from "./columns";
 
 import DrawEdit from "./DrawEdit";
@@ -195,7 +162,7 @@ export default {
   components: {
     ModalDetail: ModalDetail,
     [DrawEdit.name]: DrawEdit,
-    [WinningList.name]: WinningList
+    [WinningList.name]: WinningList,
   },
 
   data() {
@@ -204,7 +171,7 @@ export default {
       //新增 add、修改 edit
       action: {
         id: Math.random(),
-        type: "add"
+        type: "add",
       },
       //--------------------------
       id: "",
@@ -213,70 +180,70 @@ export default {
       modalWinningList: false, // 查看
       undercarriage: false,
       formValidate: {
-        reason: ""
+        reason: "",
       },
       ruleValidate: {
         reason: [
           {
             required: true,
             message: "下架原因不能为空",
-            trigger: "blur"
+            trigger: "blur",
           },
           {
             type: "string",
             min: 10,
             message: "原因不得少于10个字",
-            trigger: "blur"
-          }
-        ]
+            trigger: "blur",
+          },
+        ],
       },
       groupTypeList: [
         {
           value: 0,
-          label: "全部"
+          label: "全部",
         },
         {
           value: 1,
-          label: "单人团"
+          label: "单人团",
         },
         {
           value: 2,
-          label: "多人团"
-        }
+          label: "多人团",
+        },
       ],
       statusList: [
         {
           value: "all",
-          label: "全部"
+          label: "全部",
         },
         {
           value: "0",
-          label: "未上架"
+          label: "未上架",
         },
         {
           value: "1",
-          label: "未开始"
+          label: "未开始",
         },
         {
           value: "2",
-          label: "进行中"
+          label: "进行中",
         },
         {
           value: "3",
-          label: "开奖中"
+          label: "开奖中",
         },
         {
           value: "4",
-          label: "已开奖"
+          label: "已开奖",
         },
         {
           value: "5",
-          label: "已下架"
+          label: "已下架",
         },
         {
           value: "6",
-          label: "紧急下架"
-        }
+          label: "紧急下架",
+        },
       ],
       daterange: [],
       searchData: {
@@ -287,21 +254,21 @@ export default {
         status: "all", //提交后台过滤为 ""空字符串
         operationType: "",
         startTime: "",
-        endTime: ""
+        endTime: "",
         //分页参数
       },
       loading: false, //列表加载动画
       page: {
         pageNum: 1, //页码
         pageSize: 10, //每页数量
-        total: 0 //数据总数
+        total: 0, //数据总数
       },
       columns,
       totalPlayerColumns,
       totalTicketColumns,
       tableData: [],
       totalPlayerTableData: [], //报名成功用户列表
-      totalTicketTableData: [] //抽奖券列表
+      totalTicketTableData: [], //抽奖券列表
     };
   },
   created() {
@@ -327,7 +294,7 @@ export default {
           groupType,
           // 新增多人团和单人团数据初始化
           multiFormData: JSON.parse(JSON.stringify(multiFormData)),
-          singleFormData: JSON.parse(JSON.stringify(singleFormData))
+          singleFormData: JSON.parse(JSON.stringify(singleFormData)),
         });
       } else if (type == "edit") {
         //  0：未上架 1:未开始 2:进行中 3:开奖中 4:已开奖 5:已下架  6紧急下架
@@ -341,6 +308,7 @@ export default {
           data = res.data;
 
           //投放门店： 给每个元素添加一个id
+          if (!data.drawDailyShopList) data.drawDailyShopList = [];
           if (data.drawDailyShopList.length == 0) {
             data.drawDailyShopList.push({
               id: Math.random(),
@@ -350,7 +318,7 @@ export default {
               shopId: null,
               shopName: null,
               index: this.index,
-              status: 1
+              status: 1,
             });
           }
           data.drawDailyShopList = data.drawDailyShopList.map(item => {
@@ -373,9 +341,7 @@ export default {
           }
 
           if (data.normalPrize.giftImg) {
-            data.normalPrizeGifImageList = [
-              { imgUrl: data.normalPrize.giftImg }
-            ];
+            data.normalPrizeGifImageList = [{ imgUrl: data.normalPrize.giftImg }];
           }
 
           //广告图数据
@@ -399,7 +365,7 @@ export default {
             drawType: "edit",
             groupType,
             // 修改将数据放入进去即可
-            drawData: JSON.parse(JSON.stringify(data))
+            drawData: JSON.parse(JSON.stringify(data)),
           });
         } else {
           return this.$Message.error(res.msg);
@@ -409,7 +375,7 @@ export default {
         id: Math.random(),
         type,
         groupType,
-        data
+        data,
       };
     },
 
@@ -427,17 +393,10 @@ export default {
         prizeNum2: "", //可编辑
 
         //3 U贝
-        prizeNum3: "" //可编辑
+        prizeNum3: "", //可编辑
       };
 
-      let {
-        type,
-        prizeName,
-        prizeNum,
-        giftImg,
-        couponType,
-        prizeReferId
-      } = data;
+      let { type, prizeName, prizeNum, giftImg, couponType, prizeReferId } = data;
       temp.type = type;
       if (type == 1) {
         temp.prizeName1 = prizeName;
@@ -470,7 +429,7 @@ export default {
     },
     queryTotalPlayerTableList() {
       queryTotalPlayerList({
-        drawId: this.id
+        drawId: this.id,
       }).then(res => {
         // console.log(res);
         if (res.code == 200) {
@@ -487,7 +446,7 @@ export default {
     },
     queryTotalTicketTableList() {
       queryTotalTicketList({
-        drawId: this.id
+        drawId: this.id,
       }).then(res => {
         if (res.code == 200) {
           this.totalTicketTableData = res.data;
@@ -505,18 +464,16 @@ export default {
     putoff(name) {
       this.$refs[name].validate(valid => {
         if (valid) {
-          putoff({ drawId: this.id, reason: this.formValidate.reason }).then(
-            res => {
-              if (res.code == 200) {
-                this.msgOk("下架成功");
-                //刷新列表
-                this.queryTableList();
-              } else {
-                this.msgErr(res.msg);
-              }
-              this.cancelHandleReset(name);
+          putoff({ drawId: this.id, reason: this.formValidate.reason }).then(res => {
+            if (res.code == 200) {
+              this.msgOk("下架成功");
+              //刷新列表
+              this.queryTableList();
+            } else {
+              this.msgErr(res.msg);
             }
-          );
+            this.cancelHandleReset(name);
+          });
           //   this.$Message.success("Success!");
         }
       });
@@ -540,7 +497,7 @@ export default {
         },
         onCancel: () => {
           this.msgOk("上架已取消");
-        }
+        },
       });
     },
     underUpdateOperationStatus(row) {
@@ -571,7 +528,7 @@ export default {
       queryLuckDrawList({
         ...this.searchData,
         status,
-        ...this.page
+        ...this.page,
       }).then(res => {
         // console.log(res);
         if (res.code == 200) {
@@ -598,12 +555,12 @@ export default {
         status: "all",
         operationType: "",
         startTime: "",
-        endTime: ""
+        endTime: "",
       };
 
       this.page = {
         pageNum: 1, //页码
-        pageSize: 10 //每页数量
+        pageSize: 10, //每页数量
       };
 
       //重新查询一遍
@@ -613,16 +570,16 @@ export default {
     msgOk(txt) {
       this.$Message.info({
         content: txt,
-        duration: 3
+        duration: 3,
       });
     },
     msgErr(txt) {
       this.$Message.error({
         content: txt,
-        duration: 3
+        duration: 3,
       });
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>

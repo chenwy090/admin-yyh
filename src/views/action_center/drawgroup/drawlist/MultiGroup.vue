@@ -4,13 +4,7 @@
       <FormItem label="活动名称：" prop="name" :rules="{ required: true, message: '请输入活动名称' }">
         <Row>
           <Col span="10">
-            <Input
-              style="width:90%"
-              v-model="form.name"
-              :maxlength="40"
-              placeholder="请输入"
-              clearable
-            />
+            <Input style="width:90%" v-model="form.name" :maxlength="40" placeholder="请输入" clearable />
           </Col>
         </Row>
       </FormItem>
@@ -31,17 +25,13 @@
         </Row>
       </FormItem>
       <!-- //开奖时间配置1：固定时间、2：满多少人开奖 -->
-      <FormItem label="活动开奖时间：">
+      <FormItem label="活动开奖时间：" required>
         <RadioGroup v-model="form.openDrawTimeType" @on-change="form.openDrawTime = ''">
-          <Radio
-            v-for="item in openDrawTimeTypeList"
-            :key="item.value"
-            :label="item.value"
-          >{{ item.label }}</Radio>
+          <Radio v-for="item in openDrawTimeTypeList" :key="item.value" :label="item.value">{{ item.label }}</Radio>
         </RadioGroup>
       </FormItem>
 
-      <template v-if="form.openDrawTimeType==1">
+      <template v-if="form.openDrawTimeType == 1">
         <FormItem label prop="openDrawTime" :rules="{ required: true, message: '请选择活动开奖时间' }">
           <Row>
             <Col span="10">
@@ -59,7 +49,7 @@
           </Row>
         </FormItem>
       </template>
-      <template v-else-if="form.openDrawTimeType==2">
+      <template v-else-if="form.openDrawTimeType == 2">
         <FormItem label prop="openDrawTime" :rules="{ required: true, message: '请选择活动开奖时间' }">
           <Row>
             <Col span="10">
@@ -74,19 +64,10 @@
             </Col>
           </Row>
         </FormItem>
-        <FormItem
-          label="满x人开奖："
-          prop="openDrawTimeNeedPlayers"
-          :rules="{ required: true, message: '请输入人数' }"
-        >
+        <FormItem label="满x人开奖：" prop="openDrawTimeNeedPlayers" :rules="{ required: true, message: '请输入人数' }">
           <Row>
             <Col span="10">
-              <Input
-                style="width:90%"
-                v-model="form.openDrawTimeNeedPlayers"
-                placeholder="请输入人数"
-                clearable
-              />
+              <Input style="width:90%" v-model="form.openDrawTimeNeedPlayers" placeholder="请输入人数" clearable />
             </Col>
           </Row>
         </FormItem>
@@ -109,7 +90,12 @@
       </FormItem>-->
 
       <!-- 门店类型： storeType 0 全国 1门店 -->
-      <FormItem label="投放门店：">
+
+      <FormItem label="投放门店：" required>
+        <storeForm :pushRange.sync="form.storeType" :shopRequestList.sync="form.drawDailyShopList"></storeForm>
+      </FormItem>
+
+      <!-- <FormItem label="投放门店：">
         <RadioGroup v-model="form.storeType">
           <Radio
             v-for="item in storeTypeList"
@@ -137,7 +123,7 @@
         <FormItem label>
           <Button type="dashed" long @click="handleAdd" icon="md-add" style="width:100px;"></Button>
         </FormItem>
-      </template>
+      </template> -->
 
       <!-- 1:实物、2：优惠券、3：U贝 -->
       <FormItem label="活动大奖：">
@@ -145,7 +131,7 @@
           <Radio v-for="item in typeList" :key="item.value" :label="item.value">{{ item.label }}</Radio>
         </RadioGroup>
       </FormItem>
-      <template v-if="form.bigPrizeTemp.type==1">
+      <template v-if="form.bigPrizeTemp.type == 1">
         <Row>
           <Col span="8">
             <FormItem label="实物名称：">
@@ -162,12 +148,7 @@
           </Col>
           <Col span="8">
             <FormItem label="实物个数：">
-              <Input
-                style="width:90%"
-                v-model="form.bigPrizeTemp.prizeNum1"
-                placeholder="请输入个数"
-                disabled
-              />
+              <Input style="width:90%" v-model="form.bigPrizeTemp.prizeNum1" placeholder="请输入个数" disabled />
             </FormItem>
           </Col>
           <Col span="8">
@@ -180,7 +161,7 @@
           </Col>
         </Row>
       </template>
-      <template v-else-if="form.bigPrizeTemp.type==2">
+      <template v-else-if="form.bigPrizeTemp.type == 2">
         <FormItem
           :key="11"
           label="选择优惠券"
@@ -189,19 +170,14 @@
         >
           <Row>
             <Col span="10">
-              <Input
-                :key="11"
-                v-model="form.bigPrizeTemp.prizeName2"
-                placeholder="点击按钮选择优惠券"
-                disabled
-              >
+              <Input :key="11" v-model="form.bigPrizeTemp.prizeName2" placeholder="点击按钮选择优惠券" disabled>
                 <Button @click="handleChoose('bigPrize')" slot="append">选择</Button>
               </Input>
             </Col>
           </Row>
         </FormItem>
       </template>
-      <template v-else-if="form.bigPrizeTemp.type==3">
+      <template v-else-if="form.bigPrizeTemp.type == 3">
         <FormItem
           label="U贝数："
           prop="bigPrizeTemp.prizeNum3"
@@ -226,7 +202,7 @@
         </RadioGroup>
       </FormItem>
 
-      <template v-if="form.normalPrizeTemp.type==1">
+      <template v-if="form.normalPrizeTemp.type == 1">
         <Row>
           <Col span="8">
             <FormItem label="实物名称：">
@@ -243,12 +219,7 @@
           </Col>
           <Col span="8">
             <FormItem label="实物个数：">
-              <Input
-                style="width:90%"
-                v-model="form.normalPrizeTemp.prizeNum1"
-                placeholder="请输入个数"
-                disabled
-              />
+              <Input style="width:90%" v-model="form.normalPrizeTemp.prizeNum1" placeholder="请输入个数" disabled />
             </FormItem>
           </Col>
           <Col span="8">
@@ -261,7 +232,7 @@
           </Col>
         </Row>
       </template>
-      <template v-else-if="form.normalPrizeTemp.type==2">
+      <template v-else-if="form.normalPrizeTemp.type == 2">
         <FormItem
           :key="22"
           label="选择优惠券"
@@ -270,19 +241,14 @@
         >
           <Row>
             <Col span="10">
-              <Input
-                :key="22"
-                v-model="form.normalPrizeTemp.prizeName2"
-                placeholder="点击按钮选择优惠券"
-                disabled
-              >
+              <Input :key="22" v-model="form.normalPrizeTemp.prizeName2" placeholder="点击按钮选择优惠券" disabled>
                 <Button @click="handleChoose('normalPrize')" slot="append">选择</Button>
               </Input>
             </Col>
           </Row>
         </FormItem>
       </template>
-      <template v-else-if="form.normalPrizeTemp.type==3">
+      <template v-else-if="form.normalPrizeTemp.type == 3">
         <FormItem
           label="U贝数："
           prop="normalPrizeTemp.prizeNum3"
@@ -313,11 +279,7 @@
       <!-- 参与对象［必选，单选］参与对象［必选，单选］ -->
       <FormItem label="参与对象：">
         <RadioGroup v-model="form.joinUserLevel">
-          <Radio
-            v-for="item in joinUserLevelList"
-            :key="item.value"
-            :label="item.value"
-          >{{ item.label }}</Radio>
+          <Radio v-for="item in joinUserLevelList" :key="item.value" :label="item.value">{{ item.label }}</Radio>
         </RadioGroup>
       </FormItem>
 
@@ -328,12 +290,7 @@
       >
         <Row>
           <Col span="10">
-            <Input
-              style="width:90%"
-              v-model="form.maxOpenGroupCount"
-              placeholder="请输入总开团数"
-              clearable
-            />
+            <Input style="width:90%" v-model="form.maxOpenGroupCount" placeholder="请输入总开团数" clearable />
           </Col>
         </Row>
       </FormItem>
@@ -345,12 +302,7 @@
       >
         <Row>
           <Col span="10">
-            <Input
-              style="width:90%"
-              v-model="form.groupPlayerCount"
-              placeholder="请输入成团人数"
-              clearable
-            />
+            <Input style="width:90%" v-model="form.groupPlayerCount" placeholder="请输入成团人数" clearable />
           </Col>
         </Row>
       </FormItem>
@@ -362,12 +314,7 @@
       >
         <Row>
           <Col span="10">
-            <Input
-              style="width:90%"
-              v-model="form.userOpenGroupCount"
-              placeholder="请输入开团次数"
-              clearable
-            />
+            <Input style="width:90%" v-model="form.userOpenGroupCount" placeholder="请输入开团次数" clearable />
           </Col>
         </Row>
       </FormItem>
@@ -380,12 +327,7 @@
       >
         <Row>
           <Col span="10">
-            <Input
-              style="width:80%"
-              v-model="form.openGroupMinutes"
-              placeholder="请输入开团有效时间"
-              clearable
-            />分钟
+            <Input style="width:80%" v-model="form.openGroupMinutes" placeholder="请输入开团有效时间" clearable />分钟
           </Col>
         </Row>
       </FormItem>
@@ -408,12 +350,7 @@
       >
         <Row>
           <Col span="10">
-            <Input
-              style="width:90%"
-              v-model="form.userJoinGroupCount"
-              placeholder="请输入参团次数"
-              clearable
-            />
+            <Input style="width:90%" v-model="form.userJoinGroupCount" placeholder="请输入参团次数" clearable />
           </Col>
         </Row>
       </FormItem>
@@ -432,19 +369,11 @@
       <FormItem label="团失败u贝返还：">
         <RadioGroup v-model="form.isFailureBackFee">
           <!-- isFailureBackFee -->
-          <Radio
-            v-for="item in failureBackFeeList"
-            :key="item.value"
-            :label="item.value"
-          >{{ item.label }}</Radio>
+          <Radio v-for="item in failureBackFeeList" :key="item.value" :label="item.value">{{ item.label }}</Radio>
         </RadioGroup>
       </FormItem>
 
-      <FormItem
-        label="抽奖规则："
-        prop="drawRuleRemarks"
-        :rules="{ required: true, message: '抽奖规则描述不能为空' }"
-      >
+      <FormItem label="抽奖规则：" prop="drawRuleRemarks" :rules="{ required: true, message: '抽奖规则描述不能为空' }">
         <Row>
           <Col span="10">
             <Tooltip trigger="focus" title="提醒" content="最多600个汉字" placement="right">
@@ -452,7 +381,7 @@
                 v-model="form.drawRuleRemarks"
                 type="textarea"
                 style="width:400px"
-                :autosize="{minRows: 4,maxRows: 8}"
+                :autosize="{ minRows: 4, maxRows: 8 }"
                 placeholder="抽奖规则"
                 :maxlength="600"
               />
@@ -469,11 +398,7 @@
         </Row>
       </FormItem>
 
-      <FormItem
-        label="介绍："
-        prop="advertIntro"
-        :rules="{ required: false, message: '请输入广告主 描述富文本' }"
-      >
+      <FormItem label="介绍：" prop="advertIntro" :rules="{ required: false, message: '请输入广告主 描述富文本' }">
         <Row>
           <Col span="10">
             <Tooltip trigger="focus" title="提醒" content="最多600个汉字" placement="right">
@@ -481,7 +406,7 @@
                 v-model="form.advertIntro"
                 type="textarea"
                 style="width:400px"
-                :autosize="{minRows: 4,maxRows: 8}"
+                :autosize="{ minRows: 4, maxRows: 8 }"
                 placeholder="请输入广告主 描述富文本"
                 :maxlength="600"
               />
@@ -537,7 +462,7 @@
       :footer-hide="true"
       :closable="false"
       :mask-closable="false"
-      :styles="{top: '20px'}"
+      :styles="{ top: '20px' }"
     >
       <chooseCouponListView
         v-if="couponModalShow"
@@ -554,6 +479,7 @@ import { postRequest, getRequest } from "@/libs/axios";
 import storeView from "./store";
 import chooseCouponListView from "./chooseCouponList";
 import UploadImage from "./UploadImage";
+import storeForm from "@/components/storeForm/storeForm";
 
 import comm from "@/mixins/common";
 
@@ -564,7 +490,8 @@ export default {
   components: {
     storeView,
     chooseCouponListView,
-    UploadImage
+    UploadImage,
+    storeForm,
   },
   mixins: [comm],
   mounted() {
@@ -598,22 +525,25 @@ export default {
       //isFailureBackFee 团失败是否返还费用
       failureBackFeeList: [
         { value: 1, label: "是" },
-        { value: 0, label: "否" }
+        { value: 0, label: "否" },
       ],
       // openDrawTimeType 开奖时间配置1：固定时间、2：满多少人开奖
       openDrawTimeTypeList: [
         { value: 1, label: "固定时间" },
-        { value: 2, label: "相对时间（满x人开奖）" }
+        { value: 2, label: "相对时间（满x人开奖）" },
       ],
 
       // 门店类型 storeType 0 全国 1 门店
-      storeTypeList: [{ value: 0, label: "全国" }, { value: 1, label: "门店" }],
+      storeTypeList: [
+        { value: 0, label: "全国" },
+        { value: 1, label: "门店" },
+      ],
 
       // 优惠券类型1：周边券、2：商超券
       couponType: 2,
       couponTypelList: [
         { value: 1, label: "周边券" },
-        { value: 2, label: "商超券" }
+        { value: 2, label: "商超券" },
       ],
 
       couponId: "", //优惠券ID（单人团参团条件）
@@ -624,14 +554,14 @@ export default {
       typeList: [
         { value: 1, label: "实物" },
         { value: 2, label: "优惠券" },
-        { value: 3, label: "U贝" }
+        { value: 3, label: "U贝" },
       ],
       prizeName: "", // 奖项名称
       // 优惠券类型1：周边券、2：商超券
       couponType: 2,
       couponTypelList: [
         { value: 1, label: "周边券" },
-        { value: 2, label: "商超券" }
+        { value: 2, label: "商超券" },
       ],
 
       prizeReferId: "", //优惠券奖品关联ID
@@ -644,7 +574,7 @@ export default {
         { value: 3, label: "老客" },
         { value: 4, label: "红人" },
         { value: 5, label: "达人" },
-        { value: 0, label: "所有人" }
+        { value: 0, label: "所有人" },
       ],
 
       index: 1,
@@ -653,7 +583,7 @@ export default {
       showStore: true,
       form: JSON.parse(JSON.stringify(multiFormData)),
       formValite: {},
-      submitDisabled: false
+      submitDisabled: false,
     };
   },
 
@@ -670,7 +600,7 @@ export default {
     if (drawType == "add_cache") {
       this.$store.commit("g_setData", {
         //多人团
-        multiFormData: JSON.parse(JSON.stringify(this.form))
+        multiFormData: JSON.parse(JSON.stringify(this.form)),
       });
     }
   },
@@ -741,7 +671,7 @@ export default {
         shopId: null,
         shopName: null,
         index: this.index,
-        status: 1
+        status: 1,
       });
     },
     sendProvinceId(val, id) {
@@ -789,6 +719,7 @@ export default {
       });
     },
     handleSubmit(name) {
+      console.info(name);
       this.submitDisabled = true;
       this.$refs[name].validate(valid => {
         if (!valid) {
@@ -802,6 +733,7 @@ export default {
 
           if (d1 >= d2) {
             let msg = "活动开奖时间不能小于等于活动开始时间";
+            this.submitDisabled = false;
             return this.msgErr(msg);
           }
         }
@@ -813,10 +745,43 @@ export default {
         formData.bigPrize = this.formatFormData(formData.bigPrizeTemp);
         formData.normalPrize = this.formatFormData(formData.normalPrizeTemp);
         formData.groupType = 2;
-        if (formData.storeType == 0) {
-          //全国
-          formData.drawDailyShopList = [];
+
+        let shopReques = false;
+        let shopRequesMsg = "";
+        switch (formData.storeType) {
+          case 0:
+            shopReques = true;
+            formData.drawDailyShopList = [];
+            break;
+          case 1:
+            shopRequesMsg = "请选择零售商";
+            if (formData.drawDailyShopList instanceof Array && formData.drawDailyShopList[0]) {
+              let item = formData.drawDailyShopList[0];
+              if (item && item.venderName) {
+                shopReques = true;
+              }
+            }
+            break;
+          case 2:
+            shopRequesMsg = "请选择城市";
+            formData.drawDailyShopList.forEach(item => {
+              shopReques = false;
+              if (item.province && item.city) shopReques = true;
+            });
+            break;
+          case 3:
+            shopRequesMsg = "请选择门店";
+            if (formData.drawDailyShopList instanceof Array && formData.drawDailyShopList.length) {
+              shopReques = true;
+            }
+            break;
         }
+        if (!shopReques) {
+          this.$Message.error(shopRequesMsg);
+          this.submitDisabled = false;
+          return;
+        }
+
         postRequest(url, formData).then(res => {
           if (res.code == 200) {
             this.$emit("closeFormModal-event");
@@ -836,7 +801,7 @@ export default {
         prizeNum: "", //实物个数 奖品个数
         giftImg: "", //奖品图片地址
         couponType: 2, //优惠券类型1：周边券、2：商超券/ 超市券 优惠券：选择领优惠券和周边券
-        prizeReferId: null //优惠券奖品关联ID
+        prizeReferId: null, //优惠券奖品关联ID
       };
       let { type } = data;
       temp.type = type;
@@ -869,11 +834,10 @@ export default {
     msgErr(txt) {
       this.$Message.error({
         content: txt,
-        duration: 3
+        duration: 3,
       });
-    }
-  }
+    },
+  },
 };
 </script>
-<style scoped>
-</style>
+<style scoped></style>

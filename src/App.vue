@@ -1,7 +1,7 @@
 <template>
-    <div id="main" class="app-main" :data-updated="updated">
-        <router-view></router-view>
-    </div>
+  <div id="main" class="app-main" :data-updated="updated">
+    <router-view></router-view>
+  </div>
 </template>
 
 <script>
@@ -9,15 +9,12 @@ export default {
   data() {
     return {
       // 上线之后可以看到是什么时候打的包
-      updated: __UPDATED__
+      updated: __UPDATED__,
     };
   },
-  mounted() {
-
-
-  },
+  mounted() {},
   beforeDestroy() {},
-  methods: {}
+  methods: {},
 };
 </script>
 
@@ -45,5 +42,8 @@ body {
 
 .ivu-btn-text:focus {
   box-shadow: none !important;
+}
+.ivu-card-extra {
+  z-index: 9999999 !important;
 }
 </style>

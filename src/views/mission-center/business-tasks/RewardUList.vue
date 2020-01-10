@@ -36,6 +36,12 @@
     <Card :bordered="false">
       <Table border :show-index="true" :loading="loading" :columns="columns" :data="tableData">
         <template slot-scope="{ row }" slot="action">
+          <Button
+            type="success"
+            size="small"
+            style="margin-right: 5px"
+            @click="toBigc('edit',row)"
+          >编辑页面配置</Button>
           <!-- 
           按钮显示的逻辑如下：
           审核状态 status 0-待审核 1-审核通过 2-审核失败
@@ -52,7 +58,8 @@
           <Button type="success" size="small" style="margin-right: 5px" @click="toData(row)">数据</Button>
           <!-- 只有“待审核、审核通过未开始”状态，才会显示“编辑” -->
 
-          <template v-if="row.status==0||row.status==2">
+          <!--2020.01.09修改 isStop=2/3 在“已结束、已终止”状态，无编辑操作 -->
+          <template v-if="!(row.isStop==2||row.isStop==3) || row.status==0 || row.status==2">
             <Button
               type="primary"
               size="small"
@@ -98,6 +105,16 @@
             </Poptip>
           </template>
         </template>
+        <template slot-scope="{ row }" slot="auditLog">
+          <span v-if="row.status!=2">{{row.statusName}}</span>
+          <Button
+            v-else
+            type="error"
+            size="small"
+            title="查看日志"
+            @click="queryAuditList(row.id)"
+          >{{row.statusName}}</Button>
+        </template>
       </Table>
       <!-- 分页器 -->
       <Row type="flex" justify="end" class="page">
@@ -113,6 +130,10 @@
         ></Page>
       </Row>
     </Card>
+    <!-- bigc 赏u -->
+    <Bigc :action="bigcAction"></Bigc>
+    <!-- 审核日志对话框 -->
+    <ModalAuditLogList :id="id" v-if="showAuditLogList" :showAuditLogList.sync="showAuditLogList"></ModalAuditLogList>
 
     <Drawer v-model="showDetail" :closable="true" width="820" :styles="styles">
       <p slot="header" style="color:#f60;text-align:center">
@@ -160,22 +181,31 @@
   </div>
 </template>
 <script>
+import { createNamespacedHelpers } from "vuex";
+const { mapState, mapMutations } = createNamespacedHelpers("bigc");
+
 import {
   queryRewardUList,
   queryDetailById,
   checkMerchant, // 审核
   downMerchant, // 下架
   delMerchant, // 删除
-  queryMerchantDataById // 数据
+  queryMerchantDataById, // 数据
 } from "@/api/sys";
 import columns from "./columns";
 
 import RewardUDetail from "./RewardUDetail";
+import Bigc from "../bigc";
+
+import ModalAuditLogList from "../log/ModalAuditLogList";
+
 export default {
   name: "reward-u",
   inject: ["merchantTypeOption", "msgOk", "msgErr"],
   components: {
-    RewardUDetail
+    RewardUDetail,
+    Bigc,
+    ModalAuditLogList,
   },
   watch: {
     ["formValidate.status"]() {
@@ -188,7 +218,7 @@ export default {
       }
 
       console.log("reasonPlaceholder", status, this.reasonPlaceholder);
-    }
+    },
   },
   data() {
     // const validateReason = (rule, value, callback) => {
@@ -203,12 +233,20 @@ export default {
     //   }
     // };
     return {
+      showBigc: false,
+      showAuditLogList: false,
+      bigcAction: {
+        _id: Math.random(),
+        type: "add", //add/edit
+        data: null,
+      },
+      bigcData: {},
       showDetail: false,
       styles: {
         height: "calc(100% - 55px)",
         overflow: "auto",
         paddingBottom: "53px",
-        position: "static"
+        position: "static",
       },
       id: "",
       //审核
@@ -216,13 +254,13 @@ export default {
       // 审核状态 1-审核通过 2-审核不通过
       examineStatusOption: {
         "1": "通过",
-        "2": "不通过"
+        "2": "不通过",
       },
       // 请输入50字以内未通过原因
       reasonPlaceholder: "请输入通过原因",
       formValidate: {
         status: "1",
-        reason: ""
+        reason: "",
       },
       ruleValidate: {
         // reason: [
@@ -237,7 +275,7 @@ export default {
       statusOption: {
         "0": "待审核",
         "1": "已通过",
-        "2": "未通过"
+        "2": "未通过",
       },
       // 状态 status 显示“未开始、进行中、已结束、已终止”选项。	默认显示“请选择”。
       // isStop 是否终止 1-中止，0-正常
@@ -246,24 +284,24 @@ export default {
         "0": "未开始",
         "1": "进行中",
         "2": "已结束",
-        "3": "已终止"
+        "3": "已终止",
       },
       // merchantTypeOption: { 0: "本地商户（单店）", 1: "本地商户（多店）" },
       // 查询参数
       searchData: {
         name: "", //任务名称
         status: "", // 审核类型
-        isStop: "" //状态
+        isStop: "", //状态
       },
       loading: false, //列表加载动画
       page: {
         pageNum: 1, //页码
         pageSize: 10, //每页数量
-        total: 0 //数据总数
+        total: 0, //数据总数
       },
       columns,
       tableData: [],
-      detailData: {} //查看详情
+      detailData: {}, //查看详情
     };
   },
   created() {
@@ -271,12 +309,18 @@ export default {
     this.queryTableData();
   },
   methods: {
+    ...mapMutations(["setAssignmentId", "setShowBigc"]),
+    queryAuditList(id) {
+      // console.log("queryAuditList id", id);
+      this.id = id;
+      this.showAuditLogList = true;
+    },
     formModalChange(flag) {
       if (!flag) {
         //清空form表单数据
         this.formValidate = {
           status: "1",
-          reason: ""
+          reason: "",
         };
       }
     },
@@ -297,23 +341,20 @@ export default {
         // 审核 status 状态  isStop 是否终止 1-中止，0-正常
 
         // statusOption/isStopOption
-        const { isStop, status, startTime, endTime, ruleInfoList } = data;
-
+        const { isStop, status, startTime, endTime, ruleDescribe, ruleInfoList } = data;
+        data.newRuleDescribe = ruleDescribe; //规则描述 富文本
         data.statusName = this.statusOption[status]; //审核
         data.isStopName = this.isStopOption[isStop]; //状态
         data.daterange = [startTime, endTime];
         data.ruleInfoList = (ruleInfoList || []).map(item => {
           // item.imgUrl = "https://image.52iuh.cn/wx_mini/LGHFWoUdOt.jpg";
           // item.logoUrl = "https://image.52iuh.cn/wx_mini/vENhDz3BZg.png";
-          const {
-            merchantType,
-            merchantId,
-            brandId,
-            name,
-            imgUrl,
-            logoUrl,
-            shareLogo
-          } = item;
+          const { merchantType, merchantId, brandId, name, imgUrl, logoUrl, shareLogo } = item;
+
+          item.status = status;
+          item.statusName = data.statusName;
+          item.isStop = isStop;
+          item.isStopName = data.isStopName;
           let row = null;
           // 商户类型 0-本地商户（单店），1-本地商户（多店）
           item.merchantTypeName = this.merchantTypeOption[merchantType];
@@ -357,6 +398,17 @@ export default {
         return this.msgErr("数据查询失败！");
       }
     },
+    async toBigc(type, row) {
+      this.setShowBigc(true); //显示对话框
+      this.setAssignmentId(row.id); //商户任务id
+      //页面配置
+      this.bigcAction = {
+        _id: Math.random(),
+        type,
+        data: row,
+      };
+      // this.showBigc = true;
+    },
     async toDetail(row) {
       //查看详情
       const data = await this.queryRowById(row.id);
@@ -381,7 +433,7 @@ export default {
         if (valid) {
           const { code, msg } = await checkMerchant({
             id: this.id,
-            ...this.formValidate
+            ...this.formValidate,
           });
 
           if (code == 200) {
@@ -439,7 +491,7 @@ export default {
     linkTo(compName, data) {
       this.$store.dispatch("missionCenter/changeView", {
         compName,
-        ...data
+        ...data,
       });
     },
     // 刷新搜索
@@ -457,12 +509,12 @@ export default {
 
       queryRewardUList({
         ...this.searchData,
-        ...this.page
+        ...this.page,
       }).then(res => {
         // console.log(res);
         const {
           code,
-          data: { current, total, size, records }
+          data: { current, total, size, records },
         } = res;
 
         if (code == 200) {
@@ -490,13 +542,13 @@ export default {
       this.searchData = {
         name: "", //任务名称
         status: "", // 审核类型
-        isStop: "" //状态
+        isStop: "", //状态
       };
 
       this.page = {
         pageNum: 1, //页码
         pageSize: 10, //每页数量
-        total: 0 //数据总数
+        total: 0, //数据总数
       };
 
       //重新查询一遍
@@ -508,8 +560,8 @@ export default {
       this.$nextTick(() => {
         this.$refs[name].resetFields();
       });
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>

@@ -16,11 +16,9 @@
 
           <Form-item label="小程序appid：" required>
             <i-select v-model="base_info.appid" placeholder="请选择" style="width:300px">
-              <i-option
-                v-for="(item,index) in appStoreList"
-                :key="index"
-                :value="item.appid"
-              >{{item.appName}}</i-option>
+              <i-option v-for="(item, index) in appStoreList" :key="index" :value="item.appid">{{
+                item.appName
+              }}</i-option>
             </i-select>
           </Form-item>
 
@@ -69,22 +67,25 @@
                 v-for="(item, index) in ServiceTypeList"
                 :key="index"
                 :value="item.dictValue"
-                :disabled="base_info.qrcodeType != 1?false:base_info.qrcodeType == 1 && item.dictValue == 1?false:true"
-              >{{item.dictLabel}}</i-option>
+                :disabled="
+                  base_info.qrcodeType != 1 ? false : base_info.qrcodeType == 1 && item.dictValue == 1 ? false : true
+                "
+                >{{ item.dictLabel }}</i-option
+              >
               <!-- <i-option value="2">跳转领优惠详情页</i-option>
               <i-option value="3">跳转附近领优惠券列表</i-option>
               <i-option value="4" @click="getServiceParams('4')">推送优惠券</i-option>-->
             </i-select>
           </Form-item>
 
-          <template v-if="base_info.serviceType==6">
+          <template v-if="base_info.serviceType == 6">
             <Form-item>
-              <Button @click="serviceType6">{{tempName}}</Button>
+              <Button @click="serviceType6">{{ tempName }}</Button>
             </Form-item>
           </template>
           <template v-else>
             <Form-item v-if="base_info.serviceType == 2 || base_info.serviceType == 3">
-              <Button @click="getMerchantCouponList">{{tempName}}</Button>
+              <Button @click="getMerchantCouponList">{{ tempName }}</Button>
             </Form-item>
           </template>
           <Form-item label="二维码参数：" required>
@@ -208,27 +209,23 @@
             <i-input
               v-model="base_info.remark"
               type="textarea"
-              :autosize="{minRows: 2,maxRows: 5}"
+              :autosize="{ minRows: 2, maxRows: 5 }"
               placeholder="请输入备注"
             ></i-input>
           </Form-item>
 
           <Form-item label="小程序码关联业务参数:">
-            <div
-              v-for="(item, index) in base_info.qrcodeServiceParams"
-              :key="index"
-              style="margin-top:5px"
-            >
-              参数{{index+1}}名：
+            <div v-for="(item, index) in base_info.qrcodeServiceParams" :key="index" style="margin-top:5px">
+              参数{{ index + 1 }}名：
               <Input v-model="item.param" placeholder="请输入" style="width: 150px" />
-              参数{{index+1}}值：
+              参数{{ index + 1 }}值：
               <Input v-model="item.value" placeholder="请输入" style="width: 150px" />
               <Button type="error" @click="handleRemove(index)" style="margin-left:10px">删除</Button>
             </div>
             <Button type="primary" icon="md-add" @click="handleAdd" style="margin-top:10px">添加一项</Button>
           </Form-item>
 
-          <Form-item :style="{'margin-top':'34px'}">
+          <Form-item :style="{ 'margin-top': '34px' }">
             <i-button type="primary" @click="submitData" size="large">保存</i-button>
             <i-button @click="returnActivityList" size="large" style="margin-left:10px">返回</i-button>
           </Form-item>
@@ -249,19 +246,13 @@
           border
           highlight-row
           ref="selection"
-          :columns="this.base_info.serviceType == 2?columns1:columns2"
+          :columns="this.base_info.serviceType == 2 ? columns1 : columns2"
           :data="merchantCouponList"
           @on-current-change="selectionCampagin"
         ></Table>
         <!-- 分页器 -->
         <Row type="flex" justify="end" class="page">
-          <Page
-            :total="totalSize"
-            show-total
-            show-elevator
-            :current="current"
-            @on-change="changeCurrent"
-          ></Page>
+          <Page :total="totalSize" show-total show-elevator :current="current" @on-change="changeCurrent"></Page>
         </Row>
         <!-- 分页器 -->
         <Row style="margin:10px 0 0 797px">
@@ -283,17 +274,12 @@
 <script>
 import CouponList from "./CouponList";
 
-import {
-  getMiniApp,
-  getServiceType,
-  addQrCodeManagement,
-  getCampaginListData
-} from "@/api/sys";
+import { getMiniApp, getServiceType, addQrCodeManagement, getCampaginListData } from "@/api/sys";
 export default {
   components: { CouponList },
   props: {
     qrcodeStatus: Number,
-    qrcodeItem: Object
+    qrcodeItem: Object,
   },
   data() {
     return {
@@ -319,9 +305,9 @@ export default {
         qrcodeServiceParams: [
           {
             param: "",
-            value: ""
-          }
-        ]
+            value: "",
+          },
+        ],
         // oldUserTicketTemplateId: "",
         // newUserTicketTemplateId: ""
       },
@@ -349,20 +335,26 @@ export default {
           title: "优惠券ID",
           align: "center",
           minWidth: 140,
-          key: "templateId"
+          key: "templateId",
         },
         {
           title: "优惠券名称",
           align: "center",
           minWidth: 140,
-          key: "title"
+          key: "title",
         },
         {
           title: "所属商户",
           align: "center",
           minWidth: 140,
-          key: "merchantNames"
-        }
+          key: "merchantNames",
+        },
+        {
+          title: "投放渠道",
+          align: "center",
+          minWidth: 140,
+          key: "sendChannelStr",
+        },
       ],
       // 商户列表
       columns2: [
@@ -370,29 +362,33 @@ export default {
           title: "商户ID",
           align: "center",
           minWidth: 140,
-          key: "merchantId"
+          key: "merchantId",
         },
         {
           title: "商户名称",
           align: "center",
           minWidth: 140,
-          key: "name"
-        }
+          key: "name",
+        },
         // {
         //   title: "所属商户",
         //   align: "center",
         //   minWidth: 140,
         //   key: "merchantName"
         // }
-      ]
+        {
+          title: "投放渠道",
+          align: "center",
+          minWidth: 140,
+          key: "sendChannelStr",
+        },
+      ],
     };
   },
   computed: {
     qrDisable() {
       const { serviceType } = this.base_info;
-      return serviceType == 2 || serviceType == 3 || serviceType == 6
-        ? true
-        : false;
+      return serviceType == 2 || serviceType == 3 || serviceType == 6 ? true : false;
     },
     getLineColorR() {
       return this.lineColor_r;
@@ -402,39 +398,18 @@ export default {
     },
     getLineColorB() {
       return this.lineColor_b;
-    }
+    },
   },
   watch: {
     getLineColorR(newValue, oldValue) {
-      this.lineColor_show =
-        "rgb(" +
-        newValue +
-        "," +
-        this.lineColor_g +
-        "," +
-        this.lineColor_b +
-        ")";
+      this.lineColor_show = "rgb(" + newValue + "," + this.lineColor_g + "," + this.lineColor_b + ")";
     },
     getLineColorG(newValue, oldValue) {
-      this.lineColor_show =
-        "rgb(" +
-        this.lineColor_r +
-        "," +
-        newValue +
-        "," +
-        this.lineColor_b +
-        ")";
+      this.lineColor_show = "rgb(" + this.lineColor_r + "," + newValue + "," + this.lineColor_b + ")";
     },
     getLineColorB(newValue, oldValue) {
-      this.lineColor_show =
-        "rgb(" +
-        this.lineColor_r +
-        "," +
-        this.lineColor_g +
-        "," +
-        newValue +
-        ")";
-    }
+      this.lineColor_show = "rgb(" + this.lineColor_r + "," + this.lineColor_g + "," + newValue + ")";
+    },
     // "base_info.appType"(val) {
     //   console.log(val);
     //   this.base_info.appType = val;
@@ -495,7 +470,7 @@ export default {
       var color = {
         r: this.lineColor_r,
         g: this.lineColor_g,
-        b: this.lineColor_b
+        b: this.lineColor_b,
       };
 
       var color1 = JSON.stringify(color);
@@ -515,7 +490,7 @@ export default {
         serviceType: Number(this.base_info.serviceType),
         shopId: this.base_info.shopId,
         uid: this.base_info.uid,
-        width: this.base_info.width
+        width: this.base_info.width,
       };
 
       // console.log(data);
@@ -538,7 +513,7 @@ export default {
       console.log(this.base_info);
       this.$emit("changeStatus", {
         display: false,
-        qrcodeType: this.base_info.qrcodeType
+        qrcodeType: this.base_info.qrcodeType,
       });
     },
 
@@ -550,14 +525,14 @@ export default {
         data = {
           isEffective: 1,
           templateStatus: "进行中",
-          requestFrom: "qrcode"
+          requestFrom: "qrcode",
         };
         url = "/merchantCouponTemplate/backList";
       } else {
         // 跳转周边券列表
         data = {
           operatingStatus: "0",
-          requestFrom: "qrcode"
+          requestFrom: "qrcode",
         };
         url = "/merchant/merchantInfo/list";
       }
@@ -756,18 +731,18 @@ export default {
     msgOk(txt) {
       this.$Message.info({
         content: txt,
-        duration: 3
+        duration: 3,
       });
     },
 
     msgErr(txt) {
       this.$Message.error({
         content: txt,
-        duration: 3
+        duration: 3,
       });
-    }
+    },
     // --------------------------------------------------
-  }
+  },
 };
 </script>
 <style lang="less" scoped>
