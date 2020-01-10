@@ -14,7 +14,7 @@ module.exports = {
       }),
     ],
     optimization: {
-      minimize: process.env.NODE_ENV === "production",
+      minimize: !process.env.VUE_APP_DEV,
       minimizer: [
         new TerserPlugin({
           sourceMap: false,
@@ -70,7 +70,7 @@ module.exports = {
       },
     },
   },
-  // productionSourceMap: false, // 生产环境是否生成 sourceMap 文件，一般情况不建议打开
+  productionSourceMap: !!process.env.VUE_APP_DEV, // 生产环境是否生成 sourceMap 文件，一般情况不建议打开
   //     configureWebpack: {
   //         externals: {
   //             vue: "Vue",
