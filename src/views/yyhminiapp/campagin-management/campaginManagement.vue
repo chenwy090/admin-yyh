@@ -9,21 +9,9 @@
       <div v-if="tab_model == '57'">
         <Row>
           <!-- 搜索 -->
-          <Form
-            ref="search"
-            :model="search"
-            inline
-            :label-width="120"
-            style="display:inline-block;"
-          >
+          <Form ref="search" :model="search" inline :label-width="120" style="display:inline-block;">
             <Form-item label="活动ID" :label-width="100">
-              <Input
-                type="text"
-                v-model="search.campId"
-                clearable
-                placeholder="请输入活动ID"
-                style="width: 200px"
-              />
+              <Input type="text" v-model="search.campId" clearable placeholder="请输入活动ID" style="width: 200px" />
             </Form-item>
             <span v-if="drop">
               <Form-item label="优惠券模板ID" :label-width="100">
@@ -35,13 +23,7 @@
                 />
               </Form-item>
               <Form-item label="活动名称" :label-width="100">
-                <Input
-                  type="text"
-                  v-model="search.name"
-                  clearable
-                  placeholder="请输入活动名称"
-                  style="width: 200px"
-                />
+                <Input type="text" v-model="search.name" clearable placeholder="请输入活动名称" style="width: 200px" />
               </Form-item>
               <!-- <Form-item label="活动标签" :label-width="100">
 
@@ -74,11 +56,7 @@
 
               <Form-item label="投放渠道" :label-width="100">
                 <Select v-model="search.sendChannel" placeholder="请选择" style="width: 200px">
-                  <Option
-                    v-for="item in res_list"
-                    :value="item.dictValue"
-                    :key="item.id"
-                  >{{ item.dictLabel }}</Option>
+                  <Option v-for="item in res_list" :value="item.dictValue" :key="item.id">{{ item.dictLabel }}</Option>
                 </Select>
               </Form-item>
             </span>
@@ -126,32 +104,20 @@
             </template>
 
             <template slot-scope="{ row }" slot="getrules">
-              <span
-                style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;"
-              >
-                {{
-                row.rules
-                }}
+              <span style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;">
+                {{ row.rules }}
               </span>
             </template>
 
             <template slot-scope="{ row }" slot="getcouponValueDesc">
-              <span
-                style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;"
-              >
-                {{
-                row.couponValueDesc
-                }}
+              <span style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;">
+                {{ row.couponValueDesc }}
               </span>
             </template>
 
             <template slot-scope="{ row }" slot="getdoorsillDesc">
-              <span
-                style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;"
-              >
-                {{
-                row.doorsillDesc
-                }}
+              <span style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;">
+                {{ row.doorsillDesc }}
               </span>
             </template>
           </Table>
@@ -176,287 +142,270 @@
             <span style="color:red;">当前功能不可用</span>
           </template>
         </Alert>
-        <Form :model="add_info" ref="add_info" :label-width="180">
-          <FormItem label="appid" required>
-            <Select
-              v-model="add_info.appid"
-              style="width:300px"
-              placeholder="请输入选择appid"
-              @on-change="statusCheckChange"
-            >
-              <Option
-                v-for="item in appId_info"
-                :value="item.appid"
-                :key="item.appid"
-              >{{ item.appName }}</Option>
-            </Select>
-          </FormItem>
-
-          <FormItem label="活动类型" required>
-            <Select v-model="add_info.campType" style="width:300px" disabled>
-              <Option value="57">领优惠</Option>
-              <Option value="62">要优惠</Option>
-              <!-- <Option value="63">领优惠分享奖励</Option> -->
-              <Option value="64">要优惠参与奖励（接受分享/参团）</Option>
-            </Select>
-          </FormItem>
-
-          <FormItem label="优惠券类型" required>
-            <Select
-              v-model="add_info.couponType"
-              style="width:300px"
-              placeholder="请输入选择优惠券类型"
-              @on-change="statusCheckChange"
-              disabled
-            >
-              <Option value="1">换购券</Option>
-              <Option value="2">商品券</Option>
-              <Option value="3">折扣券</Option>
-              <Option value="4">全场券</Option>
-              <Option value="5">赠品券</Option>
-            </Select>
-          </FormItem>
-
-          <FormItem label="活动标题" required>
-            <Input
-              type="text"
-              v-model="add_info.name"
-              style="width:300px"
-              placeholder="请输入活动标题"
-              @on-change="statusCheckChange"
-            />
-          </FormItem>
-
-          <FormItem label="使用门槛描述" required>
-            <Input
-              type="textarea"
-              v-model="add_info.doorsillDesc"
-              style="width:300px"
-              @on-change="statusCheckChange"
-              :autosize="{ minRows: 2, maxRows: 5 }"
-              placeholder="请填写使用门槛描述"
-            />
-          </FormItem>
-
-          <FormItem label="有效期类型" required>
-            <Select
-              v-model="add_info.dateType"
-              style="width:300px"
-              placeholder="请选择有效期类型"
-              @on-change="statusCheckChange"
-              disabled
-            >
-              <Option value="2">永久有效</Option>
-            </Select>
-          </FormItem>
-
-          <FormItem label="优惠券缩略图" required>
-            <!-- <FormItem label="优惠券详情图"> -->
-            <div
-              style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
-              v-for="(item, index) in uploadList1"
-              :key="index"
-            >
-              <img :src="item.url" style="width:100%" />
-            </div>
-            <div style="display: inline-block;">
-              <Upload
-                ref="upload"
-                :defaultList="uploadList1"
-                type="drag"
-                :format="['jpg', 'jpeg', 'png', 'bmp']"
-                :on-success="handleSuccess1"
-                :action="url"
-                accept="image"
-                :max-size="1024"
-                :headers="userToken"
-                style="display: inline-block;width:90px;"
+        <Card>
+          <Alert>
+            <h4>优惠券基本信息</h4>
+          </Alert>
+          <Form :model="add_info" ref="add_info" :label-width="180">
+            <FormItem label="appid" required>
+              <Select
+                v-model="add_info.appid"
+                style="width:300px"
+                placeholder="请输入选择appid"
                 @on-change="statusCheckChange"
               >
-                <div style="width: 90px;height:90px;line-height: 90px;">
-                  <Icon type="ios-camera" size="20" />
-                </div>
-              </Upload>
-              <p>选择优惠券缩略图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
-            </div>
-          </FormItem>
+                <Option v-for="item in appId_info" :value="item.appid" :key="item.appid">{{ item.appName }}</Option>
+              </Select>
+            </FormItem>
 
-          <FormItem label="优惠券详情图" required>
-            <!-- <FormItem label="优惠券详情图"> -->
-            <div
-              style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
-              v-for="(item, index) in uploadList"
-              :key="index"
-            >
-              <img :src="item.url" style="width:100%" />
-            </div>
-            <div style="display: inline-block;">
-              <Upload
-                ref="upload"
-                :defaultList="uploadList"
-                type="drag"
-                :format="['jpg', 'jpeg', 'png', 'bmp']"
-                :on-success="handleSuccess"
-                :action="url"
-                accept="image"
-                :max-size="1024"
-                :headers="userToken"
-                style="display: inline-block;width:90px;"
+            <FormItem label="活动类型" required>
+              <Select v-model="add_info.campType" style="width:300px" disabled>
+                <Option value="57">领优惠</Option>
+                <Option value="62">要优惠</Option>
+                <!-- <Option value="63">领优惠分享奖励</Option> -->
+                <Option value="64">要优惠参与奖励（接受分享/参团）</Option>
+              </Select>
+            </FormItem>
+
+            <FormItem label="优惠券类型" required>
+              <Select
+                v-model="add_info.couponType"
+                style="width:300px"
+                placeholder="请输入选择优惠券类型"
                 @on-change="statusCheckChange"
+                disabled
               >
-                <div style="width: 90px;height:90px;line-height: 90px;">
-                  <Icon type="ios-camera" size="20" />
-                </div>
-              </Upload>
-              <p>选择优惠券详情图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
-            </div>
-          </FormItem>
-          <FormItem label="首页缩略图">
-            <!-- <FormItem label="首页缩略图"> -->
-            <div
-              style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
-              v-for="(item, index) in uploadList1"
-              :key="index"
-            >
-              <img :src="item.url" style="width:100%" />
-            </div>
-            <div style="display: inline-block;">
-              <Upload
-                ref="upload"
-                :defaultList="uploadList"
-                type="drag"
-                :format="['jpg', 'jpeg', 'png', 'bmp']"
-                :on-success="handleSuccess2"
-                :action="url"
-                accept="image"
-                :max-size="1024"
-                :headers="userToken"
-                style="display: inline-block;width:90px;"
+                <Option value="1">换购券</Option>
+                <Option value="2">商品券</Option>
+                <Option value="3">折扣券</Option>
+                <Option value="4">全场券</Option>
+                <Option value="5">赠品券</Option>
+              </Select>
+            </FormItem>
+
+            <FormItem label="活动标题" required>
+              <Input
+                type="text"
+                v-model="add_info.name"
+                style="width:300px"
+                placeholder="请输入活动标题"
                 @on-change="statusCheckChange"
+              />
+            </FormItem>
+
+            <FormItem label="使用门槛描述" required>
+              <Input
+                type="textarea"
+                v-model="add_info.doorsillDesc"
+                style="width:300px"
+                @on-change="statusCheckChange"
+                :autosize="{ minRows: 2, maxRows: 5 }"
+                placeholder="请填写使用门槛描述"
+              />
+            </FormItem>
+
+            <FormItem label="有效期类型" required>
+              <Select
+                v-model="add_info.dateType"
+                style="width:300px"
+                placeholder="请选择有效期类型"
+                @on-change="statusCheckChange"
+                disabled
               >
-                <div style="width: 90px;height:90px;line-height: 90px;">
-                  <Icon type="ios-camera" size="20" />
-                </div>
-              </Upload>
-              <p>选择首页缩略图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
-            </div>
-          </FormItem>
+                <Option value="2">永久有效</Option>
+              </Select>
+            </FormItem>
 
-          <FormItem label="优惠券模板" required>
-            <Button
-              type="dashed"
-              @click="resInfo"
-              :style="{ width: '150px' }"
-              @on-change="statusCheckChange"
-            >选择模版</Button>
+            <FormItem label="优惠券缩略图" required>
+              <!-- <FormItem label="优惠券详情图"> -->
+              <div
+                style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
+                v-for="(item, index) in uploadList1"
+                :key="index"
+              >
+                <img :src="item.url" style="width:100%" />
+              </div>
+              <div style="display: inline-block;">
+                <Upload
+                  ref="upload"
+                  :defaultList="uploadList1"
+                  type="drag"
+                  :format="['jpg', 'jpeg', 'png', 'bmp']"
+                  :on-success="handleSuccess1"
+                  :action="url"
+                  accept="image"
+                  :max-size="1024"
+                  :headers="userToken"
+                  style="display: inline-block;width:90px;"
+                  @on-change="statusCheckChange"
+                >
+                  <div style="width: 90px;height:90px;line-height: 90px;">
+                    <Icon type="ios-camera" size="20" />
+                  </div>
+                </Upload>
+                <p>选择优惠券缩略图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
+              </div>
+            </FormItem>
 
-            <Tag
-              checkable
-              color="error"
-              v-if="add_info.ticketTemplateId"
-              style="margin-left: 3%"
-            >已选择</Tag>
-          </FormItem>
+            <FormItem label="优惠券详情图" required>
+              <!-- <FormItem label="优惠券详情图"> -->
+              <div
+                style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
+                v-for="(item, index) in uploadList"
+                :key="index"
+              >
+                <img :src="item.url" style="width:100%" />
+              </div>
+              <div style="display: inline-block;">
+                <Upload
+                  ref="upload"
+                  :defaultList="uploadList"
+                  type="drag"
+                  :format="['jpg', 'jpeg', 'png', 'bmp']"
+                  :on-success="handleSuccess"
+                  :action="url"
+                  accept="image"
+                  :max-size="1024"
+                  :headers="userToken"
+                  style="display: inline-block;width:90px;"
+                  @on-change="statusCheckChange"
+                >
+                  <div style="width: 90px;height:90px;line-height: 90px;">
+                    <Icon type="ios-camera" size="20" />
+                  </div>
+                </Upload>
+                <p>选择优惠券详情图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
+              </div>
+            </FormItem>
+            <FormItem label="首页缩略图">
+              <!-- <FormItem label="首页缩略图"> -->
+              <div
+                style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
+                v-for="(item, index) in uploadList1"
+                :key="index"
+              >
+                <img :src="item.url" style="width:100%" />
+              </div>
+              <div style="display: inline-block;">
+                <Upload
+                  ref="upload"
+                  :defaultList="uploadList"
+                  type="drag"
+                  :format="['jpg', 'jpeg', 'png', 'bmp']"
+                  :on-success="handleSuccess2"
+                  :action="url"
+                  accept="image"
+                  :max-size="1024"
+                  :headers="userToken"
+                  style="display: inline-block;width:90px;"
+                  @on-change="statusCheckChange"
+                >
+                  <div style="width: 90px;height:90px;line-height: 90px;">
+                    <Icon type="ios-camera" size="20" />
+                  </div>
+                </Upload>
+                <p>选择首页缩略图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
+              </div>
+            </FormItem>
 
-          <FormItem v-if="add_info.ticketName">
-            <Alert style="width:500px">
-              <Row>模版ID：{{ add_info.ticketTemplateId }}</Row>
-              <Row>模版名称：{{ add_info.ticketName }}</Row>
-            </Alert>
-          </FormItem>
+            <FormItem label="优惠券模板" required>
+              <Button type="dashed" @click="resInfo" :style="{ width: '150px' }" @on-change="statusCheckChange"
+                >选择模版</Button
+              >
 
-          <FormItem label="活动/领券规则" required>
-            <Input
-              type="textarea"
-              v-model="add_info.rules"
-              style="width:300px"
-              @on-change="statusCheckChange"
-              :autosize="{ minRows: 2, maxRows: 5 }"
-              placeholder="请填写活动/领券规则"
-            />
-          </FormItem>
+              <Tag checkable color="error" v-if="add_info.ticketTemplateId" style="margin-left: 3%">已选择</Tag>
+            </FormItem>
 
-          <FormItem label="券使用说明">
-            <Input
-              type="textarea"
-              v-model="add_info.useDesc"
-              style="width:300px"
-              :autosize="{ minRows: 2, maxRows: 5 }"
-              @on-change="statusCheckChange"
-            />
-          </FormItem>
+            <FormItem v-if="add_info.ticketName">
+              <Alert style="width:500px">
+                <Row>模版ID：{{ add_info.ticketTemplateId }}</Row>
+                <Row>模版名称：{{ add_info.ticketName }}</Row>
+              </Alert>
+            </FormItem>
 
-          <FormItem label="状态" required placeholder="请选择状态">
-            <Select v-model="add_info.status" style="width:300px" @on-change="statusCheckChange">
-              <Option value="0">创建</Option>
-              <Option value="1">上架</Option>
-              <Option value="-1">下架</Option>
-            </Select>
-          </FormItem>
+            <FormItem label="活动/领券规则" required>
+              <Input
+                type="textarea"
+                v-model="add_info.rules"
+                style="width:300px"
+                @on-change="statusCheckChange"
+                :autosize="{ minRows: 2, maxRows: 5 }"
+                placeholder="请填写活动/领券规则"
+              />
+            </FormItem>
 
-          <FormItem label="拼团设置" required v-if="add_info.campType == 62 && add_info.campId">
-            <Button
-              type="dashed"
-              @click="groupInfo(add_info.campId)"
-              :style="{ width: '150px' }"
-              @on-change="statusCheckChange"
-            >拼团设置</Button>
-          </FormItem>
+            <FormItem label="券使用说明">
+              <Input
+                type="textarea"
+                v-model="add_info.useDesc"
+                style="width:300px"
+                :autosize="{ minRows: 2, maxRows: 5 }"
+                @on-change="statusCheckChange"
+              />
+            </FormItem>
 
-          <FormItem style="{'margin-top':'54px'}">
-            <Button
-              type="primary"
-              @click="campagin_add()"
-              :loading="add_loading"
-              style="width:150px;"
-              :disabled="isCheckDisabled"
-            >保存</Button>
-          </FormItem>
-        </Form>
+            <FormItem label="状态" required placeholder="请选择状态">
+              <Select v-model="add_info.status" style="width:300px" @on-change="statusCheckChange">
+                <Option value="0">创建</Option>
+                <Option value="1">上架</Option>
+                <Option value="-1">下架</Option>
+              </Select>
+            </FormItem>
+
+            <FormItem label="拼团设置" required v-if="add_info.campType == 62 && add_info.campId">
+              <Button
+                type="dashed"
+                @click="groupInfo(add_info.campId)"
+                :style="{ width: '150px' }"
+                @on-change="statusCheckChange"
+                >拼团设置</Button
+              >
+            </FormItem>
+
+            <FormItem style="{'margin-top':'54px'}">
+              <Button
+                type="primary"
+                @click="campagin_add()"
+                :loading="add_loading"
+                style="width:150px;"
+                :disabled="isCheckDisabled"
+                >保存</Button
+              >
+            </FormItem>
+          </Form>
+        </Card>
+
         <!--分享奖励配置-->
-        <Form
-          v-if="formShareModal.shareData.length && tab_model != 64"
-          ref="shareModal"
-          :model="formShareModal"
-          :label-width="180"
-          style="margin-top:20px"
-        >
-          <FormItem
-            v-for="item in formShareModal.shareData"
-            :key="item.id"
-            :label="item.name"
-            required
-          >
-            <!-- <span v-if="item.name!= '倍数'&&item.name!= '上限'">&nbsp;优惠面额 X</span> -->
-            <!-- :disabled="item.name=='分享奖励'" -->
-            <InputNumber
-              :min="item.name == '倍数' ? 1 : 0"
-              :step="1"
-              type="text"
-              v-model="item.value"
-              placeholder="请输入"
-              style="width:320px"
-            ></InputNumber>
-            <span v-if="item.name == '倍数'">&nbsp;倍</span>
-            <span v-else>&nbsp;&nbsp;U贝</span>
-          </FormItem>
-          <FormItem>
-            <Button style="float: left;" type="primary" @click="shareSave('shareModal')">保存</Button>
-          </FormItem>
-        </Form>
+        <Card style="margin-top:1vh" v-if="formShareModal.shareData.length && tab_model != 64">
+          <Alert>
+            <h4>分享奖励配置</h4>
+          </Alert>
+          <Form ref="shareModal" :model="formShareModal" :label-width="180" style="margin-top:20px">
+            <FormItem v-for="item in formShareModal.shareData" :key="item.id" :label="item.name" required>
+              <!-- <span v-if="item.name!= '倍数'&&item.name!= '上限'">&nbsp;优惠面额 X</span> -->
+              <!-- :disabled="item.name=='分享奖励'" -->
+              <InputNumber
+                :min="item.name == '倍数' ? 1 : 0"
+                :step="1"
+                type="text"
+                v-model="item.value"
+                placeholder="请输入"
+                style="width:320px"
+              ></InputNumber>
+              <span v-if="item.name == '倍数'">&nbsp;倍</span>
+              <span v-else>&nbsp;&nbsp;U贝</span>
+            </FormItem>
+            <FormItem>
+              <Button style="float: left;" type="primary" @click="shareSave('shareModal')">保存</Button>
+            </FormItem>
+          </Form>
+        </Card>
       </div>
     </Card>
 
     <Modal v-model="res_Modal_show" width="700" title="选择模版">
       <Form :model="res_info" ref="res_info" :label-width="100" :styles="{ top: '10px' }">
-        <Table
-          border
-          ref="selection"
-          :columns="res_columns"
-          :data="res_list"
-          size="small"
-          height="300"
-        ></Table>
+        <Table border ref="selection" :columns="res_columns" :data="res_list" size="small" height="300"></Table>
       </Form>
 
       <div slot="footer">
@@ -471,11 +420,7 @@
 
     <!-- 1 领优惠基础设置 -->
     <div v-if="basicSetPage">
-      <basicSet
-        :basicSetPage.sync="basicSetPage"
-        @changeStatus="showbasicSetStatus"
-        :camp_Info="camp_Info"
-      ></basicSet>
+      <basicSet :basicSetPage.sync="basicSetPage" @changeStatus="showbasicSetStatus" :camp_Info="camp_Info"></basicSet>
     </div>
 
     <!-- 2 要优惠拼团设置  [领优惠---规则设置]-->
@@ -506,7 +451,6 @@
     ></ModalDownload>
   </div>
 </template>
-
 <script>
 import { getRequest, postRequest, putRequest, deleteRequest, uploadFileRequest } from "@/libs/axios";
 

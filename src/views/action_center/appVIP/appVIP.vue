@@ -50,7 +50,7 @@
           <Row class="operation">
             <span style="margin-right:20px">app专享福利配置</span>
             <Button type="primary" icon="md-add" @click="addInfo(1)">新增</Button>
-            <Button icon="md-refresh" @click="search()">刷新</Button>
+            <Button icon="md-refresh" @click="refresh()">刷新</Button>
           </Row>
           <!-- 用户列表 -->
           <Table border width="100%" :columns="columns1" :data="tableData" :loading="tableLoading">
@@ -393,18 +393,18 @@ export default {
       this.addOrEditDisplay = e;
       this.search();
     },
-
+    refresh() {
+      this.getAppVipListFn(this.searchData);
+    },
     // 搜索
     search() {
-      // 页数
+      this.totalSize = 0;
       this.searchData.pageNum = 1;
       this.getAppVipListFn(this.searchData);
     },
-
     // 重置
     reset() {
       this.daterange = []; // 时间
-
       this.searchData = {
         // 查询参数
         couponName: "",
@@ -414,7 +414,6 @@ export default {
       };
       this.search();
     },
-
     // 列表
     getAppVipListFn(obj) {
       this.tableLoading = true;

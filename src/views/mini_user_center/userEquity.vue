@@ -308,6 +308,7 @@ export default {
   },
   methods: {
     search() {
+      this.totalSize = 0;
       this.searchForm.pageNum = 1;
       this.getList();
     },
@@ -339,6 +340,7 @@ export default {
       this.searchForm.endTime = "";
       this.searchForm.provinceCode = "";
       this.searchForm.cityCode = "";
+      this.totalSize = 0;
       if (name == "searchForm") {
         this.search();
       }

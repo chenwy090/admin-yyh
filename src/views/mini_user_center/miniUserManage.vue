@@ -1,4 +1,3 @@
-
 <template>
   <div class="search">
     <Row>
@@ -20,12 +19,7 @@
 
               <span v-show="drop">
                 <Form-item label="注册渠道：" :label-width="85">
-                  <Select
-                    v-model="searchItem.source"
-                    placeholder="请选择"
-                    clearable
-                    style="width: 200px"
-                  >
+                  <Select v-model="searchItem.source" placeholder="请选择" clearable style="width: 200px">
                     <Option value>全部</Option>
                     <Option value="1">领优惠分享</Option>
                     <Option value="2">周边券分享</Option>
@@ -39,11 +33,9 @@
                 </Form-item>
                 <FormItem label="否促核销核销用户:" :label-width="130">
                   <Select v-model="searchItem.isWriteoffUser" style="width:100px">
-                    <Option
-                      v-for="(item,index) in writeoffUserList"
-                      :value="item.value"
-                      :key="index"
-                    >{{ item.label }}</Option>
+                    <Option v-for="(item, index) in writeoffUserList" :value="item.value" :key="index">{{
+                      item.label
+                    }}</Option>
                   </Select>
                 </FormItem>
 
@@ -61,7 +53,7 @@
                 <Button @click="queryTableList" type="primary" icon="ios-search">搜索</Button>
                 <Button @click="reset">重置</Button>
                 <a class="drop-down" @click="dropDown">
-                  {{dropDownContent}}
+                  {{ dropDownContent }}
                   <Icon :type="dropDownIcon"></Icon>
                 </a>
               </FormItem>
@@ -128,7 +120,7 @@
           <Input
             v-model="edit_info.remark"
             type="textarea"
-            :autosize="{minRows: 2,maxRows: 5}"
+            :autosize="{ minRows: 2, maxRows: 5 }"
             placeholder="请输入..."
             clearable
           />
@@ -136,7 +128,7 @@
       </Form>
 
       <div slot="footer">
-        <Button type="text" @click="edit_Modal_show=false">取消</Button>
+        <Button type="text" @click="edit_Modal_show = false">取消</Button>
 
         <Button type="primary" @click="editOk('edit_info')" :loading="edit_loading">保存</Button>
       </div>
@@ -156,11 +148,7 @@
       </Form>
     </Modal>
 
-    <FileImport
-      v-if="showFileImport"
-      :showFileImport.sync="showFileImport"
-      @refresh="updateTableList"
-    ></FileImport>
+    <FileImport v-if="showFileImport" :showFileImport.sync="showFileImport" @refresh="updateTableList"></FileImport>
   </div>
 </template>
 
