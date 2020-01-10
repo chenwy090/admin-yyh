@@ -78,6 +78,7 @@ export default {
       },
     },
   },
+  inject: ["searchForm"],
   data() {
     return {
       isShow: true,
@@ -196,6 +197,7 @@ export default {
       this.page.pageNum = page || 1;
       this.tableLoading = false;
       const reqParams = {
+        ...(this.searchForm || {}),
         ...this.searchItem,
         ...this.page,
       };

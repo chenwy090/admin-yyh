@@ -138,7 +138,7 @@
                 <DatePicker
                   style="width: 275px;"
                   placeholder="请选择时间"
-                  type="datetimerange"
+                  type="daterange"
                   :options="options1"
                   :value="[modal.startTime, modal.endTime]"
                   @on-change="[modal.startTime, modal.endTime] = $event"
@@ -282,7 +282,7 @@ export default {
         value: "",
         content: "",
         couponType: "",
-        // pushRange:0,
+        pushRange: 0,
         shopRequestList: [],
         location: "",
         businessLayer: "",
@@ -458,6 +458,7 @@ export default {
         startTime: "",
         endTime: "",
         image: "",
+        pushRange: 0,
       };
       this.drawDailyShopList = [
         {
@@ -650,14 +651,14 @@ export default {
         this.$Message.error("请选择时间");
         return;
       }
-      if (new Date(this.modal.startTime) < new Date()) {
-        this.$Message.error("开始时间要大于当前时间");
-        return;
-      }
-      if (new Date(this.modal.startTime) >= new Date(this.modal.endTime)) {
-        this.$Message.error("开始时间不能大于等于结束时间");
-        return;
-      }
+      // if (new Date(this.modal.startTime) < new Date()) {
+      //   this.$Message.error("开始时间要大于当前时间");
+      //   return;
+      // }
+      // if (new Date(this.modal.startTime) >= new Date(this.modal.endTime)) {
+      //   this.$Message.error("开始时间不能大于等于结束时间");
+      //   return;
+      // }
       if (!this.modal.image) {
         this.$Message.error("请上传图片");
         return;
@@ -704,7 +705,7 @@ export default {
                 onOk: () => {},
               });
             } else {
-              this.$Message.error(res.msg || "");
+              this.$Message.error(res.msg || "系统错误！");
             }
           });
         } else {
@@ -727,7 +728,7 @@ export default {
                 onOk: () => {},
               });
             } else {
-              this.$Message.error(res.msg);
+              this.$Message.error(res.msg || "系统错误！");
             }
           });
         }

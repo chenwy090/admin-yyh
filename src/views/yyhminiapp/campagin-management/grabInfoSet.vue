@@ -564,7 +564,7 @@ export default {
                 let obj = {
                   numberStart: numberStart,
                   numberEnd: count,
-                  ratio: item.ratio * 100,
+                  ratio: Number((item.ratio * 100).toFixed()),
                   times: item.times,
                 };
                 numberStart = count + 1;
