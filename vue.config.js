@@ -70,7 +70,7 @@ module.exports = {
       },
     },
   },
-  productionSourceMap: !!process.env.VUE_APP_DEV, // 生产环境是否生成 sourceMap 文件，一般情况不建议打开
+  productionSourceMap: false, // 生产环境是否生成 sourceMap 文件，一般情况不建议打开
   //     configureWebpack: {
   //         externals: {
   //             vue: "Vue",
