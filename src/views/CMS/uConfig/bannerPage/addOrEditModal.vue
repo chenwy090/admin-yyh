@@ -141,7 +141,11 @@
                   type="daterange"
                   :options="options1"
                   :value="[modal.startTime, modal.endTime]"
-                  @on-change="[modal.startTime, modal.endTime] = $event"
+                  @on-change="
+                    [modal.startTime, modal.endTime] = $event;
+                    modal.startTime += ' 00:00:00';
+                    modal.endTime += ' 23:59:59';
+                  "
                 ></DatePicker>
               </FormItem>
             </Col>
@@ -744,6 +748,11 @@ export default {
         if (res.code == "200") {
           this.modal.title = res.data.bannerInfo.title;
           this.modal.type = res.data.bannerInfo.type;
+
+          // 后台配置优惠券类型有 6 7 前端只显示 6类型
+          if (this.modal.type == 7) {
+            this.modal.type = 6;
+          }
           this.modal.image = res.data.bannerInfo.image;
           this.modal.value = res.data.bannerInfo.value;
           this.modal.content = res.data.bannerInfo.content;
