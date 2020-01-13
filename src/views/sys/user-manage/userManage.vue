@@ -520,12 +520,13 @@
             }
           ],
           phonenumber: [
+            // String regExp = "^(13[0-9]|14[56789]|15[0-3,5-9]|16[56]|17[0-3,5-8]|18[0-9]|19[189])\\d{8}$";
             {
               type: "number",
               message: "请输入正确的手机号",
               trigger: "change",
               transform(value) {
-                var phone = /^[1][3,4,5,7,8][0-9]{9}$/;
+                var phone = /^(13[0-9]|14[56789]|15[0-3,5-9]|16[56]|17[0-3,5-8]|18[0-9]|19[189])\\d{8}$/;
                 if (value) {
                   if (!phone.test(value)) {
                     return false;
