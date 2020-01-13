@@ -447,7 +447,9 @@ export default {
     },
     //搜索
     queryTableList() {
-      let re = /^1[3|4|5|8][0-9]\d{4,8}$/;
+      // let re = /^1[3|4|5|8][0-9]\d{4,8}$/;
+      let re = /^(13[0-9]|14[56789]|15[0-3,5-9]|16[56]|17[0-3,5-8]|18[0-9]|19[189])\\d{8}$/;
+
       let { phoneNumber } = this.searchItem;
       if (!re.test(phoneNumber)) {
         return this.$Message.error("请输入正确的手机号");
