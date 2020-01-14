@@ -71,7 +71,7 @@
                   :pushRange.sync="modal.pushRange"
                   :shopRequestList.sync="modal.shopRequestList"
                   :shopRequestListInfo.sync="modal.shopInfos"
-                  disabled
+                  :disabled="true"
                 ></storeForm>
               </FormItem>
 
