@@ -1839,6 +1839,10 @@ export default {
       });
       // brandNames = brandNames.join(",");
 
+      campaign.settleAmount = campaign.settleAmountYuan;
+      campaign.price = campaign.priceYuan;
+      campaign.originalPrice = campaign.originalPriceYuan;
+
       return {
         brandIds,
         brandNames,
