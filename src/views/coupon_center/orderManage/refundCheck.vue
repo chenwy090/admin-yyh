@@ -4,18 +4,8 @@
       <Card style="height: 100%">
         <div>
           <Card :bordered="false" style="margin-bottom:2px">
-            <Form
-              ref="searchForm"
-              label-position="right"
-              :label-width="100"
-              :model="searchForm"
-              inline
-            >
-              <RadioGroup
-                v-model="searchForm.auditStatus"
-                @on-change="changeRadio"
-                style="width: 100%;margin: 10px;"
-              >
+            <Form ref="searchForm" label-position="right" :label-width="100" :model="searchForm" inline>
+              <RadioGroup v-model="searchForm.auditStatus" @on-change="changeRadio" style="width: 100%;margin: 10px;">
                 <Radio label="1">
                   <span>待审核</span>
                 </Radio>
@@ -51,8 +41,12 @@
                   @on-change="(datetime) =>{ changeDateTime(datetime, 2)}"
                 ></DatePicker> -->
 
-                <DatePicker type="daterange" v-model="searchForm.applyRefundTimeDate" placeholder="选择退款申请时间" @on-change="[searchForm.applyRefundTimeStart, searchForm.applyRefundTimeEnd] = $event"></DatePicker>
-
+                <DatePicker
+                  type="daterange"
+                  v-model="searchForm.applyRefundTimeDate"
+                  placeholder="选择退款申请时间"
+                  @on-change="[searchForm.applyRefundTimeStart, searchForm.applyRefundTimeEnd] = $event"
+                ></DatePicker>
               </FormItem>
               <FormItem span="20" :label-width="1" style="width:23%">
                 <Button
@@ -61,7 +55,8 @@
                   icon="ios-search"
                   @click="search('searchForm')"
                   style="margin-right: 5px"
-                >搜索</Button>
+                  >搜索</Button
+                >
                 <!--<Button type="primary" icon="ios-search" @click="search">搜索</Button>-->
                 <Button icon="md-refresh" @click="reset">重置</Button>
               </FormItem>
@@ -69,7 +64,7 @@
           </Card>
           <Card>
             <Row class="operation">
-              <Button type="primary" @click="checkModal" v-if="searchForm.auditStatus=='1'">批量审核</Button>
+              <Button type="primary" @click="checkModal" v-if="searchForm.auditStatus == '1'">批量审核</Button>
               <!--<span v-if="refreshData&&refreshData.allOrderCount">总共{{refreshData.allOrderCount}}单，待付款{{refreshData.pendingPaymentOrderCount}}单，已付款{{refreshData.paidOrderCount}}单，已取消{{refreshData.cancelledOrderCount}}单，退款{{refreshData.refundOrderCount}}单</span>-->
               <!--<Button type="primary" icon="ios-download-outline" @click="downFn">下载</Button>-->
             </Row>
@@ -84,27 +79,20 @@
                 @on-selection-change="handleSelect"
               >
                 <template slot-scope="{ row }" slot="action">
+                  <Button type="info" style="margin-right: 5px" size="small" @click="oneCheck(row, 'detail')"
+                    >查看详情</Button
+                  >
                   <Button
                     type="info"
                     style="margin-right: 5px"
                     size="small"
-                    @click="oneCheck(row,'detail')"
-                  >查看详情</Button>
-                  <Button
-                    type="info"
-                    style="margin-right: 5px"
-                    size="small"
-                    v-if="searchForm.auditStatus=='1'"
-                    @click="oneCheck(row,'audit')"
-                  >审核</Button>
+                    v-if="searchForm.auditStatus == '1'"
+                    @click="oneCheck(row, 'audit')"
+                    >审核</Button
+                  >
                 </template>
                 <template slot-scope="{ row }" slot="log">
-                  <Button
-                    type="info"
-                    style="margin-right: 5px"
-                    size="small"
-                    @click="showLog(row)"
-                  >审核日志</Button>
+                  <Button type="info" style="margin-right: 5px" size="small" @click="showLog(row)">审核日志</Button>
                 </template>
               </Table>
             </Row>
@@ -123,7 +111,7 @@
         </div>
       </Card>
     </div>
-    <Modal title="批量审核" v-model="showCheck" :styles="{top: '20px'}" @on-cancel="closeAuditModal">
+    <Modal title="批量审核" v-model="showCheck" :styles="{ top: '20px' }" @on-cancel="closeAuditModal">
       <Form ref="form" :model="checkData" label-position="right" :label-width="120">
         <FormItem label="审核结果：" prop="status">
           <RadioGroup v-model="checkData.auditStatus">
@@ -134,8 +122,11 @@
               <span>不通过</span>
             </Radio>
           </RadioGroup>
+          <div>
+            <p style="color:red;">退款申请过后，退款将原路退回用户账户，请谨慎操作！</p>
+          </div>
         </FormItem>
-        <FormItem label="备注：" prop="remark" :rules="{ required: true,validator:validateRemark}">
+        <FormItem label="备注：" prop="remark" :rules="{ required: true, validator: validateRemark }">
           <Row>
             <Col span="16">
               <Tooltip trigger="focus" title="提醒" content="最多100个汉字" placement="right">
@@ -157,32 +148,20 @@
       </div>
     </Modal>
 
-    <Drawer
-      v-model="showDetail"
-      :closable="true"
-      :mask-closable="true"
-      width="700"
-      :styles="styles"
-    >
+    <Drawer v-model="showDetail" :closable="true" :mask-closable="true" width="700" :styles="styles">
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="ios-information-circle"></Icon>
-        <span>{{title}}</span>
+        <span>{{ title }}</span>
       </p>
       <checkModal ref="showDetailModal" :showDetail.sync="showDetail" @refresh="closeTab"></checkModal>
     </Drawer>
     <Modal v-model="showLogModal" width="700">
       <p slot="header" style="color:#f60;text-align:center">审核日志</p>
       <div style="text-align:center">
-        <Table
-          :loading="TableLoading"
-          border
-          :columns="tableColumnsLog"
-          :data="logData"
-          ref="tableLog"
-        ></Table>
+        <Table :loading="TableLoading" border :columns="tableColumnsLog" :data="logData" ref="tableLog"></Table>
       </div>
       <div slot="footer">
-        <Button type="error" @click="showLogModal=false">关闭</Button>
+        <Button type="error" @click="showLogModal = false">关闭</Button>
       </div>
     </Modal>
   </div>
@@ -205,14 +184,14 @@ export default {
       sourceList: [
         { value: "mini", label: "微信小程序" },
         { value: "IOS", label: "苹果app" },
-        { value: "Android", label: "安卓app" }
+        { value: "Android", label: "安卓app" },
       ],
       statusList: [
         { value: "1", label: "待付款" },
         { value: "2", label: "已取消" },
         { value: "3", label: "已付款" },
         { value: "4", label: "退款" },
-        { value: "5", label: "已完成" }
+        { value: "5", label: "已完成" },
       ],
       TableLoading: false,
       totalSize: 0,
@@ -222,54 +201,54 @@ export default {
       selectDataList: [],
       checkData: {
         auditStatus: "2",
-        remark: ""
+        remark: "",
       },
       tableColumnsLog: [
         {
           title: "审核人",
           width: 160,
           key: "auditUser",
-          align: "center"
+          align: "center",
         },
         {
           title: "审核时间",
           width: 180,
           key: "auditTime",
-          align: "center"
+          align: "center",
         },
         {
           title: "审核结果",
           key: "auditResult",
-          align: "center"
+          align: "center",
         },
         {
           title: "审核备注",
           key: "remark",
-          align: "center"
-        }
+          align: "center",
+        },
       ],
       tableColumns: [
         {
           type: "selection",
           width: 60,
-          align: "center"
+          align: "center",
         },
         {
           title: "操作",
           width: 200,
           align: "center",
-          slot: "action"
+          slot: "action",
         },
         {
           title: "订单编号",
           width: 200,
-          key: "orderNo"
+          key: "orderNo",
         },
         {
           title: "退款原因",
           width: 200,
           align: "center",
-          key: 'refundReason'
+          key: "refundReason",
         },
         // {
         //   title: "券码状态",
@@ -279,85 +258,85 @@ export default {
         {
           title: "退款金额",
           width: 200,
-          align: 'right',
-          key: 'realRefundMoney'
+          align: "right",
+          key: "realRefundMoney",
         },
         {
           title: "优惠券ID",
           width: 200,
           align: "center",
-          key: "couponId"
+          key: "couponId",
         },
         {
           title: "优惠券标题",
           width: 200,
           align: "center",
-          key: "couponTitle"
+          key: "couponTitle",
         },
         {
           title: "所属商户",
           minWidth: 250,
           align: "center",
-          key: "merchantName"
+          key: "merchantName",
         },
         {
           title: "数量",
           minWidth: 150,
           align: "right",
-          key: "amount"
+          key: "amount",
         },
         {
           title: "单价",
           width: 100,
           align: "right",
-          key: "price"
+          key: "price",
         },
         {
           title: "总价",
           width: 100,
           align: "right",
-          key: "totalPrice"
+          key: "totalPrice",
         },
         {
           title: "U贝抵扣",
           minWidth: 100,
           align: "right",
-          key: "ubayDiscount"
+          key: "ubayDiscount",
         },
         {
           title: "红包抵扣",
           minWidth: 150,
           align: "right",
-          key: "redEnvelopeDiscount"
+          key: "redEnvelopeDiscount",
         },
         {
           title: "实付款",
           width: 100,
           align: "right",
-          key: "realPay"
+          key: "realPay",
         },
         {
           title: "买家",
           width: 120,
           align: "center",
-          key: "phoneNumber"
+          key: "phoneNumber",
         },
         {
           title: "付款时间",
           minWidth: 250,
           align: "center",
-          key: "payTime"
+          key: "payTime",
         },
         {
           title: "渠道",
           minWidth: 150,
-          key: "source"
+          key: "source",
         },
         {
           title: "审核日志",
           minWidth: 150,
-          slot: "log"
-        }
+          slot: "log",
+        },
       ],
       selectDataList: [],
       searchForm: {
@@ -368,7 +347,7 @@ export default {
         orderNo: "",
         phoneNumber: "",
         current: 1,
-        pageSize: 10
+        pageSize: 10,
       },
       current: 1,
       addressData: [],
@@ -382,8 +361,8 @@ export default {
         height: "calc(100% - 55px)",
         overflow: "auto",
         paddingBottom: "53px",
-        position: "static"
-      }
+        position: "static",
+      },
     };
   },
   methods: {
@@ -416,7 +395,7 @@ export default {
       this.loadTableData();
     },
     reset() {
-      this.$refs['searchForm'].resetFields()
+      this.$refs["searchForm"].resetFields();
       this.searchForm.applyRefundTimeDate = "";
       this.searchForm.applyRefundTimeEnd = "";
       this.searchForm.applyRefundTimeStart = "";
@@ -439,19 +418,17 @@ export default {
       this.totalSize = 0;
       this.listData = [];
       this.TableLoading = true;
-      postRequest(
-        `/trade/fund/account/order/orderRefundPage?pageNum=${page ||
-          1}&pageSize=10`,
-        this.searchForm
-      ).then(res => {
-        this.TableLoading = false;
-        if (res.code === "200") {
-          this.totalSize = res.data.total;
-          this.listData = res.data.records;
-        } else {
-          this.$Message.error("获取数据失败");
+      postRequest(`/trade/fund/account/order/orderRefundPage?pageNum=${page || 1}&pageSize=10`, this.searchForm).then(
+        res => {
+          this.TableLoading = false;
+          if (res.code === "200") {
+            this.totalSize = res.data.total;
+            this.listData = res.data.records;
+          } else {
+            this.$Message.error("获取数据失败");
+          }
         }
-      });
+      );
     },
     checkModal() {
       if (!this.selectDataList.length) {
@@ -500,6 +477,7 @@ export default {
     cancelHandleReset(name) {
       this.$nextTick(() => {
         this.$refs[name].resetFields();
+        this.showCheck = false;
       });
     },
     validateRemark(rule, value, callback) {
@@ -531,11 +509,11 @@ export default {
     },
     close() {
       this.$emit("close", false);
-    }
+    },
   },
   created() {
     this.search();
-  }
+  },
 };
 </script>
 

@@ -1,20 +1,18 @@
-
 <template>
   <div class="search">
     <Card>
       <Tabs @on-click="changeTab" v-model="tab_model" value="1">
-        <TabPane v-for="(item,index) in tabs" :label="item.lable" :name="item.value" :key="index"></TabPane>
+        <TabPane v-for="(item, index) in tabs" :label="item.lable" :name="item.value" :key="index"></TabPane>
       </Tabs>
-      <div v-if="tab_model=='1'">
+      <div v-if="tab_model == '1'">
         <allOrder></allOrder>
       </div>
-      <div v-if="tab_model=='2'">
+      <div v-if="tab_model == '2'">
         <refundCheck></refundCheck>
       </div>
     </Card>
   </div>
 </template>
-
 
 <script>
 import allOrder from "./allOrder";
@@ -28,15 +26,16 @@ export default {
       tabs: [
         {
           lable: "全部订单",
-          value: "1"
+          value: "1",
         },
         {
           lable: "退款审核",
-          value: "2"
-        }
-      ]
+          value: "2",
+        },
+      ],
     };
   },
+  created() {},
   methods: {
     // 切换tab
     changeTab(obj) {
@@ -75,10 +74,9 @@ export default {
       // }
       //
       // this.updateTableList();
-    }
-  }
+    },
+  },
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

@@ -59,6 +59,14 @@
                   <Option v-for="item in res_list" :value="item.dictValue" :key="item.id">{{ item.dictLabel }}</Option>
                 </Select>
               </Form-item>
+
+              <Form-item label="收费类型" :label-width="100" prop="couponKind">
+                <Select v-model="search.couponKind" placeholder="请选择" style="width: 200px">
+                  <Option :value="0">全部</Option>
+                  <Option :value="1">免费</Option>
+                  <Option :value="3">收费</Option>
+                </Select>
+              </Form-item>
             </span>
             <Button type="primary" icon="ios-search" @click="queryTableList">搜索</Button>
             <Button icon="md-refresh" style="margin-left:5px" @click="resetting">重置</Button>
@@ -420,7 +428,8 @@
 
     <!-- 1 领优惠基础设置 -->
     <div v-if="basicSetPage">
-      <basicSet :basicSetPage.sync="basicSetPage" @changeStatus="showbasicSetStatus" :camp_Info="camp_Info"></basicSet>
+      <!-- :camp_Info="camp_Info" -->
+      <basicSet :basicSetPage.sync="basicSetPage" @changeStatus="showbasicSetStatus" :campId="campId"></basicSet>
     </div>
 
     <!-- 2 要优惠拼团设置  [领优惠---规则设置]-->
@@ -507,6 +516,7 @@ export default {
         // startDate: "", // 开始时间
         // endDate: "" // 结束时间
         sendChannel: "",
+        couponKind:0
       },
       res_list: [],
       templatelist: [], // 活动标签列表 （搜索用）
@@ -635,7 +645,12 @@ export default {
             );
           },
         },
-
+        {
+          title: "收费类型",
+          key: "couponKind",
+          width: 200,
+          align: "center",
+        },
         {
           title: "活动时间类型",
           key: "dateType",
@@ -1444,7 +1459,8 @@ export default {
       this.setStore("camp_pageStatus", "edit");
 
       item.newDiscountDetail = item.discountDetail;
-      this.camp_Info = item;
+      // this.camp_Info = item;
+      this.campId = item.campId;
       this.basicSetPage = true;
     },
 

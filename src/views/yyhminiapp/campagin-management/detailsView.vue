@@ -71,6 +71,12 @@
                 </Col>
               </Row>
 
+              <Row style="margin-left:100px;margin-bottom:15px">
+                <Col span="12">
+                  <ChargeTypeItem :disabled="true" :chargeData="edit_info"></ChargeTypeItem>
+                </Col>
+              </Row>
+
               <Row>
                 <Col span="12">
                   <FormItem label="优惠面额描述" v-if="edit_info.campType==57">
@@ -509,9 +515,11 @@ import { baseUrl, uploadOperationImage2AliOssURl } from "@/api/index";
 import { formatDate } from "@/libs/date";
 import EditorBar from "@/components/EditorBar";
 
+import ChargeTypeItem from "./comp/ChargeTypeItem";
+
 export default {
   name: "detailsView",
-  components: { EditorBar },
+  components: { EditorBar, ChargeTypeItem },
   props: {
       camp_Info: Object
     },

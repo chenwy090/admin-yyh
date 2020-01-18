@@ -5,12 +5,14 @@
       <Form label-position="right" ref="form" :model="formData" :label-width="120">
         <FormItem label="审核结果：" prop="status">
           <RadioGroup v-model="formData.auditStatus">
-            <Radio v-for="(v,k) in auditStatusOption" :key="k" :label="k">{{ v }}</Radio>
+            <Radio v-for="(v, k) in auditStatusOption" :key="k" :label="k">{{ v }}</Radio>
           </RadioGroup>
+          <div>
+            <p style="color:red;">退款申请过后，退款将原路退回用户账户，请谨慎操作！</p>
+          </div>
         </FormItem>
-
         <!-- :rules="{ required: formData.auditStatus == 3?true:false,validator:formData.auditStatus == 3?validateReason:null }" -->
-        <FormItem label="备注：" prop="remark" :rules="{ required: true,validator:validateReason}">
+        <FormItem label="备注：" prop="remark" :rules="{ required: true, validator: validateReason }">
           <Row>
             <Col span="16">
               <Tooltip trigger="focus" title="提醒" content="最多100个汉字" placement="right">
@@ -18,7 +20,7 @@
                   v-model="formData.remark"
                   type="textarea"
                   style="width:300px"
-                  :autosize="{minRows: 4,maxRows: 8}"
+                  :autosize="{ minRows: 4, maxRows: 8 }"
                   :placeholder="reasonPlaceholder"
                   :maxlength="100"
                 />
@@ -42,8 +44,8 @@ export default {
   props: {
     id: {
       type: [String, Number],
-      default: ""
-    }
+      default: "",
+    },
   },
   watch: {
     ["formData.auditStatus"]() {
@@ -57,7 +59,7 @@ export default {
       } else {
         this.reasonPlaceholder = "请输入100字以内未通过原因";
       }
-    }
+    },
   },
   data() {
     return {
@@ -65,15 +67,15 @@ export default {
       // 审核状态 2-审核通过 3-审核不通过 审核结果2:通过、3：拒绝
       auditStatusOption: {
         "2": "通过",
-        "3": "拒绝"
+        "3": "拒绝",
       },
       // 请输入50字以内未通过原因
       reasonPlaceholder: "请输入通过原因",
       formData: {
         orderRefundId: "",
         auditStatus: "2",
-        remark: ""
-      }
+        remark: "",
+      },
     };
   },
   methods: {
@@ -96,7 +98,7 @@ export default {
         const url = "/trade/fund/account/order/leafletRefundAudit";
         const { code, msg } = await postRequest(url, {
           ...this.formData,
-          orderRefundId: this.id
+          orderRefundId: this.id,
         });
         this.auditLoading = false;
         if (code == 200) {
@@ -113,22 +115,23 @@ export default {
     cancelHandleReset(name) {
       this.$nextTick(() => {
         this.$refs[name].resetFields();
+        this.$emit("close");
       });
     },
     // 全局提示
     msgOk(txt) {
       this.$Message.info({
         content: txt,
-        duration: 3
+        duration: 3,
       });
     },
     msgErr(txt) {
       this.$Message.error({
         content: txt,
-        duration: 3
+        duration: 3,
       });
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>
