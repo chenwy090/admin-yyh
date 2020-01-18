@@ -1760,37 +1760,40 @@ export default {
       let res = await this.queryXX(row.campId);
       const rowData = {
         ...res,
-        appid: row.appid,
-        campId: row.campId,
-        campType: row.campType,
-        couponType: row.couponType,
-        couponValueDesc: row.couponValueDesc,
-        createBy: row.createBy,
-        createTime: row.createTime,
-        dateType: row.dateType,
-        doorsillDesc: row.doorsillDesc,
-        endDate: row.endDate,
-        imgUrl: row.imgUrl,
-        isLimitGrap: row.isLimitGrap,
-        label: row.label,
-        name: row.name,
-        params: row.params,
-        rules: row.rules,
-        startDate: row.startDate,
-        status: row.status,
-        ticketName: row.ticketName,
-        ticketTemplateId: row.ticketTemplateId,
-        updateBy: row.updateBy,
-        updateTime: row.updateTime,
-        useDesc: row.useDesc,
-        couponImg: row.couponImg,
-        ChangeDateType: row.changeDateType,
-        ChangeStartDate: row.changeStartDate,
-        ChangeEndDate: row.changeEndDate,
-        ChangeStart: row.changeStart,
-        ChangeEnd: row.changeEnd,
-        discountDetail: row.discountDetail, // 优惠券详情（富文本）
+        // appid: row.appid,
+        // campId: row.campId,
+        // campType: row.campType,
+        // couponType: row.couponType,
+        // couponValueDesc: row.couponValueDesc,
+        // createBy: row.createBy,
+        // createTime: row.createTime,
+        // dateType: row.dateType,
+        // doorsillDesc: row.doorsillDesc,
+        // endDate: row.endDate,
+        // imgUrl: row.imgUrl,
+        // isLimitGrap: row.isLimitGrap,
+        // label: row.label,
+        // name: row.name,
+        // params: row.params,
+        // rules: row.rules,
+        // startDate: row.startDate,
+        // status: row.status,
+        // ticketName: row.ticketName,
+        // ticketTemplateId: row.ticketTemplateId,
+        // updateBy: row.updateBy,
+        // updateTime: row.updateTime,
+        // useDesc: row.useDesc,
+        // couponImg: row.couponImg,
+        // ChangeDateType: row.changeDateType,
+        // ChangeStartDate: row.changeStartDate,
+        // ChangeEndDate: row.changeEndDate,
+        // ChangeStart: row.changeStart,
+        // ChangeEnd: row.changeEnd,
+        // discountDetail: row.discountDetail, // 优惠券详情（富文本）
         //  newDiscountDetail: "", //中转数据
+
+        // 1.5.6.1.1
+        ...res.campaign
       };
       this.camp_Info3 = rowData;
       this.detailsDisplay = true;
@@ -1798,7 +1801,7 @@ export default {
 
     async queryXX(campId) {
       let url = "/campagin/selectCampaignByCampId";
-      let { code, msg, classListList, brandList } = await postRequest(url, {
+      let { code, msg, classListList, brandList, campaign } = await postRequest(url, {
         campId,
       });
       let categoryList = [];
@@ -1841,6 +1844,7 @@ export default {
         brandNames,
         brandCodes,
         categoryList,
+        campaign
       };
     },
 
