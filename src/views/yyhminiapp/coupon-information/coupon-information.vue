@@ -5,7 +5,7 @@
         <Form-item label="领取人手机" prop="campId">
           <Input type="text" v-model="searchForm.campId" placeholder="请输入领取人手机" style="width: 150px" />
         </Form-item>
-        <Form-item label="使用状态">
+        <Form-item label="使用状态" prop="campId">
           <Select v-model="searchForm.campId" placeholder="请选择使用状态">
             <Option :value="''">全部</Option>
             <Option :value="1">已使用</Option>
@@ -15,12 +15,12 @@
           </Select>
         </Form-item>
 
-        <Form-item label="优惠券码">
+        <Form-item label="优惠券码" prop="campId">
           <Input type="text" v-model="searchForm.campId" placeholder="请输入优惠券码" style="width: 150px" />
         </Form-item>
 
         <span v-if="drop">
-          <Form-item label="领取终端">
+          <Form-item label="领取终端" prop="campId">
             <Select v-model="searchForm.campId" placeholder="请选择领取终端">
               <Option :value="''">全部</Option>
               <Option :value="1">小程序</Option>
@@ -29,29 +29,29 @@
             </Select>
           </Form-item>
 
-          <Form-item label="核销门店ID">
+          <Form-item label="核销门店ID" prop="campId">
             <Input type="text" v-model="searchForm.campId" placeholder="请输入核销门店ID" style="width: 150px" />
           </Form-item>
 
-          <Form-item label="领取时间段">
+          <Form-item label="领取时间段" prop="receiveTime">
             <DatePicker
-              type="date"
+              type="daterange"
               placeholder="请选择领取时间段"
-              style="width: 150px"
+              style="width: 180px"
               format="yyyy-MM-dd"
-              @on-change="searchForm.receiveStartTime = $event"
-              :value="searchForm.receiveStartTime"
+              @on-change="[searchForm.receiveStartTime, searchForm.receiveEndTime] = $event"
+              v-model="searchForm.receiveTime"
             ></DatePicker>
           </Form-item>
 
-          <Form-item label="核销时间段">
+          <Form-item label="核销时间段" prop="receiveTime">
             <DatePicker
-              type="date"
+              type="daterange"
               placeholder="请选择核销时间段"
-              style="width: 150px"
+              style="width: 180px"
               format="yyyy-MM-dd"
-              @on-change="searchForm.receiveStartTime = $event"
-              :value="searchForm.receiveStartTime"
+              @on-change="[searchForm.receiveStartTime, searchForm.receiveEndTime] = $event"
+              v-model="searchForm.receiveTime"
             ></DatePicker>
           </Form-item>
         </span>
@@ -214,12 +214,13 @@ export default {
         // 搜索
         campId: "",
         name: "",
-        receiveEndTime: "",
         receiveShopId: "",
         receiveStartTime: "",
-        verifyEndTime: "",
+        receiveEndTime: "",
         verifyShopId: "",
         verifyStartTime: "",
+        verifyEndTime: "",
+        receiveTime: [],
       },
       //列表字段显示
       columns1: columns,
@@ -269,8 +270,10 @@ export default {
     },
     // 重置form表单
     resetForm() {
+      this.totalSize = 0;
+      this.current = 1;
+      this.searchForm.receiveTime = [];
       this.$refs.searchForm.resetFields();
-      this.searchType = 1;
       this.getList();
     },
 

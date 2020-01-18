@@ -348,6 +348,7 @@ export default {
         phoneNumber: "",
         current: 1,
         pageSize: 10,
+        couponTemplateType: 2,
       },
       current: 1,
       addressData: [],
@@ -403,6 +404,7 @@ export default {
       this.searchForm.phoneNumber = "";
       this.searchForm.auditStatus = "1";
       this.searchForm.current = 1;
+      this.searchForm.couponTemplateType = 2;
       this.current = 1;
       this.loadTableData();
     },

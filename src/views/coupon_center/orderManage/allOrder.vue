@@ -255,6 +255,7 @@ export default {
         status: "",
         current: 1,
         pageSize: 10,
+        couponTemplateType: 2,
       },
       current: 1,
       addressData: [],
@@ -280,6 +281,7 @@ export default {
       this.searchForm.phoneNumber = "";
       this.searchForm.source = "";
       this.searchForm.status = "";
+      this.searchForm.couponTemplateType = 2;
       this.current = 1;
       this.search();
     },

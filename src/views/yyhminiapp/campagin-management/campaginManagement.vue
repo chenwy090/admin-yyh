@@ -128,6 +128,11 @@
                 {{ row.doorsillDesc }}
               </span>
             </template>
+
+            <template slot-scope="{ row }" slot="couponKind">
+              <span> {{row.couponKind}} </span>
+            </template>
+            
           </Table>
         </Row>
         <Row type="flex" justify="end" class="page">
@@ -650,6 +655,7 @@ export default {
           key: "couponKind",
           width: 200,
           align: "center",
+          slot:'couponKind',
         },
         {
           title: "活动时间类型",
