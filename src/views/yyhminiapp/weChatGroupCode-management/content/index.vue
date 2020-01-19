@@ -47,7 +47,7 @@
 	  </Card>
 	  <addOrEdit :action="actionContent" @refresh="queryTableData"></addOrEdit>
 	  <Modal title="查看二维码大图" v-model="visibleImg">
-	    	<div class="fl-image-modal"><img :src="imgUrlView"  style="width: 100%"></div>
+	    	<div class="fl-image-modal"><img :src="imgUrlView" ></div>
 	    <div slot="footer"></div>
 		</Modal>
 	</div>
@@ -73,6 +73,7 @@
 		watch: {
 		    action: {
 		      handler(val, oldVal) {
+		      	console.log('fffffffffff')
 		        let { type, data } = this.action;
 		        this.flexibleQrcodeId = data.id;
 		        console.log(data)
@@ -169,7 +170,7 @@
 		            }
 		        }
 		    }],
-				tableData:[{title:'二维码标题',id:122,img:'',frequency:100,residualNum:2,time:'2020-09-09',status:'可用'}],
+				tableData:[],
 				loading:false,
 				page: {
 	        pageNum: 1, //页码
@@ -227,7 +228,8 @@
 				this.actionContent = {
         	type, //query/edit
         	data,
-        	flexibleQrcodeId:this.flexibleQrcodeId
+        	flexibleQrcodeId:this.flexibleQrcodeId,
+        	total:this.page.total
 				}
 			},
 			deleteList(row){
@@ -257,8 +259,13 @@
 <style scoped lang="less">
 	.fl-image-modal{
 		width:300px;
-		max-height:300px;
+		height:300px;
 		margin:0 auto;
+		text-align:center;
+		img{
+			max-width:100%;
+			max-height:100%;
+		}
 	}
 	.btn-wechat{
 		margin:0 5px;

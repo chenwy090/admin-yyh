@@ -13,10 +13,10 @@
       	<img :src="imgUrl" />
       </div>
       <div slot="footer" style="text-align:center;">
-      	<a href="###" :download="imgUrl">
+      	<!-- <a href="###" :download="imgUrl">
 					下 载
-				</a>
-       <!--  <Button type="primary" @click="downLoad">下   载</Button> -->
+				</a> -->
+        <Button type="primary" @click="downLoad">下   载</Button>
       </div>
   </Modal>
 </template>
@@ -93,7 +93,9 @@
 			  };
 			  image.src = imgsrc;
 			},
+			
 			downLoad(){
+
 				//this.downloadIamge(this.imgUrl, 'pic')
 			}
 		}

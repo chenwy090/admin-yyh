@@ -1,15 +1,13 @@
 <template>
   <div>
-    <template v-if="!isButton">
-      <span class="label">{{label}}</span>
-      <div class="demo-upload-list" v-for="item in uploadList" :key="item.uid">
-        <img :src="item.imgUrl" />
-        <div class="demo-upload-list-cover">
-          <Icon type="ios-eye-outline" @click.native="handleView(item.imgUrl)"></Icon>
-          <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
-        </div>
+    <span class="label">{{label}}</span>
+    <div class="demo-upload-list" v-for="item in uploadList" :key="item.uid">
+      <img :src="item.imgUrl" />
+      <div class="demo-upload-list-cover">
+        <Icon type="ios-eye-outline" @click.native="handleView(item.imgUrl)"></Icon>
+        <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
       </div>
-    </template>
+    </div>
     <!-- :default-file-list="defaultList" -->
     <div style="display: inline;">
       <Upload
@@ -21,7 +19,7 @@
         :format="['jpg','png']"
         :on-format-error="handleFormatError"
         :show-upload-list="false"
-        :default-file-list="defaultList"
+        :default-file-list="myDefaultList"
         :before-upload="handleBeforeUpload"
         :on-success="handleUploadSuccess"
         :max-size="2048"
@@ -29,18 +27,13 @@
         :style="uploadStyle"
       >
         <!-- :style="display: inline-block;width:90px;" -->
-        <template v-if="!isButton">
-          <template v-if="uploadList.length==0">
-            <div style="width: 90px;height:90px;line-height: 90px;">
-              <Icon type="ios-camera" size="20" />
-            </div>
-          </template>
-          <template v-else>
-            <Button size="small" icon="ios-cloud-upload-outline">更改</Button>
-          </template>
+        <template v-if="uploadList.length==0">
+          <div style="width: 90px;height:90px;line-height: 90px;">
+            <Icon type="ios-camera" size="20" />
+          </div>
         </template>
         <template v-else>
-          <Button type="primary" icon="md-add">上传群码</Button>
+          <Button size="small" icon="ios-cloud-upload-outline">更改</Button>
         </template>
       </Upload>
       <!-- <p style="font-size:12px">选择图片(不大于1M,JPG/PNG/JPEG/BMP）</p> -->
@@ -70,16 +63,12 @@ export default {
     fileUploadType: {
       type: [String, Number],
       default: ""
-    },
-    isButton: {
-      type: Boolean,
-      default: false
     }
   },
   watch: {
     defaultList: {
       handler: function() {
-        // console.log("watch", JSON.stringify(this.defaultList));
+         //console.log("watch", JSON.stringify(this.defaultList));
         this.uploadList = [];
         for (let i = 0; i < this.defaultList.length; i++) {
           let item = this.defaultList[i];
@@ -91,16 +80,13 @@ export default {
   },
   computed: {
     uploadStyle() {
-      if(!this.isButton){
-        return this.uploadList.length == 0
-          ? "display: inline-block;width:90px;"
-          : "float:'left';padding-top:60px;";
-      }
+      return this.uploadList.length == 0
+        ? "display: inline-block;width:90px;"
+        : "float:'left';padding-top:60px;";
+      
     },
     dragType() {
-      if(!this.isButton){
-        return this.uploadList.length ? "select" : "drag";
-      }
+      return this.uploadList.length ? "select" : "drag";
     }
   },
   data() {
@@ -112,7 +98,8 @@ export default {
       url: uploadOperationImage2AliOssURl,
       uploadList: [],
       imgUrl: "",
-      visible: false
+      visible: false,
+      myDefaultList:this.defaultList
     };
   },
   created() {
@@ -122,8 +109,8 @@ export default {
   },
   mounted() {
     // this.uploadList = this.$refs.upload.fileList;
-    if (this.defaultList.length) {
-      this.uploadList = this.defaultList;
+    if (this.myDefaultList.length) {
+      this.uploadList = this.myDefaultList;
     }
   },
 
@@ -134,7 +121,7 @@ export default {
     },
     handleRemove(file) {
       this.uploadList = [];
-      this.defaultList = [];
+      this.myDefaultList = [];
       this.$emit("remove");
     },
     handleUploadSuccess(res, file, fileList) {

@@ -24,22 +24,15 @@
 	          
 	        >
 	        	<div style="display:inline-block;vertical-align:middle">
-	        		<UploadImage
-	        				:isButton="isButton"
-	                :fileUploadType="'addCode'"
-	                :defaultList="formData.defaultAddCodeList"
-	                @remove="removeImg('addCode')"
-	                @uploadSuccess="ImgUploadSuccess('addCode',$event)"
-	            ></UploadImage>
-							<!-- <Upload
+							<Upload
 				        multiple
 				        :headers="userToken"
-	        			:action="url"
+	        			:action="actionUrl"
 	        			:show-upload-list="false"
 	        			:before-upload="handleBeforeUpload"
 	        			:on-success="handleUploadSuccess">
 				        <Button type="primary" icon="md-add">上传群码</Button>
-				    	</Upload> -->
+				    	</Upload>
 						</div>
 					</FormItem>
 					<FormItem
@@ -114,7 +107,7 @@
 	  watch: {
 	    action: {
 	      handler(val, oldVal) {
-	      	let { type, data,flexibleQrcodeId } = this.action;
+	      	let { type, data,flexibleQrcodeId,total } = this.action;
 	      	this.flexibleQrcodeId = flexibleQrcodeId;
 	        console.log(flexibleQrcodeId)
 	        console.log("新增群二维码");
@@ -123,12 +116,12 @@
 	        // 新增
 	        this.isButton = true;
 	        if(type == "add") {
-	        	
+	        	this.countNum = total;
 	        	this.title = "新增群二维码";
-	        	this.url = "/flexible/wechatQrcode/add";
+	        	this.postUrl = "/flexible/wechatQrcode/add";
 	        }else if(type == "edit"){
 	        	this.title = "编辑群二维码";
-	        	this.url = "/flexible/wechatQrcode/edit";
+	        	this.postUrl = "/flexible/wechatQrcode/edit";
 	        	this.formData.id = data.id;
 	        	//回显弹窗信息
 	        	this.queryWechatQrcodeSelectById(data);
@@ -141,7 +134,7 @@
 	  	return{
 	  		showModal:false,
 	  		title:"",
-	  		url:"",
+	  		postUrl:"",
 	  		formData:{
 	  			id:"",
 	  			title:"",
@@ -157,9 +150,10 @@
 	  		},
 	  		userToken: {}, //用户token
       	// 文件上传
-      	url: uploadOperationImage2AliOssURl,
+      	actionUrl:uploadOperationImage2AliOssURl,
       	expiredTime:"",
-      	isButton:true
+      	isButton:true,
+      	countNum:''
 	  	}
 	  },
 	  created() {
@@ -241,22 +235,39 @@
   			}
     	},
 	    handlerSubmit(formName){
-	    	this.$refs[formName].validate(async valid => {
+	    	this.$refs[formName].validate(valid => {
 	    		if(valid){
 	    			const {formData:{title,remark,file,frequency,time,id,logo},flexibleQrcodeId,expiredTime} = this;
 	    			let params = "";
+	    			//let __file = [];
 	    			if(this.action.type == "add"){
-	    				let __file = [];
-	    				file.forEach(item =>{
-	    					__file.push(item.imgUrl)
+	    				//判断还能上传几个文件
+	    				let superNum = 30 - this.countNum;
+	    				if(file.length > superNum){
+	    					this.$Message.error(`还能上传${superNum}个群码图片`);
+	    					return false
+	    				}
+	    				let formData = new FormData();  
+	    				for (let i = 0; i < file.length; i++) {
+						     formData.append("file", file[i]); // 文件对象
+						  }
+	    				//先执行批量上传接口获取图片地址，然后再新增数据
+	    				this.postRequest('/operation/operation-info/batchUploadOperationImage2AliOss',formData).then(val =>{
+	    					if(val.code == 200){
+	    						//__file = val.image_url;
+	    						params = {
+				    				expiredTime:expiredTime,
+				    				flexibleQrcodeId:flexibleQrcodeId,
+				    				name:title,
+				    				switchTimes:frequency,
+				    				wechatQrcodeList:val.image_url
+				    			}
+				    			//this.disabled = true;
+				    			this.handlerSubmitSend(params);
+	    					}else{
+	    						this.$Message.error(val.msg);
+	    					}
 	    				})
-		    			params = {
-		    				expiredTime:expiredTime,
-		    				flexibleQrcodeId:flexibleQrcodeId,
-		    				name:title,
-		    				switchTimes:frequency,
-		    				wechatQrcodeList:__file
-		    			}
 		    		}else if(this.action.type == "edit"){
 		    			params = {
 		    				expiredTime:expiredTime,
@@ -265,30 +276,42 @@
 		    				switchTimes:frequency,
 		    				wechatQrcode:logo
 		    			}
+		    			//this.disabled = true;
+		    			this.handlerSubmitSend(params);
 		    		}
-	    			console.log(params)
-	    			let {code,msg} = await this.postRequest(this.url,params);
-	    			if(code == 200){
-	    				this.$Message.success("操作成功");
-	    				this.showModal = false;
-	  					this.$refs['form'].resetFields();
-	  					this.$emit("refresh")
-	    			}else{
-	    				this.$Message.error(msg);
-	    			}
 	    		}else{
 	    			return false;
 	    		}
 	    	})
 	    },
+	    async handlerSubmitSend(params){
+	    	console.log(params)
+	    	let {code,msg} = await this.postRequest(this.postUrl,params);
+  			if(code == 200){
+  				//this.disabled = false;
+  				this.$Message.success("操作成功");
+  				this.showModal = false;
+					this.$refs['form'].resetFields();
+					this.$emit("refresh")
+  			}else{
+  				//this.disabled = false;
+  				this.$Message.error(msg);
+  			}
+	    },
 	    handleBeforeUpload(file){
 	    	console.log(file)
 	    	let that = this;
-        if(that.formData.file.length >= 2){
-            this.$Message.info("最多只能上传10个文件");
-        }else{
-            that.formData.file.push(file.name);
-        }
+	    	//let superNum = 30 - that.countNum;
+	    	//if(superNum < 10){
+	    		//this.$Message.info(`还能上传${superNum}个文件`);
+	    		//return false;
+	    	//}else{
+	        if(that.formData.file.length >= 10){
+	          this.$Message.info("最多只能上传10个文件");
+	          return false;
+	        }
+	        that.formData.file.push(file);
+	      //}   
         return false
 	    },
 	    handleUploadSuccess(res, file, fileList) {
@@ -308,8 +331,6 @@
 	    delFileList(index){
           let that = this;
           that.formData.file.splice(index, 1);
-          
-          
       }
 	  }
 	}

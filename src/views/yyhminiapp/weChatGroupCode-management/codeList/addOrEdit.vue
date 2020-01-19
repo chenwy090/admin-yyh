@@ -197,8 +197,8 @@
 	    		codeImg:data.backupQrcode,
 	    		defaultCodeImgList:[{imgUrl:data.backupQrcode}],
 	    		account:data.mobile,
-	    		logo:data.logo,
-	    		defaultLogoList:[{imgUrl:data.logo}]
+	    		logo:data.qrcodeLogo,
+	    		defaultLogoList:[{imgUrl:data.qrcodeLogo}]
 	    	}
 	    }
 	  }
