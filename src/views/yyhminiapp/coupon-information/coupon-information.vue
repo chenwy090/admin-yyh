@@ -2,11 +2,11 @@
   <div>
     <Card>
       <Form ref="searchForm" :model="searchForm" inline :label-width="95" class="search-form">
-        <Form-item label="领取人手机" prop="campId">
-          <Input type="text" v-model="searchForm.campId" placeholder="请输入领取人手机" style="width: 150px" />
+        <Form-item label="领取人手机" prop="phoneNumber">
+          <Input type="text" v-model="searchForm.phoneNumber" placeholder="请输入领取人手机" style="width: 150px" />
         </Form-item>
-        <Form-item label="使用状态" prop="campId">
-          <Select v-model="searchForm.campId" placeholder="请选择使用状态">
+        <Form-item label="使用状态" prop="status">
+          <Select v-model="searchForm.status" placeholder="请选择使用状态" style="width: 120px">
             <Option :value="''">全部</Option>
             <Option :value="1">已使用</Option>
             <Option :value="2">未使用</Option>
@@ -15,13 +15,13 @@
           </Select>
         </Form-item>
 
-        <Form-item label="优惠券码" prop="campId">
-          <Input type="text" v-model="searchForm.campId" placeholder="请输入优惠券码" style="width: 150px" />
+        <Form-item label="优惠券码" prop="couponBarcode">
+          <Input type="text" v-model="searchForm.couponBarcode" placeholder="请输入优惠券码" style="width: 150px" />
         </Form-item>
 
         <span v-if="drop">
-          <Form-item label="领取终端" prop="campId">
-            <Select v-model="searchForm.campId" placeholder="请选择领取终端">
+          <Form-item label="领取终端" prop="terminal">
+            <Select v-model="searchForm.terminal" placeholder="请选择领取终端" style="width: 120px">
               <Option :value="''">全部</Option>
               <Option :value="1">小程序</Option>
               <Option :value="2">IOS</Option>
@@ -29,8 +29,8 @@
             </Select>
           </Form-item>
 
-          <Form-item label="核销门店ID" prop="campId">
-            <Input type="text" v-model="searchForm.campId" placeholder="请输入核销门店ID" style="width: 150px" />
+          <Form-item label="核销门店ID" prop="verifyShopId">
+            <Input type="text" v-model="searchForm.verifyShopId" placeholder="请输入核销门店ID" style="width: 150px" />
           </Form-item>
 
           <Form-item label="领取时间段" prop="receiveTime">
@@ -44,14 +44,14 @@
             ></DatePicker>
           </Form-item>
 
-          <Form-item label="核销时间段" prop="receiveTime">
+          <Form-item label="核销时间段" prop="verifyTime">
             <DatePicker
               type="daterange"
               placeholder="请选择核销时间段"
               style="width: 180px"
               format="yyyy-MM-dd"
-              @on-change="[searchForm.receiveStartTime, searchForm.receiveEndTime] = $event"
-              v-model="searchForm.receiveTime"
+              @on-change="[searchForm.verifyStartTime, searchForm.verifyEndTime] = $event"
+              v-model="searchForm.verifyTime"
             ></DatePicker>
           </Form-item>
         </span>
@@ -94,19 +94,20 @@
   </div>
 </template>
 <script>
-import { getCouponList, getQueryLogAll } from "@/api/sys";
-import { baseUrl } from "@/api/index";
+// import { getCouponList, getQueryLogAll } from "@/api/sys";
+// import { baseUrl } from "@/api/index";
+import * as order from "@/api/order";
 
 const columns = [
   {
     title: "订单编号",
-    key: "campId",
+    key: "orderNo",
     minWidth: 150,
     align: "center",
   },
   {
     title: "优惠券标题",
-    key: "campId",
+    key: "couponTitle",
     minWidth: 150,
     align: "center",
   },
@@ -118,85 +119,85 @@ const columns = [
   },
   {
     title: "优惠券模板ID",
-    key: "campId",
+    key: "ticketTemplateId",
     minWidth: 150,
     align: "center",
   },
   {
     title: "面额",
-    key: "campId",
+    key: "couponMoney",
     minWidth: 150,
     align: "center",
   },
   {
     title: "券码",
-    key: "campId",
+    key: "barcode",
     minWidth: 150,
     align: "center",
   },
   {
     title: "领取人手机号",
-    key: "campId",
+    key: "mobile",
     minWidth: 150,
     align: "center",
   },
   {
     title: "一键核销码",
-    key: "campId",
+    key: "userVerifyCode",
     minWidth: 150,
     align: "center",
   },
   {
     title: "领取终端",
-    key: "campId",
+    key: "receivedFrom",
     minWidth: 150,
     align: "center",
   },
   {
     title: "领取时间",
-    key: "campId",
+    key: "receiveTime",
     minWidth: 150,
     align: "center",
   },
   {
     title: "核销时间",
-    key: "campId",
+    key: "verifyTime",
     minWidth: 150,
     align: "center",
   },
   {
     title: "核销门店",
-    key: "campId",
+    key: "shopName",
     minWidth: 150,
     align: "center",
   },
   {
     title: "核销收银台编号",
-    key: "campId",
+    key: "posNo",
     minWidth: 150,
     align: "center",
   },
   {
     title: "核销流水号",
-    key: "campId",
+    key: "listNo",
     minWidth: 150,
     align: "center",
   },
   {
     title: "退款时间",
-    key: "campId",
+    key: "refundedTime",
     minWidth: 150,
     align: "center",
   },
   {
     title: "过期时间",
-    key: "campId",
+    key: "lastUseTime",
     minWidth: 150,
     align: "center",
   },
   {
     title: "使用状态",
-    key: "campId",
+    key: "useStatusDesc",
     minWidth: 150,
     align: "center",
   },
@@ -211,15 +212,18 @@ export default {
       dropDownIcon: "ios-arrow-down",
       TableLoading: false,
       searchForm: {
-        // 搜索
-        campId: "",
-        name: "",
-        receiveShopId: "",
-        receiveStartTime: "",
-        receiveEndTime: "",
-        verifyShopId: "",
-        verifyStartTime: "",
-        verifyEndTime: "",
+        pageNum: 1,
+        pageSize: 10,
+        phoneNumber: "", //手机号
+        status: "", //使用状态
+        couponBarcode: "", //券码
+        terminal: "", //终端
+        verifyShopId: "", //核销门店
+        verifyStartTime: "", //核销时间(start)
+        verifyEndTime: "", //核销时间(end)
+        receiveStartTime: "", //领取时间(start)
+        receiveEndTime: "", //领取时间(end)
+        verifyTime: [],
         receiveTime: [],
       },
       //列表字段显示
@@ -237,6 +241,7 @@ export default {
     // 搜索
     search() {
       this.current = 1;
+      this.searchForm.pageNum = 1;
       this.totalSize = 0;
       this.getList();
     },
@@ -247,7 +252,7 @@ export default {
     getList() {
       // 加载动画
       this.TableLoading = true;
-      getCouponList(this.searchForm, this.current).then(res => {
+      order.receiveInfoPage(this.searchForm).then(res => {
         //console.log(res);
         if (res.code == 200) {
           this.data1 = res.data.records;
@@ -265,6 +270,7 @@ export default {
     },
     // 分页
     changeCurrent(current) {
+      this.searchForm.pageNum = current;
       this.current = current;
       this.getList();
     },
@@ -272,7 +278,9 @@ export default {
     resetForm() {
       this.totalSize = 0;
       this.current = 1;
+      this.searchForm.pageNum = 1;
       this.searchForm.receiveTime = [];
+      this.searchForm.verifyTime = [];
       this.$refs.searchForm.resetFields();
       this.getList();
     },

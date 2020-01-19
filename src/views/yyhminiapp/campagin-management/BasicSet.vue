@@ -510,7 +510,7 @@ export default {
         couponKind: 1,
         originalPrice: 0,
         price: 0,
-        enableAfterSale: 1,
+        enableAfterSale: 0,
         settleAmount: 0,
       },
       edit_loading: false,
@@ -728,7 +728,7 @@ export default {
         couponKind: 1,
         originalPrice: 0,
         price: 0,
-        enableAfterSale: 1,
+        enableAfterSale: 0,
         settleAmount: 0,
       };
       this.currentChooseID = "";

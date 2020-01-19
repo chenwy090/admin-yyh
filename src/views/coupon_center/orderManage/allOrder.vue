@@ -58,8 +58,8 @@
             </Form>
           </Card>
           <Card style="margin-top: 1vh;">
-            <Row class="operation">
-              <!-- <Button type="primary" icon="md-refresh" @click="refech">刷新</Button> -->
+            <Row class="operation" style="margin-bottom:1vh">
+              <Button icon="md-refresh" @click="refech">刷新</Button>
               <!-- <span
                 v-if="refreshData&&refreshData.allOrderCount"
               >总共{{refreshData.allOrderCount}}单，待付款{{refreshData.pendingPaymentOrderCount}}单，已付款{{refreshData.paidOrderCount}}单，已取消{{refreshData.cancelledOrderCount}}单，退款{{refreshData.refundOrderCount}}单</span> -->
@@ -81,7 +81,14 @@
                     <Button type="info" size="small" @click="showDetail(row)">查看详情</Button>
                     <!-- 申请退款 -->
                     <!-- 申请退款：“已付款、退款失败 -->
-                    <Button type="error" size="small" @click="applyRefund(row)">申请退款</Button>
+                    <!-- 退款状态 （1：退款中 2：部分退款 3：全部退款 4：退款失败） -->
+                    <Button
+                      :disabled="!((row.status === 5 && row.refundStatus === 4) || row.status === 4)"
+                      type="error"
+                      size="small"
+                      @click="applyRefund(row)"
+                      >申请退款</Button
+                    >
                   </ButtonGroup>
                 </template>
               </Table>
@@ -116,7 +123,11 @@
       ></showDetailModal>
     </Drawer>
 
-    <applyRefundModal :showModal.sync="applyRefundModalVisible"></applyRefundModal>
+    <applyRefundModal
+      :showModal.sync="applyRefundModalVisible"
+      :orderNo="orderNo"
+      @ok="applyRefundOk"
+    ></applyRefundModal>
   </div>
 </template>
 
@@ -124,6 +135,7 @@
 import showDetailModal from "./showDetailModal";
 import applyRefundModal from "./applyRefundModal";
 import { postRequest, getRequest, getSyncRequest } from "@/libs/axios";
+import * as order from "@/api/order";
 const tableColumns = [
   {
     title: "操作",
@@ -212,6 +224,7 @@ export default {
   components: { showDetailModal, applyRefundModal },
   data() {
     return {
+      orderNo: null, //订单编号
       styles: {
         height: "calc(100% - 55px)",
         overflow: "auto",
@@ -272,6 +285,9 @@ export default {
       this.totalSize = 0;
       this.loadTableData();
     },
+    refech() {
+      this.loadTableData();
+    },
     reset() {
       this.$refs["searchForm"].resetFields();
       this.searchForm.gmtCreateDate = "";
@@ -309,10 +325,43 @@ export default {
     },
     // 申请退款
     applyRefund(row) {
+      this.orderNo = row.orderNo;
       this.applyRefundModalVisible = true;
     },
+    applyRefundOk() {
+      this.search();
+    },
     // 下载订单
-    downExcel() {},
+    downExcel() {
+      if (true) {
+        this.$Message.error("请选择需要下载的订单数据，单次做多导出1个月的订单");
+        return;
+      }
+
+      order.orderDownload(this.searchForm).then(res => {
+        console.info(res);
+        if (res.code == 500) return;
+        const content = res.data;
+        let fileName = res.headers["filename"];
+        const blob = new Blob([content], {
+          type: "application/vnd.ms-excel",
+        });
+        if ("download" in document.createElement("a")) {
+          // 非IE下载
+          const elink = document.createElement("a");
+          elink.download = decodeURI(fileName);
+          elink.style.display = "none";
+          elink.href = URL.createObjectURL(blob);
+          document.body.appendChild(elink);
+          elink.click();
+          URL.revokeObjectURL(elink.href); // 释放URL 对象
+          document.body.removeChild(elink);
+        } else {
+          // IE10+下载
+          navigator.msSaveBlob(blob, fileName);
+        }
+      });
+    },
     changeCurrent(current) {
       if (this.searchForm.pageNum != current) {
         this.searchForm.pageNum = current;
