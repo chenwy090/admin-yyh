@@ -20,14 +20,14 @@
         </Form-item>
 
         <span v-if="drop">
-          <Form-item label="领取终端" prop="terminal">
+          <!-- <Form-item label="领取终端" prop="terminal">
             <Select v-model="searchForm.terminal" placeholder="请选择领取终端" style="width: 120px">
               <Option :value="''">全部</Option>
               <Option :value="1">小程序</Option>
               <Option :value="2">IOS</Option>
               <Option :value="3">安卓</Option>
             </Select>
-          </Form-item>
+          </Form-item> -->
 
           <Form-item label="核销门店ID" prop="verifyShopId">
             <Input type="text" v-model="searchForm.verifyShopId" placeholder="请输入核销门店ID" style="width: 150px" />
@@ -99,12 +99,12 @@
 import * as order from "@/api/order";
 
 const columns = [
-  {
-    title: "订单编号",
-    key: "orderNo",
-    minWidth: 150,
-    align: "center",
-  },
+  // {
+  //   title: "订单编号",
+  //   key: "orderNo",
+  //   minWidth: 150,
+  //   align: "center",
+  // },
   {
     title: "优惠券标题",
     key: "couponTitle",
@@ -147,12 +147,12 @@ const columns = [
     minWidth: 150,
     align: "center",
   },
-  {
-    title: "领取终端",
-    key: "receivedFrom",
-    minWidth: 150,
-    align: "center",
-  },
+  // {
+  //   title: "领取终端",
+  //   key: "receivedFrom",
+  //   minWidth: 150,
+  //   align: "center",
+  // },
   {
     title: "领取时间",
     key: "receiveTime",
@@ -217,7 +217,7 @@ export default {
         phoneNumber: "", //手机号
         status: "", //使用状态
         couponBarcode: "", //券码
-        terminal: "", //终端
+        // terminal: "", //终端
         verifyShopId: "", //核销门店
         verifyStartTime: "", //核销时间(start)
         verifyEndTime: "", //核销时间(end)

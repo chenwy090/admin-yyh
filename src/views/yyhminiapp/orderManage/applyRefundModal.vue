@@ -1,5 +1,5 @@
 <template>
-  <Modal v-model="showModal2" :mask-closable="false" title="退款申请" @on-cancel="cancel">
+  <Modal v-model="showModal2" :mask-closable="false" title="退款申请" @on-cancel="cancel" @on-visible-change="close">
     <p style="padding: 10px 0;color:red;">退款申请过后，退款将原路退回用户账户，请谨慎操作！</p>
     <Form ref="formData222" :label-width="90" :model="formData" :rules="ruleCustom">
       <FormItem label="退款原因：" required prop="refundReason">
@@ -59,6 +59,15 @@ export default {
     },
     cancel() {
       this.$emit("update:showModal", false);
+    },
+    close(result) {
+      console.info(result);
+      if (!result) {
+        this.formData = {
+          refundReason: "",
+          orderNo: null,
+        };
+      }
     },
   },
 };

@@ -150,11 +150,18 @@ const tableColumns = [
     key: "orderNo",
   },
   {
-    title: "状态",
+    title: "订单状态",
     width: 120,
     align: "center",
     key: "statusStr",
   },
+  {
+    title: "券码状态",
+    width: 120,
+    align: "center",
+    key: "couponTemplateTypeStr",
+  },
+
   {
     title: "优惠券ID",
     width: 180,
