@@ -23,24 +23,6 @@
                 <Input v-model="searchForm.orderNo" placeholder="请填写订单号" />
               </FormItem>
               <FormItem label="退款申请时间：" :label-width="120">
-                <!-- <DatePicker
-                  :value="searchForm.applyRefundTimeStart"
-                  type="date"
-                  placeholder="选择开始退款申请时间"
-                  style="width: 48%"
-                  :options="options1"
-                  @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
-                ></DatePicker>
-                <div style="width: 2%;display: inline-block"></div>
-                <DatePicker
-                  :value="searchForm.applyRefundTimeEnd"
-                  type="date"
-                  placeholder="选择结束退款申请时间"
-                  style="width: 48%"
-                  :options="options2"
-                  @on-change="(datetime) =>{ changeDateTime(datetime, 2)}"
-                ></DatePicker> -->
-
                 <DatePicker
                   type="daterange"
                   v-model="searchForm.applyRefundTimeDate"
@@ -170,6 +152,142 @@
 <script>
 import checkModal from "./checkModal";
 import { postRequest } from "@/libs/axios";
+const tableColumns = [
+  {
+    type: "selection",
+    width: 60,
+    align: "center",
+  },
+  {
+    title: "操作",
+    width: 200,
+    align: "center",
+    slot: "action",
+  },
+  {
+    title: "订单编号",
+    width: 200,
+    key: "orderNo",
+  },
+  {
+    title: "退款原因",
+    width: 200,
+    align: "center",
+    key: "refundReason",
+  },
+  // {
+  //   title: "券码状态",
+  //   width: 200,
+  //   key: 'barCodeStatus'
+  // },
+  {
+    title: "退款金额",
+    width: 200,
+    align: "right",
+    key: "realRefundMoney",
+  },
+  {
+    title: "优惠券ID",
+    width: 200,
+    align: "center",
+    key: "couponId",
+  },
+  {
+    title: "优惠券标题",
+    width: 200,
+    align: "center",
+    key: "couponTitle",
+  },
+  // {
+  //   title: "所属商户",
+  //   minWidth: 250,
+  //   align: "center",
+  //   key: "merchantName",
+  // },
+  {
+    title: "数量",
+    minWidth: 150,
+    align: "right",
+    key: "amount",
+  },
+  {
+    title: "单价",
+    width: 100,
+    align: "right",
+    key: "price",
+  },
+  {
+    title: "总价",
+    width: 100,
+    align: "right",
+    key: "totalPrice",
+  },
+  {
+    title: "U贝抵扣",
+    minWidth: 100,
+    align: "right",
+    key: "ubayDiscount",
+  },
+  {
+    title: "红包抵扣",
+    minWidth: 150,
+    align: "right",
+    key: "redEnvelopeDiscount",
+  },
+  {
+    title: "实付款",
+    width: 100,
+    align: "right",
+    key: "realPay",
+  },
+  {
+    title: "买家",
+    width: 120,
+    align: "center",
+    key: "phoneNumber",
+  },
+  {
+    title: "付款时间",
+    minWidth: 250,
+    align: "center",
+    key: "payTime",
+  },
+  {
+    title: "渠道",
+    minWidth: 150,
+    key: "source",
+  },
+  {
+    title: "审核日志",
+    minWidth: 150,
+    slot: "log",
+  },
+];
+
+const tableColumnsLog = [
+  {
+    title: "审核人",
+    width: 160,
+    key: "auditUser",
+    align: "center",
+  },
+  {
+    title: "审核时间",
+    width: 180,
+    key: "auditTime",
+    align: "center",
+  },
+  {
+    title: "审核结果",
+    key: "auditResult",
+    align: "center",
+  },
+  {
+    title: "审核备注",
+    key: "remark",
+    align: "center",
+  },
+];
 export default {
   name: "refundCheck",
   components: { checkModal },
@@ -203,141 +321,8 @@ export default {
         auditStatus: "2",
         remark: "",
       },
-      tableColumnsLog: [
-        {
-          title: "审核人",
-          width: 160,
-          key: "auditUser",
-          align: "center",
-        },
-        {
-          title: "审核时间",
-          width: 180,
-          key: "auditTime",
-          align: "center",
-        },
-        {
-          title: "审核结果",
-          key: "auditResult",
-          align: "center",
-        },
-        {
-          title: "审核备注",
-          key: "remark",
-          align: "center",
-        },
-      ],
-      tableColumns: [
-        {
-          type: "selection",
-          width: 60,
-          align: "center",
-        },
-        {
-          title: "操作",
-          width: 200,
-          align: "center",
-          slot: "action",
-        },
-        {
-          title: "订单编号",
-          width: 200,
-          key: "orderNo",
-        },
-        {
-          title: "退款原因",
-          width: 200,
-          align: "center",
-          key: "refundReason",
-        },
-        // {
-        //   title: "券码状态",
-        //   width: 200,
-        //   key: 'barCodeStatus'
-        // },
-        {
-          title: "退款金额",
-          width: 200,
-          align: "right",
-          key: "realRefundMoney",
-        },
-        {
-          title: "优惠券ID",
-          width: 200,
-          align: "center",
-          key: "couponId",
-        },
-        {
-          title: "优惠券标题",
-          width: 200,
-          align: "center",
-          key: "couponTitle",
-        },
-        {
-          title: "所属商户",
-          minWidth: 250,
-          align: "center",
-          key: "merchantName",
-        },
-        {
-          title: "数量",
-          minWidth: 150,
-          align: "right",
-          key: "amount",
-        },
-        {
-          title: "单价",
-          width: 100,
-          align: "right",
-          key: "price",
-        },
-        {
-          title: "总价",
-          width: 100,
-          align: "right",
-          key: "totalPrice",
-        },
-        {
-          title: "U贝抵扣",
-          minWidth: 100,
-          align: "right",
-          key: "ubayDiscount",
-        },
-        {
-          title: "红包抵扣",
-          minWidth: 150,
-          align: "right",
-          key: "redEnvelopeDiscount",
-        },
-        {
-          title: "实付款",
-          width: 100,
-          align: "right",
-          key: "realPay",
-        },
-        {
-          title: "买家",
-          width: 120,
-          align: "center",
-          key: "phoneNumber",
-        },
-        {
-          title: "付款时间",
-          minWidth: 250,
-          align: "center",
-          key: "payTime",
-        },
-        {
-          title: "渠道",
-          minWidth: 150,
-          key: "source",
-        },
-        {
-          title: "审核日志",
-          minWidth: 150,
-          slot: "log",
-        },
-      ],
+      tableColumnsLog: tableColumnsLog,
+      tableColumns: tableColumns,
       selectDataList: [],
       searchForm: {
         auditStatus: "1",
@@ -348,7 +333,6 @@ export default {
         phoneNumber: "",
         current: 1,
         pageSize: 10,
-        couponTemplateType: 2,
       },
       current: 1,
       addressData: [],
@@ -404,7 +388,6 @@ export default {
       this.searchForm.phoneNumber = "";
       this.searchForm.auditStatus = "1";
       this.searchForm.current = 1;
-      this.searchForm.couponTemplateType = 2;
       this.current = 1;
       this.loadTableData();
     },

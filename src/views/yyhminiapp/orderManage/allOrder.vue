@@ -138,7 +138,7 @@ const tableColumns = [
     key: "orderNo",
   },
   {
-    title: "状态",
+    title: "订单状态",
     width: 120,
     align: "center",
     key: "statusStr",
@@ -154,11 +154,11 @@ const tableColumns = [
     width: 200,
     key: "couponTitle",
   },
-  {
-    title: "所属商户",
-    minWidth: 250,
-    key: "merchantName",
-  },
+  // {
+  //   title: "所属商户",
+  //   minWidth: 250,
+  //   key: "merchantName",
+  // },
   {
     title: "数量",
     minWidth: 100,
@@ -176,7 +176,7 @@ const tableColumns = [
     key: "totalPrice",
   },
   {
-    title: "U贝抵扣",
+    title: "平台立减",
     minWidth: 100,
     key: "ubayDiscount",
   },
@@ -202,7 +202,7 @@ const tableColumns = [
     key: "payTime",
   },
   {
-    title: "渠道",
+    title: "购买终端",
     minWidth: 150,
     key: "source",
   },
@@ -255,7 +255,6 @@ export default {
         status: "",
         current: 1,
         pageSize: 10,
-        couponTemplateType: 2,
       },
       current: 1,
       addressData: [],
@@ -281,7 +280,6 @@ export default {
       this.searchForm.phoneNumber = "";
       this.searchForm.source = "";
       this.searchForm.status = "";
-      this.searchForm.couponTemplateType = 2;
       this.current = 1;
       this.search();
     },
