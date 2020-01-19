@@ -1,18 +1,78 @@
 <template>
   <div class="label_manage">
-    <Tabs type="card" @on-click="changeTradeType">
-      <Tab-pane label="商户" key="0">
-        <mechants></mechants>
+    <Card>
+      <Form ref="searchForm" :model="searchForm" inline :label-width="90" class="search-form">
+        <Form-item label="订单号" prop="orderNo">
+          <Input clearable v-model="searchForm.orderNo" placeholder="请输入订单号" style="width: 200px" />
+        </Form-item>
+        <Form-item label="微信单号" prop="tradeNo">
+          <Input clearable v-model="searchForm.tradeNo" placeholder="请输入微信单号" style="width: 200px" />
+        </Form-item>
+        <Form-item label="优惠券ID" prop="couponId">
+          <Input clearable v-model="searchForm.couponId" placeholder="请输入优惠券ID" style="width: 200px" />
+        </Form-item>
+        <!-- <Form-item label="品牌名称" prop="brandName">
+          <Input clearable v-model="searchForm.brandName" placeholder="请输入品牌名称" style="width: 200px" />
+        </Form-item> -->
+        <Form-item label="零售商名称" prop="merchantName">
+          <Input clearable v-model="searchForm.merchantName" placeholder="请输入零售商名称" style="width: 200px" />
+        </Form-item>
 
-      </Tab-pane>
-      <Tab-pane label="商超" key="1">
-        <business></business>
-      </Tab-pane>
-    </Tabs>
+        <Form-item label="支付方式" prop="payType">
+          <Select v-model="searchForm.payType" placeholder="请选择支付方式" clearable style="width: 200px;">
+            <Option :value="0">全部</Option>
+            <Option :value="1">微信小程序</Option>
+            <Option :value="2">微信app</Option>
+          </Select>
+        </Form-item>
+        <Form-item label="交易类型" prop="tradeType">
+          <Select v-model="searchForm.tradeType" placeholder="请选择交易类型" clearable style="width: 200px;">
+            <Option value="">全部</Option>
+            <Option value="1">支付</Option>
+            <Option value="2">退款</Option>
+          </Select>
+        </Form-item>
 
+        <FormItem label="交易时间" prop="datetimerange">
+          <DatePicker
+            transfer
+            type="datetimerange"
+            placeholder="请选择交易时间"
+            v-model="searchForm.datetimerange"
+            @on-change=";[searchForm.tradeTimeStrat, searchForm.tradeTimeEnd] = $event"
+            style="width: 275px;"
+          >
+          </DatePicker>
+        </FormItem>
 
-
-    
+        <Form-item class="br">
+          <Button @click="search" type="primary" icon="ios-search">搜索</Button>
+          <Button @click="resetForm('searchForm')">重置</Button>
+          <Button type="primary" icon="ios-cloud-download-outline">下载</Button>
+        </Form-item>
+      </Form>
+    </Card>
+    <Card style="margin-top: 1vh;">
+      <!-- 用户列表 -->
+      <Table :loading="TableLoading" border :columns="tableColumns" :data="table_list" sortable="custom" ref="table">
+        <template slot-scope="{ row }" slot="merchantName">
+          <p>{{ row.merchantName || '--' }}</p>
+        </template>
+      </Table>
+      <!-- 用户列表 -->
+      <!-- 分页 -->
+      <Row type="flex" justify="end" class="page">
+        <Page
+          :total="totalSize"
+          show-total
+          show-elevator
+          @on-change="changeCurrent"
+          style="float: right"
+          :current.sync="current"
+        ></Page>
+      </Row>
+      <!-- 分页 -->
+    </Card>  
   </div>
 </template>
 <script>
@@ -47,14 +107,14 @@ const columns = [
     align: 'right',
     key: 'couponCount',
   },
+  // {
+  //   title: '品牌名称',
+  //   width: 190,
+  //   align: 'center',
+  //   key: 'brandName',
+  // },
   {
-    title: '品牌名称',
-    width: 190,
-    align: 'center',
-    key: 'brandName',
-  },
-  {
-    title: '商户名称',
+    title: '零售商名称',
     width: 190,
     align: 'center',
     key: 'merchantName',
@@ -105,10 +165,8 @@ const columns = [
 ]
 
 import { billTransactionFlowList } from '@/api/financial'
-import mechants from './merchants'
-import business from './business'
+
 export default {
-  components:{mechants,business},
   data() {
     return {
       searchForm: {
@@ -135,12 +193,9 @@ export default {
     }
   },
   mounted() {
-    //this.getList()
+    this.getList()
   },
   methods: {
-    changeTradeType(val){
-      console.log(val)
-    },
     // 刷新
     search() {
       this.searchForm.pageNum = 1

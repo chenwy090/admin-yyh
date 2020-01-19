@@ -1,0 +1,321 @@
+<template>
+	 <Modal
+      v-model="showModal"
+      :closable="true"
+      :mask-closable="false"
+      @on-cancel="closeDialog"
+      width="600"
+    >
+      <p slot="header">
+        <span>{{title}}</span>
+      </p>
+      <Form label-position="right" ref="form" :model="formData" :label-width="100">
+        <FormItem
+          label="二维码名称："
+          prop="title"
+          :rules="{required: true,  validator: validateEmpty('请输入二维码名称',8)}"
+        >
+        	<Input v-model="formData.title" placeholder="最多输入15个字符"></Input>
+      	</FormItem>
+      	<template v-if="action.type == 'add'">
+	      	<FormItem
+	          label="上传群码："
+	          prop="addCode"
+	          
+	        >
+	        	<div style="display:inline-block;vertical-align:middle">
+	        		<UploadImage
+	        				:isButton="isButton"
+	                :fileUploadType="'addCode'"
+	                :defaultList="formData.defaultAddCodeList"
+	                @remove="removeImg('addCode')"
+	                @uploadSuccess="ImgUploadSuccess('addCode',$event)"
+	            ></UploadImage>
+							<!-- <Upload
+				        multiple
+				        :headers="userToken"
+	        			:action="url"
+	        			:show-upload-list="false"
+	        			:before-upload="handleBeforeUpload"
+	        			:on-success="handleUploadSuccess">
+				        <Button type="primary" icon="md-add">上传群码</Button>
+				    	</Upload> -->
+						</div>
+					</FormItem>
+					<FormItem
+	          label="已上传群码："
+	          prop="file"
+	          :rules="{required: true,  message:'上传群码图片'}"
+	        >
+	        	<div>
+	              <ul class="file-list" v-for="(list,index) in formData.file" :key="index">
+	                  <li>
+	                  	<span style="font-size:14px;">{{ list.name }}</span> 
+	                  	<Button type="text" style="float:right;color:#2d8cf0" @click="delFileList(index)">删除</Button>
+	                  </li>
+	              </ul>
+	          </div>
+	      	</FormItem>
+	      </template>
+	      <template v-if="action.type == 'edit'">
+	      	<FormItem
+	          label="已上传群码："
+	          prop="logo"
+	          :rules="{required: true,  message:'上传图片'}"
+	        >
+		      	<div style="display:inline-block;vertical-align:middle">
+							<UploadImage
+	                :fileUploadType="'logo'"
+	                :defaultList="formData.defaultLogoList"
+	                @remove="removeImg('logo')"
+	                @uploadSuccess="ImgUploadSuccess('logo',$event)"
+	            ></UploadImage>
+						</div>
+						<span style="margin-left:10px;">限JPG、PNG格式，1MB以内</span>
+					</FormItem>
+	      </template>
+      	<FormItem
+          label="切换频率："
+          prop="frequency"
+          :rules="{required: true,  validator: validateOrder}"
+        >
+        	<Input v-model="formData.frequency" placeholder="仅限正整数"></Input>
+      	</FormItem>
+      	<FormItem
+          label="失效日期："
+          prop="time"
+          :rules="{required: true,  message:'选择失效时间'}"
+        >
+        	<DatePicker type="datetime" format="yyyy-MM-dd HH:mm:ss"  v-model="formData.time"  @on-change="startTimeChange" style="width: 200px"></DatePicker>
+      	</FormItem>
+      </Form>
+      <div slot="footer">
+        <Button @click="closeDialog" style="margin-left: 8px">取消</Button>
+        <Button type="primary" @click="handlerSubmit('form')">确认</Button>
+      </div>
+  </Modal>
+</template>
+<script>
+	import util from "@/libs/util";
+	import { uploadOperationImage2AliOssURl } from "@/api/index";
+	import UploadImage from "../components/UploadImage";
+	export default {
+	  name: "add",
+	  components:{
+		  UploadImage
+		},
+	  props: {
+	    action: {
+	      type: Object,
+	      // 对象或数组默认值必须从一个工厂函数获取
+	      default: () => ({ type: "add" })
+	    }
+	  },
+	  watch: {
+	    action: {
+	      handler(val, oldVal) {
+	      	let { type, data,flexibleQrcodeId } = this.action;
+	      	this.flexibleQrcodeId = flexibleQrcodeId;
+	        console.log(flexibleQrcodeId)
+	        console.log("新增群二维码");
+	        this.showModal = true;
+	        this.formData.file = [];
+	        // 新增
+	        this.isButton = true;
+	        if(type == "add") {
+	        	
+	        	this.title = "新增群二维码";
+	        	this.url = "/flexible/wechatQrcode/add";
+	        }else if(type == "edit"){
+	        	this.title = "编辑群二维码";
+	        	this.url = "/flexible/wechatQrcode/edit";
+	        	this.formData.id = data.id;
+	        	//回显弹窗信息
+	        	this.queryWechatQrcodeSelectById(data);
+	        }
+	      },
+	      deep: true
+	    }
+	  },
+	  data(){
+	  	return{
+	  		showModal:false,
+	  		title:"",
+	  		url:"",
+	  		formData:{
+	  			id:"",
+	  			title:"",
+	  			remark:"",
+	  			codeImg:"",
+	  			defaultCodeImgList:[],
+	  			account:"",
+	  			logo:"",
+	  			defaultLogoList:[],
+	  			file:[],
+	  			addCode:"",
+	  			defaultAddCodeList:[]
+	  		},
+	  		userToken: {}, //用户token
+      	// 文件上传
+      	url: uploadOperationImage2AliOssURl,
+      	expiredTime:"",
+      	isButton:true
+	  	}
+	  },
+	  created() {
+	    this.userToken = {
+	      jwttoken: localStorage.getItem("jwttoken")
+	    };
+	  },
+	  methods:{
+	  	startTimeChange: function(e) { //设置开始时间
+	  		if(e == ""){
+	  			this.expiredTime = "";
+	  			this.formData.time = "";
+	  			return false
+	  		}
+	  		this.expiredTime = e.slice(0, 10) + " " + "23:59:59";
+        this.formData.time = e.slice(0, 10) + " " + "23:59:59";
+      },
+	  	closeDialog(){
+	  		this.showModal = false;
+	  		this.$refs['form'].resetFields();
+	  		this.$emit("refresh")
+	  	},
+	  	removeImg(type) {
+	  		if(type == "logo"){
+	  			this.formData.logo = "";
+	        this.formData.defaultLogoList = [];
+	  		}else{
+	  			this.formData.codeImg = "";
+	        this.formData.defaultCodeImgList = [];
+	  		}
+	    },
+	    ImgUploadSuccess(type,{ imgUrl ,imgName}) {
+	    	if(type == "logo"){
+	    		this.formData.logo = imgUrl;
+	        this.formData.defaultLogoList = [{ imgUrl }];
+	    	}else if(type == "codeImg"){
+	    		this.formData.codeImg = imgUrl;
+	        this.formData.defaultCodeImgList = [{ imgUrl }];
+	    	}else if(type == "addCode"){
+	    		console.log('批量上传')
+	    		this.formData.file.push({name:imgName,imgUrl:imgUrl});
+	    	}    
+	    },
+	  	validateEmpty(msg, len = 20) {
+	      return function(rule, value, callback) {
+	        value += "";
+	        value = value.trim();
+	        if (value == "") {
+	          return callback(msg);
+	        }
+	        let length = util.getByteLen(value);
+	        if (length > len * 2) {
+	          return callback(`最多只能输入${len*2}个字符`);
+	        }
+	        callback();
+	      };
+	    },
+	    validateOrder(rule, value, callback){
+	      // value += "";
+	      // value = value.trim();
+	      // // 允许不填
+	      let reg = /^(0|\+?[1-9][0-9]*)$/;
+	      if (reg.test(value)) {
+	        callback();
+	      } else {
+	        callback('仅输入正整数');
+	      }  
+    	},
+    	async queryWechatQrcodeSelectById(data){
+    		console.log(data)
+  			this.expiredTime = data.expiredTime;
+  			this.formData = {
+  				id:data.id,
+  				title:data.name,
+  				logo:data.wechatQrcode,
+  				defaultLogoList:[{imgUrl:data.wechatQrcode}],
+  				frequency:data.switchTimes,
+  				time:data.expiredTime
+  			}
+    	},
+	    handlerSubmit(formName){
+	    	this.$refs[formName].validate(async valid => {
+	    		if(valid){
+	    			const {formData:{title,remark,file,frequency,time,id,logo},flexibleQrcodeId,expiredTime} = this;
+	    			let params = "";
+	    			if(this.action.type == "add"){
+	    				let __file = [];
+	    				file.forEach(item =>{
+	    					__file.push(item.imgUrl)
+	    				})
+		    			params = {
+		    				expiredTime:expiredTime,
+		    				flexibleQrcodeId:flexibleQrcodeId,
+		    				name:title,
+		    				switchTimes:frequency,
+		    				wechatQrcodeList:__file
+		    			}
+		    		}else if(this.action.type == "edit"){
+		    			params = {
+		    				expiredTime:expiredTime,
+		    				id:id,
+		    				name:title,
+		    				switchTimes:frequency,
+		    				wechatQrcode:logo
+		    			}
+		    		}
+	    			console.log(params)
+	    			let {code,msg} = await this.postRequest(this.url,params);
+	    			if(code == 200){
+	    				this.$Message.success("操作成功");
+	    				this.showModal = false;
+	  					this.$refs['form'].resetFields();
+	  					this.$emit("refresh")
+	    			}else{
+	    				this.$Message.error(msg);
+	    			}
+	    		}else{
+	    			return false;
+	    		}
+	    	})
+	    },
+	    handleBeforeUpload(file){
+	    	console.log(file)
+	    	let that = this;
+        if(that.formData.file.length >= 2){
+            this.$Message.info("最多只能上传10个文件");
+        }else{
+            that.formData.file.push(file.name);
+        }
+        return false
+	    },
+	    handleUploadSuccess(res, file, fileList) {
+	    	this.formData.file = [];
+	      if (res.code == 200) {
+	        
+	       
+
+
+	        this.formData.file.push(file.name);
+	        //console.log(this.formData.file)
+	        this.$Message.info("上传图片成功");
+	      } else {
+	        this.$Message.error("上传图片失败，请重新上传");
+	      }
+	    },
+	    delFileList(index){
+          let that = this;
+          that.formData.file.splice(index, 1);
+          
+          
+      }
+	  }
+	}
+</script>
+<style scoped lang="less">
+	.file-list{
+		list-style:none;
+	}
+</style>
