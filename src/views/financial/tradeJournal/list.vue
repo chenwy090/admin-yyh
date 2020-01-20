@@ -1,15 +1,11 @@
 <template>
   <div class="label_manage">
-    <Tabs type="card" @on-click="changeTradeType">
-      <Tab-pane label="商户" key="0">
-        <mechants></mechants>
-
-      </Tab-pane>
-      <Tab-pane label="商超" key="1">
-        <business></business>
-      </Tab-pane>
+    <Tabs type="card" @on-click="changeTradeType" value="mechants">
+      <Tab-pane label="商户" name="mechants"></Tab-pane>
+      <Tab-pane label="商超" name="business"></Tab-pane>
     </Tabs>
-
+    <mechants v-if="currentKey == 'mechants'"></mechants>
+    <business v-if="currentKey == 'business'"></business>
 
 
     
@@ -132,6 +128,7 @@ export default {
       TableLoading: false,
       table_list: [],
       tableColumns: columns,
+      currentKey:"mechants"
     }
   },
   mounted() {
@@ -139,7 +136,8 @@ export default {
   },
   methods: {
     changeTradeType(val){
-      console.log(val)
+      console.log(val);
+      this.currentKey = val;
     },
     // 刷新
     search() {

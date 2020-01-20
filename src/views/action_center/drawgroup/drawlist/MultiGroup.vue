@@ -462,22 +462,22 @@
             </Col>
           </Row>
         </FormItem>
-        <FormItem label="支付引导文案" prop="recommendTitle" :rules="{ required: false, message: '请输入支付引导文案' }">
-          <!-- <EditorBar
+        <FormItem label="支付引导文案" prop="recommendTitle" :rules="{ required: false, validator: validateEmpty('请输入支付引导文案',50) }" class="recommendTitle">
+          <EditorBar
             v-model="form.recommendTitle"
             :content="form.recommendTitle"
             style="width:600px;margin:0;"
-            @on-change="change"
-            @on-blur="blur"
-          ></EditorBar> -->
-          <Input
+            @on-change="changeRecommendTitle"
+            @on-blur="blurRecommendTitle"
+          ></EditorBar>
+          <!-- <Input
               v-model="form.recommendTitle"
               type="textarea"
               style="width:400px"
               :autosize="{ minRows: 4, maxRows: 8 }"
               placeholder="描述富文本"
               :maxlength="50"
-            />
+            /> -->
         </FormItem>
       </Row>
 
@@ -509,6 +509,7 @@
   </div>
 </template>
 <script>
+import util from "@/libs/util";
 import multiFormData from "./multiGroupFromData";
 import singleFormData from "./multiGroupFromData";
 import { postRequest, getRequest } from "@/libs/axios";
@@ -879,14 +880,25 @@ export default {
       this.form.endDate = null;
     },
     // 富文本
-    change(val) {
+    changeRecommendTitle(val) {
       // console.log("change:", val);
       // console.log("data:",this.edit_info.discountDetail);
-      //this.form.newDiscountDetail = val;
+      this.form.recommendTitle = val;
     },
-    blur(val) {
+    blurRecommendTitle(val) {
       // console.log("blur:", val);
-      //this.form.newDiscountDetail = val;
+      this.form.recommendTitle = val;
+    },
+    validateEmpty(msg, len = 20) {
+      return function(rule, value, callback) {
+        value += "";
+        value = value.trim();
+        let length = util.getByteLen(value);
+        if (length > len * 2) {
+          return callback(`最多只能输入${len}个汉字`);
+        }
+        callback();
+      };
     },
     handleChoosePaymentCoupon(type,data){
       this.actionYhq = {
@@ -919,4 +931,8 @@ export default {
   },
 };
 </script>
-<style scoped></style>
+<style>
+ .recommendTitle .text{
+  height: 100px !important;
+ }
+</style>
