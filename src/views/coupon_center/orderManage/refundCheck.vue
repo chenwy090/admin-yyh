@@ -170,6 +170,144 @@
 <script>
 import checkModal from "./checkModal";
 import { postRequest } from "@/libs/axios";
+import * as order from "@/api/order";
+const tableColumnsLog = [
+  {
+    title: "审核人",
+    width: 160,
+    key: "auditUser",
+    align: "center",
+  },
+  {
+    title: "审核时间",
+    width: 180,
+    key: "auditTime",
+    align: "center",
+  },
+  {
+    title: "审核结果",
+    key: "auditResult",
+    align: "center",
+  },
+  {
+    title: "审核备注",
+    key: "remark",
+    align: "center",
+  },
+];
+
+const tableColumns = [
+  {
+    type: "selection",
+    width: 60,
+    align: "center",
+  },
+  {
+    title: "操作",
+    width: 200,
+    align: "center",
+    slot: "action",
+  },
+  {
+    title: "订单编号",
+    width: 200,
+    key: "orderNo",
+  },
+  {
+    title: "退款原因",
+    width: 200,
+    align: "center",
+    key: "refundReason",
+  },
+  // {
+  //   title: "券码状态",
+  //   width: 200,
+  //   key: 'barCodeStatus'
+  // },
+  {
+    title: "退款金额",
+    width: 200,
+    align: "right",
+    key: "realRefundMoney",
+  },
+  {
+    title: "优惠券ID",
+    width: 200,
+    align: "center",
+    key: "couponId",
+  },
+  {
+    title: "优惠券标题",
+    width: 200,
+    align: "center",
+    key: "couponTitle",
+  },
+  {
+    title: "所属商户",
+    minWidth: 250,
+    align: "center",
+    key: "merchantName",
+  },
+  {
+    title: "数量",
+    minWidth: 150,
+    align: "right",
+    key: "amount",
+  },
+  {
+    title: "单价",
+    width: 100,
+    align: "right",
+    key: "price",
+  },
+  {
+    title: "总价",
+    width: 100,
+    align: "right",
+    key: "totalPrice",
+  },
+  {
+    title: "U贝抵扣",
+    minWidth: 100,
+    align: "right",
+    key: "ubayDiscount",
+  },
+  {
+    title: "红包抵扣",
+    minWidth: 150,
+    align: "right",
+    key: "redEnvelopeDiscount",
+  },
+  {
+    title: "实付款",
+    width: 100,
+    align: "right",
+    key: "realPay",
+  },
+  {
+    title: "买家",
+    width: 120,
+    align: "center",
+    key: "phoneNumber",
+  },
+  {
+    title: "付款时间",
+    minWidth: 250,
+    align: "center",
+    key: "payTime",
+  },
+  {
+    title: "渠道",
+    minWidth: 150,
+    key: "source",
+  },
+  {
+    title: "审核日志",
+    minWidth: 150,
+    slot: "log",
+  },
+];
+
 export default {
   name: "refundCheck",
   components: { checkModal },
@@ -203,141 +341,8 @@ export default {
         auditStatus: "2",
         remark: "",
       },
-      tableColumnsLog: [
-        {
-          title: "审核人",
-          width: 160,
-          key: "auditUser",
-          align: "center",
-        },
-        {
-          title: "审核时间",
-          width: 180,
-          key: "auditTime",
-          align: "center",
-        },
-        {
-          title: "审核结果",
-          key: "auditResult",
-          align: "center",
-        },
-        {
-          title: "审核备注",
-          key: "remark",
-          align: "center",
-        },
-      ],
-      tableColumns: [
-        {
-          type: "selection",
-          width: 60,
-          align: "center",
-        },
-        {
-          title: "操作",
-          width: 200,
-          align: "center",
-          slot: "action",
-        },
-        {
-          title: "订单编号",
-          width: 200,
-          key: "orderNo",
-        },
-        {
-          title: "退款原因",
-          width: 200,
-          align: "center",
-          key: "refundReason",
-        },
-        // {
-        //   title: "券码状态",
-        //   width: 200,
-        //   key: 'barCodeStatus'
-        // },
-        {
-          title: "退款金额",
-          width: 200,
-          align: "right",
-          key: "realRefundMoney",
-        },
-        {
-          title: "优惠券ID",
-          width: 200,
-          align: "center",
-          key: "couponId",
-        },
-        {
-          title: "优惠券标题",
-          width: 200,
-          align: "center",
-          key: "couponTitle",
-        },
-        {
-          title: "所属商户",
-          minWidth: 250,
-          align: "center",
-          key: "merchantName",
-        },
-        {
-          title: "数量",
-          minWidth: 150,
-          align: "right",
-          key: "amount",
-        },
-        {
-          title: "单价",
-          width: 100,
-          align: "right",
-          key: "price",
-        },
-        {
-          title: "总价",
-          width: 100,
-          align: "right",
-          key: "totalPrice",
-        },
-        {
-          title: "U贝抵扣",
-          minWidth: 100,
-          align: "right",
-          key: "ubayDiscount",
-        },
-        {
-          title: "红包抵扣",
-          minWidth: 150,
-          align: "right",
-          key: "redEnvelopeDiscount",
-        },
-        {
-          title: "实付款",
-          width: 100,
-          align: "right",
-          key: "realPay",
-        },
-        {
-          title: "买家",
-          width: 120,
-          align: "center",
-          key: "phoneNumber",
-        },
-        {
-          title: "付款时间",
-          minWidth: 250,
-          align: "center",
-          key: "payTime",
-        },
-        {
-          title: "渠道",
-          minWidth: 150,
-          key: "source",
-        },
-        {
-          title: "审核日志",
-          minWidth: 150,
-          slot: "log",
-        },
-      ],
+      tableColumnsLog: tableColumnsLog,
+      tableColumns: tableColumns,
       selectDataList: [],
       searchForm: {
         auditStatus: "1",
@@ -458,8 +463,7 @@ export default {
         var arr = this.selectDataList.map(item => ({ orderRefundId: item.id }));
         // /trade/fund/account/order/batchAudit
         this.checkData.data = arr;
-        const url = "/trade/fund/account/order/batchAudit";
-        const { code, msg } = await postRequest(url, this.checkData);
+        const { code, msg } = await order.orderBatchAudit(this.checkData);
         this.auditLoading = false;
         if (code === "200") {
           this.$Message.error("审核成功");

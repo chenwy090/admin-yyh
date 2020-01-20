@@ -14,6 +14,13 @@
             <Form :model="edit_info" ref="edit_info" :label-width="100">
               <Row>
                 <Col span="12">
+                  <FormItem label="预览二维码">
+                    <img :src="qrImg" v-if="qrImg" style="width: 100px;" />
+                  </FormItem>
+                </Col>
+              </Row>
+              <Row>
+                <Col span="12">
                   <FormItem label="appid">
                     <Select v-model="edit_info.appid" style="width:300px" placeholder="请输入选择appid" disabled>
                       <Option v-for="item in appId_info" :value="item.appid" :key="item.appid">{{
@@ -574,6 +581,8 @@ export default {
       status: "",
       daySum: "",
 
+      qrImg: null, //二维码预览图
+
       currentid: "", // 点击单选框得到的id（临时）
 
       // 规则设置---------------------------------------------------------------------------------------------
@@ -611,6 +620,12 @@ export default {
       this.getCampaginGrabInfoList();
       // 整点抢设置----------------------------------------------------------------
       this.share(this.campId);
+
+      getRequest("/campagin/qrcode", { campaignId: this.campId }).then(res => {
+        if (res.code == 200) {
+          this.qrImg = "data:image/png;base64," + res.data;
+        }
+      });
     },
     share(campId) {
       this.formShareModal.shareData = [];

@@ -41,6 +41,7 @@
           售后条件：
         </span>
         <RadioGroup v-model="body.enableAfterSale" vertical @on-change="statusCheckChange">
+          <!-- 1.5.6.1.1 （本期不支持前端退款，支持退款选项禁用） -->
           <Radio :label="1" :disabled="disabled">支持退款</Radio>
           <Radio :label="0" :disabled="disabled">不支持退款</Radio>
         </RadioGroup>
@@ -90,7 +91,7 @@ export default {
         couponKind: 1,
         originalPrice: 0,
         price: 0,
-        enableAfterSale: 1,
+        enableAfterSale: 0,
         settleAmount: 0,
       },
       couponAfterSaleVOLists: ["1:过期退", "2:随时退"],

@@ -13,8 +13,7 @@
             <Form-item label="活动ID" :label-width="100">
               <Input type="text" v-model="search.campId" clearable placeholder="请输入活动ID" style="width: 200px" />
             </Form-item>
-            <span v-if="drop">
-              <Form-item label="优惠券模板ID" :label-width="100">
+            <Form-item label="优惠券模板ID" :label-width="100">
                 <Input-number
                   type="text"
                   v-model="search.ticketTemplateId"
@@ -25,6 +24,8 @@
               <Form-item label="活动名称" :label-width="100">
                 <Input type="text" v-model="search.name" clearable placeholder="请输入活动名称" style="width: 200px" />
               </Form-item>
+            <span v-if="drop">
+              
               <!-- <Form-item label="活动标签" :label-width="100">
 
                 <Select v-model="search.label" placeholder="请选择" style="width: 200px">
@@ -91,6 +92,11 @@
             sortable="custom"
             ref="table"
           >
+
+          <template slot-scope="{ row }" slot="couponKind">
+              <span> {{row.couponKind | $couponKind}} </span>
+            </template>
+
             <template slot-scope="{ row }" slot="couponImg">
               <img :src="row.couponImg" style="width:74px;height:43px;" />
             </template>
@@ -127,10 +133,6 @@
               <span style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;">
                 {{ row.doorsillDesc }}
               </span>
-            </template>
-
-            <template slot-scope="{ row }" slot="couponKind">
-              <span> {{row.couponKind}} </span>
             </template>
             
           </Table>
@@ -445,7 +447,7 @@
     </div>
 
     <!-- 查看详情对话框 -->
-    <Modal v-model="detailsDisplay" title="查看详情" width="960">
+    <Modal v-model="detailsDisplay" title="查看详情" width="1000">
       <div v-if="detailsDisplay">
         <detailsView @changeStatus="showdetailsView" :camp_Info="camp_Info3"></detailsView>
       </div>
@@ -1110,7 +1112,12 @@ export default {
       detailsDisplay: false, // 查看详情对话框
     };
   },
-
+  filters:{
+    $couponKind(val){
+      console.info(val)
+      return ['','免费','','收费'][val]
+    }
+  },
   created() {
     this.userToken = { jwttoken: localStorage.getItem("jwttoken") };
   },
@@ -1302,6 +1309,7 @@ export default {
         status: this.search.status,
         campType: this.add_info.campType,
         sendChannel: this.search.sendChannel,
+        couponKind: this.search.couponKind,
       };
 
       postRequest("/campagin/list?pageNum=" + this.pageNum + "&pageSize=" + this.limit, reqParams).then(res => {

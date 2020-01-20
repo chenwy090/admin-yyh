@@ -510,7 +510,7 @@ export default {
         couponKind: 1,
         originalPrice: 0,
         price: 0,
-        enableAfterSale: 1,
+        enableAfterSale: 0,
         settleAmount: 0,
       },
       edit_loading: false,
@@ -728,7 +728,7 @@ export default {
         couponKind: 1,
         originalPrice: 0,
         price: 0,
-        enableAfterSale: 1,
+        enableAfterSale: 0,
         settleAmount: 0,
       };
       this.currentChooseID = "";
@@ -993,6 +993,14 @@ export default {
         settleAmount: this.edit_info.settleAmount,
         couponAfterSaleVOList: this.edit_info.couponAfterSaleVOList,
       };
+
+      if (reqParams.couponKind == 1) {
+        delete reqParams.couponAfterSaleVOList;
+        delete reqParams.originalPrice;
+        delete reqParams.price;
+        delete reqParams.enableAfterSale;
+        delete reqParams.settleAmount;
+      }
 
       // console.log("save:reqParams==>", reqParams);
       // return;
