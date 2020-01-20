@@ -994,6 +994,14 @@ export default {
         couponAfterSaleVOList: this.edit_info.couponAfterSaleVOList,
       };
 
+      if (reqParams.couponKind == 1) {
+        delete reqParams.couponAfterSaleVOList;
+        delete reqParams.originalPrice;
+        delete reqParams.price;
+        delete reqParams.enableAfterSale;
+        delete reqParams.settleAmount;
+      }
+
       // console.log("save:reqParams==>", reqParams);
       // return;
       this.add_loading = true;
