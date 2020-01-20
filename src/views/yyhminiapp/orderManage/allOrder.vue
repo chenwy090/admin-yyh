@@ -340,9 +340,16 @@ export default {
     },
     // 下载订单
     downExcel() {
-      if (true) {
-        this.$Message.error("请选择需要下载的订单数据，单次做多导出1个月的订单");
-        return;
+      let gmtCreateStart = this.searchForm.gmtCreateStart;
+      let gmtCreateEnd = this.searchForm.gmtCreateEnd;
+      if (gmtCreateStart && gmtCreateEnd) {
+        let day = Math.round(
+          (new Date(`${gmtCreateEnd} 23:59:59`).getTime() - new Date(`${gmtCreateStart} 00:00:00`).getTime()) / 86400000
+        );
+        if (day > 31) {
+          this.$Message.error("请选择需要下载的订单数据，单次做多导出1个月的订单");
+          return;
+        }
       }
 
       order.orderDownload(this.searchForm).then(res => {
