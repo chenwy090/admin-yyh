@@ -42,7 +42,7 @@
         </span>
         <RadioGroup v-model="body.enableAfterSale" vertical @on-change="statusCheckChange">
           <!-- 1.5.6.1.1 （本期不支持前端退款，支持退款选项禁用） -->
-          <Radio :label="1" :disabled="true">支持退款</Radio>
+          <Radio :label="1" :disabled="disabled">支持退款</Radio>
           <Radio :label="0" :disabled="disabled">不支持退款</Radio>
         </RadioGroup>
         <div v-if="body.enableAfterSale === 1">
