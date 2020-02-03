@@ -36,7 +36,7 @@
             v-model.trim="formData.imgUrl"
             placeholder="图片地址"
           ></Input>
-          <ButtonGroup size="small" >
+          <ButtonGroup size="small">
             <Button
               size="small"
               type="success"
@@ -57,7 +57,6 @@
     </Row>
   </Form>
 </template>
-
 
 <script>
 import UploadImage from "./UploadImage";
