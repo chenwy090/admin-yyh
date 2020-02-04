@@ -156,9 +156,8 @@
 
       // 添加问题
       handleAdd() {
-        if (this.formDynamic.length >= 15) {
-          this.$Message.error("不能超过15个问题");
-          return;
+        if (this.formDynamic.length >= 100) {
+          return this.$Message.error("不能超过100个问题");
         } else {
           this.formDynamic.push({
             question: "",
