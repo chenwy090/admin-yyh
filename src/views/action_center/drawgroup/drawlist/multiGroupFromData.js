@@ -102,4 +102,10 @@ export default {
     },
   ],
   shopRequestList: [],
+  //支付券
+  recommendCouponId:"",
+  recommendCouponName:"",
+  recommendCouponType:"",
+  recommendTitle:""
+  
 };

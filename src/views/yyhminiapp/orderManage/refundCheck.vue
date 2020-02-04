@@ -23,6 +23,24 @@
                 <Input v-model="searchForm.orderNo" placeholder="请填写订单号" />
               </FormItem>
               <FormItem label="退款申请时间：" :label-width="120">
+                <!-- <DatePicker
+                  :value="searchForm.applyRefundTimeStart"
+                  type="date"
+                  placeholder="选择开始退款申请时间"
+                  style="width: 48%"
+                  :options="options1"
+                  @on-change="(datetime) =>{ changeDateTime(datetime, 1)}"
+                ></DatePicker>
+                <div style="width: 2%;display: inline-block"></div>
+                <DatePicker
+                  :value="searchForm.applyRefundTimeEnd"
+                  type="date"
+                  placeholder="选择结束退款申请时间"
+                  style="width: 48%"
+                  :options="options2"
+                  @on-change="(datetime) =>{ changeDateTime(datetime, 2)}"
+                ></DatePicker> -->
+
                 <DatePicker
                   type="daterange"
                   v-model="searchForm.applyRefundTimeDate"
@@ -152,6 +170,32 @@
 <script>
 import checkModal from "./checkModal";
 import { postRequest } from "@/libs/axios";
+import * as order from "@/api/order";
+const tableColumnsLog = [
+  {
+    title: "审核人",
+    width: 160,
+    key: "auditUser",
+    align: "center",
+  },
+  {
+    title: "审核时间",
+    width: 180,
+    key: "auditTime",
+    align: "center",
+  },
+  {
+    title: "审核结果",
+    key: "auditResult",
+    align: "center",
+  },
+  {
+    title: "审核备注",
+    key: "remark",
+    align: "center",
+  },
+];
+
 const tableColumns = [
   {
     type: "selection",
@@ -264,30 +308,6 @@ const tableColumns = [
   },
 ];
 
-const tableColumnsLog = [
-  {
-    title: "审核人",
-    width: 160,
-    key: "auditUser",
-    align: "center",
-  },
-  {
-    title: "审核时间",
-    width: 180,
-    key: "auditTime",
-    align: "center",
-  },
-  {
-    title: "审核结果",
-    key: "auditResult",
-    align: "center",
-  },
-  {
-    title: "审核备注",
-    key: "remark",
-    align: "center",
-  },
-];
 export default {
   name: "refundCheck",
   components: { checkModal },
@@ -333,6 +353,7 @@ export default {
         phoneNumber: "",
         current: 1,
         pageSize: 10,
+        couponTemplateType: 1,
       },
       current: 1,
       addressData: [],
@@ -388,6 +409,7 @@ export default {
       this.searchForm.phoneNumber = "";
       this.searchForm.auditStatus = "1";
       this.searchForm.current = 1;
+      this.searchForm.couponTemplateType = 1;
       this.current = 1;
       this.loadTableData();
     },
@@ -441,8 +463,7 @@ export default {
         var arr = this.selectDataList.map(item => ({ orderRefundId: item.id }));
         // /trade/fund/account/order/batchAudit
         this.checkData.data = arr;
-        const url = "/trade/fund/account/order/batchAudit";
-        const { code, msg } = await postRequest(url, this.checkData);
+        const { code, msg } = await order.orderBatchAudit(this.checkData);
         this.auditLoading = false;
         if (code === "200") {
           this.$Message.error("审核成功");
