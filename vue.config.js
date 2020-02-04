@@ -1,5 +1,9 @@
 const webpack = require("webpack");
 const TerserPlugin = require("terser-webpack-plugin");
+
+const baseUrl = process.env.VUE_APP_API;
+console.log("build baseUrl:", baseUrl);
+
 /* css压缩 */
 // const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 module.exports = {

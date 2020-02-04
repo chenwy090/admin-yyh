@@ -8,10 +8,9 @@
     "dev": "vue-cli-service serve",
     "yyhDev": "vue-cli-service serve --mode yyhDev",
     "build": "vue-cli-service build",
-    "proDev": "vue-cli-service build --mode proDev",
-    "test": "vue-cli-service build --mode test",
-    "uat": "vue-cli-service build --mode uat",
-    "pro": "vue-cli-service build --mode production"
+    "build:dev": "vue-cli-service build --mode dev",
+    "build:test": "vue-cli-service build --mode test",
+    "build:uat": "vue-cli-service build --mode uat"
   },
   "dependencies": {
     "area-data": "^5.0.6",
