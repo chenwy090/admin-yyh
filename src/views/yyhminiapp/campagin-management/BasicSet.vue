@@ -1,4 +1,3 @@
-
 <template>
   <!-- 编辑/新增 领优惠---基础设置 -->
   <div>
@@ -22,7 +21,7 @@
 
           <Alert show-icon v-if="campId">
             活动ID :
-            <span style="color:red">{{campId}}</span>
+            <span style="color:red">{{ campId }}</span>
             <span slot="desc"></span>
           </Alert>
 
@@ -34,11 +33,7 @@
                 placeholder="请输入选择appid"
                 @on-change="statusCheckChange"
               >
-                <Option
-                  v-for="item in appId_info"
-                  :value="item.appid"
-                  :key="item.appid"
-                >{{ item.appName }}</Option>
+                <Option v-for="item in appId_info" :value="item.appid" :key="item.appid">{{ item.appName }}</Option>
               </Select>
             </FormItem>
 
@@ -66,6 +61,16 @@
               </Select>
             </FormItem>
 
+            <FormItem label="优惠券类型" required>
+              <ChargeTypeItem
+                @change="
+                  statusCheckChange();
+                  chargeTypeChange($event);
+                "
+                :chargeData="edit_info"
+              ></ChargeTypeItem>
+            </FormItem>
+
             <FormItem label="活动标题" required>
               <Input
                 type="text"
@@ -76,13 +81,13 @@
               />
             </FormItem>
 
-            <FormItem label="优惠面额描述" required v-if="edit_info.campType==57">
+            <FormItem label="优惠面额描述" required v-if="edit_info.campType == 57">
               <Input
                 type="textarea"
                 v-model="edit_info.couponValueDesc"
                 style="width:400px"
                 @on-change="statusCheckChange"
-                :autosize="{minRows: 4,maxRows: 8}"
+                :autosize="{ minRows: 4, maxRows: 8 }"
                 placeholder="请输入优惠面额描述"
               />
             </FormItem>
@@ -93,7 +98,7 @@
                 v-model="edit_info.doorsillDesc"
                 style="width:400px"
                 @on-change="statusCheckChange"
-                :autosize="{minRows: 4,maxRows: 8}"
+                :autosize="{ minRows: 4, maxRows: 8 }"
                 placeholder="请填写使用门槛描述"
               />
             </FormItem>
@@ -110,7 +115,7 @@
               </Select>
             </FormItem>
 
-            <div v-if="edit_info.dateType =='1'">
+            <div v-if="edit_info.dateType == '1'">
               <FormItem label="活动开始时间" required>
                 <DatePicker
                   type="date"
@@ -145,7 +150,7 @@
                   ref="upload"
                   :defaultList="uploadList1"
                   type="drag"
-                  :format="['jpg','jpeg','png','bmp']"
+                  :format="['jpg', 'jpeg', 'png', 'bmp']"
                   :on-success="handleSuccess1"
                   :action="url"
                   accept="image"
@@ -177,7 +182,7 @@
                   ref="upload"
                   :defaultList="uploadList"
                   type="drag"
-                  :format="['jpg','jpeg','png','bmp']"
+                  :format="['jpg', 'jpeg', 'png', 'bmp']"
                   :on-success="handleSuccess"
                   :action="url"
                   accept="image"
@@ -208,7 +213,7 @@
                   ref="upload"
                   :defaultList="uploadList2"
                   type="drag"
-                  :format="['jpg','jpeg','png','bmp']"
+                  :format="['jpg', 'jpeg', 'png', 'bmp']"
                   :on-success="handleSucces2"
                   :action="url"
                   accept="image"
@@ -289,25 +294,17 @@
             </div>-->
 
             <FormItem label="优惠券模板" required>
-              <Button
-                type="dashed"
-                @click="resInfo"
-                :style="{width:'150px'}"
-                @on-change="statusCheckChange"
-              >选择模版</Button>
+              <Button type="dashed" @click="resInfo" :style="{ width: '150px' }" @on-change="statusCheckChange"
+                >选择模版</Button
+              >
 
-              <Tag
-                checkable
-                color="error"
-                v-if="edit_info.ticketTemplateId"
-                style="margin-left: 3%"
-              >已选择</Tag>
+              <Tag checkable color="error" v-if="edit_info.ticketTemplateId" style="margin-left: 3%">已选择</Tag>
             </FormItem>
 
             <FormItem v-if="edit_info.ticketName">
               <Alert style="width:500px">
-                <Row>模版ID：{{edit_info.ticketTemplateId}}</Row>
-                <Row>模版名称：{{edit_info.ticketName}}</Row>
+                <Row>模版ID：{{ edit_info.ticketTemplateId }}</Row>
+                <Row>模版名称：{{ edit_info.ticketName }}</Row>
               </Alert>
             </FormItem>
 
@@ -348,7 +345,7 @@
                 v-model="edit_info.rules"
                 style="width:400px"
                 @on-change="statusCheckChange"
-                :autosize="{minRows: 4,maxRows: 8}"
+                :autosize="{ minRows: 4, maxRows: 8 }"
                 placeholder="请填写活动/领券规则"
               />
             </FormItem>
@@ -358,7 +355,7 @@
                 type="textarea"
                 v-model="edit_info.useDesc"
                 style="width:400px"
-                :autosize="{minRows: 4,maxRows: 8}"
+                :autosize="{ minRows: 4, maxRows: 8 }"
                 @on-change="statusCheckChange"
               />
             </FormItem>
@@ -375,12 +372,7 @@
             </FormItem>
 
             <FormItem label="状态" required placeholder="请选择状态">
-              <Select
-                v-model="edit_info.status"
-                style="width:300px"
-                @on-change="statusCheckChange"
-                disabled
-              >
+              <Select v-model="edit_info.status" style="width:300px" @on-change="statusCheckChange" disabled>
                 <Option value="0">创建</Option>
                 <Option value="1">上架</Option>
                 <Option value="-1">下架</Option>
@@ -388,25 +380,22 @@
             </FormItem>
 
             <FormItem style="{'margin-top':'54px'}">
-              <Alert
-                type="warning"
-                show-icon
-                v-if="isCheckDisabled == true"
-                style="width:500px"
-              >修改后才能保存</Alert>
+              <Alert type="warning" show-icon v-if="isCheckDisabled == true" style="width:500px">修改后才能保存</Alert>
               <Button
                 type="primary"
                 @click="campagin_add()"
                 :loading="edit_loading"
                 style="width:150px;"
                 :disabled="isCheckDisabled"
-              >保存</Button>
+                >保存</Button
+              >
               <Button
                 type="dashed"
                 @click="nextInfo()"
                 style="width:150px;margin-left: 5%"
-                v-if="camp_pageStatus=='edit'&& isCheckDisabled == true"
-              >下一步</Button>
+                v-if="camp_pageStatus == 'edit' && isCheckDisabled == true"
+                >下一步</Button
+              >
             </FormItem>
           </Form>
         </Card>
@@ -414,29 +403,22 @@
     </div>
 
     <Modal v-model="res_Modal_show" width="800" title="选择模版">
-      <Form :model="res_info" ref="res_info" :label-width="100" :styles="{top: '10px'}">
-        <Table
-          border
-          ref="selection"
-          :columns="res_columns"
-          :data="res_list"
-          size="small"
-          height="300"
-        >
+      <Form :model="res_info" ref="res_info" :label-width="100" :styles="{ top: '10px' }">
+        <Table border ref="selection" :columns="res_columns" :data="res_list" size="small" height="300">
           <template slot-scope="{ row }" slot="ChangeStart">
-            <span v-if="row.changeDateType ==0">{{row.changeStartDate}}</span>
-            <span v-if="row.changeDateType ==1">发券后+{{row.changeStart}}天开始兑换</span>
+            <span v-if="row.changeDateType == 0">{{ row.changeStartDate }}</span>
+            <span v-if="row.changeDateType == 1">发券后+{{ row.changeStart }}天开始兑换</span>
           </template>
 
           <template slot-scope="{ row }" slot="ChangeEnd">
-            <span v-if="row.changeDateType ==0">{{row.changeEndDate}}</span>
-            <span v-if="row.changeDateType ==1">发券后+{{row.changeEnd}}天结束兑换</span>
+            <span v-if="row.changeDateType == 0">{{ row.changeEndDate }}</span>
+            <span v-if="row.changeDateType == 1">发券后+{{ row.changeEnd }}天结束兑换</span>
           </template>
         </Table>
       </Form>
 
       <div slot="footer">
-        <Button type="text" @click="res_Modal_show=false">取消</Button>
+        <Button type="text" @click="res_Modal_show = false">取消</Button>
         <Button type="primary" @click="resOk" :loading="res_loading">保存</Button>
       </div>
     </Modal>
@@ -455,13 +437,7 @@
 </template>
 
 <script>
-import {
-  getRequest,
-  postRequest,
-  putRequest,
-  deleteRequest,
-  uploadFileRequest
-} from "@/libs/axios";
+import { getRequest, postRequest, putRequest, deleteRequest, uploadFileRequest } from "@/libs/axios";
 
 import { baseUrl, uploadOperationImage2AliOssURl } from "@/api/index";
 
@@ -470,6 +446,8 @@ import { formatDate, checkImageWH } from "@/libs/date";
 import receiveRuleSet from "./receiveRuleManagement";
 
 import EditorBar from "@/components/EditorBar";
+
+import ChargeTypeItem from "./comp/ChargeTypeItem";
 
 // 品类
 import Category from "./Category";
@@ -483,10 +461,11 @@ export default {
     receiveRuleSet,
     EditorBar,
     BrandList,
-    Category
+    Category,
+    ChargeTypeItem,
   },
   props: {
-    camp_Info: Object
+    campId: [String, Number],
   },
   data() {
     return {
@@ -495,7 +474,7 @@ export default {
       list1: [],
       list2: [],
       list3: [],
-
+      camp_Info: {},
       edit_info: {
         firstClassCode: "",
         secondClassCode: "",
@@ -526,11 +505,17 @@ export default {
         newDiscountDetail: "", //中转数据
         brandNames: [],
         brandIds: [],
-        brandCodes: []
+        brandCodes: [],
+
+        couponKind: 1,
+        originalPrice: 0,
+        price: 0,
+        enableAfterSale: 0,
+        settleAmount: 0,
       },
       edit_loading: false,
       userToken: "",
-      campId: "",
+      // campId: "",
       imgUrl: "",
       url: uploadOperationImage2AliOssURl,
       uploadList: [],
@@ -571,7 +556,7 @@ export default {
             return h("div", [
               h("Radio", {
                 props: {
-                  value: flag
+                  value: flag,
                 },
                 on: {
                   "on-change": () => {
@@ -579,35 +564,35 @@ export default {
                     self.currentChooseName = ticketName;
 
                     self.chooseResArray = params.row;
-                  }
-                }
-              })
+                  },
+                },
+              }),
             ]);
-          }
+          },
         },
         {
           title: "sheetID",
           key: "sheetID",
           width: 200,
-          align: "center"
+          align: "center",
         },
         {
           title: "模版ID",
           key: "ticketTemplateID",
           width: 200,
-          align: "center"
+          align: "center",
         },
         {
           title: "模版名称",
           key: "ticketName",
           width: 200,
-          align: "center"
+          align: "center",
         },
         {
           title: "ticketKind",
           key: "ticketKind",
           width: 200,
-          align: "center"
+          align: "center",
         },
         {
           title: "兑换类型",
@@ -617,21 +602,18 @@ export default {
           render: (h, params) => {
             const row = params.row;
             const color = row.changeDateType === 0 ? "red" : "blue";
-            const text =
-              row.changeDateType === 0
-                ? "固定时间兑换"
-                : "发券后+X天后开始兑换";
+            const text = row.changeDateType === 0 ? "固定时间兑换" : "发券后+X天后开始兑换";
 
             return h(
               "Tag",
               {
                 props: {
-                  color: color
-                }
+                  color: color,
+                },
               },
               text
             );
-          }
+          },
         },
 
         {
@@ -639,7 +621,7 @@ export default {
           key: "ChangeStart",
           width: 200,
           align: "center",
-          slot: "ChangeStart"
+          slot: "ChangeStart",
         },
 
         {
@@ -647,9 +629,9 @@ export default {
           key: "ChangeEnd",
           width: 200,
           align: "center",
-          slot: "ChangeEnd"
-        }
-      ]
+          slot: "ChangeEnd",
+        },
+      ],
     };
   },
 
@@ -670,7 +652,7 @@ export default {
         id: "",
         firstClassCode: "",
         secondClassCode: "",
-        threeClassCode: ""
+        threeClassCode: "",
       });
 
       console.log(this.edit_info.categoryList);
@@ -704,7 +686,7 @@ export default {
     },
     init() {
       this.camp_pageStatus = this.getStore("camp_pageStatus");
-      console.log(this.camp_pageStatus);
+      // console.log(this.camp_pageStatus);
       this.getAppId();
       this.getCampInfo();
     },
@@ -712,7 +694,6 @@ export default {
       if (this.camp_pageStatus == "add") {
         this.addInfo();
       } else if (this.camp_pageStatus == "edit") {
-        this.editInfo();
         this.queryXX();
       }
     },
@@ -742,7 +723,13 @@ export default {
         ChangeEnd: "",
         categoryList: [],
         discountDetail: "",
-        newDiscountDetail: ""
+        newDiscountDetail: "",
+
+        couponKind: 1,
+        originalPrice: 0,
+        price: 0,
+        enableAfterSale: 0,
+        settleAmount: 0,
       };
       this.currentChooseID = "";
       this.currentChooseName = "";
@@ -757,25 +744,18 @@ export default {
     editInfo() {
       this.edit_info = {
         ...this.edit_info,
-        ...this.camp_Info
+        ...this.camp_Info,
       };
       this.edit_info.categoryList = [];
       this.uploadList = [{ url: this.camp_Info.imgUrl }];
       this.uploadList1 = [{ url: this.camp_Info.couponImg }];
       this.uploadList2 = [{ url: this.camp_Info.couponSimpleImg }];
       this.edit_info.appid = this.camp_Info.appid;
-      this.campId = this.camp_Info.campId;
 
       this.edit_info.name = this.camp_Info.name;
       this.edit_info.rules = this.camp_Info.rules.replace(/\\n/g, "\n");
-      this.edit_info.couponValueDesc = this.camp_Info.couponValueDesc.replace(
-        /\\n/g,
-        "\n"
-      );
-      this.edit_info.doorsillDesc = this.camp_Info.doorsillDesc.replace(
-        /\\n/g,
-        "\n"
-      );
+      this.edit_info.couponValueDesc = this.camp_Info.couponValueDesc.replace(/\\n/g, "\n");
+      this.edit_info.doorsillDesc = this.camp_Info.doorsillDesc.replace(/\\n/g, "\n");
 
       this.edit_info.imgUrl = this.camp_Info.imgUrl;
       this.edit_info.couponImg = this.camp_Info.couponImg;
@@ -793,12 +773,7 @@ export default {
           ? "4"
           : "5";
 
-      this.edit_info.status =
-        this.camp_Info.status == 0
-          ? "0"
-          : this.camp_Info.status == 1
-          ? "1"
-          : "-1";
+      this.edit_info.status = this.camp_Info.status == 0 ? "0" : this.camp_Info.status == 1 ? "1" : "-1";
 
       this.edit_info.ticketTemplateId = this.camp_Info.ticketTemplateId;
 
@@ -814,8 +789,7 @@ export default {
 
       this.edit_info.useDesc = this.camp_Info.useDesc.replace(/\\n/g, "\n");
 
-      this.edit_info.ChangeDateType =
-        this.camp_Info.changeDateType == 0 ? "0" : "1";
+      this.edit_info.ChangeDateType = this.camp_Info.changeDateType == 0 ? "0" : "1";
       this.edit_info.ChangeStartDate = this.camp_Info.changeStartDate;
       this.edit_info.ChangeEndDate = this.camp_Info.changeEndDate;
       this.edit_info.ChangeStart = this.camp_Info.changeStart;
@@ -823,15 +797,15 @@ export default {
       this.edit_info.discountDetail = this.camp_Info.discountDetail;
       this.edit_info.newDiscountDetail = this.camp_Info.discountDetail;
 
-      console.log(this.edit_info.ChangeDateType);
+      // console.log(this.edit_info.ChangeDateType);
 
       this.isCheckDisabled = true;
     },
 
     async queryXX() {
       let url = "/campagin/selectCampaignByCampId";
-      let { code, msg, classListList, brandList } = await postRequest(url, {
-        campId: this.campId
+      let { code, msg, classListList, brandList, campaign } = await postRequest(url, {
+        campId: this.campId,
       });
       let categoryList = [];
       classListList.forEach(arr => {
@@ -855,6 +829,13 @@ export default {
         categoryList.push(obj);
       });
 
+      campaign.settleAmount = campaign.settleAmountYuan;
+      campaign.price = campaign.priceYuan;
+      campaign.originalPrice = campaign.originalPriceYuan;
+
+      this.camp_Info = campaign;
+      this.editInfo();
+
       this.edit_info.categoryList = categoryList;
 
       let brandIds = [];
@@ -874,8 +855,30 @@ export default {
       this.isCheckDisabled = false;
     },
 
+    //优惠券类型改变
+    chargeTypeChange(item) {
+      console.info(item);
+      Object.assign(this.edit_info, item);
+      console.info(this.edit_info);
+    },
+
     //保存
     campagin_add() {
+      if (this.edit_info.couponKind == 3) {
+        if (this.edit_info.originalPrice <= 0) {
+          this.$Message.error("请填写原价");
+          return;
+        }
+        if (this.edit_info.price < 0.1) {
+          this.$Message.error("请填写售卖价并且不能低于0.1元");
+          return;
+        }
+        if (this.edit_info.price > this.edit_info.originalPrice) {
+          this.$Message.error("您的优惠价高于原价，请重新输入");
+          return;
+        }
+      }
+
       if (this.edit_info.name == "") {
         this.$Message.error("请填写活动标题");
         return;
@@ -896,10 +899,7 @@ export default {
       }
       if (this.edit_info.startDate != "" || this.edit_info.endDate != "") {
         if (
-          formatDate(
-            new Date(this.edit_info.startDate),
-            "yyyy-MM-dd hh:mm:ss"
-          ) >
+          formatDate(new Date(this.edit_info.startDate), "yyyy-MM-dd hh:mm:ss") >
           formatDate(new Date(this.edit_info.endDate), "yyyy-MM-dd hh:mm:ss")
         ) {
           this.$Message.error("开始日期不能大于结束日期");
@@ -907,18 +907,11 @@ export default {
         }
       }
 
-      this.edit_info.startDate = formatDate(
-        new Date(this.edit_info.startDate),
-        "yyyy-MM-dd hh:mm:ss"
-      );
-      this.edit_info.endDate = formatDate(
-        new Date(this.edit_info.endDate),
-        "yyyy-MM-dd hh:mm:ss"
-      );
+      this.edit_info.startDate = formatDate(new Date(this.edit_info.startDate), "yyyy-MM-dd hh:mm:ss");
+      this.edit_info.endDate = formatDate(new Date(this.edit_info.endDate), "yyyy-MM-dd hh:mm:ss");
 
       // 转换结束时间 23:59:59
-      this.edit_info.endDate =
-        this.edit_info.endDate.slice(0, 10) + " 23:59:59";
+      this.edit_info.endDate = this.edit_info.endDate.slice(0, 10) + " 23:59:59";
       // console.log(this.edit_info.endDate);
       // return;
 
@@ -977,27 +970,37 @@ export default {
         couponType: this.edit_info.couponType,
         ticketTemplateId: this.edit_info.ticketTemplateId,
         name: this.edit_info.name,
-        couponValueDesc: this.edit_info.couponValueDesc
-          .replace(/\t/g, "")
-          .replace(/\n/g, "\\n"),
-        doorsillDesc: this.edit_info.doorsillDesc
-          .replace(/\t/g, "")
-          .replace(/\n/g, "\\n"),
+        couponValueDesc: this.edit_info.couponValueDesc.replace(/\t/g, "").replace(/\n/g, "\\n"),
+        doorsillDesc: this.edit_info.doorsillDesc.replace(/\t/g, "").replace(/\n/g, "\\n"),
         dateType: this.edit_info.dateType,
         startDate: this.edit_info.startDate,
         endDate: this.edit_info.endDate,
         rules: this.edit_info.rules.replace(/\t/g, "").replace(/\n/g, "\\n"),
-        useDesc: this.edit_info.useDesc
-          .replace(/\t/g, "")
-          .replace(/\n/g, "\\n"),
+        useDesc: this.edit_info.useDesc.replace(/\t/g, "").replace(/\n/g, "\\n"),
         status: this.edit_info.status,
         ticketName: this.edit_info.ticketName,
         couponImg: this.edit_info.couponImg,
         couponSimpleImg: this.edit_info.couponSimpleImg,
         imgUrl: this.edit_info.imgUrl,
         // discountDetail: this.edit_info.discountDetail // 优惠券详情(富文本)
-        discountDetail: this.edit_info.newDiscountDetail // 优惠券详情(富文本)
+        discountDetail: this.edit_info.newDiscountDetail, // 优惠券详情(富文本)
+
+        // 1.5.6.1.1
+        couponKind: this.edit_info.couponKind,
+        originalPrice: this.edit_info.originalPrice,
+        price: this.edit_info.price,
+        enableAfterSale: this.edit_info.enableAfterSale,
+        settleAmount: this.edit_info.settleAmount,
+        couponAfterSaleVOList: this.edit_info.couponAfterSaleVOList,
       };
+
+      if (reqParams.couponKind == 1) {
+        delete reqParams.couponAfterSaleVOList;
+        delete reqParams.originalPrice;
+        delete reqParams.price;
+        delete reqParams.enableAfterSale;
+        delete reqParams.settleAmount;
+      }
 
       // console.log("save:reqParams==>", reqParams);
       // return;
@@ -1029,10 +1032,7 @@ export default {
       }
       if (this.edit_info.startDate != "" || this.edit_info.endDate != "") {
         if (
-          formatDate(
-            new Date(this.edit_info.startDate),
-            "yyyy-MM-dd hh:mm:ss"
-          ) >
+          formatDate(new Date(this.edit_info.startDate), "yyyy-MM-dd hh:mm:ss") >
           formatDate(new Date(this.edit_info.endDate), "yyyy-MM-dd hh:mm:ss")
         ) {
           this.$Message.error("开始日期不能大于结束日期");
@@ -1040,15 +1040,9 @@ export default {
         }
       }
 
-      var old_sDate = formatDate(
-        new Date(this.edit_info.startDate),
-        "yyyy-MM-dd hh:mm:ss"
-      );
+      var old_sDate = formatDate(new Date(this.edit_info.startDate), "yyyy-MM-dd hh:mm:ss");
 
-      var old_eDate = formatDate(
-        new Date(this.edit_info.endDate),
-        "yyyy-MM-dd hh:mm:ss"
-      );
+      var old_eDate = formatDate(new Date(this.edit_info.endDate), "yyyy-MM-dd hh:mm:ss");
 
       var new_sdate = new Date(old_sDate.replace(/-/g, "/"));
       var new_edate = new Date(old_eDate.replace(/-/g, "/"));
@@ -1079,9 +1073,9 @@ export default {
       this.$emit("changeStatus", false);
     },
 
-    statusCheckChange() {
-      this.isCheckDisabled = false;
-    },
+    // statusCheckChange() {
+    //   this.isCheckDisabled = false;
+    // },
     handleMaxSize(file) {
       this.$Message.error("图片不大于1M");
     },
@@ -1092,7 +1086,7 @@ export default {
 
         if (this.uploadList.length == 0) {
           let obj = {
-            url: res.image_url
+            url: res.image_url,
           };
           this.uploadList.push(obj);
         } else {
@@ -1121,7 +1115,7 @@ export default {
 
         if (this.uploadList1.length == 0) {
           let obj = {
-            url: res.image_url
+            url: res.image_url,
           };
           this.uploadList1.push(obj);
         } else {
@@ -1141,7 +1135,7 @@ export default {
 
         if (this.uploadList2.length == 0) {
           let obj = {
-            url: res.image_url
+            url: res.image_url,
           };
           this.uploadList2.push(obj);
         } else {
@@ -1174,10 +1168,7 @@ export default {
       }
       if (this.edit_info.startDate != "" || this.edit_info.endDate != "") {
         if (
-          formatDate(
-            new Date(this.edit_info.startDate),
-            "yyyy-MM-dd hh:mm:ss"
-          ) >
+          formatDate(new Date(this.edit_info.startDate), "yyyy-MM-dd hh:mm:ss") >
           formatDate(new Date(this.edit_info.endDate), "yyyy-MM-dd hh:mm:ss")
         ) {
           this.$Message.error("开始日期不能大于结束日期");
@@ -1185,18 +1176,11 @@ export default {
         }
       }
 
-      this.edit_info.startDate = formatDate(
-        new Date(this.edit_info.startDate),
-        "yyyy-MM-dd hh:mm:ss"
-      );
-      this.edit_info.endDate = formatDate(
-        new Date(this.edit_info.endDate),
-        "yyyy-MM-dd hh:mm:ss"
-      );
+      this.edit_info.startDate = formatDate(new Date(this.edit_info.startDate), "yyyy-MM-dd hh:mm:ss");
+      this.edit_info.endDate = formatDate(new Date(this.edit_info.endDate), "yyyy-MM-dd hh:mm:ss");
 
       // 转换结束时间 23:59:59
-      this.edit_info.endDate =
-        this.edit_info.endDate.slice(0, 10) + " 23:59:59";
+      this.edit_info.endDate = this.edit_info.endDate.slice(0, 10) + " 23:59:59";
 
       this.res_Modal_show = true;
       this.res_info.ticketTemplateIDs = this.edit_info.ticketTemplateId;
@@ -1253,7 +1237,7 @@ export default {
         brandCode: "",
         brandName: "",
         pageNum: 1,
-        pageSize: 10
+        pageSize: 10,
       });
       if (code == 200) {
         this.list3 = data;
@@ -1265,23 +1249,22 @@ export default {
     msgOk(txt) {
       this.$Message.info({
         content: txt,
-        duration: 3
+        duration: 3,
       });
     },
     msgErr(txt) {
       this.$Message.error({
         content: txt,
-        duration: 3
+        duration: 3,
       });
-    }
+    },
   },
   mounted() {
     this.init();
     this.getBrandList();
-  }
+  },
 };
 </script>
-
 
 <style>
 .form {

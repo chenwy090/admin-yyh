@@ -1,96 +1,79 @@
 <template>
   <div>
     <Card>
-      <Row>
-        <Form ref="searchForm" :model="searchForm" inline :label-width="95" class="search-form">
-          <Form-item label="活动id" :label-width="60">
-            <Input type="text" v-model="searchForm.campId" placeholder="请输入" style="width: 150px"/>
+      <Form ref="searchForm" :model="searchForm" inline :label-width="95" class="search-form">
+        <Form-item label="领取人手机" prop="phoneNumber">
+          <Input type="text" v-model="searchForm.phoneNumber" placeholder="请输入领取人手机" style="width: 150px" />
+        </Form-item>
+        <Form-item label="使用状态" prop="status">
+          <Select v-model="searchForm.status" placeholder="请选择使用状态" style="width: 120px">
+            <Option :value="''">全部</Option>
+            <Option :value="1">已使用</Option>
+            <Option :value="2">未使用</Option>
+            <Option :value="3">已过期</Option>
+            <Option :value="4">已退款</Option>
+          </Select>
+        </Form-item>
+
+        <Form-item label="优惠券码" prop="couponBarcode">
+          <Input type="text" v-model="searchForm.couponBarcode" placeholder="请输入优惠券码" style="width: 150px" />
+        </Form-item>
+
+        <span v-if="drop">
+          <!-- <Form-item label="领取终端" prop="terminal">
+            <Select v-model="searchForm.terminal" placeholder="请选择领取终端" style="width: 120px">
+              <Option :value="''">全部</Option>
+              <Option :value="1">小程序</Option>
+              <Option :value="2">IOS</Option>
+              <Option :value="3">安卓</Option>
+            </Select>
+          </Form-item> -->
+
+          <Form-item label="核销门店ID" prop="verifyShopId">
+            <Input type="text" v-model="searchForm.verifyShopId" placeholder="请输入核销门店ID" style="width: 150px" />
           </Form-item>
-          <Form-item label="活动名称" :label-width="60">
-            <Input type="text" v-model="searchForm.name" placeholder="请输入" style="width: 150px"/>
+
+          <Form-item label="领取时间段" prop="receiveTime">
+            <DatePicker
+              type="daterange"
+              placeholder="请选择领取时间段"
+              style="width: 180px"
+              format="yyyy-MM-dd"
+              @on-change="[searchForm.receiveStartTime, searchForm.receiveEndTime] = $event"
+              v-model="searchForm.receiveTime"
+            ></DatePicker>
           </Form-item>
-          <span v-if="drop">
-            <Form-item label="领券门店id">
-              <Input
-                type="text"
-                v-model="searchForm.receiveShopId"
-                placeholder="请输入"
-                style="width: 150px"
-              />
-            </Form-item>
-            <Form-item label="领券开始时间">
-              <DatePicker
-                type="date"
-                placeholder="请选择"
-                style="width: 150px"
-                format="yyyy-MM-dd"
-                @on-change="time1"
-                :value="searchForm.receiveStartTime"
-              ></DatePicker>
-            </Form-item>
-            <Form-item label="领券结束时间">
-              <DatePicker
-                type="date"
-                placeholder="请选择"
-                style="width: 150px"
-                format="yyyy-MM-dd"
-                @on-change="time2"
-                :value="searchForm.receiveEndTime"
-              ></DatePicker>
-            </Form-item>
-            <Form-item label="核销门店id">
-              <Input
-                type="text"
-                v-model="searchForm.verifyShopId"
-                clearable
-                placeholder="请输入"
-                style="width: 150px"
-              />
-            </Form-item>
-            <Form-item label="核销开始时间">
-              <DatePicker
-                type="date"
-                placeholder="请选择"
-                style="width: 150px"
-                format="yyyy-MM-dd"
-                @on-change="time3"
-                :value="searchForm.verifyStartTime"
-              ></DatePicker>
-            </Form-item>
-            <Form-item label="核销结束时间">
-              <DatePicker
-                type="date"
-                placeholder="请选择"
-                style="width: 150px"
-                format="yyyy-MM-dd"
-                @on-change="time4"
-                :value="searchForm.verifyEndTime"
-              ></DatePicker>
-            </Form-item>
-          </span>
-          <Form-item :label-width="0">
-            <a class="drop-down" @click="dropDown">
-              {{dropDownContent}}
-              <Icon :type="dropDownIcon"></Icon>
-            </a>
+
+          <Form-item label="核销时间段" prop="verifyTime">
+            <DatePicker
+              type="daterange"
+              placeholder="请选择核销时间段"
+              style="width: 180px"
+              format="yyyy-MM-dd"
+              @on-change="[searchForm.verifyStartTime, searchForm.verifyEndTime] = $event"
+              v-model="searchForm.verifyTime"
+            ></DatePicker>
           </Form-item>
-          <div class="br">
-            <Button type="primary" icon="ios-search" @click="search">搜索</Button>
-            <Button type="warning" icon="md-arrow-round-down" @click="leadingOut">导出信息表</Button>
-            <Button @click="resetForm()">重置</Button>
-          </div>
-        </Form>
-      </Row>
+        </span>
+
+        <Form-item :label-width="0">
+          <a class="drop-down" @click="dropDown">
+            {{ dropDownContent }}
+            <Icon :type="dropDownIcon"></Icon>
+          </a>
+        </Form-item>
+
+        <div class="operation">
+          <Button type="primary" icon="ios-search" @click="search">搜索</Button>
+          <Button @click="resetForm()">重置</Button>
+        </div>
+      </Form>
     </Card>
-    <Card>
-      <!-- <Row class="operation">
-          <Button type="primary" icon="md-add" @click="addTimed()">新增</Button>
-      </Row>-->
-      <Table :columns="columns1" :data="data1" :loading="TableLoading">
-        <template slot-scope="{ row }" slot="action">
-          <Button type="success" size="small" style="margin-right:5px;" @click="inputCheck(row)">查看</Button>
-        </template>
-      </Table>
+    <Card style="margin-top:1vh">
+      <Row class="operation">
+        <Button icon="md-refresh" @click="refreshFun()">刷新</Button>
+      </Row>
+      <Table border :columns="columns1" :data="data1" :loading="TableLoading"> </Table>
 
       <Row type="flex" justify="end" class="page">
         <!-- 分页 -->
@@ -105,333 +88,255 @@
         <!-- 分页 -->
       </Row>
       <!-- 查看弹框 -->
-      <Modal v-model="checkDsplay" :mask-closable="false" class="check" footer-hide width="800">
-        <div style="margin-bottom:10px">
-          <span>id:</span>
-          <Input v-model="checkData.id"/>
-        </div>
-        <div style="margin-bottom:10px">
-          <span>响应吗:</span>
-          <Input v-model="checkData.code"/>
-        </div>
-        <div style="margin-bottom:10px">
-          <span>ip:</span>
-          <Input v-model="checkData.ip"/>
-        </div>
-        <div style="margin-bottom:10px">
-          <span>请求方式:</span>
-          <Input v-model="checkData.method"/>
-        </div>
-        <div style="margin-bottom:10px">
-          <span>url:</span>
-          <Input v-model="checkData.uri"/>
-        </div>
-        <div style="margin-bottom:10px">
-          <span>args:</span>
-          <Input type="textarea" :rows="4" v-model="checkData.args"/>
-        </div>
-        <div style="margin-bottom:10px">
-          <span>returning:</span>
-          <Input type="textarea" :rows="6" v-model="checkData.returning"/>
-        </div>
-      </Modal>
+      <Modal v-model="checkDsplay" :mask-closable="false" class="check" footer-hide width="800"> </Modal>
       <!-- 查看弹框 -->
     </Card>
   </div>
 </template>
 <script>
-  import { getCouponList, getQueryLogAll } from "@/api/sys";
-  import { baseUrl } from "@/api/index";
-  export default {
-    name: "timed-task",
-    data() {
-      return {
-        drop: false,
-        dropDownContent: "展开",
-        dropDownIcon: "ios-arrow-down",
-        TableLoading: false,
-        searchForm: {
-          // 搜索
-          campId: "",
-          name: "",
-          receiveEndTime: "",
-          receiveShopId: "",
-          receiveStartTime: "",
-          verifyEndTime: "",
-          verifyShopId: "",
-          verifyStartTime: ""
-        },
-        //列表字段显示
-        columns1: [
-          // {
-          //   title: "操作",
-          //   minWidth: 80,
-          //   fixed: "left",
-          //   slot: "action",
-          //   align: "center"
-          // },
-          {
-            title: "活动id",
-            key: "campId",
-            minWidth: 150,
-            align: "center"
-          },
-          {
-            title: "活动名称",
-            key: "name",
-            minWidth: 150,
-            align: "center"
-          },
-          {
-            title: "领券总金额",
-            key: "receiveMoney",
-            minWidth: 150,
-            align: "center"
-          },
-          {
-            title: "领券数量",
-            key: "receiveCount",
-            minWidth: 150,
-            align: "center"
-          },
-          {
-            title: "未激活券数量",
-            key: "notActiveCount",
-            minWidth: 150,
-            align: "center"
-          },
-          {
-            title: "用券数量",
-            key: "useCount",
-            minWidth: 150,
-            align: "center"
-          },
-          {
-            title: "用券总金额",
-            key: "useMoney",
-            minWidth: 150,
-            align: "center"
-          }
-        ],
-        data1: [], // 列表数据
-        current: 1, //当前页码
-        totalSize: 0, //总条数
-        searchType: "", // 1：页面初始化 2：搜索
-        apiId: "", //接口id
-        checkData: {}, //查看数据
-        checkDsplay: false // 查看对话框
-      };
+// import { getCouponList, getQueryLogAll } from "@/api/sys";
+// import { baseUrl } from "@/api/index";
+import * as order from "@/api/order";
+
+const columns = [
+  // {
+  //   title: "订单编号",
+  //   key: "orderNo",
+  //   minWidth: 150,
+  //   align: "center",
+  // },
+  {
+    title: "优惠券标题",
+    key: "couponTitle",
+    minWidth: 150,
+    align: "center",
+  },
+  {
+    title: "优惠券活动ID",
+    key: "campId",
+    minWidth: 150,
+    align: "center",
+  },
+  {
+    title: "优惠券模板ID",
+    key: "ticketTemplateId",
+    minWidth: 150,
+    align: "center",
+  },
+  {
+    title: "面额",
+    key: "couponMoney",
+    minWidth: 150,
+    align: "center",
+  },
+  {
+    title: "券码",
+    key: "barcode",
+    minWidth: 150,
+    align: "center",
+  },
+  {
+    title: "领取人手机号",
+    key: "mobile",
+    minWidth: 150,
+    align: "center",
+  },
+  {
+    title: "一键核销码",
+    key: "userVerifyCode",
+    minWidth: 150,
+    align: "center",
+  },
+  // {
+  //   title: "领取终端",
+  //   key: "receivedFrom",
+  //   minWidth: 150,
+  //   align: "center",
+  // },
+  {
+    title: "领取时间",
+    key: "receiveTime",
+    minWidth: 150,
+    align: "center",
+  },
+  {
+    title: "核销时间",
+    key: "verifyTime",
+    minWidth: 150,
+    align: "center",
+  },
+  {
+    title: "核销门店",
+    key: "shopName",
+    minWidth: 150,
+    align: "center",
+  },
+  {
+    title: "核销收银台编号",
+    key: "posNo",
+    minWidth: 150,
+    align: "center",
+  },
+  {
+    title: "核销流水号",
+    key: "listNo",
+    minWidth: 150,
+    align: "center",
+  },
+  {
+    title: "退款时间",
+    key: "refundedTime",
+    minWidth: 150,
+    align: "center",
+  },
+  {
+    title: "过期时间",
+    key: "lastUseTime",
+    minWidth: 150,
+    align: "center",
+  },
+  {
+    title: "使用状态",
+    key: "useStatusDesc",
+    minWidth: 150,
+    align: "center",
+  },
+];
+
+export default {
+  name: "timed-task",
+  data() {
+    return {
+      drop: false,
+      dropDownContent: "展开",
+      dropDownIcon: "ios-arrow-down",
+      TableLoading: false,
+      searchForm: {
+        pageNum: 1,
+        pageSize: 10,
+        phoneNumber: "", //手机号
+        status: "", //使用状态
+        couponBarcode: "", //券码
+        // terminal: "", //终端
+        verifyShopId: "", //核销门店
+        verifyStartTime: "", //核销时间(start)
+        verifyEndTime: "", //核销时间(end)
+        receiveStartTime: "", //领取时间(start)
+        receiveEndTime: "", //领取时间(end)
+        verifyTime: [],
+        receiveTime: [],
+      },
+      //列表字段显示
+      columns1: columns,
+      data1: [], // 列表数据
+      current: 1, //当前页码
+      totalSize: 0, //总条数
+      checkDsplay: false, // 查看对话框
+    };
+  },
+  created() {
+    this.getList();
+  },
+  methods: {
+    // 搜索
+    search() {
+      this.current = 1;
+      this.searchForm.pageNum = 1;
+      this.totalSize = 0;
+      this.getList();
     },
-    filters: {
-      codeFilters: function(value) {
-        if (value) {
-          if (value.length > 10) {
-            let str = value.slice(0, 10);
-            return str + "...";
-          } else {
-            return value;
-          }
-        }
-      }
+    refreshFun() {
+      this.getList();
     },
-    created: function() {
-      this.getList({});
-      this.searchType = 1;
-    },
-    methods: {
-      // 搜索
-      search() {
-        // console.log(this.searchForm);
-        this.searchType = 2;
-        this.current = 1;
-        this.getList(this.searchForm);
-      },
-
-      // 渲染列表
-      getList(obj) {
-        // 加载动画
-        this.TableLoading = true;
-        getCouponList(obj, this.current).then(res => {
-          //console.log(res);
-          if (res.code == 200) {
-            this.data1 = res.data.records;
-            // 分页
-            this.current = res.data.current;
-            this.totalSize = res.data.total;
-            // 加载动画
-            this.TableLoading = false;
-          } else {
-            this.msgErr(res.msg);
-            // 加载动画
-            this.TableLoading = false;
-          }
-        });
-      },
-
-      // 分页
-      changeCurrent(current) {
-        this.current = current;
-        if (this.searchType == 1) {
-          this.getList({});
-        } else if (this.searchType == 2) {
-          let searchForm2 = {
-            code: this.searchForm.code,
-            startDate: this.searchForm.startDate,
-            endDate: this.searchForm.endDate,
-            logType:
-              this.searchForm.logType1 == undefined
-                ? ""
-                : this.searchForm.logType1 + this.searchForm.logType2,
-            startTimeUsed: this.searchForm.timeUsed[0],
-            endTimeUsed: this.searchForm.timeUsed[1]
-          };
-          this.getList(searchForm2);
-        }
-      },
-
-      // 传值到查看对话框
-      inputCheck(row) {
-        // this.apiId = row.id
-        getQueryLogAll(row.id).then(res => {
-          if (res.code == 200) {
-            this.checkData = res.data;
-            if (this.checkData) {
-              this.checkDsplay = true;
-            }
-          } else {
-            this.msgErr(res.msg);
-          }
-        });
-      },
-
-      // 重置form表单
-      resetForm() {
-        this.searchForm.campId = "";
-        this.searchForm.name = "";
-        this.searchForm.receiveEndTime = "";
-        this.searchForm.receiveShopId = "";
-        this.searchForm.receiveStartTime = "";
-        this.searchForm.verifyEndTime = "";
-        this.searchForm.verifyShopId = "";
-        this.searchForm.verifyStartTime = "";
-        this.searchType = 1;
-        this.getList({});
-      },
-
-      // 导出确认
-      leadingOut() {
-        this.$Modal.confirm({
-          title: "导出确认",
-          content:
-            `
-            <p>确实将搜索结果导出Excel表格吗？</p>
-            <p style='color:#ff9900'>搜索框全部不输入，默认导出当天全部</p>
-            <p style='color:#ff9900'>只是不选择领券开始和结束时间，默认当天时间</p>
-            `,
-          onOk: () => {
-            this.deriveShopXls()
-          },
-          onCancel: () => {
-            // this.$Message.info('Clicked cancel');
-          }
-        });
-      },
-
-      //导出
-      deriveShopXls() {
-        window.location.href =
-          baseUrl +
-          `/coupon/receiveInfo/download?` +
-          "&campId=" +
-          this.searchForm.campId +
-          "&name=" +
-          this.searchForm.name +
-          "&receiveEndTime=" +
-          this.searchForm.receiveEndTime +
-          "&receiveShopId=" +
-          this.searchForm.receiveShopId +
-          "&receiveStartTime=" +
-          this.searchForm.receiveStartTime +
-          "&verifyEndTime=" +
-          this.searchForm.verifyEndTime +
-          "&verifyShopId=" +
-          this.searchForm.verifyShopId +
-          "&verifyStartTime=" +
-          this.searchForm.verifyStartTime;
-      },
-
-      // 时间处理
-      time1(e) {
-        // let time = e.slice(0,10) + ' ' + '00:00:00'
-        this.searchForm.receiveStartTime = e;
-      },
-      time2(e) {
-        //let time = e.slice(0,10) + ' ' + '23:59:59'
-        this.searchForm.receiveEndTime = e;
-      },
-      time3(e) {
-        //let time = e.slice(0,10) + ' ' + '23:59:59'
-        this.searchForm.verifyStartTime = e;
-      },
-      time4(e) {
-        //let time = e.slice(0,10) + ' ' + '23:59:59'
-        this.searchForm.verifyEndTime = e;
-      },
-
-      // 全局提示
-      msgOk(txt) {
-        this.$Message.info({
-          content: txt,
-          duration: 3
-        });
-      },
-
-      msgErr(txt) {
-        this.$Message.error({
-          content: txt,
-          duration: 3
-        });
-      },
-
-      dropDown() {
-        if (this.drop) {
-          this.dropDownContent = "展开";
-          this.dropDownIcon = "ios-arrow-down";
+    // 渲染列表
+    getList() {
+      // 加载动画
+      this.TableLoading = true;
+      order.receiveInfoPage(this.searchForm).then(res => {
+        //console.log(res);
+        if (res.code == 200) {
+          this.data1 = res.data.records;
+          // 分页
+          this.current = res.data.current;
+          this.totalSize = res.data.total;
+          // 加载动画
+          this.TableLoading = false;
         } else {
-          this.dropDownContent = "收起";
-          this.dropDownIcon = "ios-arrow-up";
+          this.msgErr(res.msg);
+          // 加载动画
+          this.TableLoading = false;
         }
-        this.drop = !this.drop;
+      });
+    },
+    // 分页
+    changeCurrent(current) {
+      this.searchForm.pageNum = current;
+      this.current = current;
+      this.getList();
+    },
+    // 重置form表单
+    resetForm() {
+      this.totalSize = 0;
+      this.current = 1;
+      this.searchForm.pageNum = 1;
+      this.searchForm.receiveTime = [];
+      this.searchForm.verifyTime = [];
+      this.$refs.searchForm.resetFields();
+      this.getList();
+    },
+
+    // 全局提示
+    msgOk(txt) {
+      this.$Message.info({
+        content: txt,
+        duration: 3,
+      });
+    },
+    msgErr(txt) {
+      this.$Message.error({
+        content: txt,
+        duration: 3,
+      });
+    },
+    dropDown() {
+      if (this.drop) {
+        this.dropDownContent = "展开";
+        this.dropDownIcon = "ios-arrow-down";
+      } else {
+        this.dropDownContent = "收起";
+        this.dropDownIcon = "ios-arrow-up";
       }
-    }
-  };
+      this.drop = !this.drop;
+    },
+  },
+};
 </script>
 
 <style lang="less" scoped>
-  .operation {
-    margin-bottom: 2vh;
-  }
-  .select-count {
-    font-size: 13px;
-    font-weight: 600;
-    color: #40a9ff;
-  }
-  .select-clear {
-    margin-left: 10px;
-  }
-  .page {
-    margin-top: 2vh;
-  }
-  .drop-down {
-    font-size: 13px;
-    margin-left: 5px;
-  }
+.operation {
+  margin-bottom: 2vh;
+}
+.select-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: #40a9ff;
+}
+.select-clear {
+  margin-left: 10px;
+}
+.page {
+  margin-top: 2vh;
+}
+.drop-down {
+  font-size: 13px;
+  margin-left: 5px;
+}
 
-  .check {
-    span {
-      width: 100px;
-      display: inline-block;
-      font-size: 16px;
-    }
+.check {
+  span {
+    width: 100px;
+    display: inline-block;
+    font-size: 16px;
   }
+}
 </style>

@@ -242,12 +242,12 @@ const tableColumns = [
     align: "center",
     key: "couponTitle",
   },
-  {
-    title: "所属商户",
-    minWidth: 250,
-    align: "center",
-    key: "merchantName",
-  },
+  // {
+  //   title: "所属商户",
+  //   minWidth: 250,
+  //   align: "center",
+  //   key: "merchantName",
+  // },
   {
     title: "数量",
     minWidth: 150,
@@ -353,7 +353,7 @@ export default {
         phoneNumber: "",
         current: 1,
         pageSize: 10,
-        couponTemplateType: 2,
+        couponTemplateType: 1,
       },
       current: 1,
       addressData: [],
@@ -409,7 +409,7 @@ export default {
       this.searchForm.phoneNumber = "";
       this.searchForm.auditStatus = "1";
       this.searchForm.current = 1;
-      this.searchForm.couponTemplateType = 2;
+      this.searchForm.couponTemplateType = 1;
       this.current = 1;
       this.loadTableData();
     },

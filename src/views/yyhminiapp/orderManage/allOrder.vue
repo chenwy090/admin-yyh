@@ -150,11 +150,18 @@ const tableColumns = [
     key: "orderNo",
   },
   {
-    title: "状态",
+    title: "订单状态",
     width: 120,
     align: "center",
     key: "statusStr",
   },
+  {
+    title: "券码状态",
+    width: 120,
+    align: "center",
+    key: "couponTemplateTypeStr",
+  },
+
   {
     title: "优惠券ID",
     width: 180,
@@ -166,11 +173,11 @@ const tableColumns = [
     width: 200,
     key: "couponTitle",
   },
-  {
-    title: "所属商户",
-    minWidth: 250,
-    key: "merchantName",
-  },
+  // {
+  //   title: "所属商户",
+  //   minWidth: 250,
+  //   key: "merchantName",
+  // },
   {
     title: "数量",
     minWidth: 100,
@@ -268,7 +275,7 @@ export default {
         status: "",
         current: 1,
         pageSize: 10,
-        couponTemplateType: 2,
+        couponTemplateType: 1,
       },
       current: 1,
       addressData: [],
@@ -297,7 +304,7 @@ export default {
       this.searchForm.phoneNumber = "";
       this.searchForm.source = "";
       this.searchForm.status = "";
-      this.searchForm.couponTemplateType = 2;
+      this.searchForm.couponTemplateType = 1;
       this.current = 1;
       this.search();
     },
