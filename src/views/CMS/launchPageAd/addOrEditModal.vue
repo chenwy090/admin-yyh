@@ -125,34 +125,47 @@
             </FormItem>
           </Col>
         </Row>
-        <Row
-          class="padding-left-12"
-          v-if="modal.jumpFlag=='1'&&(modal.contentType==3||modal.contentType==4)"
-        >
-          <Col span="18">
-            <FormItem label="跳转内容">
-              <Input
-                type="text"
-                v-model="modal.contentValue"
-                placeholder="请输入链接"
-                style="width: 100%"
-              ></Input>
-            </FormItem>
-          </Col>
-        </Row>
-        <Row
-          class="padding-left-12"
-          v-if="modal.jumpFlag=='1'&&(modal.contentType==1||modal.contentType==10||modal.contentType==11||modal.contentType==12)"
-        >
-          <Col span="18">
-            <FormItem label="跳转内容">
-              <Button type="dashed" @click="openContent">
-                <span v-if="!modal.contentValue">请选择</span>
-                <span v-if="modal.contentValue">{{modal.contentTitle}}</span>
-              </Button>
-            </FormItem>
-          </Col>
-        </Row>
+
+        <template v-if="modal.jumpFlag=='1'">
+          <!-- U社区-标签 13 -->
+          <Row class="padding-left-12" v-if="modal.contentType==13">
+            <Col span="18">
+              <FormItem label="标签列表页">
+                <Button type="dashed" @click="openTag">
+                  <span v-if="!modal.contentValue">请选择</span>
+                  <span v-if="modal.contentValue">{{modal.contentTitle}}</span>
+                </Button>
+              </FormItem>
+            </Col>
+          </Row>
+          <!-- U社区-内容 14 -->
+          <Row class="padding-left-12" v-if="modal.contentType==14">
+            <Col span="18">
+              <FormItem label="指定内容">
+                <Input
+                  type="text"
+                  v-model.trim="modal.contentValue"
+                  placeholder="请填写内容ID"
+                  style="width: 100%"
+                ></Input>
+              </FormItem>
+            </Col>
+          </Row>
+
+          <Row
+            class="padding-left-12"
+            v-if="(modal.contentType==1||modal.contentType==10||modal.contentType==11||modal.contentType==12)"
+          >
+            <Col span="18">
+              <FormItem label="跳转内容">
+                <Button type="dashed" @click="openContent">
+                  <span v-if="!modal.contentValue">请选择</span>
+                  <span v-if="modal.contentValue">{{modal.contentTitle}}</span>
+                </Button>
+              </FormItem>
+            </Col>
+          </Row>
+        </template>
         <Row>
           <div style="text-align: center">
             <Button @click="close">返回</Button>
@@ -181,8 +194,6 @@
     <ModalTagList
       v-if="showTagList"
       :showTagList.sync="showTagList"
-      :tags="tags"
-      :tagList="tagList"
       @seclectedTr-event="updateTagList"
     ></ModalTagList>
   </div>
@@ -190,7 +201,6 @@
 
 <script>
 import { uploadOperationImage2AliOssURl } from "@/api/index";
-import { postRequest, getRequest, getSyncRequest } from "@/libs/axios";
 import contentModal from "./contentModal";
 import drawModal from "./drawModal";
 import couponModal from "./couponModal";
@@ -208,8 +218,7 @@ export default {
   data() {
     return {
       showTagList: false,
-      tagList: [],
-      tags: [], //	标签
+      tagList: [], //	标签
       userToken: "",
       url: uploadOperationImage2AliOssURl,
       contentObj: {},
@@ -269,26 +278,13 @@ export default {
     };
   },
   methods: {
-    handleAddTag() {
+    openTag() {
       this.showTagList = true;
     },
     updateTagList(data) {
       console.log("selectedTagList----", data);
-      this.tags = data;
-    },
-    async getTagList() {
-      //标签查询
-      const url = "/tag/list";
-      const { code, msg, data } = await this.postRequest(url);
-      if (code == 200) {
-        // data:[{id,name,sort}]
-        this.tagList = data.map(item => {
-          item._checked = false;
-          return item;
-        });
-      } else {
-        this.msgErr(msg);
-      }
+      this.modal.contentValue = data.id;
+      this.modal.contentTitle = data.name;
     },
     handleView(item) {
       this.visible = true;
@@ -370,7 +366,7 @@ export default {
         };
       } else {
         this.titleName = "编辑";
-        postRequest(`/page/ad/get`, { id: row.id }).then(res => {
+        this.postRequest("/page/ad/get", { id: row.id }).then(res => {
           if (res.code == "200") {
             this.modal.title = res.data.title;
             this.modal.id = res.data.id;
@@ -454,17 +450,14 @@ export default {
     },
     ok() {
       if (!this.modal.title) {
-        this.$Message.error("请填写标题");
-        return;
+        return this.$Message.error("请填写标题");
       }
       if (this.modal.jumpFlag !== 0 && this.modal.jumpFlag !== 1) {
-        this.$Message.error("请选择跳转类型");
-        return;
+        return this.$Message.error("请选择跳转类型");
       }
       if (this.modal.jumpFlag == 1) {
         if (!this.modal.contentType) {
-          this.$Message.error("请选择内容类型");
-          return;
+          return this.$Message.error("请选择内容类型");
         }
         if (
           this.modal.contentType === 1 ||
@@ -475,29 +468,24 @@ export default {
           this.modal.contentType === 12
         ) {
           if (!this.modal.contentValue) {
-            this.$Message.error("请选择内容或链接");
-            return;
+            return this.$Message.error("请选择内容或链接");
           }
         }
       }
       if (!this.modal.clientType.length) {
-        this.$Message.error("请选择终端");
-        return;
+        return this.$Message.error("请选择终端");
       }
       if (!this.modal.startTime || !this.modal.endTime) {
-        this.$Message.error("请选择时间");
-        return;
+        return this.$Message.error("请选择时间");
       }
       if (new Date(this.modal.startTime) >= new Date(this.modal.endTime)) {
-        this.$Message.error("开始时间不能大于等于结束时间");
-        return;
+        return this.$Message.error("开始时间不能大于等于结束时间");
       }
       if (!this.modal.imgUrl) {
-        this.$Message.error("请上传图片");
-        return;
+        return this.$Message.error("请上传图片");
       }
       if (true) {
-        postRequest(`/page/ad/save`, this.modal).then(res => {
+        this.postRequest("/page/ad/save", this.modal).then(res => {
           if (res.code == "200") {
             this.$Message.success("新增成功");
             this.$emit("setViewDialogVisible", false);
