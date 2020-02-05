@@ -149,11 +149,14 @@
 	  			defaultAddCodeList:[]
 	  		},
 	  		userToken: {}, //用户token
-      	// 文件上传
-      	actionUrl:uploadOperationImage2AliOssURl,
-      	expiredTime:"",
-      	isButton:true,
-      	countNum:''
+	      	// 文件上传
+	      	actionUrl:uploadOperationImage2AliOssURl,
+	      	expiredTime:"",
+	      	isButton:true,
+	      	countNum:'',
+	      	imgData:{
+	          accept: 'image/png, image/jpg,image/jpeg',
+	      	}
 	  	}
 	  },
 	  created() {
@@ -241,6 +244,23 @@
 	    			let params = "";
 	    			//let __file = [];
 	    			if(this.action.type == "add"){
+	    				console.log(file)
+	    				//判断图片的格式和大小是否符合要求
+	    				for(let i = 0; i < file.length; i++){
+	    					let type = file[i].type;//文件的类型，判断是否是图片
+	    					console.log(type)  
+					      	let size = file[i].size/1024;//文件的大小，判断图片的大小
+					      	let name = file[i].name;
+					      	if(this.imgData.accept.indexOf(type) === -1){
+					        	this.$Message.error('只支持png,jpg格式图片！');
+					        	return false;
+					      	}
+					      	if(size > 1024){
+					        	this.$Message.error(`请选择1M以内的图片！`);
+					        	return false;
+					      	}
+	    				}
+	    				
 	    				//判断还能上传几个文件
 	    				let superNum = 30 - this.countNum;
 	    				if(file.length > superNum){
@@ -300,19 +320,16 @@
 	    },
 	    handleBeforeUpload(file){
 	    	console.log(file)
+	    	
+	      	
 	    	let that = this;
-	    	//let superNum = 30 - that.countNum;
-	    	//if(superNum < 10){
-	    		//this.$Message.info(`还能上传${superNum}个文件`);
-	    		//return false;
-	    	//}else{
 	        if(that.formData.file.length >= 10){
 	          this.$Message.info("最多只能上传10个文件");
 	          return false;
 	        }
 	        that.formData.file.push(file);
-	      //}   
-        return false
+	        
+        	return false
 	    },
 	    handleUploadSuccess(res, file, fileList) {
 	    	this.formData.file = [];
