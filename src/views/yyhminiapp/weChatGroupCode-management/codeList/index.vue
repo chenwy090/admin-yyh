@@ -43,7 +43,7 @@
             @click="addOrEditContent('edit',row)"
           >编辑关联码</Button>
           <Button type="primary" size="small" class="btn-wechat" @click="downLoad('query',row)">下载活码</Button>
-          <Button type="error" size="small" class="btn-wechat" @click="deleteList(row)">删除</Button>
+          <!-- <Button type="error" size="small" class="btn-wechat" @click="deleteList(row)">删除</Button> -->
         </template>
       </Table>
       <Row type="flex" justify="end" class="page">
