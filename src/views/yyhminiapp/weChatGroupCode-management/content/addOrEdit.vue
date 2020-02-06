@@ -13,7 +13,7 @@
         <FormItem
           label="二维码名称："
           prop="title"
-          :rules="{required: true,  validator: validateEmpty('请输入二维码名称',8)}"
+          :rules="{required: true,  validator: validateEmpty('请输入二维码名称',15)}"
         >
         	<Input v-model="formData.title" placeholder="最多输入15个字符"></Input>
       	</FormItem>
@@ -207,9 +207,9 @@
 	        if (value == "") {
 	          return callback(msg);
 	        }
-	        let length = util.getByteLen(value);
-	        if (length > len * 2) {
-	          return callback(`最多只能输入${len*2}个字符`);
+	        let length = value.length;
+	        if (length > 15) {
+	          return callback(`最多只能输入15个字符`);
 	        }
 	        callback();
 	      };
@@ -218,7 +218,7 @@
 	      // value += "";
 	      // value = value.trim();
 	      // // 允许不填
-	      let reg = /^(0|\+?[1-9][0-9]*)$/;
+	      let reg = /^[1-9]*[1-9][0-9]*$/;
 	      if (reg.test(value)) {
 	        callback();
 	      } else {

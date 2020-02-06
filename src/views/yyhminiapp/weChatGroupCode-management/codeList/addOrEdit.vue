@@ -13,18 +13,18 @@
         <FormItem
           label="活码标题："
           prop="title"
-          :rules="{required: true,  validator: validateEmpty('请输入活码标题',10)}"
+          :rules="{required: true,  validator: validateEmpty('请输入活码标题',20)}"
         >
         	<Input v-model="formData.title" placeholder="最多输入20个字符"></Input>
       	</FormItem>
       	<FormItem
           label="活码备注："
           prop="remark"
-          :rules="{required: true,  validator: validateEmpty('请输入活码备注',10)}"
+          :rules="{required: true,  validator: validateEmpty('请输入活码备注',20)}"
         >
         	<Input v-model="formData.remark" placeholder="最多输入20个字符"></Input>
       	</FormItem>
-      	<FormItem prop="codeImg" label="备用二维码" :rules="{required: true, message:'仅限JPG、PNG格式，小于1MB，尺寸为1:1比例'}">
+      	<FormItem prop="codeImg" label="备用二维码" :rules="{required: true, message:'仅限JPG、PNG格式，小于1MB'}">
 					<div style="display:inline-block;vertical-align:middle">
 						<UploadImage	
                 :fileUploadType="'codeImg'"
@@ -135,8 +135,10 @@
 	    },
 	    ImgUploadSuccess(type,{ imgUrl,coverImgWidth,coverImgHeight }) {
 	    	if(type == "logo"){
-	    		if(coverImgWidth!= 75 && coverImgHeight != 75){
-	    			this.isLogoFlag = false;	
+	    		if(coverImgWidth == 75 && coverImgHeight == 75){
+	    			this.isLogoFlag = true;	
+	    		}else{
+	    			this.isLogoFlag = false;
 	    		}
 	    		this.formData.logo = imgUrl;
 	        this.formData.defaultLogoList = [{ imgUrl }];
@@ -152,9 +154,9 @@
 	        if (value == "") {
 	          return callback(msg);
 	        }
-	        let length = util.getByteLen(value);
-	        if (length > len * 2) {
-	          return callback(`最多只能输入${len*2}个字符`);
+	        let length = value.length;
+	        if (length > 20) {
+	          return callback(`最多只能输入20个字符`);
 	        }
 	        callback();
 	      };
