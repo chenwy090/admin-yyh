@@ -1,4 +1,5 @@
 <template>
+  <!-- 商超 -->
   <div class="label_manage">
     <Card>
       <Form ref="searchForm" :model="searchForm" inline :label-width="90" class="search-form">
@@ -9,25 +10,45 @@
           <Input clearable v-model="searchForm.tradeNo" placeholder="请输入微信单号" style="width: 200px" />
         </Form-item>
         <Form-item label="优惠券ID" prop="couponId">
-          <Input clearable v-model="searchForm.couponId" placeholder="请输入优惠券ID" style="width: 200px" />
+          <Input
+            clearable
+            v-model="searchForm.couponId"
+            placeholder="请输入优惠券ID"
+            style="width: 200px"
+          />
         </Form-item>
         <!-- <Form-item label="品牌名称" prop="brandName">
           <Input clearable v-model="searchForm.brandName" placeholder="请输入品牌名称" style="width: 200px" />
-        </Form-item> -->
+        </Form-item>-->
         <Form-item label="零售商名称" prop="venderName">
-          <Input clearable v-model="searchForm.venderName" placeholder="请输入零售商名称" style="width: 200px" />
+          <Input
+            clearable
+            v-model="searchForm.venderName"
+            placeholder="请输入零售商名称"
+            style="width: 200px"
+          />
         </Form-item>
 
         <Form-item label="支付方式" prop="payType">
-          <Select v-model="searchForm.payType" placeholder="请选择支付方式" clearable style="width: 200px;">
+          <Select
+            v-model="searchForm.payType"
+            placeholder="请选择支付方式"
+            clearable
+            style="width: 200px;"
+          >
             <Option :value="0">全部</Option>
             <Option :value="1">微信小程序</Option>
             <Option :value="2">微信app</Option>
           </Select>
         </Form-item>
         <Form-item label="交易类型" prop="tradeType">
-          <Select v-model="searchForm.tradeType" placeholder="请选择交易类型" clearable style="width: 200px;">
-            <Option value="">全部</Option>
+          <Select
+            v-model="searchForm.tradeType"
+            placeholder="请选择交易类型"
+            clearable
+            style="width: 200px;"
+          >
+            <Option value>全部</Option>
             <Option value="1">支付</Option>
             <Option value="2">退款</Option>
           </Select>
@@ -41,8 +62,7 @@
             v-model="searchForm.datetimerange"
             @on-change=";[searchForm.tradeTimeStrat, searchForm.tradeTimeEnd] = $event"
             style="width: 275px;"
-          >
-          </DatePicker>
+          ></DatePicker>
         </FormItem>
 
         <Form-item class="br">
@@ -54,7 +74,14 @@
     </Card>
     <Card style="margin-top: 1vh;">
       <!-- 用户列表 -->
-      <Table :loading="TableLoading" border :columns="tableColumns" :data="table_list" sortable="custom" ref="table">
+      <Table
+        :loading="TableLoading"
+        border
+        :columns="tableColumns"
+        :data="table_list"
+        sortable="custom"
+        ref="table"
+      >
         <template slot-scope="{ row }" slot="brandIdStr">
           <p>{{ row.brandIdStr || '--' }}</p>
         </template>
@@ -72,116 +99,29 @@
         ></Page>
       </Row>
       <!-- 分页 -->
-    </Card>  
+    </Card>
   </div>
 </template>
 <script>
-const columns = [
-  {
-    title: '订单号',
-    width: 160,
-    align: 'center',
-    key: 'orderNo',
-  },
-  {
-    title: '微信单号',
-    width: 134,
-    align: 'center',
-    key: 'tradeNo',
-  },
-  {
-    title: '优惠券ID',
-    width: 100,
-    align: 'center',
-    key: 'couponId',
-  },
-  {
-    title: '优惠券名称',
-    width: 190,
-    align: 'center',
-    key: 'couponName',
-  },
-  {
-    title: '数量',
-    width: 100,
-    align: 'right',
-    key: 'couponCount',
-  },
-  // {
-  //   title: '品牌名称',
-  //   width: 190,
-  //   align: 'center',
-  //   key: 'brandName',
-  // },
-  {
-    title: '零售商名称',
-    width: 190,
-    align: 'center',
-    key: 'brandIdStr',
-    slot: 'brandIdStr',
-  },
-  {
-    title: '交易金额（元）',
-    width: 150,
-    align: 'right',
-    key: 'orderAmount',
-  },
-  {
-    title: '支付通消费（元）',
-    width: 150,
-    align: 'right',
-    key: 'payChannelFee',
-  },
-  {
-    title: '平台分账含通消费（元）',
-    width: 190,
-    align: 'right',
-    key: 'totalFee',
-  },
-  {
-    title: '商户分账（元）',
-    width: 150,
-    align: 'right',
-    key: 'paidAmount',
-  },
-  {
-    title: '支付方式',
-    width: 100,
-    align: 'center',
-    key: 'payTypeDesc',
-  },
-  {
-    title: '交易类型',
-    width: 100,
-    align: 'center',
-    key: 'tradeTypeDesc',
-  },
-  {
-    title: '交易时间',
-    width: 150,
-    align: 'center',
-    key: 'tradeTime',
-  },
-]
-
-import { billTransactionFlowList } from '@/api/financial'
-import {downloadSteam} from "@/libs/axios";
+import { businessColumns as columns } from "./columns";
+import { billTransactionFlowList } from "@/api/financial";
+import { downloadSteam } from "@/libs/axios";
 export default {
   data() {
     return {
       searchForm: {
         pageNum: 1,
         pageSize: 10,
-        datetimerange: '',
-        orderNo: '',
-        venderName: '',
-        brandName: '',
-        tradeNo: '',
-        couponId: '',
+        datetimerange: "",
+        orderNo: "",
+        venderName: "",
+        brandName: "",
+        tradeNo: "",
+        couponId: "",
         payType: 0,
-        tradeType: '',
-        tradeTimeStrat: '',
-        tradeTimeEnd: '',
+        tradeType: "",
+        tradeTimeStrat: "",
+        tradeTimeEnd: "",
       },
 
       current: 1,
@@ -190,96 +130,114 @@ export default {
       TableLoading: false,
       table_list: [],
       tableColumns: columns,
-    }
+    };
   },
   mounted() {
-    this.getList()
+    this.getList();
   },
   methods: {
     // 刷新
     search() {
-      this.searchForm.pageNum = 1
-      this.getList()
+      this.searchForm.pageNum = 1;
+      this.getList();
     },
     getList() {
-      this.TableLoading = true
-      let body = JSON.parse(JSON.stringify(this.searchForm))
-      delete body.datetimerange
-      this.postRequest('/trade/merchant/bill/transaction/business/list',body).then(res => {
-        this.TableLoading = false
+      this.TableLoading = true;
+      let body = JSON.parse(JSON.stringify(this.searchForm));
+      delete body.datetimerange;
+      this.postRequest("/trade/merchant/bill/transaction/business/list", body).then(res => {
+        this.TableLoading = false;
         if (res && res.code == 200) {
           if (res.data.records instanceof Array) {
             res.data.records.forEach(item => {
-              item.orderAmount = this.division100(item.orderAmount || 0)
-              item.payChannelFee = this.division100(item.payChannelFee || 0)
-              item.totalFee = this.division100(item.totalFee || 0)
-              item.paidAmount = this.division100(item.paidAmount || 0)
-            })
+              item.orderAmount = this.division100(item.orderAmount || 0);
+              item.payChannelFee = this.division100(item.payChannelFee || 0);
+              item.totalFee = this.division100(item.totalFee || 0);
+              item.paidAmount = this.division100(item.paidAmount || 0);
+            });
           }
-          this.table_list = res.data.records
-          this.totalSize = res.data.total
+          this.table_list = res.data.records;
+          this.totalSize = res.data.total;
         } else {
           this.table_list = [];
           this.totalSize = 0;
-          this.$Message.error(res.msg)
+          this.$Message.error(res.msg);
         }
-      })
+      });
     },
     changeCurrent(current) {
-      this.searchForm.pageNum = current
-      this.getList()
+      this.searchForm.pageNum = current;
+      this.getList();
     },
     // 重置form表单
     resetForm(name) {
-      this.$refs[name].resetFields()
-      this.searchForm.tradeTimeStrat = ''
-      this.searchForm.tradeTimeEnd = ''
-      if (name == 'searchForm') {
-        this.search()
+      this.$refs[name].resetFields();
+      this.searchForm.tradeTimeStrat = "";
+      this.searchForm.tradeTimeEnd = "";
+      if (name == "searchForm") {
+        this.search();
       }
     },
     division100(n) {
-      let num = String(n)
-      let arr = num.split(/\./)
+      let num = String(n);
+      let arr = num.split(/\./);
       if (arr.length == 2) {
         if (arr[1].length < 2) {
-          arr[1] = arr[1].padEnd(2, '0')
+          arr[1] = arr[1].padEnd(2, "0");
         }
-        return arr.join('.')
+        return arr.join(".");
       } else {
-        return `${num}.00`
+        return `${num}.00`;
       }
     },
-    async downLoad(){
+    async downLoad() {
       //如导出的内容超出5000条记录，弹出提示框信息"一次性最多只能导出5000条记录"
-      if(this.totalSize > 5000){
-        this.$Message.error('一次性最多只能导出5000条记录');
-        return false
+      if (this.totalSize > 5000) {
+        this.$Message.error("一次性最多只能导出5000条记录");
+        return false;
       }
-      const {searchForm:{pageNum,pageSize,datetimerange,orderNo,merchantName,brandName,tradeNo,couponId,payType,tradeType,tradeTimeStrat,tradeTimeEnd,venderName}} = this
+      const {
+        searchForm: {
+          pageNum,
+          pageSize,
+          datetimerange,
+          orderNo,
+          merchantName,
+          brandName,
+          tradeNo,
+          couponId,
+          payType,
+          tradeType,
+          tradeTimeStrat,
+          tradeTimeEnd,
+          venderName,
+        },
+      } = this;
       let params = {
-        brandName:brandName,
-        couponId:couponId,
-        couponType:2,
-        orderNo:orderNo,
-        pageNum:pageNum,
-        pageSize:pageSize,
-        payType:payType,
-        tradeNo:tradeNo,
-        tradeTimeStrat:tradeTimeStrat,
-        tradeTimeEnd:tradeTimeEnd,
-        tradeType:tradeType,
-        venderName:venderName
-      }
-      const res = await downloadSteam('/trade/merchant/bill/transaction/business/download',params)
+        brandName: brandName,
+        couponId: couponId,
+        couponType: 2,
+        orderNo: orderNo,
+        pageNum: pageNum,
+        pageSize: pageSize,
+        payType: payType,
+        tradeNo: tradeNo,
+        tradeTimeStrat: tradeTimeStrat,
+        tradeTimeEnd: tradeTimeEnd,
+        tradeType: tradeType,
+        venderName: venderName,
+      };
+      const res = await downloadSteam("/trade/merchant/bill/transaction/business/download", params);
       const content = res;
 
       //const { filename } = res.headers;
       const blob = new Blob([content], { type: "application/vnd.ms-excel" });
+
+      const filename = "商超交易流水.csv";
       const oA = document.createElement("a");
       if ("download" in oA) {
         // 非IE下载
-        oA.download = decodeURI('商超交易流水');
+        oA.download = decodeURI(filename);
         oA.style.display = "none";
         oA.href = URL.createObjectURL(blob);
         document.body.appendChild(oA);
@@ -288,11 +246,11 @@ export default {
         document.body.removeChild(oA);
       } else {
         // IE10+下载
-        navigator.msSaveBlob(blob, '商超交易流水');
+        navigator.msSaveBlob(blob, "商超交易流水");
       }
-    }
+    },
   },
-}
+};
 </script>
 <style lang="less" scoped>
 .operation {
