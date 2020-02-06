@@ -33,7 +33,7 @@
                 @uploadSuccess="ImgUploadSuccess('codeImg',$event)"
             ></UploadImage>
 					</div>
-					<span style="margin-left:10px;">仅限JPG、PNG格式，小于1MB，尺寸为1:1比例</span>
+					<span style="margin-left:10px;">仅限JPG、PNG格式，小于1MB</span>
 				</FormItem>
       	<FormItem
           label="关联账号："

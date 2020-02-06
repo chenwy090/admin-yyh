@@ -254,10 +254,10 @@
 	        case 2:
 	          url = "/merchantCouponTemplate/backList";
 	          data = {
-	            isActivityCoupon: null,
+	            //isActivityCoupon: null,
 	            templateStatus: "进行中",
 	            title: this.searchForm.name,
-	            requestFrom: "choujiangtuan",
+	            //requestFrom: "choujiangtuan",
 	          };
 	          break;
 	        case 1:
