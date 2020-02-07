@@ -99,16 +99,17 @@ export default {
   },
   watch: {
     chargeData(val) {
-      if (val) {
-        Object.keys(this.body).forEach(key => {
-          this.body[key] = val[key];
-        });
-        if (val.couponAfterSaleVOList) {
-          this.couponAfterSaleVOLists = val.couponAfterSaleVOList.map(({ code, value }) => {
-            return `${code}:${value}`;
-          });
-        }
-      }
+      this.chargeDataView(val);
+      // if (val) {
+      //   Object.keys(this.body).forEach(key => {
+      //     this.body[key] = val[key];
+      //   });
+      //   if (val.couponAfterSaleVOList) {
+      //     this.couponAfterSaleVOLists = val.couponAfterSaleVOList.map(({ code, value }) => {
+      //       return `${code}:${value}`;
+      //     });
+      //   }
+      // }
     },
   },
   computed: {
@@ -143,6 +144,22 @@ export default {
       }
       this.$emit("change", body);
     },
+    chargeDataView(val) {
+      if (val) {
+        Object.keys(this.body).forEach(key => {
+          this.body[key] = val[key];
+        });
+        if (val.couponAfterSaleVOList) {
+          this.couponAfterSaleVOLists = val.couponAfterSaleVOList.map(({ code, value }) => {
+            return `${code}:${value}`;
+          });
+        }
+      }
+    },
+  },
+  mounted() {
+    console.info(this.chargeData);
+    this.chargeDataView(this.chargeData);
   },
 };
 </script>

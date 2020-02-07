@@ -654,8 +654,6 @@ export default {
         secondClassCode: "",
         threeClassCode: "",
       });
-
-      console.log(this.edit_info.categoryList);
     },
     del(index) {
       console.log("del categoryList:", index);
@@ -1066,7 +1064,9 @@ export default {
       }
       this.$emit(`update:basicSetPage`, true);
       this.receiveRuleSetPage = e.Return;
-      // this.edit_info = JSON.parse(JSON.stringify(this.edit_info));
+
+      this.edit_info = { ...this.edit_info };
+      console.info(this.edit_info);
     },
 
     goback() {

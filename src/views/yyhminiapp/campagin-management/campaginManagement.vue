@@ -14,18 +14,17 @@
               <Input type="text" v-model="search.campId" clearable placeholder="请输入活动ID" style="width: 200px" />
             </Form-item>
             <Form-item label="优惠券模板ID" :label-width="100">
-                <Input-number
-                  type="text"
-                  v-model="search.ticketTemplateId"
-                  placeholder="请输入优惠券模板ID"
-                  style="width: 200px"
-                />
-              </Form-item>
-              <Form-item label="活动名称" :label-width="100">
-                <Input type="text" v-model="search.name" clearable placeholder="请输入活动名称" style="width: 200px" />
-              </Form-item>
+              <Input-number
+                type="text"
+                v-model="search.ticketTemplateId"
+                placeholder="请输入优惠券模板ID"
+                style="width: 200px"
+              />
+            </Form-item>
+            <Form-item label="活动名称" :label-width="100">
+              <Input type="text" v-model="search.name" clearable placeholder="请输入活动名称" style="width: 200px" />
+            </Form-item>
             <span v-if="drop">
-              
               <!-- <Form-item label="活动标签" :label-width="100">
 
                 <Select v-model="search.label" placeholder="请选择" style="width: 200px">
@@ -92,9 +91,8 @@
             sortable="custom"
             ref="table"
           >
-
-          <template slot-scope="{ row }" slot="couponKind">
-              <span> {{row.couponKind | $couponKind}} </span>
+            <template slot-scope="{ row }" slot="couponKind">
+              <span> {{ row.couponKind | $couponKind }} </span>
             </template>
 
             <template slot-scope="{ row }" slot="couponImg">
@@ -134,7 +132,6 @@
                 {{ row.doorsillDesc }}
               </span>
             </template>
-            
           </Table>
         </Row>
         <Row type="flex" justify="end" class="page">
@@ -523,7 +520,7 @@ export default {
         // startDate: "", // 开始时间
         // endDate: "" // 结束时间
         sendChannel: "",
-        couponKind:0
+        couponKind: 0,
       },
       res_list: [],
       templatelist: [], // 活动标签列表 （搜索用）
@@ -657,7 +654,7 @@ export default {
           key: "couponKind",
           width: 200,
           align: "center",
-          slot:'couponKind',
+          slot: "couponKind",
         },
         {
           title: "活动时间类型",
@@ -1112,11 +1109,11 @@ export default {
       detailsDisplay: false, // 查看详情对话框
     };
   },
-  filters:{
-    $couponKind(val){
-      console.info(val)
-      return ['','免费','','收费'][val]
-    }
+  filters: {
+    $couponKind(val) {
+      console.info(val);
+      return ["", "免费", "", "收费"][val];
+    },
   },
   created() {
     this.userToken = { jwttoken: localStorage.getItem("jwttoken") };
@@ -1807,7 +1804,7 @@ export default {
         //  newDiscountDetail: "", //中转数据
 
         // 1.5.6.1.1
-        ...res.campaign
+        ...res.campaign,
       };
       this.camp_Info3 = rowData;
       this.detailsDisplay = true;
@@ -1862,7 +1859,7 @@ export default {
         brandNames,
         brandCodes,
         categoryList,
-        campaign
+        campaign,
       };
     },
 
