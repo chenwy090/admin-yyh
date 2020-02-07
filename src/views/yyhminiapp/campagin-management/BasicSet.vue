@@ -1066,7 +1066,6 @@ export default {
       this.receiveRuleSetPage = e.Return;
 
       this.edit_info = { ...this.edit_info };
-      console.info(this.edit_info);
     },
 
     goback() {
