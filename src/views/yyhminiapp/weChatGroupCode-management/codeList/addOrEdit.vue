@@ -127,10 +127,11 @@
 	  	removeImg(type) {
 	  		if(type == "logo"){
 	  			this.formData.logo = "";
-	        this.formData.defaultLogoList = [];
+	        	this.formData.defaultLogoList = [];
+	        	this.isLogoFlag = true;
 	  		}else{
 	  			this.formData.codeImg = "";
-	        this.formData.defaultCodeImgList = [];
+	        	this.formData.defaultCodeImgList = [];
 	  		}
 	    },
 	    ImgUploadSuccess(type,{ imgUrl,coverImgWidth,coverImgHeight }) {
@@ -173,10 +174,13 @@
 	    				remark:remark,
 	    				title:title
 	    			}
-	    			if(!this.isLogoFlag){
-	    				this.$Message.error("二维码logo尺寸必须是75*75");
-	    				return false;
-	    			}
+	    			console.log(this.isLogoFlag)
+	    			
+		    		if(!this.isLogoFlag){
+		    			this.$Message.error("二维码logo尺寸必须是75*75");
+		    			return false;
+		    		}
+	    			
 	    			let {code,msg} = await this.postRequest(this.url,params);
 	    			if(code == 200){
 	    				this.$Message.success("操作成功");
