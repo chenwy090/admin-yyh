@@ -127,8 +127,8 @@
         </Row>
 
         <template v-if="modal.jumpFlag=='1'">
-          <!-- U社区-标签 13 -->
-          <Row class="padding-left-12" v-if="modal.contentType==13">
+          <!-- U社区-标签 19 -->
+          <Row class="padding-left-12" v-if="modal.contentType==19">
             <Col span="18">
               <FormItem label="标签列表页">
                 <Button type="dashed" @click="openTag">
@@ -138,8 +138,8 @@
               </FormItem>
             </Col>
           </Row>
-          <!-- U社区-内容 14 -->
-          <Row class="padding-left-12" v-if="modal.contentType==14">
+          <!-- U社区-内容 20 -->
+          <Row class="padding-left-12" v-if="modal.contentType==20">
             <Col span="18">
               <FormItem label="指定内容">
                 <Input
@@ -240,8 +240,8 @@ export default {
         { value: 11, label: "周边券详情" },
         { value: 12, label: "商超券详情" },
         // U社区
-        { value: 13, label: "U社区-标签" },
-        { value: 14, label: "U社区-内容" },
+        { value: 19, label: "U社区-标签" },
+        { value: 20, label: "U社区-内容" },
       ],
       clientTypeList: [
         { value: 1, label: "小程序" },

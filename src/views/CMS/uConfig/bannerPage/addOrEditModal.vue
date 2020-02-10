@@ -45,8 +45,8 @@
             </FormItem>
           </Col>
         </Row>
-        <!-- U社区-标签 13 -->
-        <Row class="padding-left-12" v-if="modal.type==13">
+        <!-- U社区-标签 19 -->
+        <Row class="padding-left-12" v-if="modal.type==19">
           <Col span="18">
             <FormItem label="标签列表页">
               <Button type="dashed" @click="openTag">
@@ -56,8 +56,8 @@
             </FormItem>
           </Col>
         </Row>
-        <!-- U社区-内容 14 -->
-        <Row class="padding-left-12" v-if="modal.type==14">
+        <!-- U社区-内容 20 -->
+        <Row class="padding-left-12" v-if="modal.type==20">
           <Col span="18">
             <FormItem label="指定内容">
               <Input
@@ -319,8 +319,8 @@ export default {
         { value: 5, label: "商户" },
         { value: 6, label: "优惠券" },
         // U社区
-        { value: 13, label: "U社区-标签" },
-        { value: 14, label: "U社区-内容" },
+        { value: 19, label: "U社区-标签" },
+        { value: 20, label: "U社区-内容" },
       ],
       clientTypeList: [
         // { value: '0', label: '全部' },
@@ -658,11 +658,11 @@ export default {
       }
 
       // U社区
-      // { value: 13, label: "U社区-标签" }, 弹框选择
-      // { value: 14, label: "U社区-内容" }, 输入框
-      if (type == 13 || type == 14) {
+      // { value: 19, label: "U社区-标签" }, 弹框选择
+      // { value: 20, label: "U社区-内容" }, 输入框
+      if (type == 19 || type == 20) {
         //输入框
-        if (type == 14) {
+        if (type == 20) {
           content = value;
           this.modal.content = value;
         }
