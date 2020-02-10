@@ -638,25 +638,42 @@ export default {
       this.modal.location = this.cascaderValue[0];
       this.modal.businessLayer = this.cascaderValue[1];
       this.modal.layerPriority = this.cascaderValue[2];
-      if (!this.modal.title) {
+
+      let { title, type, value, content } = this.modal;
+      if (!title) {
         this.$Message.error("请填写标题");
         return;
       }
-      if (!this.modal.type) {
+      if (!type) {
         this.$Message.error("请选择内容类型");
         return;
       }
-      if (this.modal.type == 2 && this.choujiangType == "抽奖广场") {
+      if (type == 2 && this.choujiangType == "抽奖广场") {
         this.modal.value = "";
         this.modal.content = "0";
       }
-      if (this.modal.type == 3 || this.modal.type == 4) {
-        this.modal.content = this.modal.value;
+      if (type == 3 || type == 4) {
+        content = value;
+        this.modal.content = value;
       }
-      if ((!this.modal.value || !this.modal.content) && !(this.modal.type == 2 && this.choujiangType == "抽奖广场")) {
+
+      // U社区
+      // { value: 13, label: "U社区-标签" }, 弹框选择
+      // { value: 14, label: "U社区-内容" }, 输入框
+      if (type == 13 || type == 14) {
+        //输入框
+        if (type == 14) {
+          content = value;
+          this.modal.content = value;
+        }
+        if (!value) {
+          this.$Message.error("请输入指定内容ID");
+        }
+      } else if ((!value || !content) && !(type == 2 && this.choujiangType == "抽奖广场")) {
         this.$Message.error("请选择内容或链接");
         return;
       }
+
       // if (!this.modal.shopId && this.modal.shopId !== 0) {
       //   this.$Message.error('请选择投放门店')
       //   return
