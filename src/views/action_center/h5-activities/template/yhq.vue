@@ -275,6 +275,7 @@ export default {
     action: {
       handler(val, oldVal) {
         let { type, data } = this.action;
+
         if (type == "add") {
           this.isShow = true;
           this.yhqDetail = false;
@@ -465,10 +466,14 @@ export default {
         couponName: name.trim(),
         templateId: id.trim(),
         couponType: type,
-        pageNum: this.page.pageNum,
-        pageSize: this.page.pageSize,
+        // pageNum: this.page.pageNum,
+        // pageSize: this.page.pageSize,
+        ...this.page,
       };
-      let { code, msg, data, current, total, size } = await postRequest("/browsing/templateCoupon/list", params);
+      const url = "/browsing/templateCoupon/list";
+      let { code, msg, data } = await postRequest(url, params);
+      //   let { code, msg, data, current, total, size } = await postRequest(url, params);
+      debugger;
       if (code == 200) {
         if (data.dataList == null) {
           this.dataYhq = [];
@@ -495,7 +500,9 @@ export default {
       }
     },
     setTab(value) {
+
       this.currentChoose = "";
+      //  yhqM:超市券 type:1   yhqZ:周边券 type:2
       if (value == "yhqM") {
         this.searchData.type = 1;
         this.page.pageSize = 10;
@@ -532,6 +539,7 @@ export default {
     setFormDataVaule(data) {
       //回显数据
       const {
+        couponType, //yhqM:超市券 type:1   yhqZ:周边券 type:2
         mainTitle,
         id,
         templateId,
@@ -547,18 +555,21 @@ export default {
         startDate,
         endDate,
       } = data;
+
+      this.searchData.type = couponType;
+
       this.formData = {
-        id: id,
-        templateId: templateId,
-        surplusCount: surplusCount,
+        id,
+        templateId,
+        surplusCount,
         beginTime: startTime,
-        endTime: endTime,
+        endTime,
         isYg: isHerald,
         isYgValue: heraldType == null ? "" : heraldType,
         img: imgUrl,
         defaultImgList: [{ imgUrl: imgUrl }],
-        mainTitle: mainTitle,
-        subTitle: subTitle,
+        mainTitle,
+        subTitle,
       };
       this.activityTime = startDate + "--" + endDate;
       this.daterange = [startTime, endTime];
@@ -573,17 +584,17 @@ export default {
             browsingId,
           } = this;
           let params = {
-            browsingId: browsingId,
+            browsingId,
             couponId: templateId,
             couponType: type,
-            endTime: endTime,
-            id: id,
+            endTime,
+            id,
             imgUrl: img,
             isHerald: isYg,
-            mainTitle: mainTitle,
-            moduleId: moduleId,
+            mainTitle,
+            moduleId,
             startTime: beginTime,
-            subTitle: subTitle,
+            subTitle,
           };
           if (isYg == 1) {
             if (isYgValue == "") {
@@ -594,7 +605,7 @@ export default {
           } else {
             params.heraldType = "";
           }
-          console.log(params);
+
           let { code, msg } = await postRequest(this.url, params);
           if (code == 200) {
             this.msgOk("保存成功");
