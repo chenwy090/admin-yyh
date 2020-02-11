@@ -15,7 +15,7 @@
               <Row>
                 <Col span="12">
                   <FormItem label="预览二维码">
-                    <img :src="qrImg" v-if="qrImg" style="width: 100px;" />
+                    <img :src="qrImg" v-if="qrImg" style="width: 155px;" />
                   </FormItem>
                 </Col>
               </Row>
@@ -73,7 +73,7 @@
 
               <Row>
                 <Col span="12">
-                  <FormItem label="优惠券类型">
+                  <FormItem label="收费类型">
                     <ChargeTypeItem :disabled="true" :chargeData="edit_info"></ChargeTypeItem>
                   </FormItem>
                 </Col>
