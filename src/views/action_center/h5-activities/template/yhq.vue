@@ -473,7 +473,6 @@ export default {
       const url = "/browsing/templateCoupon/list";
       let { code, msg, data } = await postRequest(url, params);
       //   let { code, msg, data, current, total, size } = await postRequest(url, params);
-      debugger;
       if (code == 200) {
         if (data.dataList == null) {
           this.dataYhq = [];
