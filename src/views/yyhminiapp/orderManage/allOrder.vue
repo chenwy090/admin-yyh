@@ -30,7 +30,7 @@
                 <DatePicker
                   type="daterange"
                   placeholder="选择领取时间"
-                  v-model="searchForm.gmtCreateDate"
+                  v-model="searchForm.gmtDate"
                   @on-change="[searchForm.gmtCreateStart, searchForm.gmtCreateEnd] = $event"
                 ></DatePicker>
               </FormItem>
@@ -38,8 +38,8 @@
                 <DatePicker
                   type="daterange"
                   placeholder="选择核销时间"
-                  v-model="searchForm.gmtCreateDate"
-                  @on-change="[searchForm.gmtCreateStart, searchForm.gmtCreateEnd] = $event"
+                  v-model="searchForm.verifyTime"
+                  @on-change="[searchForm.verifyStartTime, searchForm.verifyEndTime] = $event"
                 ></DatePicker>
               </FormItem>
               <FormItem span="20" :label-width="1">
@@ -269,6 +269,9 @@ export default {
         gmtCreateDate: "",
         gmtCreateEnd: "",
         gmtCreateStart: "",
+        verifyTime: "",
+        verifyStartTime: "",
+        verifyEndTime: "",
         orderNo: "",
         phoneNumber: "",
         source: "",
@@ -300,6 +303,9 @@ export default {
       this.searchForm.gmtCreateDate = "";
       this.searchForm.gmtCreateEnd = "";
       this.searchForm.gmtCreateStart = "";
+      this.searchForm.verifyTime = "";
+      this.searchForm.verifyStartTime = "";
+      this.searchForm.verifyEndTime = "";
       this.searchForm.orderNo = "";
       this.searchForm.phoneNumber = "";
       this.searchForm.source = "";
@@ -350,11 +356,16 @@ export default {
           this.$Message.error("请选择需要下载的订单数据，单次做多导出1个月的订单");
           return;
         }
+      }else{
+        this.$Message.error("请选择需要下载的订单数据，单次做多导出1个月的订单");
+        return;
       }
 
       order.orderDownload(this.searchForm).then(res => {
-        console.info(res);
-        if (res.code == 500) return;
+        if (res.code == 500) {
+          this.$Message.error(res.msg || '');
+          return;
+        };
         const content = res.data;
         let fileName = res.headers["filename"];
         const blob = new Blob([content], {
