@@ -234,7 +234,8 @@
   				logo:data.wechatQrcode,
   				defaultLogoList:[{imgUrl:data.wechatQrcode}],
   				frequency:data.switchTimes,
-  				time:data.expiredTime
+  				time:data.expiredTime,
+  				file:[]
   			}
     	},
 	    handlerSubmit(formName){
@@ -319,6 +320,7 @@
   			}
 	    },
 	    handleBeforeUpload(file){
+	    	console.log(3333)
 	    	console.log(file)
 	    	
 	      	
@@ -327,8 +329,9 @@
 	          this.$Message.info("最多只能上传10个文件");
 	          return false;
 	        }
+	        console.log(66)
 	        that.formData.file.push(file);
-	        
+	        console.log(that.formData.file)
         	return false
 	    },
 	    handleUploadSuccess(res, file, fileList) {

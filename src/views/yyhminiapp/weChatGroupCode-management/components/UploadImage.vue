@@ -22,7 +22,7 @@
         :default-file-list="myDefaultList"
         :before-upload="handleBeforeUpload"
         :on-success="handleUploadSuccess"
-        :max-size="2048"
+        :max-size="1024"
         :on-exceeded-size="handleMaxSize"
         :style="uploadStyle"
       >
@@ -148,7 +148,7 @@ export default {
     },
     //文件上传
     handleMaxSize(file) {
-      this.$Message.error("图片不大于2M");
+      this.$Message.error("图片不大于1M");
     },
     handleFormatError() {
       this.msgErr("只能上传jpg,png格式,请重新上传");
