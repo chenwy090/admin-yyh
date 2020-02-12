@@ -42,7 +42,7 @@
         >
         	<Input v-model="formData.account" placeholder="请输入账号的登录手机号码"></Input>
       	</FormItem>
-      	<FormItem prop="logo" label="二维码logo" :rules="{required: false, message:'限JPG、PNG格式，1MB以内，尺寸75*75'}">
+      	<FormItem prop="logo" label="二维码logo" :rules="{required: false, message:'限JPG、PNG格式，1MB以内，1:1比例'}">
 					<div style="display:inline-block;vertical-align:middle">
 						<UploadImage
                 :fileUploadType="'logo'"
@@ -51,7 +51,7 @@
                 @uploadSuccess="ImgUploadSuccess('logo',$event)"
             ></UploadImage>
 					</div>
-					<span style="margin-left:10px;">限JPG、PNG格式，1MB以内，尺寸75*75</span>
+					<span style="margin-left:10px;">限JPG、PNG格式，1MB以内，1:1比例</span>
 				</FormItem>
       	
       </Form>
@@ -136,7 +136,8 @@
 	    },
 	    ImgUploadSuccess(type,{ imgUrl,coverImgWidth,coverImgHeight }) {
 	    	if(type == "logo"){
-	    		if(coverImgWidth == 75 && coverImgHeight == 75){
+	    		let _int = coverImgWidth/coverImgHeight;
+	    		if(_int == 1){
 	    			this.isLogoFlag = true;	
 	    		}else{
 	    			this.isLogoFlag = false;
@@ -177,7 +178,7 @@
 	    			console.log(this.isLogoFlag)
 	    			
 		    		if(!this.isLogoFlag){
-		    			this.$Message.error("二维码logo尺寸必须是75*75");
+		    			this.$Message.error("二维码logo请上传比例为1:1的图片");
 		    			return false;
 		    		}
 	    			
@@ -204,7 +205,7 @@
 	    		defaultCodeImgList:[{imgUrl:data.backupQrcode}],
 	    		account:data.mobile,
 	    		logo:data.qrcodeLogo,
-	    		defaultLogoList:[{imgUrl:data.qrcodeLogo}]
+	    		defaultLogoList:data.qrcodeLogo == "" ? [] : [{imgUrl:data.qrcodeLogo}]
 	    	}
 	    }
 	  }
