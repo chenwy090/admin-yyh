@@ -10,7 +10,8 @@
       <span>{{title}}</span>
     </p>
     <div class="download-wrap">
-      <img :src="imgUrl" />
+      <Spin v-if="loading" style="text-align:center;margin:0 auto;"></Spin>
+      <img :src="imgUrl" v-else/>
     </div>
     <div slot="footer" style="text-align:center;">
       <!-- <a :href="imgUrl" download="imgUrl">下 载</a> -->
@@ -54,6 +55,7 @@ export default {
       url: "",
       id: "",
       imgUrl: "",
+      loading:false
     };
   },
   methods: {
@@ -62,7 +64,10 @@ export default {
       this.$emit("refresh");
     },
     queryListById() {
+      this.imgUrl = "";
+      this.loading = true;
       this.postRequest(this.url, { id: this.id }).then(val => {
+        this.loading = false;
         if (val.code == 200) {
           this.imgUrl = val.data;
         } else {
