@@ -361,7 +361,7 @@ export default {
         return;
       }
 
-      order.orderDownload(this.searchForm).then(res => {
+      order.orderDownload({...this.searchForm}).then(res => {
         if (res.code == 500) {
           this.$Message.error(res.msg || '');
           return;

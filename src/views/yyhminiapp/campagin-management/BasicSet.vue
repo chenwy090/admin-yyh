@@ -61,13 +61,14 @@
               </Select>
             </FormItem>
 
-            <FormItem label="优惠券类型" required>
+            <FormItem label="收费类型" required>
               <ChargeTypeItem
                 @change="
                   statusCheckChange();
                   chargeTypeChange($event);
                 "
                 :chargeData="edit_info"
+                :disabled=" camp_pageStatus == 'edit' "
               ></ChargeTypeItem>
             </FormItem>
 

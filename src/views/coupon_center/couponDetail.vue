@@ -28,7 +28,7 @@
       <Row style="margin-left:15%;">
         <Form label-position="right" :label-width="150">
           <FormItem label="预览二维码：" required>
-            <img style="width:100px" :src="QrImg" />
+            <img style="width:155px" :src="QrImg" />
           </FormItem>
           <FormItem
             label="优惠券来源："
