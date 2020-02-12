@@ -154,7 +154,7 @@
 
           <Row
             class="padding-left-12"
-            v-if="(modal.contentType==1||modal.contentType==10||modal.contentType==11||modal.contentType==12)"
+            v-if="modal.contentType==1||modal.contentType==10||modal.contentType==11||modal.contentType==12"
           >
             <Col span="18">
               <FormItem label="跳转内容">
