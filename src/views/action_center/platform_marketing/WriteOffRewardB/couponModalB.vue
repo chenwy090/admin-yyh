@@ -89,7 +89,6 @@ export default {
         merchantName: "",
         couponName: "",
         current: 1,
-        requestFrom: "useReward",
       },
       totalSize: 0,
       current: 1,
@@ -248,7 +247,6 @@ export default {
         couponName: this.copponForm.couponName,
         merchantName: this.copponForm.merchantName,
         // provinceCode:this.addressValue[0]||'',
-        requestFrom: "useReward",
       };
       //商户券列表
       postRequest(`/coupon/merchant/list`, params).then(res => {

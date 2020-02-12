@@ -156,7 +156,6 @@ export default {
         merchantName: "",
         couponName: "",
         current: 1,
-        requestFrom: "useReward",
       },
       copponForm2: {
         merchantName: "",
@@ -422,7 +421,6 @@ export default {
         couponName: this.copponForm1.couponName,
         merchantName: this.copponForm1.merchantName,
         // provinceCode:this.addressValue[0]||'',
-        requestFrom: "useReward",
       };
       //商户券列表
       postRequest(`/coupon/superMarket/list`, params).then(res => {
