@@ -13,7 +13,6 @@
         <InputNumber
           :min="0"
           :step="0.1"
-          :disabled="disabled"
           v-model="body.originalPrice"
           style="width:100px"
           placeholder="请输入原价"
@@ -22,7 +21,6 @@
         <span style="padding-left:5px">元</span>
         <span style="padding-left:30px">售卖价：</span>
         <InputNumber
-          :disabled="disabled"
           v-model="body.price"
           :min="0.1"
           :max="body.originalPrice"
@@ -42,13 +40,13 @@
         </span>
         <RadioGroup v-model="body.enableAfterSale" vertical @on-change="statusCheckChange">
           <!-- 1.5.6.1.1 （本期不支持前端退款，支持退款选项禁用） -->
-          <Radio :label="1" :disabled="disabled">支持退款</Radio>
-          <Radio :label="0" :disabled="disabled">不支持退款</Radio>
+          <Radio :label="1" :disabled="false">支持退款</Radio>
+          <Radio :label="0">不支持退款</Radio>
         </RadioGroup>
         <div v-if="body.enableAfterSale === 1">
           <CheckboxGroup v-model="couponAfterSaleVOLists" @on-change="statusCheckChange">
-            <Checkbox :label="'1:过期退'" :disabled="disabled">过期退</Checkbox>
-            <Checkbox :label="'2:随时退'" :disabled="disabled">随时退</Checkbox>
+            <Checkbox :label="'1:过期退'">过期退</Checkbox>
+            <Checkbox :label="'2:随时退'">随时退</Checkbox>
           </CheckboxGroup>
         </div>
       </div>
@@ -57,7 +55,6 @@
         <InputNumber
           :min="0"
           :step="0.01"
-          :disabled="disabled"
           v-model="body.settleAmount"
           style="width:100px"
           placeholder="请输入结算金额"
