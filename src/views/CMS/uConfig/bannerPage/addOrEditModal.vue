@@ -12,7 +12,13 @@
       <a href="#" slot="extra">
         <Button type="dashed" icon="md-arrow-round-back" @click="close()">返回上一层</Button>
       </a>
-      <Form :model="modal" ref="addOrEditModal" :rules="ruleValidate" :label-width="80" label-position="left">
+      <Form
+        :model="modal"
+        ref="addOrEditModal"
+        :rules="ruleValidate"
+        :label-width="80"
+        label-position="left"
+      >
         <Row class="padding-left-12">
           <Col span="18">
             <FormItem label="标题">
@@ -30,11 +36,40 @@
           <Col span="18">
             <FormItem label="内容类型">
               <Select v-model="modal.type" style="width:30%" @on-change="changeType">
-                <Option v-for="item in typeList" :value="item.value" :key="item.value">{{ item.label }} </Option>
+                <Option
+                  v-for="item in typeList"
+                  :value="item.value"
+                  :key="item.value"
+                >{{ item.label }}</Option>
               </Select>
             </FormItem>
           </Col>
         </Row>
+        <!-- U社区-标签 19 -->
+        <Row class="padding-left-12" v-if="modal.type==19">
+          <Col span="18">
+            <FormItem label="标签列表页">
+              <Button type="dashed" @click="openTag">
+                <span v-if="!modal.content">请选择</span>
+                <span v-if="modal.content">{{modal.content}}</span>
+              </Button>
+            </FormItem>
+          </Col>
+        </Row>
+        <!-- U社区-内容 20 -->
+        <Row class="padding-left-12" v-if="modal.type==20">
+          <Col span="18">
+            <FormItem label="指定内容">
+              <Input
+                type="text"
+                v-model.trim="modal.value"
+                placeholder="请填写内容ID"
+                style="width: 340px"
+              ></Input>
+            </FormItem>
+          </Col>
+        </Row>
+
         <Row class="padding-left-12" v-if="modal.type == 3 || modal.type == 4">
           <Col span="18">
             <FormItem label="链接">
@@ -47,7 +82,7 @@
             <FormItem label="内容选择">
               <Button type="dashed" @click="openContent">
                 <span v-if="!modal.content">请选择</span>
-                <span v-if="modal.content"> {{ modal.content }}</span>
+                <span v-if="modal.content">{{ modal.content }}</span>
               </Button>
             </FormItem>
           </Col>
@@ -62,7 +97,7 @@
               <div>
                 <Button type="dashed" @click="openContent" v-if="choujiangType == '抽奖团'">
                   <span v-if="!modal.content">请选择</span>
-                  <span v-if="modal.content"> {{ modal.content }}</span>
+                  <span v-if="modal.content">{{ modal.content }}</span>
                 </Button>
               </div>
             </FormItem>
@@ -75,7 +110,10 @@
               <!-- 门店类型： storeType 0 全国  1零售商 2城市  3门店 -->
               <!-- 自定义门店 -->
               <FormItem label="投放门店">
-                <storeForm :pushRange.sync="modal.pushRange" :shopRequestList.sync="modal.shopRequestList"></storeForm>
+                <storeForm
+                  :pushRange.sync="modal.pushRange"
+                  :shopRequestList.sync="modal.shopRequestList"
+                ></storeForm>
               </FormItem>
             </Col>
           </Row>
@@ -95,10 +133,14 @@
                   <Option v-for="item in clientTypeList" :value="item.value" :key="item.value"
                     >{{ item.label }}
                   </Option>
-                </Select> -->
+                </Select>-->
 
                 <CheckboxGroup v-model="modal.clientType">
-                  <Checkbox :label="item.value" v-for="(item, index) in clientTypeList" :key="item.value">
+                  <Checkbox
+                    :label="item.value"
+                    v-for="(item, index) in clientTypeList"
+                    :key="item.value"
+                  >
                     <span>{{ item.label }}</span>
                   </Checkbox>
                 </CheckboxGroup>
@@ -133,7 +175,7 @@
                     }
                   "
                 ></DatePicker>
-              </FormItem> -->
+              </FormItem>-->
               <FormItem label="选择时间">
                 <DatePicker
                   style="width: 275px;"
@@ -215,6 +257,11 @@
       :viewDialogVisible="shopViewDialogModal"
       @setViewDialogVisible="selectContent"
     ></shopModal>
+    <ModalTagList
+      v-if="showTagList"
+      :showTagList.sync="showTagList"
+      @seclectedTr-event="updateTagList"
+    ></ModalTagList>
   </div>
 </template>
 
@@ -226,15 +273,19 @@ import contentModal from "./contentModal";
 import drawModal from "./drawModal";
 import shopModal from "./shopModal";
 import storeForm from "@/components/storeForm/storeForm";
+// 标签
+import ModalTagList from "./ModalTagList";
 
 export default {
   name: "add-or-edit-modal",
-  components: { volumeModal, contentModal, drawModal, shopModal, storeForm },
+  components: { volumeModal, contentModal, drawModal, shopModal, storeForm, ModalTagList },
   props: {
     viewDialogVisible: { type: Boolean, default: false },
   },
   data() {
     return {
+      showTagList: false,
+      tagList: [], //	标签
       id: 0,
       choujiangType: "",
       userToken: "",
@@ -267,6 +318,9 @@ export default {
         { value: 4, label: "外链" },
         { value: 5, label: "商户" },
         { value: 6, label: "优惠券" },
+        // U社区
+        { value: 19, label: "U社区-标签" },
+        { value: 20, label: "U社区-内容" },
       ],
       clientTypeList: [
         // { value: '0', label: '全部' },
@@ -312,6 +366,14 @@ export default {
     };
   },
   methods: {
+    openTag() {
+      this.showTagList = true;
+    },
+    updateTagList(data) {
+      console.log("selectedTagList----", data);
+      this.modal.value = data.id;
+      this.modal.content = data.name;
+    },
     sendProvinceId(val, id) {
       this.drawDailyShopList.some((item, index) => {
         if (item.id == id) {
@@ -433,8 +495,8 @@ export default {
     //   }
     // },
     getLocation() {
-      postRequest(`/banner/getLocations`, null).then(res => {
-        console.log(123);
+      const url = "/banner/getLocations";
+      postRequest(url).then(res => {
         if (res.code == "200") {
           this.cascaderData = res.data;
         } else {
@@ -488,29 +550,30 @@ export default {
     },
     openContent() {
       // this.contentViewDialogModal = true;
-      switch (this.modal.type) {
+      const { type, content, value } = this.modal;
+      switch (type) {
         case 1:
           this.contentViewDialogModal = true;
           this.$nextTick(() => {
-            this.$refs["contentModal"].resetRow({ content: this.modal.content, value: this.modal.value });
+            this.$refs["contentModal"].resetRow({ content, value });
           });
           break;
         case 2:
           this.drawViewDialogModal = true;
           this.$nextTick(() => {
-            this.$refs["drawModal"].resetRow({ content: this.modal.content, value: this.modal.value });
+            this.$refs["drawModal"].resetRow({ content, value });
           });
           break;
         case 5:
           this.shopViewDialogModal = true;
           this.$nextTick(() => {
-            this.$refs["shopModal"].resetRow({ content: this.modal.content, value: this.modal.value });
+            this.$refs["shopModal"].resetRow({ content, value });
           });
           break;
         case 6:
           this.volumeViewDialogModal = true;
           this.$nextTick(() => {
-            this.$refs["volumeModal"].resetRow({ content: this.modal.content, value: this.modal.value });
+            this.$refs["volumeModal"].resetRow({ content, value });
           });
           break;
       }
@@ -575,25 +638,42 @@ export default {
       this.modal.location = this.cascaderValue[0];
       this.modal.businessLayer = this.cascaderValue[1];
       this.modal.layerPriority = this.cascaderValue[2];
-      if (!this.modal.title) {
+
+      let { title, type, value, content } = this.modal;
+      if (!title) {
         this.$Message.error("请填写标题");
         return;
       }
-      if (!this.modal.type) {
+      if (!type) {
         this.$Message.error("请选择内容类型");
         return;
       }
-      if (this.modal.type == 2 && this.choujiangType == "抽奖广场") {
+      if (type == 2 && this.choujiangType == "抽奖广场") {
         this.modal.value = "";
         this.modal.content = "0";
       }
-      if (this.modal.type == 3 || this.modal.type == 4) {
-        this.modal.content = this.modal.value;
+      if (type == 3 || type == 4) {
+        content = value;
+        this.modal.content = value;
       }
-      if ((!this.modal.value || !this.modal.content) && !(this.modal.type == 2 && this.choujiangType == "抽奖广场")) {
+
+      // U社区
+      // { value: 19, label: "U社区-标签" }, 弹框选择
+      // { value: 20, label: "U社区-内容" }, 输入框
+      if (type == 19 || type == 20) {
+        //输入框
+        if (type == 20) {
+          content = value;
+          this.modal.content = value;
+        }
+        if (!value) {
+          this.$Message.error("请输入指定内容ID");
+        }
+      } else if ((!value || !content) && !(type == 2 && this.choujiangType == "抽奖广场")) {
         this.$Message.error("请选择内容或链接");
         return;
       }
+
       // if (!this.modal.shopId && this.modal.shopId !== 0) {
       //   this.$Message.error('请选择投放门店')
       //   return

@@ -13,18 +13,18 @@
             <Form-item label="活动ID" :label-width="100">
               <Input type="text" v-model="search.campId" clearable placeholder="请输入活动ID" style="width: 200px" />
             </Form-item>
+            <Form-item label="优惠券模板ID" :label-width="100">
+              <Input-number
+                type="text"
+                v-model="search.ticketTemplateId"
+                placeholder="请输入优惠券模板ID"
+                style="width: 200px"
+              />
+            </Form-item>
+            <Form-item label="活动名称" :label-width="100">
+              <Input type="text" v-model="search.name" clearable placeholder="请输入活动名称" style="width: 200px" />
+            </Form-item>
             <span v-if="drop">
-              <Form-item label="优惠券模板ID" :label-width="100">
-                <Input-number
-                  type="text"
-                  v-model="search.ticketTemplateId"
-                  placeholder="请输入优惠券模板ID"
-                  style="width: 200px"
-                />
-              </Form-item>
-              <Form-item label="活动名称" :label-width="100">
-                <Input type="text" v-model="search.name" clearable placeholder="请输入活动名称" style="width: 200px" />
-              </Form-item>
               <!-- <Form-item label="活动标签" :label-width="100">
 
                 <Select v-model="search.label" placeholder="请选择" style="width: 200px">
@@ -59,6 +59,14 @@
                   <Option v-for="item in res_list" :value="item.dictValue" :key="item.id">{{ item.dictLabel }}</Option>
                 </Select>
               </Form-item>
+
+              <Form-item label="收费类型" :label-width="100" prop="couponKind">
+                <Select v-model="search.couponKind" placeholder="请选择" style="width: 200px">
+                  <Option :value="0">全部</Option>
+                  <Option :value="1">免费</Option>
+                  <Option :value="3">收费</Option>
+                </Select>
+              </Form-item>
             </span>
             <Button type="primary" icon="ios-search" @click="queryTableList">搜索</Button>
             <Button icon="md-refresh" style="margin-left:5px" @click="resetting">重置</Button>
@@ -83,6 +91,10 @@
             sortable="custom"
             ref="table"
           >
+            <template slot-scope="{ row }" slot="couponKind">
+              <span> {{ row.couponKind | $couponKind }} </span>
+            </template>
+
             <template slot-scope="{ row }" slot="couponImg">
               <img :src="row.couponImg" style="width:74px;height:43px;" />
             </template>
@@ -420,7 +432,8 @@
 
     <!-- 1 领优惠基础设置 -->
     <div v-if="basicSetPage">
-      <basicSet :basicSetPage.sync="basicSetPage" @changeStatus="showbasicSetStatus" :camp_Info="camp_Info"></basicSet>
+      <!-- :camp_Info="camp_Info" -->
+      <basicSet :basicSetPage.sync="basicSetPage" @changeStatus="showbasicSetStatus" :campId="campId"></basicSet>
     </div>
 
     <!-- 2 要优惠拼团设置  [领优惠---规则设置]-->
@@ -431,7 +444,7 @@
     </div>
 
     <!-- 查看详情对话框 -->
-    <Modal v-model="detailsDisplay" title="查看详情" width="960">
+    <Modal v-model="detailsDisplay" title="查看详情" width="1000">
       <div v-if="detailsDisplay">
         <detailsView @changeStatus="showdetailsView" :camp_Info="camp_Info3"></detailsView>
       </div>
@@ -507,6 +520,7 @@ export default {
         // startDate: "", // 开始时间
         // endDate: "" // 结束时间
         sendChannel: "",
+        couponKind: 0,
       },
       res_list: [],
       templatelist: [], // 活动标签列表 （搜索用）
@@ -635,7 +649,13 @@ export default {
             );
           },
         },
-
+        {
+          title: "收费类型",
+          key: "couponKind",
+          width: 200,
+          align: "center",
+          slot: "couponKind",
+        },
         {
           title: "活动时间类型",
           key: "dateType",
@@ -1089,7 +1109,12 @@ export default {
       detailsDisplay: false, // 查看详情对话框
     };
   },
-
+  filters: {
+    $couponKind(val) {
+      console.info(val);
+      return ["", "免费", "", "收费"][val];
+    },
+  },
   created() {
     this.userToken = { jwttoken: localStorage.getItem("jwttoken") };
   },
@@ -1281,6 +1306,7 @@ export default {
         status: this.search.status,
         campType: this.add_info.campType,
         sendChannel: this.search.sendChannel,
+        couponKind: this.search.couponKind,
       };
 
       postRequest("/campagin/list?pageNum=" + this.pageNum + "&pageSize=" + this.limit, reqParams).then(res => {
@@ -1444,7 +1470,8 @@ export default {
       this.setStore("camp_pageStatus", "edit");
 
       item.newDiscountDetail = item.discountDetail;
-      this.camp_Info = item;
+      // this.camp_Info = item;
+      this.campId = item.campId;
       this.basicSetPage = true;
     },
 
@@ -1744,37 +1771,40 @@ export default {
       let res = await this.queryXX(row.campId);
       const rowData = {
         ...res,
-        appid: row.appid,
-        campId: row.campId,
-        campType: row.campType,
-        couponType: row.couponType,
-        couponValueDesc: row.couponValueDesc,
-        createBy: row.createBy,
-        createTime: row.createTime,
-        dateType: row.dateType,
-        doorsillDesc: row.doorsillDesc,
-        endDate: row.endDate,
-        imgUrl: row.imgUrl,
-        isLimitGrap: row.isLimitGrap,
-        label: row.label,
-        name: row.name,
-        params: row.params,
-        rules: row.rules,
-        startDate: row.startDate,
-        status: row.status,
-        ticketName: row.ticketName,
-        ticketTemplateId: row.ticketTemplateId,
-        updateBy: row.updateBy,
-        updateTime: row.updateTime,
-        useDesc: row.useDesc,
-        couponImg: row.couponImg,
-        ChangeDateType: row.changeDateType,
-        ChangeStartDate: row.changeStartDate,
-        ChangeEndDate: row.changeEndDate,
-        ChangeStart: row.changeStart,
-        ChangeEnd: row.changeEnd,
-        discountDetail: row.discountDetail, // 优惠券详情（富文本）
+        // appid: row.appid,
+        // campId: row.campId,
+        // campType: row.campType,
+        // couponType: row.couponType,
+        // couponValueDesc: row.couponValueDesc,
+        // createBy: row.createBy,
+        // createTime: row.createTime,
+        // dateType: row.dateType,
+        // doorsillDesc: row.doorsillDesc,
+        // endDate: row.endDate,
+        // imgUrl: row.imgUrl,
+        // isLimitGrap: row.isLimitGrap,
+        // label: row.label,
+        // name: row.name,
+        // params: row.params,
+        // rules: row.rules,
+        // startDate: row.startDate,
+        // status: row.status,
+        // ticketName: row.ticketName,
+        // ticketTemplateId: row.ticketTemplateId,
+        // updateBy: row.updateBy,
+        // updateTime: row.updateTime,
+        // useDesc: row.useDesc,
+        // couponImg: row.couponImg,
+        // ChangeDateType: row.changeDateType,
+        // ChangeStartDate: row.changeStartDate,
+        // ChangeEndDate: row.changeEndDate,
+        // ChangeStart: row.changeStart,
+        // ChangeEnd: row.changeEnd,
+        // discountDetail: row.discountDetail, // 优惠券详情（富文本）
         //  newDiscountDetail: "", //中转数据
+
+        // 1.5.6.1.1
+        ...res.campaign,
       };
       this.camp_Info3 = rowData;
       this.detailsDisplay = true;
@@ -1782,7 +1812,7 @@ export default {
 
     async queryXX(campId) {
       let url = "/campagin/selectCampaignByCampId";
-      let { code, msg, classListList, brandList } = await postRequest(url, {
+      let { code, msg, classListList, brandList, campaign } = await postRequest(url, {
         campId,
       });
       let categoryList = [];
@@ -1820,11 +1850,16 @@ export default {
       });
       // brandNames = brandNames.join(",");
 
+      campaign.settleAmount = campaign.settleAmountYuan;
+      campaign.price = campaign.priceYuan;
+      campaign.originalPrice = campaign.originalPriceYuan;
+
       return {
         brandIds,
         brandNames,
         brandCodes,
         categoryList,
+        campaign,
       };
     },
 

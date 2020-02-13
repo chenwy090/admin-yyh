@@ -268,6 +268,8 @@
         </FormItem>
       </template>
 
+      
+
       <FormItem label="领奖说明" prop="winningRemarks" :rules="{ required: false, message: '请输入领奖说明' }">
         <Row>
           <Col span="10">
@@ -448,6 +450,39 @@
         </Col>
       </Row>
 
+      <Row style="margin-top:20px;">
+        
+        <!--  支付券信息 -->
+        <FormItem label="选择支付券" prop="recommendCouponName" :rules="{ required: false, message: '请选择优惠券' }">
+          <Row>
+            <Col span="10">
+              <Input style="width:90%" v-model="form.recommendCouponName" placeholder="请选择优惠券" clearable :readonly="true" @on-change="clearableRecommendCouponName">
+                <span slot="append"><Button @click="handleChoosePaymentCoupon('add')">选择</Button></span>
+              </Input>
+            </Col>
+          </Row>
+        </FormItem>
+        <FormItem label="支付引导文案" prop="recommendTitle" :rules="{ required: false, validator: validateEmpty('请输入支付引导文案',50) }" class="recommendTitle">
+          <EditorBar
+            v-model="form.recommendTitle"
+            :content="form.recommendTitle"
+            style="width:600px;margin:0;"
+            @on-change="changeRecommendTitle"
+            @on-blur="blurRecommendTitle"
+          ></EditorBar>
+          <!-- <Input
+              v-model="form.recommendTitle"
+              type="textarea"
+              style="width:400px"
+              :autosize="{ minRows: 4, maxRows: 8 }"
+              placeholder="描述富文本"
+              :maxlength="50"
+            /> -->
+        </FormItem>
+      </Row>
+
+
+
       <div style="margin-top:20px;">
         <FormItem label>
           <Button type="primary" :disabled="submitDisabled" @click="handleSubmit('form')">提交</Button>
@@ -470,9 +505,11 @@
         @seclectedTr-event="selectedTrCallBack"
       ></chooseCouponListView>
     </Modal>
+    <paymentCouponList :action="actionYhq" @addPaymentCouponId="addPaymentCouponId"></paymentCouponList>
   </div>
 </template>
 <script>
+import util from "@/libs/util";
 import multiFormData from "./multiGroupFromData";
 import singleFormData from "./multiGroupFromData";
 import { postRequest, getRequest } from "@/libs/axios";
@@ -482,9 +519,9 @@ import UploadImage from "./UploadImage";
 import storeForm from "@/components/storeForm/storeForm";
 
 import comm from "@/mixins/common";
-
+import EditorBar from "@/components/EditorBar";
 // this.$emit("closeFormModal-event");
-
+import paymentCouponList from "./paymentCouponList";
 export default {
   name: "multi-group",
   components: {
@@ -492,14 +529,18 @@ export default {
     chooseCouponListView,
     UploadImage,
     storeForm,
+    EditorBar,
+    paymentCouponList
   },
   mixins: [comm],
   mounted() {
+   
     let { drawType, multiFormData, drawData } = this.$store.state;
     if (drawType == "add" || drawType == "add_cache") {
       this.form = JSON.parse(JSON.stringify(multiFormData));
     } else if (drawType == "edit") {
       this.form = JSON.parse(JSON.stringify(drawData));
+       console.log(this.form)
     }
   },
   data() {
@@ -584,6 +625,11 @@ export default {
       form: JSON.parse(JSON.stringify(multiFormData)),
       formValite: {},
       submitDisabled: false,
+      actionYhq:{
+        _id: Math.random(),
+          type: "add",
+          data: null
+      }
     };
   },
 
@@ -782,6 +828,8 @@ export default {
           return;
         }
 
+        console.log(formData)
+        
         postRequest(url, formData).then(res => {
           if (res.code == 200) {
             this.$emit("closeFormModal-event");
@@ -831,6 +879,49 @@ export default {
       this.form.startDate = null;
       this.form.endDate = null;
     },
+    // 富文本
+    changeRecommendTitle(val) {
+      // console.log("change:", val);
+      // console.log("data:",this.edit_info.discountDetail);
+      this.form.recommendTitle = val;
+    },
+    blurRecommendTitle(val) {
+      // console.log("blur:", val);
+      this.form.recommendTitle = val;
+    },
+    validateEmpty(msg, len = 20) {
+      return function(rule, value, callback) {
+        value += "";
+        value = value.trim();
+        let length = util.getByteLen(value);
+        if (length > len * 2) {
+          return callback(`最多只能输入${len}个汉字`);
+        }
+        callback();
+      };
+    },
+    handleChoosePaymentCoupon(type,data){
+      this.actionYhq = {
+        id: Math.random(),
+        type,
+        data
+      }
+    },
+    addPaymentCouponId(data){
+      // console.log(this.form.paymentCouponId)
+      // this.form.paymentCouponId = data.couponName;
+      this.form.recommendCouponName = data.name;
+      this.form.recommendCouponId = data.id;
+      this.form.recommendCouponType = data.couponType;
+      console.log(data)
+    },
+    clearableRecommendCouponName(val){
+      if(val.target.value == ""){
+        this.form.recommendCouponName = "";
+        this.form.recommendCouponId = "";
+        this.form.recommendCouponType = "";
+      }
+    },
     msgErr(txt) {
       this.$Message.error({
         content: txt,
@@ -840,4 +931,8 @@ export default {
   },
 };
 </script>
-<style scoped></style>
+<style>
+ .recommendTitle .text{
+  height: 100px !important;
+ }
+</style>

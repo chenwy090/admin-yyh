@@ -13,15 +13,16 @@ import { createNamespacedHelpers } from "vuex";
 const { mapGetters, mapState, mapActions } = createNamespacedHelpers("cms");
 
 import ConfigModule from "./ConfigModule";
+//开机广告
 import BootAd from "./bootAd";
+//首页
 import IndexPage from "./indexPage";
-import PlatformBonus from "./platformBonus"; //平台分红
-
+//平台分红
+import PlatformBonus from "./platformBonus";
+//banner设置
 import bannerPage from "./bannerPage/bannerPage";
-
 // 领优惠配置
 import DiscountConfig from "./discountConfig";
-
 // 赚钱频道
 import makeMoney from "./makeMoney";
 

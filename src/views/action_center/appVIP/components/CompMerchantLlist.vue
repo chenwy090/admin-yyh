@@ -161,6 +161,7 @@ export default {
         couponName: "",
         shopName: "",
         isActivityCoupon: true,
+        requestFrom: "app",
       },
     };
   },
@@ -227,6 +228,7 @@ export default {
         couponName: "",
         shopName: "",
         isActivityCoupon: true,
+        requestFrom: "app",
       };
 
       this.page = {

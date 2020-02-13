@@ -95,5 +95,12 @@ export default {
         shopName: null,
         index: 1
     }],
-    shopRequestList:[]
+    shopRequestList:[],
+    //支付券
+  
+    recommendCouponId:"",
+    recommendCouponName:"",
+    recommendCouponType:"",
+    recommendTitle:""
+    
 }

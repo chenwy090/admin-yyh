@@ -254,6 +254,7 @@ export default {
             status: 1,
             sendChannel: 1,
             name: this.searchForm.name,
+            requestFrom: "choujiangtuan",
           };
           break;
       }

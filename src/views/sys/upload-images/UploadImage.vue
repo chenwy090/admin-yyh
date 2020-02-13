@@ -96,14 +96,15 @@ export default {
     dragType() {
       return this.uploadList.length ? "select" : "drag";
     },
-    postData() { //data	上传时附带的额外参数
+    postData() {
+      //data	上传时附带的额外参数
       console.log("this.doCompress:", this.switchStatus, this.switchStatus ? 1 : 0);
       return { doCompress: this.switchStatus ? 1 : 0 };
     },
   },
   data() {
     return {
-      switchStatus: true,//压缩switch开关
+      switchStatus: true, //压缩switch开关
       // doCompress 传 1是压缩 0是不压缩
       doCompress: 0,
       width: 0,
@@ -148,11 +149,12 @@ export default {
       if (res.code == 200) {
         this.uploadList = [];
         let imgUrl = res.image_url;
+        imgUrl = `${imgUrl}?w=${this.width}&h=${this.height}`;
         file.imgUrl = imgUrl;
-        console.log(this.width);
+
         this.$emit("uploadSuccess", {
-          coverImgHeight: this.height,
-          coverImgWidth: this.width,
+          w: this.width,
+          h: this.height,
           fileUploadType: this.fileUploadType,
           imgUrl,
         });
@@ -170,13 +172,12 @@ export default {
     handleFormatError() {
       this.msgErr("只能上传gif,jpg,jpeg,png,bmp格式,请重新上传");
     },
-    handleBeforeUpload(file) {
+    async handleBeforeUpload(file) {
       console.log(file);
-      getImageWH(file).then(res => {
-        console.log(res);
-        this.width = res.w;
-        this.height = res.h;
-      });
+      let res = await getImageWH(file);
+      console.log(res);
+      this.width = res.w;
+      this.height = res.h;
       return checkImage(file);
     },
     // 全局提示

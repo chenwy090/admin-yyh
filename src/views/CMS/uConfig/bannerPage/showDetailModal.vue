@@ -12,7 +12,13 @@
       <a href="#" slot="extra">
         <Button type="dashed" icon="md-arrow-round-back" @click="close()">返回上一层</Button>
       </a>
-      <Form :model="modal" ref="addOrEditModal" :rules="ruleValidate" :label-width="80" label-position="left">
+      <Form
+        :model="modal"
+        ref="addOrEditModal"
+        :rules="ruleValidate"
+        :label-width="80"
+        label-position="left"
+      >
         <Row class="padding-left-12">
           <Col span="18">
             <FormItem label="标题">
@@ -24,11 +30,35 @@
           <Col span="18">
             <FormItem label="内容类型">
               <Select v-model="modal.type" style="width:30%" @on-change="changeType" disabled>
-                <Option v-for="item in typeList" :value="item.value" :key="item.value">{{ item.label }} </Option>
+                <Option
+                  v-for="item in typeList"
+                  :value="item.value"
+                  :key="item.value"
+                >{{ item.label }}</Option>
               </Select>
             </FormItem>
           </Col>
         </Row>
+
+        <!-- U社区-标签 19 -->
+        <Row class="padding-left-12" v-if="modal.type==19">
+          <Col span="18">
+            <FormItem label="标签列表页">
+              <Button type="dashed">
+                <span v-if="modal.content">{{ modal.content }}</span>
+              </Button>
+            </FormItem>
+          </Col>
+        </Row>
+        <!-- U社区-内容 20 -->
+        <Row class="padding-left-12" v-if="modal.type==20">
+          <Col span="18">
+            <FormItem label="指定内容">
+              <span>{{ modal.value }}</span>
+            </FormItem>
+          </Col>
+        </Row>
+
         <Row class="padding-left-12" v-if="modal.type == 3 || modal.type == 4">
           <Col span="18">
             <FormItem label="链接">
@@ -40,7 +70,7 @@
           <Col span="18">
             <FormItem label="内容选择">
               <Button type="dashed">
-                <span v-if="modal.content"> {{ modal.content }}</span>
+                <span v-if="modal.content">{{ modal.content }}</span>
               </Button>
             </FormItem>
           </Col>
@@ -54,7 +84,7 @@
               </RadioGroup>
               <div>
                 <Button type="dashed" v-if="choujiangType == '抽奖团'">
-                  <span v-if="modal.content"> {{ modal.content }}</span>
+                  <span v-if="modal.content">{{ modal.content }}</span>
                 </Button>
               </div>
             </FormItem>
@@ -71,7 +101,7 @@
                   :pushRange.sync="modal.pushRange"
                   :shopRequestList.sync="modal.shopRequestList"
                   :shopRequestListInfo.sync="modal.shopInfos"
-                  disabled
+                  :disabled="true"
                 ></storeForm>
               </FormItem>
 
@@ -89,7 +119,7 @@
                     {{ item.province }}/{{ item.city }}/{{ item.address }} {{ item.shopName }}
                   </div>
                 </FormItem>
-              </template> -->
+              </template>-->
             </Col>
           </Row>
           <Row class="padding-left-12">
@@ -106,10 +136,15 @@
                   <Option v-for="item in clientTypeList" :value="item.value" :key="item.value" disabled
                     >{{ item.label }}
                   </Option>
-                </Select> -->
+                </Select>-->
 
                 <CheckboxGroup v-model="modal.clientType">
-                  <Checkbox :label="item.value" v-for="(item, index) in clientTypeList" :key="item.value" disabled>
+                  <Checkbox
+                    :label="item.value"
+                    v-for="(item, index) in clientTypeList"
+                    :key="item.value"
+                    disabled
+                  >
                     <span>{{ item.label }}</span>
                   </Checkbox>
                 </CheckboxGroup>
@@ -216,6 +251,9 @@ export default {
         { value: 4, label: "外链" },
         { value: 5, label: "商户" },
         { value: 6, label: "优惠券" },
+        // U社区
+        { value: 19, label: "U社区-标签" },
+        { value: 20, label: "U社区-内容" },
       ],
       locationList: [
         { value: 1, label: "首页" },
@@ -430,8 +468,9 @@ export default {
       };
     },
     getData(id) {
-      console.log(111);
-      getRequest(`/banner/details/${id}`).then(res => {
+      //获取详情信息
+      const url = `/banner/details/${id}`;
+      getRequest(url).then(res => {
         if (res.code == "200") {
           this.modal.title = res.data.bannerInfo.title;
           this.modal.type = res.data.bannerInfo.type;
@@ -440,7 +479,7 @@ export default {
           this.modal.content = res.data.bannerInfo.content;
           this.modal.startTime = res.data.bannerInfo.startTime;
           this.modal.endTime = res.data.bannerInfo.endTime;
-          this.modal.clientType = res.data.clients;
+          this.modal.clientType = res.data.clients; //[1, 2, 3]
           if (!this.modal.value && this.modal.type == "2") {
             this.choujiangType = "抽奖广场";
           } else {
