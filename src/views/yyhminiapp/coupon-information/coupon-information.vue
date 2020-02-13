@@ -8,10 +8,11 @@
         <Form-item label="使用状态" prop="status">
           <Select v-model="searchForm.status" placeholder="请选择使用状态" style="width: 120px">
             <Option :value="''">全部</Option>
-            <Option :value="1">已使用</Option>
-            <Option :value="2">未使用</Option>
-            <Option :value="3">已过期</Option>
-            <Option :value="4">已退款</Option>
+            <Option :value="1">待使用</Option>
+            <Option :value="2">已使用</Option>
+            <Option :value="4">退款中</Option>
+            <Option :value="5">已退款</Option>
+            <Option :value="6">已过期</Option>
           </Select>
         </Form-item>
 
