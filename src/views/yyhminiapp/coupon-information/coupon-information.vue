@@ -310,7 +310,7 @@ export default {
       //   verifyEndTime &&
       //   (new Date(verifyEndTime).getTime() - new Date(verifyStartTime).getTime()) / 86400000 > 30
       // ) {
-      //   this.$Message.error("领取时间段范围最多30天");
+      //   this.$Message.error("核销时间段范围最多30天");
       //   return false;
       // }
       if (
