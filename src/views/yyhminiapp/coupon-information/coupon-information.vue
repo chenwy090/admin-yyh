@@ -208,8 +208,8 @@ export default {
         couponBarcode: "", //券码
         // terminal: "", //终端
         verifyShopId: "", //核销门店
-        verifyStartTime: new Date().calendar(3, -30).formatDate(), //核销时间(start)
-        verifyEndTime: new Date().formatDate(), //核销时间(end)
+        verifyStartTime: "", //new Date().calendar(3, -30).formatDate(), //核销时间(start)
+        verifyEndTime: "", //new Date().formatDate(), //核销时间(end)
         receiveStartTime: new Date().calendar(3, -30).formatDate(), //领取时间(start)
         receiveEndTime: new Date().formatDate(), //领取时间(end)
         verifyTime: [new Date().calendar(3, -30).formatDate(), new Date().formatDate()],
@@ -270,8 +270,8 @@ export default {
       this.totalSize = 0;
       this.current = 1;
       this.searchForm.pageNum = 1;
-      this.searchForm.verifyStartTime = new Date().calendar(3, -30).formatDate(); //核销时间(start)
-      this.searchForm.verifyEndTime = new Date().formatDate(); //核销时间(end)
+      this.searchForm.verifyStartTime = ""; //new Date().calendar(3, -30).formatDate(); //核销时间(start)
+      this.searchForm.verifyEndTime = ""; //new Date().formatDate(); //核销时间(end)
       this.searchForm.receiveStartTime = new Date().calendar(3, -30).formatDate(); //领取时间(start)
       this.searchForm.receiveEndTime = new Date().formatDate(); //领取时间(end)
       this.searchForm.receiveTime = [new Date().calendar(3, -30).formatDate(), new Date().formatDate()];
@@ -305,22 +305,22 @@ export default {
     // 验证时间范围
     validationTimeRange() {
       let { verifyStartTime, verifyEndTime, receiveStartTime, receiveEndTime } = this.searchForm;
-      if (
-        verifyStartTime &&
-        verifyEndTime &&
-        (new Date(verifyEndTime).getTime() - new Date(verifyStartTime).getTime()) / 86400000 > 30
-      ) {
-        this.$Message.error("领取时间段范围最多30天");
-        return false;
-      }
       // if (
-      //   receiveStartTime &&
-      //   receiveEndTime &&
-      //   (new Date(receiveEndTime).getTime() - new Date(receiveStartTime).getTime()) / 86400000 > 30
+      //   verifyStartTime &&
+      //   verifyEndTime &&
+      //   (new Date(verifyEndTime).getTime() - new Date(verifyStartTime).getTime()) / 86400000 > 30
       // ) {
       //   this.$Message.error("核销时间段范围最多30天");
       //   return false;
       // }
+      if (
+        receiveStartTime &&
+        receiveEndTime &&
+        (new Date(receiveEndTime).getTime() - new Date(receiveStartTime).getTime()) / 86400000 > 30
+      ) {
+        this.$Message.error("领取时间段范围最多30天");
+        return false;
+      }
 
       if (!receiveStartTime || !receiveEndTime) {
         this.$Message.error("请选择领取时间段范围");

@@ -2,8 +2,8 @@
   <div>
     <RadioGroup v-model="body.couponKind" @on-change="statusCheckChange">
       <!-- :disabled="disabled" -->
-      <Radio :label="1">免费</Radio>
-      <Radio :label="3">收费（平台自营）</Radio>
+      <Radio :label="1" :disabled="disabled">免费</Radio>
+      <Radio :label="3" :disabled="disabled">收费（平台自营）</Radio>
     </RadioGroup>
 
     <template v-if="body.couponKind === 3">
@@ -41,7 +41,7 @@
         </span>
         <RadioGroup v-model="body.enableAfterSale" vertical @on-change="statusCheckChange">
           <!-- 1.5.6.1.1 （本期不支持前端退款，支持退款选项禁用） -->
-          <Radio :label="1" :disabled="false">支持退款</Radio>
+          <Radio :label="1" :disabled="true">支持退款</Radio>
           <Radio :label="0">不支持退款</Radio>
         </RadioGroup>
         <div v-if="body.enableAfterSale === 1">
