@@ -2,8 +2,8 @@
   <div>
     <RadioGroup v-model="body.couponKind" @on-change="statusCheckChange">
       <!-- :disabled="disabled" -->
-      <Radio :label="1">免费</Radio>
-      <Radio :label="3">收费（平台自营）</Radio>
+      <Radio :label="1" :disabled="disabled">免费</Radio>
+      <Radio :label="3" :disabled="disabled">收费（平台自营）</Radio>
     </RadioGroup>
 
     <template v-if="body.couponKind === 3">
