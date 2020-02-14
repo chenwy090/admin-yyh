@@ -6,6 +6,7 @@ import { router } from "./router/index";
 import store from "./store";
 import "@/locale";
 import "@/styles/index.less";
+import "@/libs/init";
 import VueI18n from "vue-i18n";
 import Icon from "vue-awesome/components/Icon";
 Vue.component("icon", Icon);

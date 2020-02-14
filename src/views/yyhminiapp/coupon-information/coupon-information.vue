@@ -21,15 +21,6 @@
         </Form-item>
 
         <span v-if="drop">
-          <!-- <Form-item label="领取终端" prop="terminal">
-            <Select v-model="searchForm.terminal" placeholder="请选择领取终端" style="width: 120px">
-              <Option :value="''">全部</Option>
-              <Option :value="1">小程序</Option>
-              <Option :value="2">IOS</Option>
-              <Option :value="3">安卓</Option>
-            </Select>
-          </Form-item> -->
-
           <Form-item label="核销门店ID" prop="verifyShopId">
             <Input type="text" v-model="searchForm.verifyShopId" placeholder="请输入核销门店ID" style="width: 150px" />
           </Form-item>
@@ -95,8 +86,6 @@
   </div>
 </template>
 <script>
-// import { getCouponList, getQueryLogAll } from "@/api/sys";
-// import { baseUrl } from "@/api/index";
 import * as order from "@/api/order";
 
 const columns = [
@@ -205,7 +194,6 @@ const columns = [
 ];
 
 export default {
-  name: "timed-task",
   data() {
     return {
       drop: false,
@@ -220,12 +208,12 @@ export default {
         couponBarcode: "", //券码
         // terminal: "", //终端
         verifyShopId: "", //核销门店
-        verifyStartTime: "", //核销时间(start)
-        verifyEndTime: "", //核销时间(end)
-        receiveStartTime: "", //领取时间(start)
-        receiveEndTime: "", //领取时间(end)
-        verifyTime: [],
-        receiveTime: [],
+        verifyStartTime: new Date().calendar(3, -30).formatDate(), //核销时间(start)
+        verifyEndTime: new Date().formatDate(), //核销时间(end)
+        receiveStartTime: new Date().calendar(3, -30).formatDate(), //领取时间(start)
+        receiveEndTime: new Date().formatDate(), //领取时间(end)
+        verifyTime: [new Date().calendar(3, -30).formatDate(), new Date().formatDate()],
+        receiveTime: [new Date().calendar(3, -30).formatDate(), new Date().formatDate()],
       },
       //列表字段显示
       columns1: columns,
@@ -236,7 +224,7 @@ export default {
     };
   },
   created() {
-    this.getList();
+    // this.getList();
   },
   methods: {
     // 搜索
@@ -251,6 +239,8 @@ export default {
     },
     // 渲染列表
     getList() {
+      // 验证时间范围
+      if (!this.validationTimeRange()) return;
       // 加载动画
       this.TableLoading = true;
       order.receiveInfoPage(this.searchForm).then(res => {
@@ -280,12 +270,15 @@ export default {
       this.totalSize = 0;
       this.current = 1;
       this.searchForm.pageNum = 1;
-      this.searchForm.receiveTime = [];
-      this.searchForm.verifyTime = [];
+      this.searchForm.verifyStartTime = new Date().calendar(3, -30).formatDate(); //核销时间(start)
+      this.searchForm.verifyEndTime = new Date().formatDate(); //核销时间(end)
+      this.searchForm.receiveStartTime = new Date().calendar(3, -30).formatDate(); //领取时间(start)
+      this.searchForm.receiveEndTime = new Date().formatDate(); //领取时间(end)
+      this.searchForm.receiveTime = [new Date().calendar(3, -30).formatDate(), new Date().formatDate()];
+      this.searchForm.verifyTime = [new Date().calendar(3, -30).formatDate(), new Date().formatDate()];
       this.$refs.searchForm.resetFields();
       this.getList();
     },
-
     // 全局提示
     msgOk(txt) {
       this.$Message.info({
@@ -308,6 +301,27 @@ export default {
         this.dropDownIcon = "ios-arrow-up";
       }
       this.drop = !this.drop;
+    },
+    // 验证时间范围
+    validationTimeRange() {
+      let { verifyStartTime, verifyEndTime, receiveStartTime, receiveEndTime } = this.searchForm;
+      if (
+        verifyStartTime &&
+        verifyEndTime &&
+        (new Date(verifyEndTime).getTime() - new Date(verifyStartTime).getTime()) / 86400000 > 30
+      ) {
+        this.$Message.error("领取时间段范围最多30天");
+        return false;
+      }
+      if (
+        receiveStartTime &&
+        receiveEndTime &&
+        (new Date(receiveEndTime).getTime() - new Date(receiveStartTime).getTime()) / 86400000 > 30
+      ) {
+        this.$Message.error("核销时间段范围最多30天");
+        return false;
+      }
+      return true;
     },
   },
 };
