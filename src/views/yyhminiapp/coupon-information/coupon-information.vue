@@ -313,12 +313,17 @@ export default {
         this.$Message.error("领取时间段范围最多30天");
         return false;
       }
-      if (
-        receiveStartTime &&
-        receiveEndTime &&
-        (new Date(receiveEndTime).getTime() - new Date(receiveStartTime).getTime()) / 86400000 > 30
-      ) {
-        this.$Message.error("核销时间段范围最多30天");
+      // if (
+      //   receiveStartTime &&
+      //   receiveEndTime &&
+      //   (new Date(receiveEndTime).getTime() - new Date(receiveStartTime).getTime()) / 86400000 > 30
+      // ) {
+      //   this.$Message.error("核销时间段范围最多30天");
+      //   return false;
+      // }
+
+      if (!receiveStartTime || !receiveEndTime) {
+        this.$Message.error("请选择领取时间段范围");
         return false;
       }
       return true;
