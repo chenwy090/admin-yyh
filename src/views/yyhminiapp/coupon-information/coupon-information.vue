@@ -196,7 +196,7 @@ const columns = [
 export default {
   data() {
     return {
-      drop: false,
+      drop: true,
       dropDownContent: "展开",
       dropDownIcon: "ios-arrow-down",
       TableLoading: false,
