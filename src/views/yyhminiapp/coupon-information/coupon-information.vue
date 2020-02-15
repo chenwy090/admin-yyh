@@ -50,7 +50,7 @@
 
         <Form-item :label-width="0">
           <a class="drop-down" @click="dropDown">
-            {{ dropDownContent }}
+            {{ drop ? "收起" : "展开" }}
             <Icon :type="dropDownIcon"></Icon>
           </a>
         </Form-item>
@@ -197,7 +197,6 @@ export default {
   data() {
     return {
       drop: true,
-      dropDownContent: "展开",
       dropDownIcon: "ios-arrow-down",
       TableLoading: false,
       searchForm: {
@@ -294,10 +293,8 @@ export default {
     },
     dropDown() {
       if (this.drop) {
-        this.dropDownContent = "展开";
         this.dropDownIcon = "ios-arrow-down";
       } else {
-        this.dropDownContent = "收起";
         this.dropDownIcon = "ios-arrow-up";
       }
       this.drop = !this.drop;
