@@ -212,7 +212,7 @@ export default {
         verifyEndTime: "", //new Date().formatDate(), //核销时间(end)
         receiveStartTime: new Date().calendar(3, -30).formatDate(), //领取时间(start)
         receiveEndTime: new Date().formatDate(), //领取时间(end)
-        verifyTime: [new Date().calendar(3, -30).formatDate(), new Date().formatDate()],
+        verifyTime: [],
         receiveTime: [new Date().calendar(3, -30).formatDate(), new Date().formatDate()],
       },
       //列表字段显示
