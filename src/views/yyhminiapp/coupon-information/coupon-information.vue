@@ -211,9 +211,9 @@ export default {
         verifyStartTime: "", //new Date().calendar(3, -30).formatDate(), //核销时间(start)
         verifyEndTime: "", //new Date().formatDate(), //核销时间(end)
         receiveStartTime: new Date().calendar(3, -30).formatDate(), //领取时间(start)
-        receiveEndTime: new Date().formatDate(), //领取时间(end)
+        receiveEndTime: new Date().calendar(3, 1).formatDate(), //领取时间(end)
         verifyTime: [],
-        receiveTime: [new Date().calendar(3, -30).formatDate(), new Date().formatDate()],
+        receiveTime: [new Date().calendar(3, -30).formatDate(), new Date().calendar(3, 1).formatDate()],
       },
       //列表字段显示
       columns1: columns,
@@ -273,9 +273,9 @@ export default {
       this.searchForm.verifyStartTime = ""; //new Date().calendar(3, -30).formatDate(); //核销时间(start)
       this.searchForm.verifyEndTime = ""; //new Date().formatDate(); //核销时间(end)
       this.searchForm.receiveStartTime = new Date().calendar(3, -30).formatDate(); //领取时间(start)
-      this.searchForm.receiveEndTime = new Date().formatDate(); //领取时间(end)
-      this.searchForm.receiveTime = [new Date().calendar(3, -30).formatDate(), new Date().formatDate()];
-      this.searchForm.verifyTime = [new Date().calendar(3, -30).formatDate(), new Date().formatDate()];
+      this.searchForm.receiveEndTime = new Date().calendar(3, 1).formatDate(); //领取时间(end)
+      this.searchForm.receiveTime = [new Date().calendar(3, -30).formatDate(), new Date().calendar(3, 1).formatDate()];
+      this.searchForm.verifyTime = [];
       this.$refs.searchForm.resetFields();
       this.getList();
     },
@@ -316,7 +316,7 @@ export default {
       if (
         receiveStartTime &&
         receiveEndTime &&
-        (new Date(receiveEndTime).getTime() - new Date(receiveStartTime).getTime()) / 86400000 > 30
+        (new Date(receiveEndTime).getTime() - new Date(receiveStartTime).getTime()) / 86400000 > 31
       ) {
         this.$Message.error("领取时间段范围最多30天");
         return false;
