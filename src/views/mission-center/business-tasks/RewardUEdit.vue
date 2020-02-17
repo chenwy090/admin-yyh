@@ -16,21 +16,17 @@
       >
         <Row class="task-info">
           <h3>任务信息</h3>
-
-          <FormItem label="任务名称：" prop="name" :rules="{ required: true, message: '请输入任务名称' }">
+          <FormItem
+            label="任务名称："
+            prop="name"
+            :rules="{required: true,  validator: validateEmpty('请输入任务名称',20)}"
+          >
             <Row>
               <Col span="10">
-                <Input
-                  style="width:90%"
-                  v-model="formData.name"
-                  :maxlength="20"
-                  placeholder="请输入"
-                  clearable
-                />
+                <Input style="width:90%" v-model.trim="formData.name" placeholder="请输入" clearable />
               </Col>
             </Row>
           </FormItem>
-
           <FormItem label="任务时间：" prop="startTime" :rules="{ required: true, message: '请选择时间' }">
             <Row>
               <Col span="10">
@@ -47,14 +43,17 @@
               </Col>
             </Row>
           </FormItem>
-
           <!-- 必填项 -->
-          <FormItem label="任务规则：">
+          <FormItem
+            label="任务规则："
+            prop="ruleDescribe"
+            :rules="{required: true,  validator: validateEmpty('请输入任务规则',500)}"
+          >
             <Row>
               <Col span="10">
                 <Tooltip trigger="focus" title="提醒" content="最多500个汉字" placement="right">
                   <Input
-                    v-model="formData.ruleDescribe"
+                    v-model.trim="formData.ruleDescribe"
                     type="textarea"
                     style="width:400px"
                     :autosize="{minRows: 4,maxRows: 8}"
@@ -73,7 +72,9 @@
             prop="ruleInfoList"
             :rules="{ required: true, validator: validateRewardRules }"
           >
-            <Button type="primary" icon="md-add-circle" size="small" @click="addRewardRules">新增</Button>
+            <template v-if="formData.isStop!==1">
+              <Button type="primary" icon="md-add-circle" size="small" @click="addRewardRules">新增</Button>
+            </template>
           </FormItem>
 
           <RewardRulesItem
@@ -94,23 +95,29 @@
   </div>
 </template>
 <script>
+import util from "@/libs/util";
 import { addOrEdit } from "@/api/sys";
 
 import comm from "@/mixins/common";
+
+import EditorBar from "@/components/EditorBar";
+
 import RewardRulesItem from "./RewardRulesItem";
 
 export default {
   name: "reward-u-edit",
   mixins: [comm],
-  inject: ["getMoneyAndUbay", "msgOk", "msgErr"],
+  // inject: ["getMoneyAndUbay", "msgOk", "msgErr"],
+  inject: ["getMoneyAndUbay"],
   components: {
-    RewardRulesItem
+    EditorBar,
+    RewardRulesItem,
   },
   props: {
     showDeduction: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   data() {
     const validateRemarks = (rule, value, callback) => {
@@ -132,7 +139,7 @@ export default {
         height: "calc(100% - 55px)",
         overflow: "auto",
         paddingBottom: "53px",
-        position: "static"
+        position: "static",
       },
       formData: {
         // 任务信息
@@ -142,6 +149,7 @@ export default {
         endTime: "", // 任务结束时间
         daterange: [], // 任务时间数组
         ruleDescribe: "", //规则描述
+        newRuleDescribe: "",
         // 奖励规则
         ruleInfoList: [
           {
@@ -149,6 +157,7 @@ export default {
             merchantType: 0,
             merchantId: "", // 商户id
             merhcantName: "", // 商户名称
+            couponSubheadTemp: "", //副标题
             brandId: "", // 品牌id
             brandName: "", // 品牌名称
             anticipatedUbay: "", // 预计消耗u贝数量
@@ -166,11 +175,11 @@ export default {
             defaultLogoList: [],
             logoUrl: "",
             defaultShareLogoList: [],
-            shareLogo: ""
-          }
-        ]
+            shareLogo: "",
+          },
+        ],
       },
-      ruleValidate: {}
+      ruleValidate: {},
     };
   },
   created() {
@@ -187,6 +196,14 @@ export default {
     this.$store.state.missionCenter.data = {};
   },
   methods: {
+    change(val) {
+      console.log("change:", val);
+      this.formData.newRuleDescribe = val;
+    },
+    blur(val) {
+      console.log("blur:", val);
+      this.formData.newRuleDescribe = val;
+    },
     goback() {
       console.log("reward-u");
       this.$store.dispatch("missionCenter/changeCompName", "reward-u");
@@ -228,7 +245,7 @@ export default {
         defaultLogoList: [],
         logoUrl: "",
         defaultShareLogoList: [],
-        shareLogo: ""
+        shareLogo: "",
       });
     },
 
@@ -243,12 +260,7 @@ export default {
       this.$refs[name].validate(async valid => {
         // console.log(JSON.stringify(this.formValidate));
         if (valid) {
-          const validateZero = [
-            "receiveAwardUbay",
-            "useAwardUbay",
-            "shareReceiveAwardUbay",
-            "shareUseAwardUbay"
-          ];
+          const validateZero = ["receiveAwardUbay", "useAwardUbay", "shareReceiveAwardUbay", "shareUseAwardUbay"];
 
           let flag = this.formData.ruleInfoList.some(item => {
             let len = 0;
@@ -268,14 +280,12 @@ export default {
           let oForm = JSON.parse(JSON.stringify(this.formData));
 
           const { ruleInfoList } = oForm;
+          // const { newRuleDescribe, ruleInfoList } = oForm;
+          // oForm.ruleDescribe = newRuleDescribe; //规则描述
 
           oForm.ruleInfoList = ruleInfoList.map(item => {
             // 提交的时候清理数据
-            const {
-              merchantType: type,
-              businessId: id,
-              businessName: name
-            } = item;
+            const { merchantType: type, businessId: id, businessName: name } = item;
 
             if (type == 0) {
               item.merchantId = id;
@@ -351,17 +361,41 @@ export default {
         const reg = /^(0|[1-9]\d*)(\s|$|\.\d{1,2}\b)/;
 
         if (!reg.test(value)) {
-          return callback(
-            new Error("请输入大于等于0的金额，小数点最多包含两位小数")
-          );
+          return callback(new Error("请输入大于等于0的金额，小数点最多包含两位小数"));
         }
       } else {
         return callback(new Error("请输入[0.01—99999.99]之间的数"));
       }
 
       callback();
-    }
-  }
+    },
+    validateEmpty(msg, len = 20) {
+      return function(rule, value, callback) {
+        value += "";
+        value = value.trim();
+        if (value == "") {
+          return callback(msg);
+        }
+        let length = util.getByteLen(value);
+        if (length > len * 2) {
+          return callback(`最多只能输入${len}个汉字`);
+        }
+        callback();
+      };
+    },
+    msgOk(txt) {
+      this.$Message.info({
+        content: txt,
+        duration: 3,
+      });
+    },
+    msgErr(txt) {
+      this.$Message.error({
+        content: txt,
+        duration: 3,
+      });
+    },
+  },
 };
 </script>
 <style scoped>

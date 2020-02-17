@@ -1,49 +1,30 @@
-
 <template>
   <!-- 要优惠小程序 ---优惠活动管理--- 领优惠  -->
   <div class="search">
-    <Card v-if="!basicSetPage && !grabInfoSetPage  ">
+    <Card v-if="!basicSetPage && !grabInfoSetPage">
       <Tabs @on-click="changeTab" v-model="tab_model" value="57">
-        <TabPane v-for="(item,index) in tabs" :label="item.lable" :name="item.value" :key="index"></TabPane>
+        <TabPane v-for="(item, index) in tabs" :label="item.lable" :name="item.value" :key="index"></TabPane>
       </Tabs>
 
-      <div v-if=" tab_model=='57'">
+      <div v-if="tab_model == '57'">
         <Row>
           <!-- 搜索 -->
-          <Form
-            ref="search"
-            :model="search"
-            inline
-            :label-width="120"
-            style="display:inline-block;"
-          >
+          <Form ref="search" :model="search" inline :label-width="120" style="display:inline-block;">
             <Form-item label="活动ID" :label-width="100">
-              <Input
+              <Input type="text" v-model="search.campId" clearable placeholder="请输入活动ID" style="width: 200px" />
+            </Form-item>
+            <Form-item label="优惠券模板ID" :label-width="100">
+              <Input-number
                 type="text"
-                v-model="search.campId"
-                clearable
-                placeholder="请输入活动ID"
+                v-model="search.ticketTemplateId"
+                placeholder="请输入优惠券模板ID"
                 style="width: 200px"
               />
             </Form-item>
+            <Form-item label="活动名称" :label-width="100">
+              <Input type="text" v-model="search.name" clearable placeholder="请输入活动名称" style="width: 200px" />
+            </Form-item>
             <span v-if="drop">
-              <Form-item label="优惠券模板ID" :label-width="100">
-                <Input-number
-                  type="text"
-                  v-model="search.ticketTemplateId"
-                  placeholder="请输入优惠券模板ID"
-                  style="width: 200px"
-                />
-              </Form-item>
-              <Form-item label="活动名称" :label-width="100">
-                <Input
-                  type="text"
-                  v-model="search.name"
-                  clearable
-                  placeholder="请输入活动名称"
-                  style="width: 200px"
-                />
-              </Form-item>
               <!-- <Form-item label="活动标签" :label-width="100">
 
                 <Select v-model="search.label" placeholder="请选择" style="width: 200px">
@@ -75,18 +56,22 @@
 
               <Form-item label="投放渠道" :label-width="100">
                 <Select v-model="search.sendChannel" placeholder="请选择" style="width: 200px">
-                  <Option
-                    v-for="item in res_list"
-                    :value="item.dictValue"
-                    :key="item.id"
-                  >{{ item.dictLabel }}</Option>
+                  <Option v-for="item in res_list" :value="item.dictValue" :key="item.id">{{ item.dictLabel }}</Option>
+                </Select>
+              </Form-item>
+
+              <Form-item label="收费类型" :label-width="100" prop="couponKind">
+                <Select v-model="search.couponKind" placeholder="请选择" style="width: 200px">
+                  <Option :value="0">全部</Option>
+                  <Option :value="1">免费</Option>
+                  <Option :value="3">收费</Option>
                 </Select>
               </Form-item>
             </span>
             <Button type="primary" icon="ios-search" @click="queryTableList">搜索</Button>
             <Button icon="md-refresh" style="margin-left:5px" @click="resetting">重置</Button>
             <a class="drop-down" @click="dropDown">
-              {{dropDownContent}}
+              {{ dropDownContent }}
               <Icon :type="dropDownIcon"></Icon>
             </a>
           </Form>
@@ -106,18 +91,22 @@
             sortable="custom"
             ref="table"
           >
+            <template slot-scope="{ row }" slot="couponKind">
+              <span> {{ row.couponKind | $couponKind }} </span>
+            </template>
+
             <template slot-scope="{ row }" slot="couponImg">
               <img :src="row.couponImg" style="width:74px;height:43px;" />
             </template>
 
             <template slot-scope="{ row }" slot="ChangeStart">
-              <span v-if="row.changeDateType ==0">{{row.changeStartDate}}</span>
-              <span v-if="row.changeDateType ==1">发券后+{{row.changeStart}}天开始兑换</span>
+              <span v-if="row.changeDateType == 0">{{ row.changeStartDate }}</span>
+              <span v-if="row.changeDateType == 1">发券后+{{ row.changeStart }}天开始兑换</span>
             </template>
 
             <template slot-scope="{ row }" slot="ChangeEnd">
-              <span v-if="row.changeDateType ==0">{{row.changeEndDate}}</span>
-              <span v-if="row.changeDateType ==1">发券后+{{row.changeEnd}}天结束兑换</span>
+              <span v-if="row.changeDateType == 0">{{ row.changeEndDate }}</span>
+              <span v-if="row.changeDateType == 1">发券后+{{ row.changeEnd }}天结束兑换</span>
             </template>
 
             <template slot-scope="{ row }" slot="imgUrl">
@@ -127,21 +116,21 @@
             </template>
 
             <template slot-scope="{ row }" slot="getrules">
-              <span
-                style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;"
-              >{{row.rules}}</span>
+              <span style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;">
+                {{ row.rules }}
+              </span>
             </template>
 
             <template slot-scope="{ row }" slot="getcouponValueDesc">
-              <span
-                style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;"
-              >{{row.couponValueDesc}}</span>
+              <span style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;">
+                {{ row.couponValueDesc }}
+              </span>
             </template>
 
             <template slot-scope="{ row }" slot="getdoorsillDesc">
-              <span
-                style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;"
-              >{{row.doorsillDesc}}</span>
+              <span style="width: 150px;display: block;white-space:nowrap;overflow: hidden;text-overflow:ellipsis;">
+                {{ row.doorsillDesc }}
+              </span>
             </template>
           </Table>
         </Row>
@@ -157,299 +146,282 @@
         </Row>
       </div>
 
-      <div style="margin-top: 15px;" v-if=" tab_model!='57'">
-        <Alert v-if="tab_model=='64'" type="error" show-icon>
+      <div style="margin-top: 15px;" v-if="tab_model != '57'">
+        <Alert v-if="tab_model == '64'" type="error" show-icon>
           <span style="color:red;">提示：</span>
           <Icon type="md-flash" slot="icon"></Icon>
           <template slot="desc">
             <span style="color:red;">当前功能不可用</span>
           </template>
         </Alert>
-        <Form :model="add_info" ref="add_info" :label-width="180">
-          <FormItem label="appid" required>
-            <Select
-              v-model="add_info.appid"
-              style="width:300px"
-              placeholder="请输入选择appid"
-              @on-change="statusCheckChange"
-            >
-              <Option
-                v-for="item in appId_info"
-                :value="item.appid"
-                :key="item.appid"
-              >{{ item.appName }}</Option>
-            </Select>
-          </FormItem>
-
-          <FormItem label="活动类型" required>
-            <Select v-model="add_info.campType" style="width:300px" disabled>
-              <Option value="57">领优惠</Option>
-              <Option value="62">要优惠</Option>
-              <!-- <Option value="63">领优惠分享奖励</Option> -->
-              <Option value="64">要优惠参与奖励（接受分享/参团）</Option>
-            </Select>
-          </FormItem>
-
-          <FormItem label="优惠券类型" required>
-            <Select
-              v-model="add_info.couponType"
-              style="width:300px"
-              placeholder="请输入选择优惠券类型"
-              @on-change="statusCheckChange"
-              disabled
-            >
-              <Option value="1">换购券</Option>
-              <Option value="2">商品券</Option>
-              <Option value="3">折扣券</Option>
-              <Option value="4">全场券</Option>
-              <Option value="5">赠品券</Option>
-            </Select>
-          </FormItem>
-
-          <FormItem label="活动标题" required>
-            <Input
-              type="text"
-              v-model="add_info.name"
-              style="width:300px"
-              placeholder="请输入活动标题"
-              @on-change="statusCheckChange"
-            />
-          </FormItem>
-
-          <FormItem label="使用门槛描述" required>
-            <Input
-              type="textarea"
-              v-model="add_info.doorsillDesc"
-              style="width:300px"
-              @on-change="statusCheckChange"
-              :autosize="{minRows: 2,maxRows: 5}"
-              placeholder="请填写使用门槛描述"
-            />
-          </FormItem>
-
-          <FormItem label="有效期类型" required>
-            <Select
-              v-model="add_info.dateType"
-              style="width:300px"
-              placeholder="请选择有效期类型"
-              @on-change="statusCheckChange"
-              disabled
-            >
-              <Option value="2">永久有效</Option>
-            </Select>
-          </FormItem>
-
-          <FormItem label="优惠券缩略图" required>
-            <!-- <FormItem label="优惠券详情图"> -->
-            <div
-              style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
-              v-for="(item, index) in uploadList1"
-              :key="index"
-            >
-              <img :src="item.url" style="width:100%" />
-            </div>
-            <div style="display: inline-block;">
-              <Upload
-                ref="upload"
-                :defaultList="uploadList1"
-                type="drag"
-                :format="['jpg','jpeg','png','bmp']"
-                :on-success="handleSuccess1"
-                :action="url"
-                accept="image"
-                :max-size="1024"
-                :headers="userToken"
-                style="display: inline-block;width:90px;"
+        <Card>
+          <Alert>
+            <h4>优惠券基本信息</h4>
+          </Alert>
+          <Form :model="add_info" ref="add_info" :label-width="180">
+            <FormItem label="appid" required>
+              <Select
+                v-model="add_info.appid"
+                style="width:300px"
+                placeholder="请输入选择appid"
                 @on-change="statusCheckChange"
               >
-                <div style="width: 90px;height:90px;line-height: 90px;">
-                  <Icon type="ios-camera" size="20" />
-                </div>
-              </Upload>
-              <p>选择优惠券缩略图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
-            </div>
-          </FormItem>
+                <Option v-for="item in appId_info" :value="item.appid" :key="item.appid">{{ item.appName }}</Option>
+              </Select>
+            </FormItem>
 
-          <FormItem label="优惠券详情图" required>
-            <!-- <FormItem label="优惠券详情图"> -->
-            <div
-              style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
-              v-for="(item, index) in uploadList"
-              :key="index"
-            >
-              <img :src="item.url" style="width:100%" />
-            </div>
-            <div style="display: inline-block;">
-              <Upload
-                ref="upload"
-                :defaultList="uploadList"
-                type="drag"
-                :format="['jpg','jpeg','png','bmp']"
-                :on-success="handleSuccess"
-                :action="url"
-                accept="image"
-                :max-size="1024"
-                :headers="userToken"
-                style="display: inline-block;width:90px;"
+            <FormItem label="活动类型" required>
+              <Select v-model="add_info.campType" style="width:300px" disabled>
+                <Option value="57">领优惠</Option>
+                <Option value="62">要优惠</Option>
+                <!-- <Option value="63">领优惠分享奖励</Option> -->
+                <Option value="64">要优惠参与奖励（接受分享/参团）</Option>
+              </Select>
+            </FormItem>
+
+            <FormItem label="优惠券类型" required>
+              <Select
+                v-model="add_info.couponType"
+                style="width:300px"
+                placeholder="请输入选择优惠券类型"
                 @on-change="statusCheckChange"
+                disabled
               >
-                <div style="width: 90px;height:90px;line-height: 90px;">
-                  <Icon type="ios-camera" size="20" />
-                </div>
-              </Upload>
-              <p>选择优惠券详情图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
-            </div>
-          </FormItem>
-          <FormItem label="首页缩略图">
-            <!-- <FormItem label="首页缩略图"> -->
-            <div
-              style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
-              v-for="(item, index) in uploadList1"
-              :key="index"
-            >
-              <img :src="item.url" style="width:100%" />
-            </div>
-            <div style="display: inline-block;">
-              <Upload
-                ref="upload"
-                :defaultList="uploadList"
-                type="drag"
-                :format="['jpg','jpeg','png','bmp']"
-                :on-success="handleSuccess2"
-                :action="url"
-                accept="image"
-                :max-size="1024"
-                :headers="userToken"
-                style="display: inline-block;width:90px;"
+                <Option value="1">换购券</Option>
+                <Option value="2">商品券</Option>
+                <Option value="3">折扣券</Option>
+                <Option value="4">全场券</Option>
+                <Option value="5">赠品券</Option>
+              </Select>
+            </FormItem>
+
+            <FormItem label="活动标题" required>
+              <Input
+                type="text"
+                v-model="add_info.name"
+                style="width:300px"
+                placeholder="请输入活动标题"
                 @on-change="statusCheckChange"
+              />
+            </FormItem>
+
+            <FormItem label="使用门槛描述" required>
+              <Input
+                type="textarea"
+                v-model="add_info.doorsillDesc"
+                style="width:300px"
+                @on-change="statusCheckChange"
+                :autosize="{ minRows: 2, maxRows: 5 }"
+                placeholder="请填写使用门槛描述"
+              />
+            </FormItem>
+
+            <FormItem label="有效期类型" required>
+              <Select
+                v-model="add_info.dateType"
+                style="width:300px"
+                placeholder="请选择有效期类型"
+                @on-change="statusCheckChange"
+                disabled
               >
-                <div style="width: 90px;height:90px;line-height: 90px;">
-                  <Icon type="ios-camera" size="20" />
-                </div>
-              </Upload>
-              <p>选择首页缩略图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
-            </div>
-          </FormItem>
+                <Option value="2">永久有效</Option>
+              </Select>
+            </FormItem>
 
-          <FormItem label="优惠券模板" required>
-            <Button
-              type="dashed"
-              @click="resInfo"
-              :style="{width:'150px'}"
-              @on-change="statusCheckChange"
-            >选择模版</Button>
+            <FormItem label="优惠券缩略图" required>
+              <!-- <FormItem label="优惠券详情图"> -->
+              <div
+                style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
+                v-for="(item, index) in uploadList1"
+                :key="index"
+              >
+                <img :src="item.url" style="width:100%" />
+              </div>
+              <div style="display: inline-block;">
+                <Upload
+                  ref="upload"
+                  :defaultList="uploadList1"
+                  type="drag"
+                  :format="['jpg', 'jpeg', 'png', 'bmp']"
+                  :on-success="handleSuccess1"
+                  :action="url"
+                  accept="image"
+                  :max-size="1024"
+                  :headers="userToken"
+                  style="display: inline-block;width:90px;"
+                  @on-change="statusCheckChange"
+                >
+                  <div style="width: 90px;height:90px;line-height: 90px;">
+                    <Icon type="ios-camera" size="20" />
+                  </div>
+                </Upload>
+                <p>选择优惠券缩略图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
+              </div>
+            </FormItem>
 
-            <Tag
-              checkable
-              color="error"
-              v-if="add_info.ticketTemplateId"
-              style="margin-left: 3%"
-            >已选择</Tag>
-          </FormItem>
+            <FormItem label="优惠券详情图" required>
+              <!-- <FormItem label="优惠券详情图"> -->
+              <div
+                style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
+                v-for="(item, index) in uploadList"
+                :key="index"
+              >
+                <img :src="item.url" style="width:100%" />
+              </div>
+              <div style="display: inline-block;">
+                <Upload
+                  ref="upload"
+                  :defaultList="uploadList"
+                  type="drag"
+                  :format="['jpg', 'jpeg', 'png', 'bmp']"
+                  :on-success="handleSuccess"
+                  :action="url"
+                  accept="image"
+                  :max-size="1024"
+                  :headers="userToken"
+                  style="display: inline-block;width:90px;"
+                  @on-change="statusCheckChange"
+                >
+                  <div style="width: 90px;height:90px;line-height: 90px;">
+                    <Icon type="ios-camera" size="20" />
+                  </div>
+                </Upload>
+                <p>选择优惠券详情图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
+              </div>
+            </FormItem>
+            <FormItem label="首页缩略图">
+              <!-- <FormItem label="首页缩略图"> -->
+              <div
+                style=" float: left;width: 90px;height: 90px;line-height: 90px; margin-right: 10px;border: 1px dashed #dcdee2;background: #fff;"
+                v-for="(item, index) in uploadList1"
+                :key="index"
+              >
+                <img :src="item.url" style="width:100%" />
+              </div>
+              <div style="display: inline-block;">
+                <Upload
+                  ref="upload"
+                  :defaultList="uploadList"
+                  type="drag"
+                  :format="['jpg', 'jpeg', 'png', 'bmp']"
+                  :on-success="handleSuccess2"
+                  :action="url"
+                  accept="image"
+                  :max-size="1024"
+                  :headers="userToken"
+                  style="display: inline-block;width:90px;"
+                  @on-change="statusCheckChange"
+                >
+                  <div style="width: 90px;height:90px;line-height: 90px;">
+                    <Icon type="ios-camera" size="20" />
+                  </div>
+                </Upload>
+                <p>选择首页缩略图 (不大于1M, JPG/PNG/JPEG/BMP）</p>
+              </div>
+            </FormItem>
 
-          <FormItem v-if="add_info.ticketName">
-            <Alert style="width:500px">
-              <Row>模版ID：{{add_info.ticketTemplateId}}</Row>
-              <Row>模版名称：{{add_info.ticketName}}</Row>
-            </Alert>
-          </FormItem>
+            <FormItem label="优惠券模板" required>
+              <Button type="dashed" @click="resInfo" :style="{ width: '150px' }" @on-change="statusCheckChange"
+                >选择模版</Button
+              >
 
-          <FormItem label="活动/领券规则" required>
-            <Input
-              type="textarea"
-              v-model="add_info.rules"
-              style="width:300px"
-              @on-change="statusCheckChange"
-              :autosize="{minRows: 2,maxRows: 5}"
-              placeholder="请填写活动/领券规则"
-            />
-          </FormItem>
+              <Tag checkable color="error" v-if="add_info.ticketTemplateId" style="margin-left: 3%">已选择</Tag>
+            </FormItem>
 
-          <FormItem label="券使用说明">
-            <Input
-              type="textarea"
-              v-model="add_info.useDesc"
-              style="width:300px"
-              :autosize="{minRows: 2,maxRows: 5}"
-              @on-change="statusCheckChange"
-            />
-          </FormItem>
+            <FormItem v-if="add_info.ticketName">
+              <Alert style="width:500px">
+                <Row>模版ID：{{ add_info.ticketTemplateId }}</Row>
+                <Row>模版名称：{{ add_info.ticketName }}</Row>
+              </Alert>
+            </FormItem>
 
-          <FormItem label="状态" required placeholder="请选择状态">
-            <Select v-model="add_info.status" style="width:300px" @on-change="statusCheckChange">
-              <Option value="0">创建</Option>
-              <Option value="1">上架</Option>
-              <Option value="-1">下架</Option>
-            </Select>
-          </FormItem>
+            <FormItem label="活动/领券规则" required>
+              <Input
+                type="textarea"
+                v-model="add_info.rules"
+                style="width:300px"
+                @on-change="statusCheckChange"
+                :autosize="{ minRows: 2, maxRows: 5 }"
+                placeholder="请填写活动/领券规则"
+              />
+            </FormItem>
 
-          <FormItem label="拼团设置" required v-if="add_info.campType ==62 && add_info.campId">
-            <Button
-              type="dashed"
-              @click="groupInfo(add_info.campId)"
-              :style="{width:'150px'}"
-              @on-change="statusCheckChange"
-            >拼团设置</Button>
-          </FormItem>
+            <FormItem label="券使用说明">
+              <Input
+                type="textarea"
+                v-model="add_info.useDesc"
+                style="width:300px"
+                :autosize="{ minRows: 2, maxRows: 5 }"
+                @on-change="statusCheckChange"
+              />
+            </FormItem>
 
-          <FormItem style="{'margin-top':'54px'}">
-            <Button
-              type="primary"
-              @click="campagin_add()"
-              :loading="add_loading"
-              style="width:150px;"
-              :disabled="isCheckDisabled"
-            >保存</Button>
-          </FormItem>
-        </Form>
+            <FormItem label="状态" required placeholder="请选择状态">
+              <Select v-model="add_info.status" style="width:300px" @on-change="statusCheckChange">
+                <Option value="0">创建</Option>
+                <Option value="1">上架</Option>
+                <Option value="-1">下架</Option>
+              </Select>
+            </FormItem>
+
+            <FormItem label="拼团设置" required v-if="add_info.campType == 62 && add_info.campId">
+              <Button
+                type="dashed"
+                @click="groupInfo(add_info.campId)"
+                :style="{ width: '150px' }"
+                @on-change="statusCheckChange"
+                >拼团设置</Button
+              >
+            </FormItem>
+
+            <FormItem style="{'margin-top':'54px'}">
+              <Button
+                type="primary"
+                @click="campagin_add()"
+                :loading="add_loading"
+                style="width:150px;"
+                :disabled="isCheckDisabled"
+                >保存</Button
+              >
+            </FormItem>
+          </Form>
+        </Card>
+
         <!--分享奖励配置-->
-        <Form
-          v-if="formShareModal.shareData.length&&tab_model!=64"
-          ref="shareModal"
-          :model="formShareModal"
-          :label-width="180"
-          style="margin-top:20px"
-        >
-          <FormItem
-            v-for="item in formShareModal.shareData"
-            :key="item.id"
-            :label="item.name"
-            required
-          >
-            <!-- <span v-if="item.name!= '倍数'&&item.name!= '上限'">&nbsp;优惠面额 X</span> -->
-            <!-- :disabled="item.name=='分享奖励'" -->
-            <InputNumber
-              :min="item.name== '倍数'?1:0"
-              :step="1"
-              type="text"
-              v-model="item.value"
-              placeholder="请输入"
-              style="width:320px"
-            ></InputNumber>
-            <span v-if="item.name== '倍数'">&nbsp;倍</span>
-            <span v-else>&nbsp;&nbsp;U贝</span>
-          </FormItem>
-          <FormItem>
-            <Button style="float: left;" type="primary" @click="shareSave('shareModal')">保存</Button>
-          </FormItem>
-        </Form>
+        <Card style="margin-top:1vh" v-if="formShareModal.shareData.length && tab_model != 64">
+          <Alert>
+            <h4>分享奖励配置</h4>
+          </Alert>
+          <Form ref="shareModal" :model="formShareModal" :label-width="180" style="margin-top:20px">
+            <FormItem v-for="item in formShareModal.shareData" :key="item.id" :label="item.name" required>
+              <!-- <span v-if="item.name!= '倍数'&&item.name!= '上限'">&nbsp;优惠面额 X</span> -->
+              <!-- :disabled="item.name=='分享奖励'" -->
+              <InputNumber
+                :min="item.name == '倍数' ? 1 : 0"
+                :step="1"
+                type="text"
+                v-model="item.value"
+                placeholder="请输入"
+                style="width:320px"
+              ></InputNumber>
+              <span v-if="item.name == '倍数'">&nbsp;倍</span>
+              <span v-else>&nbsp;&nbsp;U贝</span>
+            </FormItem>
+            <FormItem>
+              <Button style="float: left;" type="primary" @click="shareSave('shareModal')">保存</Button>
+            </FormItem>
+          </Form>
+        </Card>
       </div>
     </Card>
 
     <Modal v-model="res_Modal_show" width="700" title="选择模版">
-      <Form :model="res_info" ref="res_info" :label-width="100" :styles="{top: '10px'}">
-        <Table
-          border
-          ref="selection"
-          :columns="res_columns"
-          :data="res_list"
-          size="small"
-          height="300"
-        ></Table>
+      <Form :model="res_info" ref="res_info" :label-width="100" :styles="{ top: '10px' }">
+        <Table border ref="selection" :columns="res_columns" :data="res_list" size="small" height="300"></Table>
       </Form>
 
       <div slot="footer">
-        <Button type="text" @click="res_Modal_show=false">取消</Button>
+        <Button type="text" @click="res_Modal_show = false">取消</Button>
         <Button type="primary" @click="resOk" :loading="res_loading">保存</Button>
       </div>
     </Modal>
@@ -460,7 +432,8 @@
 
     <!-- 1 领优惠基础设置 -->
     <div v-if="basicSetPage">
-      <basicSet :basicSetPage.sync="basicSetPage" @changeStatus="showbasicSetStatus" :camp_Info="camp_Info"></basicSet>
+      <!-- :camp_Info="camp_Info" -->
+      <basicSet :basicSetPage.sync="basicSetPage" @changeStatus="showbasicSetStatus" :campId="campId"></basicSet>
     </div>
 
     <!-- 2 要优惠拼团设置  [领优惠---规则设置]-->
@@ -471,24 +444,28 @@
     </div>
 
     <!-- 查看详情对话框 -->
-    <Modal v-model="detailsDisplay" title="查看详情" width="960">
+    <Modal v-model="detailsDisplay" title="查看详情" width="1000">
       <div v-if="detailsDisplay">
         <detailsView @changeStatus="showdetailsView" :camp_Info="camp_Info3"></detailsView>
       </div>
       <div slot="footer"></div>
     </Modal>
-    <!-- 查看详情对话框 -->
+    <!-- 文件上传弹框 -->
+    <FileImport
+      v-if="showFileImport"
+      :showFileImport.sync="showFileImport"
+      :params="uploadData"
+      @refresh="updateTableList"
+    ></FileImport>
+    <ModalDownload
+      v-if="showModalDownload"
+      :showModalDownload.sync="showModalDownload"
+      :params="uploadData"
+    ></ModalDownload>
   </div>
 </template>
-
 <script>
-import {
-  getRequest,
-  postRequest,
-  putRequest,
-  deleteRequest,
-  uploadFileRequest
-} from "@/libs/axios";
+import { getRequest, postRequest, putRequest, deleteRequest, uploadFileRequest } from "@/libs/axios";
 
 import { baseUrl, uploadOperationImage2AliOssURl } from "@/api/index";
 
@@ -500,17 +477,32 @@ import grabInfoSet from "./grabInfoSet";
 
 import detailsView from "./detailsView";
 
+// 文件上传组件
+import FileImport from "./comp/FileImport";
+// 下载对话框
+import ModalDownload from "./comp/ModalDownload";
+
 export default {
   name: "campagin",
   components: {
     basicSet,
     grabInfoSet,
-    detailsView
+    detailsView,
+    FileImport,
+    ModalDownload,
   },
   data() {
     return {
+      // 文件下载对话框
+      showModalDownload: false,
+      // 文件上传
+      showFileImport: false,
+      uploadData: {
+        campId: "",
+        templateId: "",
+      },
       formShareModal: {
-        shareData: []
+        shareData: [],
       },
       drop: false,
       dropDownContent: "展开",
@@ -527,7 +519,8 @@ export default {
         campType: "",
         // startDate: "", // 开始时间
         // endDate: "" // 结束时间
-        sendChannel: ""
+        sendChannel: "",
+        couponKind: 0,
       },
       res_list: [],
       templatelist: [], // 活动标签列表 （搜索用）
@@ -565,27 +558,27 @@ export default {
           title: "appid",
           key: "appid",
           width: 200,
-          align: "center"
+          align: "center",
         },
         {
           title: "活动ID",
           key: "campId",
           width: 200,
-          align: "center"
+          align: "center",
         },
 
         {
           title: "活动名称",
           key: "name",
           width: 200,
-          align: "center"
+          align: "center",
         },
 
         {
           title: "优惠券模板ID",
           key: "ticketTemplateId",
           width: 200,
-          align: "center"
+          align: "center",
         },
 
         {
@@ -597,13 +590,7 @@ export default {
           render: (h, params) => {
             const row = params.row;
             const color =
-              row.campType === 57
-                ? "red"
-                : row.campType === 62
-                ? "volcano"
-                : row.campType === 63
-                ? "green"
-                : "blue";
+              row.campType === 57 ? "red" : row.campType === 62 ? "volcano" : row.campType === 63 ? "green" : "blue";
             const text =
               row.campType === 57
                 ? "领优惠"
@@ -616,12 +603,12 @@ export default {
               "Tag",
               {
                 props: {
-                  color: color
-                }
+                  color: color,
+                },
               },
               text
             );
-          }
+          },
         },
         {
           title: "优惠券类型",
@@ -655,14 +642,20 @@ export default {
               "Tag",
               {
                 props: {
-                  color: color
-                }
+                  color: color,
+                },
               },
               text
             );
-          }
+          },
         },
-
+        {
+          title: "收费类型",
+          key: "couponKind",
+          width: 200,
+          align: "center",
+          slot: "couponKind",
+        },
         {
           title: "活动时间类型",
           key: "dateType",
@@ -671,21 +664,18 @@ export default {
           render: (h, params) => {
             const row = params.row;
             const color = row.dateType === 0 ? "red" : "red";
-            const text =
-              row.dateType === 0
-                ? "固定日期时间范围有效"
-                : "固定日期时间范围有效";
+            const text = row.dateType === 0 ? "固定日期时间范围有效" : "固定日期时间范围有效";
 
             return h(
               "Tag",
               {
                 props: {
-                  color: color
-                }
+                  color: color,
+                },
               },
               text
             );
-          }
+          },
         },
 
         {
@@ -724,25 +714,25 @@ export default {
               "Tag",
               {
                 props: {
-                  color: color
-                }
+                  color: color,
+                },
               },
               text
             );
-          }
+          },
         },
 
         {
           title: "开始时间",
           key: "startDate",
           width: 200,
-          align: "center"
+          align: "center",
         },
         {
           title: "结束时间",
           key: "endDate",
           width: 200,
-          align: "center"
+          align: "center",
         },
         {
           title: "兑换类型",
@@ -752,21 +742,18 @@ export default {
           render: (h, params) => {
             const row = params.row;
             const color = row.changeDateType === 0 ? "red" : "blue";
-            const text =
-              row.changeDateType === 0
-                ? "固定时间兑换"
-                : "发券后+X天后开始兑换";
+            const text = row.changeDateType === 0 ? "固定时间兑换" : "发券后+X天后开始兑换";
 
             return h(
               "Tag",
               {
                 props: {
-                  color: color
-                }
+                  color: color,
+                },
               },
               text
             );
-          }
+          },
         },
 
         {
@@ -774,7 +761,7 @@ export default {
           key: "ChangeStart",
           width: 200,
           align: "center",
-          slot: "ChangeStart"
+          slot: "ChangeStart",
         },
 
         {
@@ -782,21 +769,21 @@ export default {
           key: "ChangeEnd",
           width: 200,
           align: "center",
-          slot: "ChangeEnd"
+          slot: "ChangeEnd",
         },
         {
           title: "优惠券缩略图",
           width: 200,
           align: "center",
           key: "couponImg",
-          slot: "couponImg"
+          slot: "couponImg",
         },
         {
           title: "优惠券详情图",
           width: 200,
           align: "center",
           key: "imgUrl",
-          slot: "imgUrl"
+          slot: "imgUrl",
         },
 
         {
@@ -807,21 +794,19 @@ export default {
           align: "center",
           render: (h, params) => {
             const row = params.row;
-            const color =
-              row.status === 0 ? "green" : row.status === 1 ? "blue" : "red";
-            const text =
-              row.status === 0 ? "创建" : row.status === 1 ? "上架" : "下架";
+            const color = row.status === 0 ? "green" : row.status === 1 ? "blue" : "red";
+            const text = row.status === 0 ? "创建" : row.status === 1 ? "上架" : "下架";
 
             return h(
               "Tag",
               {
                 props: {
-                  color: color
-                }
+                  color: color,
+                },
               },
               text
             );
-          }
+          },
         },
 
         {
@@ -829,14 +814,14 @@ export default {
           key: "rules",
           width: 200,
           align: "center",
-          slot: "getrules"
+          slot: "getrules",
         },
         {
           title: "优惠面额描述",
           key: "couponValueDesc",
           width: 200,
           align: "center",
-          slot: "getcouponValueDesc"
+          slot: "getcouponValueDesc",
         },
 
         {
@@ -844,7 +829,7 @@ export default {
           key: "doorsillDesc",
           width: 200,
           align: "center",
-          slot: "getcouponValueDesc"
+          slot: "getcouponValueDesc",
         },
 
         // {
@@ -881,17 +866,63 @@ export default {
                 {
                   props: {
                     type: "text",
-                    size: "small"
+                    size: "small",
+                  },
+                  style: {
+                    display: "inline-block",
+                    color: "#5cadff",
+                  },
+                  on: {
+                    click: () => {
+                      // campId templateId excel
+                      // 活动ID campId		优惠券模板ID ticketTemplateId
+                      const { campId, ticketTemplateId: templateId } = params.row;
+                      this.uploadData = { campId, templateId };
+                      this.showFileImport = true;
+                    },
+                  },
+                },
+                "上传"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "text",
+                    size: "small",
+                  },
+                  style: {
+                    display: "inline-block",
+                    color: "#5cadff",
+                  },
+                  on: {
+                    click: () => {
+                      // campId templateId excel
+                      // 活动ID campId		优惠券模板ID ticketTemplateId
+                      const { campId, ticketTemplateId: templateId } = params.row;
+                      this.uploadData = { campId, templateId };
+                      this.showModalDownload = true;
+                    },
+                  },
+                },
+                "下载"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "text",
+                    size: "small",
                   },
                   style: {
                     display: params.row.status == 1 ? "none" : "inline-block",
-                    color: "#5cadff"
+                    color: "#5cadff",
                   },
                   on: {
                     click: () => {
                       this.editInfo(params.row);
-                    }
-                  }
+                    },
+                  },
                 },
                 "编辑"
               ),
@@ -901,16 +932,16 @@ export default {
                 {
                   props: {
                     type: "text",
-                    size: "small"
+                    size: "small",
                   },
                   style: {
-                    color: color
+                    color: color,
                   },
                   on: {
                     click: () => {
                       this.changeStatus(params.row);
-                    }
-                  }
+                    },
+                  },
                 },
                 text
               ),
@@ -919,17 +950,17 @@ export default {
                 {
                   props: {
                     type: "text",
-                    size: "small"
+                    size: "small",
                   },
                   style: {
                     display: params.row.status == 1 ? "none" : "inline-block",
-                    color: "#ff3300"
+                    color: "#ff3300",
                   },
                   on: {
                     click: () => {
                       this.removeInfo(params.row);
-                    }
-                  }
+                    },
+                  },
                 },
                 "删除"
               ),
@@ -938,32 +969,32 @@ export default {
                 {
                   props: {
                     type: "text",
-                    size: "small"
+                    size: "small",
                   },
                   style: {
-                    color: "#2db7f5"
+                    color: "#2db7f5",
                   },
                   on: {
                     click: () => {
                       this.detailsDisplayFn(params.row);
-                    }
-                  }
+                    },
+                  },
                 },
                 "查看详情"
-              )
+              ),
             ]);
-          }
-        }
+          },
+        },
       ],
 
       tabs: [
         {
           lable: "领优惠",
-          value: "57"
+          value: "57",
         },
         {
           lable: "要优惠",
-          value: "62"
+          value: "62",
         },
         // {
         //   lable: "领优惠分享奖励",
@@ -971,8 +1002,8 @@ export default {
         // },
         {
           lable: "要优惠参与奖励",
-          value: "64"
-        }
+          value: "64",
+        },
       ],
 
       changeTabValue: "",
@@ -993,7 +1024,7 @@ export default {
         startDate: "",
         status: "0",
         ticketTemplateId: "",
-        useDesc: ""
+        useDesc: "",
       },
 
       imgUrl: "",
@@ -1038,47 +1069,52 @@ export default {
             return h("div", [
               h("Radio", {
                 props: {
-                  value: flag
+                  value: flag,
                 },
                 on: {
                   "on-change": () => {
                     self.currentChooseID = ticketTemplateID;
                     self.currentChooseName = ticketName;
                     self.chooseResArray = params.row;
-                  }
-                }
-              })
+                  },
+                },
+              }),
             ]);
-          }
+          },
         },
         {
           title: "sheetID",
           key: "sheetID",
-          align: "center"
+          align: "center",
         },
         {
           title: "模版ID",
           key: "ticketTemplateID",
-          align: "center"
+          align: "center",
         },
         {
           title: "模版名称",
           key: "ticketName",
-          align: "center"
+          align: "center",
         },
         {
           title: "ticketKind",
           key: "ticketKind",
-          align: "center"
-        }
+          align: "center",
+        },
       ],
 
       grabInfoSetStatus: false,
       // couponTypeDisabled: false
-      detailsDisplay: false // 查看详情对话框
+      detailsDisplay: false, // 查看详情对话框
     };
   },
-
+  filters: {
+    $couponKind(val) {
+      console.info(val);
+      return ["", "免费", "", "收费"][val];
+    },
+  },
   created() {
     this.userToken = { jwttoken: localStorage.getItem("jwttoken") };
   },
@@ -1099,17 +1135,13 @@ export default {
         if (res.code == 200) {
           if (res.data || res.data.noOverallCommonConfigList) {
             let arr = res.data.noOverallCommonConfigList || [];
-            this.formShareModal.shareData = arr.filter(
-              item => item.name !== "上限"
-            );
-
-            console.log(this.formShareModal.shareData);
+            this.formShareModal.shareData = arr.filter(item => item.name !== "上限");
 
             this.formShareModal.shareData.forEach(function(v) {
               v.value = Number(v.value) || 0;
-              if (v.name == "分享奖励") {
-                v.value = 0;
-              }
+              // if (v.name == "分享奖励") {
+              //   v.value = 0;
+              // }
             });
             this.shareDisplay = true;
           } else {
@@ -1141,7 +1173,7 @@ export default {
         return;
       }
       postRequest("/commonConfig/updateConfigBatch", {
-        noOverallCommonConfigList: this.formShareModal.shareData
+        noOverallCommonConfigList: this.formShareModal.shareData,
       }).then(res => {
         if (res.code == 200) {
           //this.formCustom.remark='';
@@ -1155,22 +1187,18 @@ export default {
     //获取投放渠道
     getchannel() {
       const reqParams = {
-        dictCode: "send_channel"
+        dictCode: "send_channel",
       };
 
-      postRequest(
-        "/system/sys-dict-data/list?pageNum=" +
-          this.pageNum +
-          "&pageSize=" +
-          this.limit,
-        reqParams
-      ).then(res => {
-        if (res.code == 200) {
-          this.res_list = res.data.records;
-        } else {
-          this.$Message.error(res.msg);
+      postRequest("/system/sys-dict-data/list?pageNum=" + this.pageNum + "&pageSize=" + this.limit, reqParams).then(
+        res => {
+          if (res.code == 200) {
+            this.res_list = res.data.records;
+          } else {
+            this.$Message.error(res.msg);
+          }
         }
-      });
+      );
     },
 
     // 切换tab
@@ -1220,13 +1248,10 @@ export default {
     //获取活动标签(搜索用)
     getActivity() {
       const reqParams = {
-        dictCode: "campLabel"
+        dictCode: "campLabel",
       };
 
-      postRequest(
-        "/system/sys-dict-data/list?pageNum=1&pageSize=10",
-        reqParams
-      ).then(res => {
+      postRequest("/system/sys-dict-data/list?pageNum=1&pageSize=10", reqParams).then(res => {
         if (res.code == 200) {
           this.templatelist = res.data.records;
         } else {
@@ -1280,13 +1305,11 @@ export default {
         couponType: this.search.couponType,
         status: this.search.status,
         campType: this.add_info.campType,
-        sendChannel: this.search.sendChannel
+        sendChannel: this.search.sendChannel,
+        couponKind: this.search.couponKind,
       };
 
-      postRequest(
-        "/campagin/list?pageNum=" + this.pageNum + "&pageSize=" + this.limit,
-        reqParams
-      ).then(res => {
+      postRequest("/campagin/list?pageNum=" + this.pageNum + "&pageSize=" + this.limit, reqParams).then(res => {
         console.log(111);
         this.TableLoading = false;
         if (res.isSuccess) {
@@ -1297,25 +1320,16 @@ export default {
             this.totalSize = res.data.total;
             this.table_list = res.data.records;
             this.pageStatus = "edit";
-          } else if (
-            this.add_info.campType != 57 &&
-            res.data.records.length != 0
-          ) {
+          } else if (this.add_info.campType != 57 && res.data.records.length != 0) {
             this.uploadList = [{ url: res.data.records[0].imgUrl }];
             this.uploadList1 = [{ url: res.data.records[0].couponImg }];
             this.uploadList2 = [{ url: res.data.records[0].couponSimpleImg }];
             this.add_info.appid = res.data.records[0].appid;
             this.add_info.campId = res.data.records[0].campId;
             this.add_info.name = res.data.records[0].name;
-            this.add_info.rules = res.data.records[0].rules.replace(
-              /\\n/g,
-              "\n"
-            );
+            this.add_info.rules = res.data.records[0].rules.replace(/\\n/g, "\n");
 
-            this.add_info.doorsillDesc = res.data.records[0].doorsillDesc.replace(
-              /\\n/g,
-              "\n"
-            );
+            this.add_info.doorsillDesc = res.data.records[0].doorsillDesc.replace(/\\n/g, "\n");
 
             this.add_info.imgUrl = res.data.records[0].imgUrl;
             this.add_info.couponImg = res.data.records[0].couponImg;
@@ -1340,25 +1354,15 @@ export default {
                 ? "4"
                 : "5";
 
-            this.add_info.status =
-              res.data.records[0].status == 0
-                ? "0"
-                : res.data.records[0].status == 1
-                ? "1"
-                : "-1";
+            this.add_info.status = res.data.records[0].status == 0 ? "0" : res.data.records[0].status == 1 ? "1" : "-1";
 
-            this.add_info.dateType =
-              res.data.records[0].dateType == 2 ? "2" : "2";
+            this.add_info.dateType = res.data.records[0].dateType == 2 ? "2" : "2";
             this.add_info.startDate = res.data.records[0].startDate || "";
             this.add_info.endDate = res.data.records[0].endDate || "";
 
-            this.add_info.useDesc = res.data.records[0].useDesc.replace(
-              /\\n/g,
-              "\n"
-            );
+            this.add_info.useDesc = res.data.records[0].useDesc.replace(/\\n/g, "\n");
             this.add_info.ticketName = res.data.records[0].ticketName;
-            this.add_info.ticketTemplateId =
-              res.data.records[0].ticketTemplateId;
+            this.add_info.ticketTemplateId = res.data.records[0].ticketTemplateId;
             // this.add_info.couponValueDesc = res.data.records[0].couponValueDesc
             //   .replace("￥", "")
             //   .replace("券", "");
@@ -1384,7 +1388,7 @@ export default {
               dateType: "2",
               endDate: "",
               startDate: "",
-              useDesc: ""
+              useDesc: "",
             };
             this.uploadList = [];
             this.pageStatus = "add";
@@ -1433,29 +1437,27 @@ export default {
         content: `删除后不可恢复，是否继续删除？`,
         onOk: function() {
           const reqParams = {
-            campId: item.campId
+            campId: item.campId,
           };
 
-          postRequest("/campagin/delete?campId=" + item.campId, reqParams).then(
-            res => {
-              self.loading = false;
+          postRequest("/campagin/delete?campId=" + item.campId, reqParams).then(res => {
+            self.loading = false;
 
-              if (res.code == "200") {
-                self.$Message.info("删除成功！");
+            if (res.code == "200") {
+              self.$Message.info("删除成功！");
 
-                setTimeout(() => {
-                  self.pageNum = 1;
-                  self.updateTableList();
-                }, 1200);
-              } else {
-                self.$Message.error(res.msg);
-              }
+              setTimeout(() => {
+                self.pageNum = 1;
+                self.updateTableList();
+              }, 1200);
+            } else {
+              self.$Message.error(res.msg);
             }
-          );
+          });
         },
         onCancel: () => {
           self.$Message.info("点击了取消");
-        }
+        },
       });
     },
 
@@ -1468,7 +1470,8 @@ export default {
       this.setStore("camp_pageStatus", "edit");
 
       item.newDiscountDetail = item.discountDetail;
-      this.camp_Info = item;
+      // this.camp_Info = item;
+      this.campId = item.campId;
       this.basicSetPage = true;
     },
 
@@ -1514,16 +1517,10 @@ export default {
         onOk: function() {
           const reqParams = {
             campId: item.campId,
-            status: new_status
+            status: new_status,
           };
 
-          postRequest(
-            "/campagin/updStatus/?campId=" +
-              item.campId +
-              "&status=" +
-              new_status,
-            reqParams
-          ).then(res => {
+          postRequest("/campagin/updStatus/?campId=" + item.campId + "&status=" + new_status, reqParams).then(res => {
             self.loading = false;
 
             if (res.code == "200") {
@@ -1540,7 +1537,7 @@ export default {
         },
         onCancel: () => {
           self.$Message.info("点击了取消");
-        }
+        },
       });
     },
 
@@ -1605,9 +1602,7 @@ export default {
         couponType: this.add_info.couponType,
         couponValueDesc: this.add_info.couponValueDesc,
         dateType: this.add_info.dateType,
-        doorsillDesc: this.add_info.doorsillDesc
-          .replace(/\t/g, "")
-          .replace(/\n/g, "\\n"),
+        doorsillDesc: this.add_info.doorsillDesc.replace(/\t/g, "").replace(/\n/g, "\\n"),
         endDate: this.add_info.endDate,
         imgUrl: this.add_info.imgUrl,
         couponImg: this.add_info.couponImg, // 缩略图
@@ -1618,7 +1613,7 @@ export default {
         status: this.add_info.status,
         ticketName: this.add_info.ticketName,
         ticketTemplateId: this.add_info.ticketTemplateId,
-        useDesc: this.add_info.useDesc.replace(/\t/g, "").replace(/\n/g, "\\n")
+        useDesc: this.add_info.useDesc.replace(/\t/g, "").replace(/\n/g, "\\n"),
       };
       //this.add_info;
 
@@ -1657,7 +1652,7 @@ export default {
 
           this.campaginGrabInfoPage = false;
         },
-        onCancel: () => {}
+        onCancel: () => {},
       });
     },
     showGgrabInfoSet(e) {
@@ -1672,7 +1667,7 @@ export default {
 
         if (this.uploadList.length == 0) {
           let obj = {
-            url: res.image_url
+            url: res.image_url,
           };
           this.uploadList.push(obj);
         } else {
@@ -1692,7 +1687,7 @@ export default {
 
         if (this.uploadList1.length == 0) {
           let obj = {
-            url: res.image_url
+            url: res.image_url,
           };
           this.uploadList1.push(obj);
         } else {
@@ -1712,7 +1707,7 @@ export default {
 
         if (this.uploadList2.length == 0) {
           let obj = {
-            url: res.image_url
+            url: res.image_url,
           };
           this.uploadList2.push(obj);
         } else {
@@ -1747,15 +1742,13 @@ export default {
     },
     //获取模版ID
     getTicketTemplate(obj) {
-      postRequest("/campagin/selectSweetprojectitemBySheetID?type=" + obj).then(
-        res => {
-          if (res.code == 200) {
-            this.res_list = res.data;
-          } else {
-            this.$Message.error(res.msg);
-          }
+      postRequest("/campagin/selectSweetprojectitemBySheetID?type=" + obj).then(res => {
+        if (res.code == 200) {
+          this.res_list = res.data;
+        } else {
+          this.$Message.error(res.msg);
         }
-      );
+      });
     },
 
     resOk() {
@@ -1778,37 +1771,40 @@ export default {
       let res = await this.queryXX(row.campId);
       const rowData = {
         ...res,
-        appid: row.appid,
-        campId: row.campId,
-        campType: row.campType,
-        couponType: row.couponType,
-        couponValueDesc: row.couponValueDesc,
-        createBy: row.createBy,
-        createTime: row.createTime,
-        dateType: row.dateType,
-        doorsillDesc: row.doorsillDesc,
-        endDate: row.endDate,
-        imgUrl: row.imgUrl,
-        isLimitGrap: row.isLimitGrap,
-        label: row.label,
-        name: row.name,
-        params: row.params,
-        rules: row.rules,
-        startDate: row.startDate,
-        status: row.status,
-        ticketName: row.ticketName,
-        ticketTemplateId: row.ticketTemplateId,
-        updateBy: row.updateBy,
-        updateTime: row.updateTime,
-        useDesc: row.useDesc,
-        couponImg: row.couponImg,
-        ChangeDateType: row.changeDateType,
-        ChangeStartDate: row.changeStartDate,
-        ChangeEndDate: row.changeEndDate,
-        ChangeStart: row.changeStart,
-        ChangeEnd: row.changeEnd,
-        discountDetail: row.discountDetail // 优惠券详情（富文本）
+        // appid: row.appid,
+        // campId: row.campId,
+        // campType: row.campType,
+        // couponType: row.couponType,
+        // couponValueDesc: row.couponValueDesc,
+        // createBy: row.createBy,
+        // createTime: row.createTime,
+        // dateType: row.dateType,
+        // doorsillDesc: row.doorsillDesc,
+        // endDate: row.endDate,
+        // imgUrl: row.imgUrl,
+        // isLimitGrap: row.isLimitGrap,
+        // label: row.label,
+        // name: row.name,
+        // params: row.params,
+        // rules: row.rules,
+        // startDate: row.startDate,
+        // status: row.status,
+        // ticketName: row.ticketName,
+        // ticketTemplateId: row.ticketTemplateId,
+        // updateBy: row.updateBy,
+        // updateTime: row.updateTime,
+        // useDesc: row.useDesc,
+        // couponImg: row.couponImg,
+        // ChangeDateType: row.changeDateType,
+        // ChangeStartDate: row.changeStartDate,
+        // ChangeEndDate: row.changeEndDate,
+        // ChangeStart: row.changeStart,
+        // ChangeEnd: row.changeEnd,
+        // discountDetail: row.discountDetail, // 优惠券详情（富文本）
         //  newDiscountDetail: "", //中转数据
+
+        // 1.5.6.1.1
+        ...res.campaign,
       };
       this.camp_Info3 = rowData;
       this.detailsDisplay = true;
@@ -1816,8 +1812,8 @@ export default {
 
     async queryXX(campId) {
       let url = "/campagin/selectCampaignByCampId";
-      let { code, msg, classListList, brandList } = await postRequest(url, {
-        campId
+      let { code, msg, classListList, brandList, campaign } = await postRequest(url, {
+        campId,
       });
       let categoryList = [];
       classListList.forEach(arr => {
@@ -1854,11 +1850,16 @@ export default {
       });
       // brandNames = brandNames.join(",");
 
+      campaign.settleAmount = campaign.settleAmountYuan;
+      campaign.price = campaign.priceYuan;
+      campaign.originalPrice = campaign.originalPriceYuan;
+
       return {
         brandIds,
         brandNames,
         brandCodes,
-        categoryList
+        categoryList,
+        campaign,
       };
     },
 
@@ -1887,11 +1888,11 @@ export default {
     time2(e) {
       let time = e.slice(0, 10) + " " + "00:00:00";
       this.search.endDate = time;
-    }
+    },
   },
   mounted() {
     this.init();
-  }
+  },
 };
 </script>
 

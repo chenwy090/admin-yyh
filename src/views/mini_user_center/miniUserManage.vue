@@ -1,4 +1,3 @@
-
 <template>
   <div class="search">
     <Row>
@@ -20,12 +19,7 @@
 
               <span v-show="drop">
                 <Form-item label="注册渠道：" :label-width="85">
-                  <Select
-                    v-model="searchItem.source"
-                    placeholder="请选择"
-                    clearable
-                    style="width: 200px"
-                  >
+                  <Select v-model="searchItem.source" placeholder="请选择" clearable style="width: 200px">
                     <Option value>全部</Option>
                     <Option value="1">领优惠分享</Option>
                     <Option value="2">周边券分享</Option>
@@ -37,14 +31,11 @@
                     <Option value="8">所有分享到小程序首页</Option>
                   </Select>
                 </Form-item>
-
                 <FormItem label="否促核销核销用户:" :label-width="130">
                   <Select v-model="searchItem.isWriteoffUser" style="width:100px">
-                    <Option
-                      v-for="(item,index) in writeoffUserList"
-                      :value="item.value"
-                      :key="index"
-                    >{{ item.label }}</Option>
+                    <Option v-for="(item, index) in writeoffUserList" :value="item.value" :key="index">{{
+                      item.label
+                    }}</Option>
                   </Select>
                 </FormItem>
 
@@ -62,7 +53,7 @@
                 <Button @click="queryTableList" type="primary" icon="ios-search">搜索</Button>
                 <Button @click="reset">重置</Button>
                 <a class="drop-down" @click="dropDown">
-                  {{dropDownContent}}
+                  {{ dropDownContent }}
                   <Icon :type="dropDownIcon"></Icon>
                 </a>
               </FormItem>
@@ -129,7 +120,7 @@
           <Input
             v-model="edit_info.remark"
             type="textarea"
-            :autosize="{minRows: 2,maxRows: 5}"
+            :autosize="{ minRows: 2, maxRows: 5 }"
             placeholder="请输入..."
             clearable
           />
@@ -137,7 +128,7 @@
       </Form>
 
       <div slot="footer">
-        <Button type="text" @click="edit_Modal_show=false">取消</Button>
+        <Button type="text" @click="edit_Modal_show = false">取消</Button>
 
         <Button type="primary" @click="editOk('edit_info')" :loading="edit_loading">保存</Button>
       </div>
@@ -157,11 +148,7 @@
       </Form>
     </Modal>
 
-    <FileImport
-      v-if="showFileImport"
-      :showFileImport.sync="showFileImport"
-      @refresh="updateTableList"
-    ></FileImport>
+    <FileImport v-if="showFileImport" :showFileImport.sync="showFileImport" @refresh="updateTableList"></FileImport>
   </div>
 </template>
 
@@ -181,29 +168,28 @@ export default {
       writeoffUserList: [
         {
           value: "",
-          label: "全部"
+          label: "全部",
         },
         {
           value: 0,
-          label: "否"
+          label: "否",
         },
         {
           value: 1,
-          label: "是"
-        }
+          label: "是",
+        },
       ],
       // 促核销有效期:  startTime/endTime  格式:yyyy-MM-dd
       daterange: [],
       drop: false,
       dropDownContent: "展开",
       dropDownIcon: "ios-arrow-down",
-
       searchItem: {
         phoneNumber: null,
         source: "",
         isWriteoffUser: "",
         startTime: "",
-        endTime: ""
+        endTime: "",
       },
 
       current: 1,
@@ -223,62 +209,62 @@ export default {
           render: (h, params) => {
             const text = params.row.isWriteoffUser == "1" ? "是" : "否";
             return h("span", text);
-          }
+          },
         },
         {
           title: "促核销开始时间",
           key: "startTime",
           width: 200,
-          align: "center"
+          align: "center",
         },
         {
           title: "促核销结束时间",
           key: "endTime",
           width: 200,
-          align: "center"
+          align: "center",
         },
         {
           title: "会员Id",
           key: "userVerifyCode",
           width: 200,
-          align: "center"
+          align: "center",
         },
         {
           title: "可提现余额",
           key: "withdrawalBalance",
           width: 150,
           align: "center",
-          sortable: true
+          sortable: true,
         },
         {
           title: "userId",
           key: "userId",
           width: 150,
-          align: "center"
+          align: "center",
         },
         {
           title: "手机号",
           key: "phoneNumber",
           width: 150,
-          align: "center"
+          align: "center",
         },
         {
           title: "微信昵称",
           key: "nickName",
           width: 150,
-          align: "center"
+          align: "center",
         },
         {
           title: "注册时间",
           key: "registerTime",
           width: 150,
-          align: "center"
+          align: "center",
         },
         {
           title: "注册渠道",
           key: "source",
           width: 200,
-          align: "center"
+          align: "center",
         },
         {
           title: "状态",
@@ -288,23 +274,18 @@ export default {
           render: (h, params) => {
             const row = params.row;
             const color = row.status == "1" ? "blue" : "red";
-            const text =
-              row.status == "1"
-                ? "有效"
-                : row.status == "2"
-                ? "冻结"
-                : "无账号";
+            const text = row.status == "1" ? "有效" : row.status == "2" ? "冻结" : "无账号";
 
             return h(
               "Tag",
               {
                 props: {
-                  color: color
-                }
+                  color: color,
+                },
               },
               text
             );
-          }
+          },
         },
         {
           title: "操作",
@@ -315,32 +296,30 @@ export default {
           render: (h, params) => {
             const row = params.row;
 
-            const color =
-              row.status == 1 ? "red" : row.status == 2 ? "#5cadff" : "";
-            const text =
-              row.status == 1 ? "不可赚钱" : row.status == 2 ? "恢复赚钱" : "";
+            const color = row.status == 1 ? "red" : row.status == 2 ? "#5cadff" : "";
+            const text = row.status == 1 ? "不可赚钱" : row.status == 2 ? "恢复赚钱" : "";
             return h("div", [
               h(
                 "Button",
                 {
                   props: {
                     type: "text",
-                    size: "small"
+                    size: "small",
                   },
                   style: {
                     //color: "#5cadff",
-                    color: color
+                    color: color,
                   },
                   on: {
                     click: () => {
                       this.inputUpdateAccountStatus(params.row);
-                    }
-                  }
+                    },
+                  },
                 },
                 text
-              )
+              ),
             ]);
-          }
+          },
         },
         {
           title: "操作日志",
@@ -354,22 +333,22 @@ export default {
                 {
                   props: {
                     type: "text",
-                    size: "small"
+                    size: "small",
                   },
                   style: {
-                    color: "#5cadff"
+                    color: "#5cadff",
                   },
                   on: {
                     click: () => {
                       this.editInfo(params.row);
-                    }
-                  }
+                    },
+                  },
                 },
                 "查看"
-              )
+              ),
             ]);
-          }
-        }
+          },
+        },
       ],
 
       edit_Modal_show: false,
@@ -379,7 +358,7 @@ export default {
         postCode: "",
         status: "",
         remark: "",
-        postSort: null
+        postSort: null,
       },
       edit_loading: false,
       ruleValidate: {
@@ -387,33 +366,33 @@ export default {
           {
             required: true,
             message: "岗位名称不能为空",
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
 
         postCode: [
           {
             required: true,
             message: "岗位编码不能为空",
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
 
         postSort: [
           {
             required: true,
             message: "显示顺序不能为空",
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
 
         status: [
           {
             required: true,
             message: "请选择岗位状态",
-            trigger: "change"
-          }
-        ]
+            trigger: "change",
+          },
+        ],
       },
       requestUrl: "",
       msg: "",
@@ -426,8 +405,8 @@ export default {
         userId: "",
         status: "",
         operation: "", // 操作
-        remark: "" // 备注
-      }
+        remark: "", // 备注
+      },
     };
   },
 
@@ -466,16 +445,20 @@ export default {
       /*this.searchItem.status = ""*/
       this.updateTableList();
     },
-
     //搜索
     queryTableList() {
+      // let re = /^1[3|4|5|8][0-9]\d{4,8}$/;
+      let re = /^(13[0-9]|14[56789]|15[0-3,5-9]|16[56]|17[0-3,5-8]|18[0-9]|19[189])\d{8}$/;
+
+      let { phoneNumber } = this.searchItem;
+      if (!re.test(phoneNumber)) {
+        return this.$Message.error("请输入正确的手机号");
+      }
       this.pageNum = 1;
       this.totalSize = 0;
       this.updateTableList();
     },
-
     //分页
-
     changeCurrent(current) {
       this.pageNum = current;
       this.updateTableList();
@@ -486,7 +469,7 @@ export default {
       const reqParams = {
         // phoneNumber: this.searchItem.phoneNumber,
         // source: this.searchItem.source,
-        ...this.searchItem
+        ...this.searchItem,
       };
 
       let url = `/mini-user/list?pageNum=${this.pageNum}&pageSize=${this.limit}`;
@@ -508,7 +491,7 @@ export default {
         postCode: "",
         status: "0",
         remark: "",
-        postSort: null
+        postSort: null,
       };
       this.edit_Modal_show = true;
       this.title = "岗位管理新增";
@@ -549,7 +532,7 @@ export default {
             postCode: this.edit_info.postCode,
             status: this.edit_info.status,
             remark: this.edit_info.remark,
-            postSort: this.edit_info.postSort
+            postSort: this.edit_info.postSort,
           };
 
           postRequest(this.requestUrl, reqParams).then(res => {
@@ -588,7 +571,7 @@ export default {
         userId: this.formCustom.userId,
         status: this.formCustom.status,
         remark: this.formCustom.remark,
-        type: this.formCustom.type
+        type: this.formCustom.type,
       };
       postRequest("/account/edit", reqParams).then(res => {
         if (res.code == 200) {
@@ -610,13 +593,13 @@ export default {
     msgOk(txt) {
       this.$Message.info({
         content: txt,
-        duration: 3
+        duration: 3,
       });
     },
     msgErr(txt) {
       this.$Message.error({
         content: txt,
-        duration: 3
+        duration: 3,
       });
     },
 
@@ -629,26 +612,24 @@ export default {
         content: `删除后不可恢复，是否继续删除？`,
         onOk: function() {
           self.$Loading.start();
-          postRequest("/system/sys-post/delete?postId=" + item.postId).then(
-            res => {
-              self.loading = false;
+          postRequest("/system/sys-post/delete?postId=" + item.postId).then(res => {
+            self.loading = false;
 
-              if (res.code == "200") {
-                self.$Message.info("删除成功！");
+            if (res.code == "200") {
+              self.$Message.info("删除成功！");
 
-                setTimeout(() => {
-                  self.pageNum = 1;
-                  self.updateTableList();
-                }, 1200);
-              } else {
-                self.$Message.error(res.msg);
-              }
+              setTimeout(() => {
+                self.pageNum = 1;
+                self.updateTableList();
+              }, 1200);
+            } else {
+              self.$Message.error(res.msg);
             }
-          );
+          });
         },
         onCancel: () => {
           self.$Message.info("点击了取消");
-        }
+        },
       });
     },
     removeInfoTest(item) {
@@ -659,32 +640,30 @@ export default {
         content: `填写原因`,
         onOk: function() {
           self.$Loading.start();
-          postRequest("/system/sys-post/delete?postId=" + item.postId).then(
-            res => {
-              self.loading = false;
+          postRequest("/system/sys-post/delete?postId=" + item.postId).then(res => {
+            self.loading = false;
 
-              if (res.code == "200") {
-                self.$Message.info("删除成功！");
+            if (res.code == "200") {
+              self.$Message.info("删除成功！");
 
-                setTimeout(() => {
-                  self.pageNum = 1;
-                  self.updateTableList();
-                }, 1200);
-              } else {
-                self.$Message.error(res.msg);
-              }
+              setTimeout(() => {
+                self.pageNum = 1;
+                self.updateTableList();
+              }, 1200);
+            } else {
+              self.$Message.error(res.msg);
             }
-          );
+          });
         },
         onCancel: () => {
           self.$Message.info("点击了取消");
-        }
+        },
       });
-    }
+    },
   },
   mounted() {
-    this.init();
-  }
+    // this.init();
+  },
 };
 </script>
 

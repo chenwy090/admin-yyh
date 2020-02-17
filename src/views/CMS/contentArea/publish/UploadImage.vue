@@ -19,6 +19,7 @@
         :before-upload="handleBeforeUpload"
         :on-success="handleUploadSuccess"
         :action="url"
+        :data="postData"
         accept="image"
         :max-size="2048"
         :on-exceeded-size="handleMaxSize"
@@ -36,6 +37,14 @@
         </template>
       </Upload>
       <!-- <p style="font-size:12px">选择图片(不大于1M,JPG/PNG/JPEG/BMP）</p> -->
+      <Form v-if="compress">
+        <FormItem label="是否启用压缩:">
+          <i-switch v-model="switchStatus" false-color="#ff4949" @on-change="switchStatusChange">
+            <span slot="open">开</span>
+            <span slot="close">关</span>
+          </i-switch>
+        </FormItem>
+      </Form>
     </div>
 
     <Modal v-model="visible" :footer-hide="true">
@@ -45,24 +54,27 @@
 </template>
 <script>
 import { uploadOperationImage2AliOssURl } from "@/api/index";
-import { checkImage,getImageWH } from "@/libs/date";
+import { checkImage, getImageWH } from "@/libs/date";
 export default {
   name: "upload-image",
   props: {
+    // compress 是否显示压缩 Switch 开关
+    compress: {
+      type: Boolean,
+      default: true,
+    },
     label: {
       type: String,
-      default: ""
+      default: "",
     },
     defaultList: {
       type: Array,
-      default: function() {
-        return [];
-      }
+      default: () => [],
     },
     fileUploadType: {
       type: [String, Number],
-      default: ""
-    }
+      default: "",
+    },
   },
   watch: {
     defaultList: {
@@ -74,34 +86,39 @@ export default {
           this.uploadList.push(item);
         }
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   computed: {
     uploadStyle() {
-      return this.uploadList.length == 0
-        ? "display: inline-block;width:90px;"
-        : "float:'left';padding-top:60px;";
+      return this.uploadList.length == 0 ? "display: inline-block;width:90px;" : "float:'left';padding-top:60px;";
     },
     dragType() {
       return this.uploadList.length ? "select" : "drag";
-    }
+    },
+    postData() { //data	上传时附带的额外参数
+      console.log("this.doCompress:", this.switchStatus, this.switchStatus ? 1 : 0);
+      return { doCompress: this.switchStatus ? 1 : 0 };
+    },
   },
   data() {
     return {
-        width:0,
-        height:0,
+      switchStatus: true,//压缩switch开关
+      // doCompress 传 1是压缩 0是不压缩
+      doCompress: 0,
+      width: 0,
+      height: 0,
       userToken: {}, //用户token
       // 文件上传
       url: uploadOperationImage2AliOssURl,
       uploadList: [],
       imgUrl: "",
-      visible: false
+      visible: false,
     };
   },
   created() {
     this.userToken = {
-      jwttoken: localStorage.getItem("jwttoken")
+      jwttoken: localStorage.getItem("jwttoken"),
     };
   },
   mounted() {
@@ -109,30 +126,35 @@ export default {
     if (this.defaultList.length) {
       this.uploadList = this.defaultList;
     }
+    console.log("mounted compress", this.compress);
   },
 
   methods: {
-
+    switchStatusChange(status) {
+      // console.log("开关状态：" + status);
+      // this.switchStatus = status ? 1 : 0;
+      // console.log("开关状态status：" + this.switchStatus);
+    },
     handleView(imgUrl) {
       this.imgUrl = imgUrl;
       this.visible = true;
     },
     handleRemove(file) {
       this.uploadList = [];
-      this.defaultList = [];
+      // this.defaultList = [];
       this.$emit("remove");
     },
     handleUploadSuccess(res, file, fileList) {
       if (res.code == 200) {
-          this.uploadList = [];
+        this.uploadList = [];
         let imgUrl = res.image_url;
         file.imgUrl = imgUrl;
-          console.log(this.width);
-          this.$emit("uploadSuccess", {
-           coverImgHeight: this.height,
-           coverImgWidth: this.width,
+        console.log(this.width);
+        this.$emit("uploadSuccess", {
+          coverImgHeight: this.height,
+          coverImgWidth: this.width,
           fileUploadType: this.fileUploadType,
-          imgUrl
+          imgUrl,
         });
 
         this.uploadList.push(file);
@@ -149,28 +171,28 @@ export default {
       this.msgErr("只能上传gif,jpg,jpeg,png,bmp格式,请重新上传");
     },
     handleBeforeUpload(file) {
-        console.log(file);
-        getImageWH(file).then(res => {
-            console.log(res);
-           this.width = res.w;
-           this.height = res.h;
-        })
-        return checkImage(file);
+      console.log(file);
+      getImageWH(file).then(res => {
+        console.log(res);
+        this.width = res.w;
+        this.height = res.h;
+      });
+      return checkImage(file);
     },
     // 全局提示
     msgOk(txt) {
       this.$Message.info({
         content: txt,
-        duration: 3
+        duration: 3,
       });
     },
     msgErr(txt) {
       this.$Message.error({
         content: txt,
-        duration: 3
+        duration: 3,
       });
-    }
-  }
+    },
+  },
 };
 </script>
 <style  lang="less" scoped>

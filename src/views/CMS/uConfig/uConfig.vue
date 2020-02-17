@@ -13,14 +13,18 @@ import { createNamespacedHelpers } from "vuex";
 const { mapGetters, mapState, mapActions } = createNamespacedHelpers("cms");
 
 import ConfigModule from "./ConfigModule";
+//开机广告
 import BootAd from "./bootAd";
+//首页
 import IndexPage from "./indexPage";
-import PlatformBonus from "./platformBonus"; //平台分红
-
+//平台分红
+import PlatformBonus from "./platformBonus";
+//banner设置
 import bannerPage from "./bannerPage/bannerPage";
-
 // 领优惠配置
 import DiscountConfig from "./discountConfig";
+// 赚钱频道
+import makeMoney from "./makeMoney";
 
 export default {
   name: "u-config",
@@ -29,7 +33,7 @@ export default {
       linkTo: this.linkTo,
       // 全局提示
       msgOk: this.msgOk,
-      msgErr: this.msgErr
+      msgErr: this.msgErr,
     };
   },
   components: {
@@ -38,32 +42,37 @@ export default {
     bannerPage,
     IndexPage,
     PlatformBonus,
-    DiscountConfig
+    DiscountConfig,
+    makeMoney,
   },
   computed: {
-    ...mapGetters({ compName: "getCompName" })
+    ...mapGetters({ compName: "getCompName" }),
   },
   data() {
     return {};
   },
   methods: {
     ...mapActions({
-      linkTo: "setCompName"
+      linkTo: "setCompName",
     }),
     // 全局提示
     msgOk(txt) {
       this.$Message.info({
         content: txt,
-        duration: 3
+        duration: 3,
       });
     },
     msgErr(txt) {
       this.$Message.error({
         content: txt,
-        duration: 3
+        duration: 3,
       });
-    }
-  }
+    },
+  },
+  mounted() {},
+  destroyed() {
+    this.linkTo("cms");
+  },
 };
 </script>
 

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="x5-fullscreen" content="true">
+  <meta name="full-screen" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+  <meta http-equiv="cache-control" content="max-age=0" />
+  <meta http-equiv="cache-control" content="no-cache" />
+  <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>预览优惠券详情</title>
+  <link href="./css.css" rel="stylesheet">
+  <script src="https://cdn.bootcss.com/vue/2.6.10/vue.min.js"></script>
+  <script src="https://cdn.bootcss.com/axios/0.19.0/axios.min.js"></script>
+  <!-- <script src="https://cdn.bootcss.com/sass.js/0.11.0/sass.min.js"></script> -->
+  <script src="./rem.js"></script>
+</head>
+
+<body>
+  <div id="container">
+    <template v-if=" success == 200 ">
+      <div class="title">优惠券详情</div>
+      <div class="main">
+        <div class="mian_head">
+          <div class="head_img">
+            <img :src="couponData.couponBigImg" alt="">
+          </div>
+          <div class="head_txt">
+            <div class="head_title1">
+              {{couponData.displayText}}
+              <span>{{couponData.couponTypeName}}</span>
+              <div class="head_title1_left">
+
+                <template v-if=" couponData.couponKind != 1 && couponData.enableSaleAfter == 1 ">
+                  <span v-for="(item, index) in couponData.couponSaleAfterVOList" :key="index">
+                    <span v-if="index != 0">|</span>
+                    {{item.value}}
+                  </span>
+                  <i class="help-icon"><svg t="1576662261265" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1922" width="200" height="200"><path d="M512 127.9c51.9 0 102.2 10.1 149.5 30.2 45.7 19.3 86.8 47 122.1 82.3s63 76.4 82.3 122.1c20 47.3 30.2 97.6 30.2 149.5S886 614.2 865.9 661.5c-19.3 45.7-47 86.8-82.3 122.1s-76.4 63-122.1 82.3c-47.3 20-97.6 30.2-149.5 30.2S409.8 886 362.5 865.9c-45.7-19.3-86.8-47-122.1-82.3s-63-76.4-82.3-122.1c-20-47.3-30.2-97.6-30.2-149.5s10.1-102.2 30.2-149.5c19.3-45.7 47-86.8 82.3-122.1s76.4-63 122.1-82.3c47.3-20 97.6-30.2 149.5-30.2m0-64C264.5 63.9 63.9 264.5 63.9 512S264.5 960.1 512 960.1 960.1 759.5 960.1 512 759.5 63.9 512 63.9z" fill="" p-id="1923"></path><path d="M480 736h64v64h-64zM476.9 686.3c-0.3-9.3-0.4-42.2-0.4-46.8 0-27.3 3.9-50.8 11.6-70.6 5.7-14.9 14.8-30 27.4-45.1 9.3-11.1 25.9-27.2 50-48.4 24-21.2 39.7-38.1 46.9-50.7s10.8-26.4 10.8-41.3c0-27-10.5-50.7-31.6-71.2-21.1-20.4-46.9-30.7-77.5-30.7-29.6 0-54.3 9.3-74.1 27.8-19.8 18.5-32.8 47.4-39 86.8l-71.4-8.5c6.4-52.7 25.5-93.1 57.3-121.1s73.7-42 125.9-42c55.3 0 99.4 15 132.3 45.1 32.9 30.1 49.4 66.5 49.4 109.2 0 24.7-5.8 47.4-17.4 68.3s-34.2 46.2-67.9 76c-22.6 20.1-37.4 34.8-44.4 44.4-6.9 9.5-12.1 20.4-15.4 32.8-3.3 12.3-5.3 58.4-5.8 86.2h-66.7v-0.2z" fill="" p-id="1924"></path></svg></i>
+                </template>
+                <template v-if=" couponData.couponKind != 1 && couponData.enableSaleAfter == 0 ">
+                  <span>不支持退款</span>
+                </template>
+
+              </div>
+            </div>
+            <div class="head_title2">
+              {{couponData.title}}
+            </div>
+            <div class="head_title3">
+              <div class="head_title3_txt">
+                <span>{{couponData.shareReward}}</span>
+                <span>{{couponData.sharedReward}}</span>
+                <span>{{couponData.firstLevelReward}}</span>
+              </div>
+              <div class="head_title3_button">
+                分享赚U贝
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mian_rule">
+          <div class="rule_title">
+            领取规则
+          </div>
+          <div class="rule_main">
+            <div class="rule_time">
+              活动时间：{{couponData.startDate | time}} 至 {{couponData.endDate | time}}
+            </div>
+            <div class="rule_main_txt" :class=" { 'active': showMore } ">
+              <p v-for="(item,index) in couponData.useDesc" :key="index">{{item}}</p>
+            </div>
+            <div class="rule_main_button" :class=" { 'active': showMore } " @click=" showMore = !showMore ">
+            </div>
+          </div>
+        </div>
+
+        <div class="mian_rule">
+          <div class="rule_title">
+            适用门店
+            <span class="title-desc-more" v-if="couponData.merchantInfoVOList && couponData.merchantInfoVOList.length > 1">查看适用门店({{couponData.merchantInfoVOList.length}}家)</span>
+          </div>
+          <div class="gps_main">
+            <div class="gps_left">
+              <template v-if=" couponData.merchantInfoVOList && couponData.merchantInfoVOList[0] ">
+                <p class="item">{{couponData.merchantInfoVOList[0].merchantName}}</p>
+                <p class="item">{{couponData.merchantInfoVOList[0].address}}</p>
+              </template>
+            </div>
+            <div class="gps_right">
+              <i class="address-icon"><svg t="1576661227295" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1171" width="200" height="200"><path d="M511.425901 955.659138C481.601958 955.659138 168.221882 603.156422 168.221882 413.616259 168.221882 224.080961 321.866277 70.412239 511.425901 70.412239s343.20402 153.645612 343.20402 343.20402C854.629921 603.175883 539.724591 955.659138 511.425901 955.659138L511.425901 955.659138zM511.425901 114.69812C346.33602 114.69812 212.507762 248.544622 212.507762 413.616259c0 165.114207 290.551136 497.761864 298.918139 497.761864 3.853273 0 298.923004-332.647657 298.923004-497.761864C810.348905 248.544622 676.520648 114.69812 511.425901 114.69812L511.425901 114.69812zM511.425901 535.399389c-67.243749 0-121.783131-54.534516-121.783131-121.783131 0-67.243749 54.539382-121.783131 121.783131-121.783131 67.248614 0 121.783131 54.539382 121.783131 121.783131C633.209032 480.864873 578.674516 535.399389 511.425901 535.399389L511.425901 535.399389zM511.425901 336.119008c-42.799549 0-77.49725 34.717163-77.49725 77.49725 0 42.822659 34.697702 77.49725 77.49725 77.49725 42.803198 0 77.49725-34.674592 77.49725-77.49725C588.923151 370.836171 554.229099 336.119008 511.425901 336.119008L511.425901 336.119008zM511.425901 336.119008" p-id="1172"></path></svg></i>
+              <span>{{ address }}km</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mian_rule" style="padding-bottom: 10px;" v-if="couponData.discountDetail">
+          <div class="rule_title">
+            优惠券详情
+          </div>
+          <div class="gps_main">
+            <div v-html="couponData.discountDetail" style="padding: .1rem .2rem;"></div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <template v-if=" success == 401 ">
+      <div class="success401">预览信息已失效</div>
+    </template>
+  </div>
+  <script src="./t.js"></script>
+</body>
+
+</html>

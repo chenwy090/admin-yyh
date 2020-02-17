@@ -23,7 +23,7 @@ export default Vue.directive('numformatter', {
         // } else {
             // let value = String(vnode.data.directives[1].value);
             let value = String(binding.value);
-            console.log(2222, value);
+            // console.log(2222, value);
             if (typeof value === 'string') { } //在重置的时候清空
             if (value.split('.').length - 1 > 1) {
                 value = value.replace(/\.{2,}/g, '') // 只保留第一个. 清除多余的

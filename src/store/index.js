@@ -10,6 +10,12 @@ import cms from './modules/cms';
 import financial from './modules/financial';
 // 任务中心
 import missionCenter from './modules/mission-center';
+// 双蛋活动
+import egg from './modules/egg';
+// 活动模板
+import template from './modules/template';
+// bigc 赏u
+import bigc from './modules/bigc';
 
 Vue.use(Vuex);
 
@@ -31,7 +37,10 @@ const store = new Vuex.Store({
         comm,
         cms,
         financial,
-        missionCenter
+        missionCenter,
+        egg,
+        template,
+        bigc
     }
 });
 

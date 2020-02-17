@@ -13,7 +13,10 @@
           <FormItem label="状态：">{{formData.isStopName}}</FormItem>
           <FormItem label="任务规则：">
             <Row>
-              <Col span="10">{{formData.ruleDescribe}}</Col>
+              <Col span="10">
+                <!-- {{formData.ruleDescribe}} -->
+                <div v-html="formData.ruleDescribe"></div>
+              </Col>
             </Row>
           </FormItem>
         </row>
@@ -39,19 +42,19 @@ import RewardRulesItemDetail from "./RewardRulesItemDetail";
 export default {
   name: "reward-u-edit",
   components: {
-    RewardRulesItemDetail
+    RewardRulesItemDetail,
   },
   props: {
     showDetail: {
       type: Boolean,
-      default: true
+      default: true,
     },
     detailData: {
       type: Object,
       default: function() {
         return {};
-      }
-    }
+      },
+    },
   },
   data() {
     return {
@@ -59,7 +62,7 @@ export default {
       statusOption: {
         "0": "待审核",
         "1": "已通过",
-        "2": "未通过"
+        "2": "未通过",
       },
       // 状态 status 显示“未开始、进行中、已结束、已终止”选项。	默认显示“请选择”。
       //  isStop 是否终止 1-中止，0-正常
@@ -67,7 +70,7 @@ export default {
         "0": "未开始",
         "1": "进行中",
         "2": "已结束",
-        "3": "已终止"
+        "3": "已终止",
       },
       merchantTypeOption: { 0: "本地商户（单店）", 1: "本地商户（多店）" },
 
@@ -101,10 +104,10 @@ export default {
             defaultBannerList: [],
             imgUrl: "",
             defaultLogoList: [],
-            logoUrl: ""
-          }
-        ]
-      }
+            logoUrl: "",
+          },
+        ],
+      },
     };
   },
   mounted() {
@@ -138,8 +141,8 @@ export default {
       // this.$refs.formValidate.resetFields();
       console.log("closeDialog");
       this.$emit(`update:showDetail`, false);
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>

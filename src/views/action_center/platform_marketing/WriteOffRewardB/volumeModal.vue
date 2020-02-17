@@ -337,6 +337,8 @@
                     couponName:this.volumeForm.couponName,
                     shopName:this.volumeForm.shopName,
                     // provinceCode:this.addressValue[0]||'',
+                    // 1.5.6.1.1
+                    requestFrom: "useReward",
                 }
                 //商户券列表
                 postRequest(`/coupon/superMarket/list`,params
@@ -371,6 +373,7 @@
                     // cityCode:this.addressValue[1]||'',
                     couponName:this.volumeForm.couponName,
                     merchantName:this.volumeForm.merchantName,
+                    requestFrom: "useReward",
                     // provinceCode:this.addressValue[0]||'',
                 }
                 //商超券列表

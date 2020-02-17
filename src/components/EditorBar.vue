@@ -14,6 +14,28 @@ import { uploadOperationImage2AliOssURl } from "@/api/index";
 import E from "wangeditor";
 import allMenus from "./editorBar/menus";
 
+const filterEmptyHtmlTag = html => {
+  html = html.trim();
+  // console.log(1, html);
+  var reg = /<([a-z]+?)(?:\s+?[^>]*?)?>\s*?<\/\1>/gi;
+  html = html.replace(reg, "");
+  // console.log(2, html);
+  // <p></p><p>&nbsp;</p><p></p>
+
+  let arr = [
+    "<p>&nbsp;</p>",
+    "<p>&nbsp; &nbsp;</p>",
+    "<p></p><p>&nbsp;</p><p></p>",
+    "<p><br></p>",
+    "<p><br></p >"
+  ];
+  if (arr.includes(html)) {
+    html = "";
+  }
+  // console.log(3, html);
+  return html;
+};
+
 export default {
   name: "EditorBar",
   data() {
@@ -34,12 +56,12 @@ export default {
       type: Array,
       default: () => []
     },
-    content:String,
-    disabled:null,
+    content: String,
+    disabled: null
   },
   watch: {
     content(newOne, oldOne) {
-      if(newOne){
+      if (newOne) {
         if (newOne.indexOf("<!--") !== -1) {
           var strArr1 = newOne.split("<!--");
           var strArr2 = strArr1[1].split("-->");
@@ -49,10 +71,10 @@ export default {
       }
       this.editor.txt.text(newOne);
       // this.disabled 传1过来表示禁用
-      if(this.disabled == 1) {
-        this.editor.$textElem.attr('contenteditable', false)
+      if (this.disabled == 1) {
+        this.editor.$textElem.attr("contenteditable", false);
       }
-    },
+    }
   },
   mounted() {
     this.seteditor();
@@ -62,16 +84,28 @@ export default {
     seteditor() {
       this.editor = new E(this.$refs.toolbar, this.$refs.editor);
       // this.editor.customConfig.pasteTextHandle = function(content) {
-      //   // content 即粘贴过来的内容（html 或 纯文本），可进行自定义处理然后返回
-      //   if (content == "" && !content) return "";
-      //   var str = content;
-      //   str = str.replace(/<xml>[\s\S]*?<\/xml>/gi, "");
-      //   str = str.replace(/<\/?[^>]*>/g, "");
-      //   str = str.replace(/[ | ]*\n/g, "\n");
-      //   str = str.replace(/&nbsp;/gi, "");
-      //   console.log("****", content);
-      //   console.log("****", str);
-      //   return str;
+      //   //   // content 即粘贴过来的内容（html 或 纯文本），可进行自定义处理然后返回
+      //   //   if (content == "" && !content) return "";
+      //   //   var str = content;
+      //   //   str = str.replace(/<xml>[\s\S]*?<\/xml>/gi, "");
+      //   //   str = str.replace(/<\/?[^>]*>/g, "");
+      //   //   str = str.replace(/[ | ]*\n/g, "\n");
+      //   //   str = str.replace(/&nbsp;/gi, "");
+      //   //   console.log("****", content);
+      //   //   console.log("****", str);
+      //   //   return str;
+
+      //   console.log(1, content);
+
+      //   var reg = /<([a-z]+?)(?:\s+?[^>]*?)?>\s*?<\/\1>/gi;
+
+      //   content = content.replace(reg, "");
+
+      //   console.log(2, content);
+
+      //   // <p></p><p>&nbsp;</p><p></p>
+
+      //   return content;
       // };
       // 配置菜单
       this.editor.customConfig.menus = [
@@ -80,12 +114,12 @@ export default {
         "fontSize", // 字号
         "fontName", // 字体
         "underline", // 下划线
-        'strikeThrough',  // 删除线
+        "strikeThrough", // 删除线
         "foreColor", // 文字颜色
         "link", // 插入链接
         "list", // 列表
         "justify", // 对齐方式
-        'emoticon',  // 表情
+        "emoticon", // 表情
         "image", // 插入图片
         "table", // 表格
         "undo", // 撤销
@@ -148,10 +182,12 @@ export default {
         // }
       };
       this.editor.customConfig.onchange = html => {
+        html = filterEmptyHtmlTag(html);
         this.info_ = html; // 绑定当前逐渐地值
         this.$emit("on-change", this.info_); // 将内容同步到父组件中
       };
       this.editor.customConfig.onblur = html => {
+        html = filterEmptyHtmlTag(html);
         this.info_ = html; // 绑定当前逐渐地值
         this.$emit("on-blur", this.info_); // 将内容同步到父组件中
       };

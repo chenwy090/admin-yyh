@@ -16,7 +16,9 @@
               v-else-if="row.code == '8'||row.code == '18'||row.code == '19'||row.code == '21'||row.code == '26'"
             >{{row.value}}元</div>
             <div v-else-if="row.code == '9'">{{row.value}}U贝=1元</div>
-            <div v-else-if="row.code == '10'||row.code=='27'||row.code=='31'||row.code=='33'||row.code=='34'||row.code=='35'">{{row.value}}次</div>
+            <div
+              v-else-if="row.code == '10'||row.code=='27'||row.code=='31'||row.code=='33'||row.code=='34'||row.code=='35'"
+            >{{row.value}}次</div>
             <div v-else-if="row.code == '11'||row.code == '12'||row.code == '13'||row.code == '14'">
               <p>第一名{{row.value.split(',')[0]}}U贝</p>
               <p>第二名{{row.value.split(',')[1]}}U贝</p>
@@ -73,10 +75,19 @@
           </Tooltip>
         </template>
       </Table>
-    </div>
+    </div>Modal36
+    <!-- 进店群U贝奖励值 code 39 -->
+    <Modal39 :modal="modal39" @refresh="getData1"></Modal39>
 
     <!-- 提现-开关 -->
     <WithdrawalSwitch></WithdrawalSwitch>
+    <!-- 商户免审提现金额 -->
+    <!-- <WithdrawalFreeAmount></WithdrawalFreeAmount> -->
+    <!-- 支付券配置 -->
+    <paymentVoucher></paymentVoucher>
+
+    <!-- 微信号 -->
+    <wxconfig></wxconfig>
 
     <!--奖励配置-->
     <Modal v-model="modal1.isopen" :title="modal1.name" :mask-closable="false" footer-hide>
@@ -195,7 +206,9 @@
             <span class="ivu-form-item-label">U贝=1元</span>
           </Col>
         </Row>
-        <Row v-else-if="modal1.code == '10'||modal1.code == '27'||modal1.code == '31'||modal1.code=='33'||modal1.code=='34'||modal1.code=='35'">
+        <Row
+          v-else-if="modal1.code == '10'||modal1.code == '27'||modal1.code == '31'||modal1.code=='33'||modal1.code=='34'||modal1.code=='35'"
+        >
           <Col span="18">
             <FormItem label="次数">
               <InputNumber
@@ -306,13 +319,13 @@
           <Col span="18">
             <FormItem label="分钟">
               <InputNumber
-                      :min="0"
-                      :step="1"
-                      type="text"
-                      :precision="0"
-                      v-model="modal1.value"
-                      placeholder="请输入"
-                      style="width: 100%"
+                :min="0"
+                :step="1"
+                type="text"
+                :precision="0"
+                v-model="modal1.value"
+                placeholder="请输入"
+                style="width: 100%"
               ></InputNumber>
             </FormItem>
           </Col>
@@ -404,9 +417,17 @@ import { postRequest, getRequest } from "@/libs/axios";
 import { uploadOperationImage2AliOssURl } from "@/api/index";
 import EditorBar from "@/components/EditorBar";
 import WithdrawalSwitch from "./WithdrawalSwitch";
+import wxconfig from "./wxconfig";
+import Modal39 from "./Modal39";
+
+// import WithdrawalFreeAmount from "./WithdrawalFreeAmount";
+import paymentVoucher from "./paymentVoucher";
+
+import { columns1, columns2, columns3 } from "./columns";
+
 export default {
   name: "reward_deploy",
-  components: { EditorBar, WithdrawalSwitch },
+  components: { EditorBar, WithdrawalSwitch, paymentVoucher, wxconfig, Modal39 },
   data() {
     return {
       userToken: {}, //用户token
@@ -415,15 +436,13 @@ export default {
         value: [{ required: true, message: "请输入数量", trigger: "blur" }],
         value1: [{ required: true, message: "请输入数量", trigger: "blur" }],
         value2: [{ required: true, message: "请输入数量", trigger: "blur" }],
-        value3: [{ required: true, message: "请输入数量", trigger: "blur" }]
+        value3: [{ required: true, message: "请输入数量", trigger: "blur" }],
       },
       ruleValidate2: {
-        verifyQuantityMin: [
-          { required: true, message: "请输入数量", trigger: "blur" }
-        ]
+        verifyQuantityMin: [{ required: true, message: "请输入数量", trigger: "blur" }],
       },
       ruleValidate3: {
-        context: [{ required: true, message: "请输入", trigger: "blur" }]
+        context: [{ required: true, message: "请输入", trigger: "blur" }],
       },
       loading: true,
       defaultList: [],
@@ -432,6 +451,13 @@ export default {
       TableLoading3: false,
       visible: false,
       imgName: "",
+      modal39: {
+        isopen: false,
+        name: "",
+        id: "",
+        code: "39",
+        value: "",
+      },
       modal1: {
         name: "",
         id: "",
@@ -441,142 +467,28 @@ export default {
         value: 0,
         value1: 0,
         value2: 0,
-        value3: 0
+        value3: 0,
       },
       modal2: {
         levelName: "",
         isopen: false,
         level: "",
-        verifyQuantityMin: 0
+        verifyQuantityMin: 0,
       },
       modal3: {
         name: "",
         isopen: false,
         context: "",
         newcontext: "",
-        isEditor: true
+        isEditor: true,
       },
-      columns1: [
-        {
-          title: "操作",
-          align: "center",
-          width: 100,
-          fixed: "left",
-          slot: "action"
-        },
-        {
-          title: "序号",
-          type: "index",
-          align: "center",
-          minWidth: 100
-        },
-        {
-          title: "配置项",
-          align: "center",
-          minWidth: 160,
-          key: "name"
-        },
-        {
-          title: "配置值",
-          align: "center",
-          minWidth: 160,
-          slot: "value"
-        },
-        {
-          title: "修改人",
-          align: "center",
-          minWidth: 160,
-          key: "updateBy"
-        },
-        {
-          title: "修改时间",
-          align: "center",
-          minWidth: 160,
-          key: "updateTime"
-        }
-      ],
-      columns2: [
-        {
-          title: "操作",
-          align: "center",
-          width: 100,
-          fixed: "left",
-          slot: "action"
-        },
-        {
-          title: "序号",
-          type: "index",
-          align: "center",
-          minWidth: 100
-        },
-        {
-          title: "配置项",
-          align: "center",
-          minWidth: 160,
-          key: "levelName"
-        },
-        {
-          title: "配置值",
-          align: "center",
-          minWidth: 160,
-          slot: "verifyQuantityMin"
-        },
-        {
-          title: "修改人",
-          align: "center",
-          minWidth: 160,
-          key: "createBy"
-        },
-        {
-          title: "修改时间",
-          align: "center",
-          minWidth: 160,
-          key: "gmtCreate"
-        }
-      ],
-      columns3: [
-        {
-          title: "操作",
-          align: "center",
-          width: 100,
-          fixed: "left",
-          slot: "action"
-        },
-        {
-          title: "序号",
-          type: "index",
-          align: "center",
-          minWidth: 100
-        },
-        {
-          title: "配置项",
-          align: "center",
-          minWidth: 160,
-          key: "name"
-        },
-        {
-          title: "配置值",
-          align: "center",
-          minWidth: 160,
-          slot: "context"
-        },
-        {
-          title: "修改人",
-          align: "center",
-          minWidth: 160,
-          key: "updateBy"
-        },
-        {
-          title: "修改时间",
-          align: "center",
-          minWidth: 160,
-          key: "updateTime"
-        }
-      ],
+      columns1,
+      columns2,
+      columns3,
       list1: [],
       list2: [],
       list3: [],
-      list4: []
+      list4: [],
     };
   },
   methods: {
@@ -591,10 +503,7 @@ export default {
       // if (value.indexOf('.')&&e.keyCode==190) return false
       // if (value.split('.')[1]&&value.split('.')[1].length>=2) return false
       console.log(e);
-      e.target.value = e.target.value.replace(
-        /^(\-)*(\d+)\.(\d\d).*$/,
-        "$1$2.$3"
-      ); //只能输入两个小数
+      e.target.value = e.target.value.replace(/^(\-)*(\d+)\.(\d\d).*$/, "$1$2.$3"); //只能输入两个小数
     },
     // 仅能输入数字
     isNumber(keyCode) {
@@ -619,8 +528,7 @@ export default {
     handleSuccess(res, file) {
       this.model1.value = file.url;
       // 因为上传过程为实例，这里模拟添加 url
-      file.url =
-        "https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar";
+      file.url = "https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar";
       file.name = "7eb99afb9d5f317c912f08b5212fd69a";
     },
     handleSuccess(res, file) {
@@ -637,7 +545,7 @@ export default {
     handleMaxSize(file) {
       this.$Notice.warning({
         title: "超出文件大小限制",
-        desc: "文件 " + file.name + " 太大，不能超过 2M。"
+        desc: "文件 " + file.name + " 太大，不能超过 2M。",
       });
     },
     handleBeforeUpload() {
@@ -650,6 +558,17 @@ export default {
       // return check;
     },
     openModal1(item) {
+      if (item.code == 39) {
+        this.modal39 = {
+          isopen: true,
+          levelName: item.name,
+          id: item.id,
+          code: item.code,
+          name: item.name,
+          value: item.value,
+        };
+        return;
+      }
       (this.defaultList = []), (this.modal1.name = item.name);
       this.modal1.code = item.code;
       this.modal1.id = item.id;
@@ -657,12 +576,7 @@ export default {
       this.modal1.isopen = true;
       if (item.type != "3") {
         this.modal1.value = Number(item.value) || 0;
-        if (
-          item.code == "11" ||
-          item.code == "12" ||
-          item.code == "13" ||
-          item.code == "14"
-        ) {
+        if (item.code == "11" || item.code == "12" || item.code == "13" || item.code == "14") {
           this.modal1.value1 = Number(item.value.split(",")[0]) || 0;
           this.modal1.value2 = Number(item.value.split(",")[1]) || 0;
           this.modal1.value3 = Number(item.value.split(",")[2]) || 0;
@@ -684,12 +598,9 @@ export default {
       this.modal3.isopen = true;
       this.modal3.context = item.context;
       this.modal3.newcontext = item.context;
-      if (
-          item.code == "12" ||
-          item.code == "13"
-      ){
+      if (item.code == "12" || item.code == "13") {
         this.modal3.isEditor = false;
-      }else {
+      } else {
         this.modal3.isEditor = true;
       }
     },
@@ -701,12 +612,7 @@ export default {
           this.modal1.code == "13" ||
           this.modal1.code == "14"
         ) {
-          this.modal1.value =
-            this.modal1.value1 +
-            "," +
-            this.modal1.value2 +
-            "," +
-            this.modal1.value3;
+          this.modal1.value = this.modal1.value1 + "," + this.modal1.value2 + "," + this.modal1.value3;
         }
         if (this.modal1.value || this.modal1.value === 0) {
           this.saveChange1();
@@ -726,17 +632,14 @@ export default {
     },
     ok2(name) {
       // this.$Message.info('Clicked ok');
-      if (
-        this.modal2.verifyQuantityMin ||
-        this.modal2.verifyQuantityMin === 0
-      ) {
+      if (this.modal2.verifyQuantityMin || this.modal2.verifyQuantityMin === 0) {
         this.saveChange2();
       } else {
         this.$Message.error("请检查表单");
       }
     },
     ok3(name) {
-      if (!this.modal3.isEditor){
+      if (!this.modal3.isEditor) {
         this.modal3.newcontext = this.modal3.context;
       }
       if (this.modal3.newcontext) {
@@ -753,13 +656,7 @@ export default {
           if (res.data) {
             this.list1 = res.data.noOverallCommonConfigList || [];
             this.list1.forEach(function(v) {
-              if (
-                v.code == "8" ||
-                v.code == "18" ||
-                v.code == "19" ||
-                v.code == "21" ||
-                v.code == "26"
-              ) {
+              if (v.code == "8" || v.code == "18" || v.code == "19" || v.code == "21" || v.code == "26") {
                 v.value = v.value / 100;
               }
             });
@@ -800,8 +697,8 @@ export default {
         overallCommonConfig: {
           id: this.modal1.id,
           code: this.modal1.code,
-          value: this.modal1.value
-        }
+          value: this.modal1.value,
+        },
       }).then(res => {
         if (res.code == 200) {
           // this.list2.forEach(function(v){
@@ -822,7 +719,7 @@ export default {
       var that = this;
       postRequest("/mini/userLevelRule/add", {
         verifyQuantityMin: this.modal2.verifyQuantityMin,
-        level: this.modal2.level
+        level: this.modal2.level,
       }).then(res => {
         if (res.code == 200) {
           // this.list2.forEach(function(v){
@@ -844,7 +741,7 @@ export default {
 
       postRequest("/rewardNotice/updateNotice", {
         code: this.modal3.code,
-        context: this.modal3.newcontext
+        context: this.modal3.newcontext,
       }).then(res => {
         if (res.code == 200) {
           // this.list2.forEach(function(v){
@@ -865,25 +762,25 @@ export default {
     msgOk(txt) {
       this.$Message.info({
         content: txt,
-        duration: 3
+        duration: 3,
       });
     },
 
     msgErr(txt) {
       this.$Message.error({
         content: txt,
-        duration: 3
+        duration: 3,
       });
-    }
+    },
   },
   created() {
     this.getData1();
     this.getData2();
     this.getData3();
     this.userToken = {
-      jwttoken: localStorage.getItem("jwttoken")
+      jwttoken: localStorage.getItem("jwttoken"),
     };
-  }
+  },
 };
 </script>
 
